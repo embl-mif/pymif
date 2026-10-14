@@ -4,7 +4,7 @@
 
 It is developed for users of the [Mesoscopic Imaging Facility (MIF)](https://www.embl.org/groups/mesoscopic-imaging-facility/), but the repository now covers a broader scope than simple vendor import: it includes a reusable manager API, NGFF-aware zarr creation utilities, region writing for images and labels, batch conversion helpers, and napari widgets for conversion and overview generation.
 
-For the rendered docs, see [the documentation page](https://grinic.github.io/pymif/).
+For the rendered docs, see [the documentation page](https://embl-mif.github.io/pymif/).
 
 > [!NOTE]
 > Current PyMIF releases write **NGFF v0.5 / Zarr v3** by default. Existing **NGFF v0.4 / Zarr v2** datasets remain supported through `ZarrManager` and `ZarrV04Manager`.
@@ -82,7 +82,7 @@ conda activate pymif
 Then install from the repository:
 
 ```console
-git clone https://github.com/grinic/pymif.git
+git clone https://github.com/embl-mif/pymif.git
 cd pymif
 pip install .
 ```

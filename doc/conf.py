@@ -49,7 +49,7 @@ def linkcode_resolve(domain, info):
     if not info['module']:
         return None
     filename = info['module'].replace('.', '/')
-    return "https://github.com/grinic/pymif/blob/main/%s.py" % filename
+    return "https://github.com/embl-mif/pymif/blob/main/%s.py" % filename
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
