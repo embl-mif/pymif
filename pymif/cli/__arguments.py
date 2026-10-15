@@ -386,9 +386,9 @@ def _add_mosaic_arguments(parser):
         help='"none" writes a 3D volume; "max"/"sum" write a 2D projection along z.',
     )
     parser.add_argument(
-        '-b', '--blend', choices=['max', 'sum', 'count', 'midline'], default='max',
-        help='How overlapping tiles are merged: max, sum (overlaps brighter), count (tiles per voxel, '
-             'no pixel data read), midline (each tile group, e.g. illumination side, on its own side of the overlap).',
+        '-b', '--blend', choices=['max', 'sum', 'midline'], default='max',
+        help='How overlapping tiles are merged: max, sum (overlaps brighter), or midline (each tile group, '
+             'e.g. illumination side, up to the middle of the overlap, with a sharp switch there).',
     )
     parser.add_argument('-ch', '--channels', nargs='+', help='Tile channels to fuse, in output order. Default: all.')
     parser.add_argument('-g', '--groups', nargs='+', help='Tile groups to fuse (e.g. L R). Default: all.')
@@ -400,7 +400,7 @@ def _add_mosaic_arguments(parser):
     parser.add_argument('-ma', '--midline_axis', choices=['x', 'y', 'z'], default='x',
                         help='Axis along which blend=midline separates the groups.')
     parser.add_argument('-od', '--out_dtype', help='Output dtype, e.g. uint16 or float32. Default: input dtype '
-                        '(float32 for blend=sum, uint16 for blend=count).')
+                        '(float32 for blend=sum).')
     parser.add_argument('-rw', '--read_workers', type=int, default=4,
                         help='Tiles read in parallel (worker processes).')
     parser.add_argument('-td', '--temp_dir', help='Folder for the temporary fused level 0. Default: next to the output.')

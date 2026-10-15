@@ -162,6 +162,19 @@ def batch_row(*, input_path, microscope: str, output, values: dict, all_groups: 
     }
 
 
+def apply_display_windows(layers, windows, dtype) -> None:
+    """Give the image layers of a fused result its stored display windows (one per
+    channel, in layer order), with the slider over the whole dtype range."""
+    import numpy as np
+
+    images = [layer for layer in layers if hasattr(layer, "contrast_limits")]
+    for layer, window in zip(images[-len(windows):] if windows else [], windows):
+        if np.issubdtype(np.dtype(dtype), np.integer):
+            info = np.iinfo(np.dtype(dtype))
+            layer.contrast_limits_range = (info.min, info.max)
+        layer.contrast_limits = window
+
+
 @thread_worker
 def _scan_worker(reader, path):
     """Scan the acquisition folder in the background (opens every tile's metadata)."""
@@ -374,6 +387,7 @@ def mosaic_widget():
             if open_result:
                 viewer.layers.clear()
                 zm.visualize(viewer=viewer)
+                apply_display_windows(viewer.layers, mos.display_windows(out), zm.metadata["dtype"])
 
         @worker.errored.connect
         def _failed(err):

@@ -90,13 +90,13 @@ def test_mosaic2zarr_skip_tiles(acquisition, tmp_path, monkeypatch):
         _run(monkeypatch, "mosaic2zarr", "-i", str(acquisition), "-z", str(tmp_path / "x.zarr"), "-st", "nope")
 
 
-def test_mosaic_convert_count_matches_tile_layout(acquisition, tmp_path):
-    out = tmp_path / "count.ome.zarr"
-    cli.mosaic_convert(acquisition, out, blend="count", projection="max", channels=["GFP"],
+def test_mosaic_convert_matches_tile_layout(acquisition, tmp_path):
+    out = tmp_path / "layout.ome.zarr"
+    cli.mosaic_convert(acquisition, out, blend="max", projection="max", channels=["GFP"],
                        num_levels=1, shards=None, drop_singleton=False)
     img = mm.ZarrManager(str(out)).data[0].compute()[0]
-    # tiles are 32 um wide (16 px x 2 um) at x = -15, 13, 35, 63 um -> overlaps of 4 / 10 / 4 um
-    assert img.max() == 2 and img.min() >= 1
+    # tiles are 32 um wide (16 px x 2 um) at x = -15, 13, 35, 63 um: no gaps
+    assert img.min() > 0
     assert img.shape[-1] == (63 - -15 + 32) // 2
 
 

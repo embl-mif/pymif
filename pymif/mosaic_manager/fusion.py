@@ -37,7 +37,7 @@ from .tile import Tile
 
 logger = logging.getLogger("pymif")
 
-BLENDS = ("max", "sum", "count", "midline")
+BLENDS = ("max", "sum", "midline")
 PROJECTIONS = (None, "max", "sum")
 
 #: Number of full-resolution z planes read at once (bounds memory per worker).
@@ -46,6 +46,11 @@ _SLAB_PLANES = 64
 #: Size (y, x) of the regions fused at once, in output voxels; a region spans the whole z range.
 _REGION_3D = (256, 256)
 _REGION_2D = (1024, 1024)
+
+#: Percentiles of the fused values used as the display window written to the output.
+DISPLAY_PERCENTILES = (0.5, 99.9)
+#: Values kept from every fused region to estimate the display window (no extra reads).
+_WINDOW_SAMPLES = 65536
 
 #: ``to_zarr`` options that fusion sets itself.
 _RESERVED_WRITE_OPTIONS = {"overwrite", "compute", "data_type"}
@@ -257,22 +262,18 @@ def _merge_groups(canvases, midline, region, flat: bool, shape) -> np.ndarray:
     return result
 
 
-def _finish_region(r: _Region, entries, arr, depth: int, blend, dtype, flat: bool) -> None:
-    """Merge the tile blocks of region ``r`` (futures or pending jobs) and write it."""
+def _finish_region(r: _Region, entries, arr, depth: int, blend, dtype, flat: bool) -> np.ndarray:
+    """Merge the tile blocks of region ``r`` (futures or pending jobs), write it and
+    return a small sample of its non-zero values (for the display window)."""
     y0, y1, x0, x1 = r.bounds
     shape = (y1 - y0, x1 - x0) if flat else (depth, y1 - y0, x1 - x0)
-    acc_dtype = np.uint32 if blend == "count" else np.float32
     canvases: Dict[Optional[str], Tuple[np.ndarray, np.ndarray]] = {}
     for p, pending in entries:
         key = p.tile.group if blend == "midline" else None
         if key not in canvases:
-            canvases[key] = (np.zeros(shape, acc_dtype), np.zeros(shape, bool))
+            canvases[key] = (np.zeros(shape, np.float32), np.zeros(shape, bool))
         acc, cov = canvases[key]
         sl = _target(p, r.bounds, depth, flat)
-        if blend == "count":  # coverage only: no I/O
-            acc[sl] += 1
-            cov[sl] = True
-            continue
         blk = pending.result() if isinstance(pending, Future) else _read_block(pending)
         _combine(acc[sl], cov[sl], blk, blend)
 
@@ -281,11 +282,13 @@ def _finish_region(r: _Region, entries, arr, depth: int, blend, dtype, flat: boo
         arr[r.channel_index, y0:y1, x0:x1] = block
     else:
         arr[r.channel_index, :, y0:y1, x0:x1] = block
+    values = block.ravel()[:: max(1, block.size // _WINDOW_SAMPLES)]
+    return values[values != 0]
 
 
 def _fuse_level0(regions, arr, *, depth, ds, projection, blend, dtype,
-                 workers: int, executor: str, progress: bool) -> None:
-    """Fuse and write every region of level 0.
+                 workers: int, executor: str, progress: bool) -> Dict[int, np.ndarray]:
+    """Fuse and write every region of level 0; return a sample of values per channel index.
 
     The unit of parallel work is one tile inside one region: workers only read and
     downsample, the calling process merges and writes, so the store is never
@@ -296,27 +299,68 @@ def _fuse_level0(regions, arr, *, depth, ds, projection, blend, dtype,
 
     flat = projection is not None
     pool = None
-    if workers > 1 and blend != "count":
+    if workers > 1:
         pool = (ProcessPoolExecutor if executor == "process" else ThreadPoolExecutor)(max_workers=workers)
     window = 2 * workers if pool is not None else 0
+    samples: Dict[int, List[np.ndarray]] = {}
+
+    def finish(r, entries):
+        samples.setdefault(r.channel_index, []).append(
+            _finish_region(r, entries, arr, depth, blend, dtype, flat))
+        bar.update(1)
+
     try:
         with tqdm(total=len(regions), desc="fusing regions", unit="region", disable=not progress) as bar:
             open_regions = deque()
             for r in regions:
                 entries = []
                 for p in r.placed:
-                    job = None if blend == "count" else (p, r.bounds, depth, ds, projection)
-                    entries.append((p, pool.submit(_read_block, job) if pool is not None and job else job))
+                    job = (p, r.bounds, depth, ds, projection)
+                    entries.append((p, pool.submit(_read_block, job) if pool is not None else job))
                 open_regions.append((r, entries))
                 while len(open_regions) > window:
-                    _finish_region(*open_regions.popleft(), arr, depth, blend, dtype, flat)
-                    bar.update(1)
+                    finish(*open_regions.popleft())
             while open_regions:
-                _finish_region(*open_regions.popleft(), arr, depth, blend, dtype, flat)
-                bar.update(1)
+                finish(*open_regions.popleft())
     finally:
         if pool is not None:
             pool.shutdown(cancel_futures=True)
+    return {c: np.concatenate(v) for c, v in samples.items()}
+
+
+def _display_windows(samples: Dict[int, np.ndarray], n_channels: int, dtype) -> List[Tuple[float, float]]:
+    """``(start, end)`` display window per channel from the fused-value samples."""
+    windows = []
+    for c in range(n_channels):
+        values = samples.get(c)
+        if values is None or values.size == 0:
+            windows.append((0.0, 1.0))
+            continue
+        low, high = (float(v) for v in np.percentile(values, DISPLAY_PERCENTILES))
+        windows.append((low, high if high > low else low + 1.0))
+    return windows
+
+
+def _write_display_windows(path, windows: Sequence[Tuple[float, float]]) -> None:
+    """Store the display windows in the OMERO channel metadata (NGFF 0.4 and 0.5)."""
+    root = zarr.open_group(str(path), mode="r+")
+    attrs = root.attrs.asdict()
+    nested = "ome" in attrs  # NGFF 0.5 keeps everything under "ome"
+    omero = (attrs["ome"] if nested else attrs).get("omero")
+    if not omero:
+        return
+    for channel, (start, end) in zip(omero.get("channels", []), windows):
+        channel.setdefault("window", {}).update({"start": start, "end": end})
+    root.attrs.update({"ome": attrs["ome"]} if nested else {"omero": omero})
+
+
+def display_windows(path) -> List[Tuple[float, float]]:
+    """Display window ``(start, end)`` of every channel of an OME-Zarr image, from its
+    OMERO metadata (written by :func:`fuse_tiles` from the fused values)."""
+    attrs = zarr.open_group(str(path), mode="r").attrs.asdict()
+    omero = attrs.get("ome", attrs).get("omero") or {}
+    return [(float(c["window"]["start"]), float(c["window"]["end"]))
+            for c in omero.get("channels", []) if "window" in c]
 
 
 # ---------------------------------------------------------------------------
@@ -418,9 +462,7 @@ def plan_fusion(
         blend = "max"
 
     if out_dtype is None:
-        out_dtype = {"sum": np.float32, "count": np.uint16}.get(blend)
-        if out_dtype is None:
-            out_dtype = np.result_type(*{t.dtype for t in tiles})
+        out_dtype = np.float32 if blend == "sum" else np.result_type(*{t.dtype for t in tiles})
     out_dtype = np.dtype(out_dtype)
 
     spatial = grid[1:] if flat else grid
@@ -510,11 +552,9 @@ def fuse_tiles(
 
         * ``"max"`` -- keep the brighter value;
         * ``"sum"`` -- add the values, so overlaps show up as brighter bands;
-        * ``"count"`` -- number of tiles covering each voxel (no pixel data is
-          read); shows exactly where tiles start and end;
         * ``"midline"`` -- ``max`` within each tile ``group``; where groups
-          overlap, every group is used on its own side of the middle of the
-          overlap, along ``midline_axis``.
+          overlap, the image switches sharply from one group to the next at the
+          middle of their overlap, along ``midline_axis``.
     channels
         Tile channels to fuse, in output order. Default: all, in tile order.
     channel_names, channel_colors
@@ -541,7 +581,7 @@ def fuse_tiles(
         are what actually speeds up reading from HDF5 tiles.
     out_dtype
         Output dtype. Default: input dtype for ``max``/``midline``, ``float32``
-        for ``sum`` and ``uint16`` for ``count``.
+        for ``sum``.
     midline_axis
         ``"x"``, ``"y"`` or ``"z"``: axis along which groups are separated.
     overwrite
@@ -560,6 +600,10 @@ def fuse_tiles(
         ``compressor_level``, ``drop_singleton``, ``num_workers``, ``storage_options``.
         ``chunks`` is given in the output axis order (``c, z, y, x``, or ``c, y, x``
         for projections).
+
+    The display window of every channel (OMERO ``window`` metadata) is set to the
+    0.5th-99.9th percentile of the fused values, ignoring blank areas, so viewers
+    open the result with a usable contrast; see :func:`display_windows`.
 
     Use :func:`plan_fusion` with the same arguments to get the output shape and
     size without reading or writing anything.
@@ -623,14 +667,15 @@ def fuse_tiles(
         options = dict(depth=depth, ds=ds, projection=projection, blend=blend,
                        dtype=out_dtype, workers=workers, progress=progress)
         try:
-            _fuse_level0(regions, level0, executor=executor, **options)
+            samples = _fuse_level0(regions, level0, executor=executor, **options)
         except (BrokenProcessPool, RuntimeError) as e:
             if not (auto and executor == "process"):
                 raise
             # e.g. worker processes cannot be spawned from this interpreter (some GUI
             # launchers); every region is rewritten as a whole, so redoing them is safe.
             logger.warning("Worker processes failed (%s); retrying with threads.", e)
-            _fuse_level0(regions, level0, executor="thread", **options)
+            samples = _fuse_level0(regions, level0, executor="thread", **options)
+        windows = _display_windows(samples, n_ch, out_dtype)
 
         # ----- 2. pyramid + OME-Zarr through the standard PyMIF writer -----
         metadata = build_metadata(
@@ -651,6 +696,9 @@ def fuse_tiles(
         dataset.build_pyramid(num_levels=max(1, int(levels)),
                               downscale_factor=_spatial_factor(downscale_factor, flat))
         dataset.to_zarr(str(out), overwrite=True, progress=progress, **write_options)
+        # Sensible display range for viewers (the writer's default is the whole dtype range).
+        _write_display_windows(out, windows)
+        logger.info("Display window per channel: %s", windows)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 

@@ -46,8 +46,8 @@ pymif mosaic2zarr -i /path/to/2026-10-14_103957 -z acq_3D.ome.zarr -rds 4 8 8 -b
 # 2D maximum projection, downsampled 8 x 8 in y/x
 pymif mosaic2zarr -i /path/to/2026-10-14_103957 -z acq_MIP.ome.zarr -rds 1 8 8 -p max -b midline
 
-# where are the tiles? (reads no pixel data)
-pymif mosaic2zarr -i /path/to/2026-10-14_103957 -z acq_tiles.ome.zarr -rds 1 8 8 -p max -b count
+# where are the tiles? (overlaps are brighter)
+pymif mosaic2zarr -i /path/to/2026-10-14_103957 -z acq_tiles.ome.zarr -rds 1 8 8 -p max -b sum
 ```
 
 Every `2zarr` option is available with the same flag and meaning, applied to the fused output:
@@ -72,7 +72,7 @@ The fusion options:
 | `-m`, `--microscope` | `luxendo`, `opera`, `zeiss`; auto-detected for raw Luxendo acquisitions |
 | `-rds`, `--read_downsample` | downsampling while reading (block mean): one value or `Z Y X` (default 1) |
 | `-p`, `--projection` | `none` (3D, default), `max` or `sum` |
-| `-b`, `--blend` | `max` (default), `sum`, `count` or `midline` |
+| `-b`, `--blend` | `max` (default), `sum` or `midline` |
 | `-ch`, `--channels` / `-g`, `--groups` | tile channels and groups (e.g. `L R`) to fuse |
 | `-st`, `--skip_tiles` | tiles to leave blank: `channel/stack` ids such as `cFos-647/1-x00-y00`, or a stack such as `1-x00-y00` for every channel |
 | `-ma`, `--midline_axis` | `x` (default), `y` or `z` |

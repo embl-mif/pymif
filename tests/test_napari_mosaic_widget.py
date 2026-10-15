@@ -43,9 +43,9 @@ def test_default_output_names(tmp_path):
 
 
 def test_fuse_kwargs():
-    kw = mw.fuse_kwargs(channels=("A",), projection="none (3D)", blend="count", ds_z=2, ds_y=4,
+    kw = mw.fuse_kwargs(channels=("A",), projection="none (3D)", blend="sum", ds_z=2, ds_y=4,
                         ds_x=4, levels=2, workers=3, overwrite=True)
-    assert kw == {"channels": ["A"], "projection": None, "blend": "count", "ds": (2, 4, 4),
+    assert kw == {"channels": ["A"], "projection": None, "blend": "sum", "ds": (2, 4, 4),
                   "levels": 2, "workers": 3, "overwrite": True}
 
 
@@ -263,3 +263,15 @@ def test_widget_leaves_hidden_tiles_blank(app, monkeypatch):
     fw.tiles_to_fuse.value = "selected layers only"
     viewer.layers.selection = set(mw.tile_layers(viewer.layers, m.path)[:3])  # 3 of the 4 tiles
     assert "1 tile(s) left blank" in dock.plan_label.text()
+
+
+def test_apply_display_windows():
+    from napari.components import ViewerModel
+
+    v = ViewerModel()
+    v.add_image(np.zeros((4, 4), np.uint16))
+    v.add_image(np.zeros((4, 4), np.uint16))
+    mw.apply_display_windows(v.layers, [(100.0, 1200.0), (5.0, 50.0)], "uint16")
+    assert tuple(v.layers[0].contrast_limits) == (100.0, 1200.0)
+    assert tuple(v.layers[1].contrast_limits) == (5.0, 50.0)
+    assert tuple(v.layers[0].contrast_limits_range) == (0, 65535)

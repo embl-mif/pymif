@@ -77,14 +77,14 @@ The projection is computed at full resolution along z and then downsampled in y/
 |---|---|---|
 | `ds` | `(z, y, x)` integers | downsampling applied while reading: each output voxel is the mean of its block (default `(1, 1, 1)`) |
 | `projection` | `None`, `"max"`, `"sum"` | 3D volume (default) or a 2D projection along z |
-| `blend` | `"max"`, `"sum"`, `"count"`, `"midline"` | how overlapping tiles are merged, see below |
+| `blend` | `"max"`, `"sum"`, `"midline"` | how overlapping tiles are merged, see below |
 | `channels` | list of names | tile channels to fuse, in output order (default: all) |
 | `channel_names`, `channel_colors` | lists | names and colours (hex or matplotlib names) of the output channels |
 | `crop` | `{"z": slice, "y": slice, "x": slice}` | part of the output to write, in output voxels (after `ds`) |
 | `skip` | tiles or tile ids | tiles to leave blank, see below |
 | `levels`, `downscale_factor` | integer, integer or `(z, y, x)` | pyramid levels (default 1) and factor between them (default 2) |
 | `workers` | integer | tiles read in parallel (default 1) |
-| `out_dtype` | dtype | default: input dtype, `float32` for `sum`, `uint16` for `count` |
+| `out_dtype` | dtype | default: input dtype, `float32` for `sum` |
 | `midline_axis` | `"x"`, `"y"`, `"z"` | axis along which `midline` separates the groups (default `x`) |
 | `overwrite` | bool | replace an existing output |
 | `temp_dir` | path | where the temporary fused level 0 goes (default: next to the output) |
@@ -113,10 +113,11 @@ Blend modes:
 
 - **`max`**: keeps the brighter value.
 - **`sum`**: adds the values, so overlaps show up as brighter bands.
-- **`count`**: writes how many tiles cover each voxel. It reads no pixel data, so it is instant and shows exactly where tiles start and end.
-- **`midline`**: uses `max` within each tile group. Where two groups overlap (for example the left and right illumination sides), each group is used on its own side of the middle of the overlap, along `midline_axis`. Every side is then shown where its light sheet is sharpest.
+- **`midline`**: uses `max` within each tile group. Where two groups overlap (for example the left and right illumination sides), the image switches sharply from one group to the other at the middle of their overlap, along `midline_axis`. Each side is then shown where its light sheet is sharpest.
 
 `plan_fusion(mosaic.tiles, ...)` takes the fusion arguments (`ds`, `projection`, `blend`, `channels`, `crop`, `out_dtype`, `midline_axis`) and returns the level-0 geometry without reading anything: `plan.summary()`, `plan.shape`, `plan.scale`, `plan.nbytes`.
+
+The fused output stores a **display window** for every channel (OMERO `window` metadata): the 0.5th to 99.9th percentile of the fused values, ignoring blank areas. Viewers that read it (napari-ome-zarr, Fiji, the *Open result* option of the napari widget) show the result with a usable contrast instead of the whole 0 to 65535 range. Read it with `pymif.mosaic_manager.display_windows(path)`.
 
 ## How fusion works
 

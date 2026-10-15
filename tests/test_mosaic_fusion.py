@@ -35,15 +35,6 @@ def test_sum_blend_shows_overlap(tmp_path):
     assert zm.metadata["dtype"] == "float32"
 
 
-def test_count_blend_marks_tile_extents(tmp_path):
-    tiles = [_tile(10, (0, 0, 0)), _tile(30, (0, 0, 4))]
-    zm = fuse_tiles(tiles, tmp_path / "o.zarr", blend="count", chunks=(1, 4, 8, 8))
-    img = _read(zm).reshape(4, 8, 12)
-    assert (img[..., :4] == 1).all()
-    assert (img[..., 4:8] == 2).all()
-    assert (img[..., 8:] == 1).all()
-
-
 def test_midline_cuts_between_groups(tmp_path):
     # Left covers x 0..8, right covers x 4..12: overlap 4..8, cut at x=6.
     tiles = [_tile(10, (0, 0, 0), group="L"), _tile(200, (0, 0, 4), group="R")]
@@ -199,8 +190,8 @@ def test_skipped_tiles_are_left_blank(tmp_path):
     assert (img[..., 12:14] == 20).all()          # overlap now only from tile 1
     assert np.array_equal(img[..., :12], full[..., :12])
 
-    count = _read(fuse_tiles(tiles, tmp_path / "count.zarr", blend="count", skip=[tiles[1]], progress=False))
-    assert (count[..., :8] == 1).all() and (count[..., 8:12] == 0).all() and (count[..., 12:] == 1).all()
+    summed = _read(fuse_tiles(tiles, tmp_path / "sum.zarr", blend="sum", skip=[tiles[1]], progress=False))
+    assert (summed[..., :8] == 10).all() and (summed[..., 8:12] == 0).all() and (summed[..., 12:] == 30).all()
 
     from pymif.mosaic_manager import plan_fusion
     assert "1 tile(s) left blank" in plan_fusion(tiles, skip=[tiles[0]]).summary()
@@ -227,3 +218,24 @@ def test_tile_ids_and_skip_by_id(tmp_path):
         m.tiles_by_ids(["nope"])
     img = _read(m.fuse(tmp_path / "o.zarr", skip=["1-x01-y00"], progress=False))
     assert img.shape == (2, 4, 8, 16) and (img[..., 8:] == 0).all()
+
+
+def test_display_window_from_fused_values(tmp_path):
+    from pymif.mosaic_manager import display_windows
+
+    rng = np.random.default_rng(3)
+    data = rng.integers(900, 1100, (8, 32, 32)).astype(np.uint16)
+    data[0, 0, 0] = 60000                      # one hot pixel must not set the window
+    tiles = [Tile(data, (0, 0, 0), (1.0, 1.0, 1.0), "A"), Tile(data // 10, (0, 0, 0), (1.0, 1.0, 1.0), "B")]
+    for zf, name in ((3, "v3.zarr"), (2, "v2.zarr")):
+        out = tmp_path / name
+        fuse_tiles(tiles, out, levels=2, crop={"x": slice(0, 40)}, zarr_format=zf, progress=False)
+        (a_lo, a_hi), (b_lo, b_hi) = display_windows(out)
+        assert 899 <= a_lo < 910 and 1090 < a_hi <= 1100, (a_lo, a_hi)
+        assert 89 <= b_lo < 92 and 108 < b_hi <= 110, (b_lo, b_hi)
+
+    # blank (skipped / empty) areas do not pull the window down
+    wide = [Tile(data, (0, 0, 0), (1.0, 1.0, 1.0), "A"), Tile(data, (0, 0, 64), (1.0, 1.0, 1.0), "A")]
+    out = tmp_path / "blank.zarr"
+    fuse_tiles(wide, out, skip=[wide[1]], progress=False)
+    assert display_windows(out)[0][0] >= 899
