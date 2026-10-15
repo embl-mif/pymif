@@ -2,9 +2,6 @@ name: pymif
 display_name: PyMIF
 contributions:
   commands:
-    - id: pymif.overview
-      python_name: pymif.napari._overview_widget:overview_widget
-      title: Overview Generator
     - id: pymif.convert
       python_name: pymif.napari._convert_widget:convert_widget
       title: Converter Plugin
@@ -15,8 +12,6 @@ contributions:
       python_name: pymif.napari._mosaic_widget:mosaic_widget
       title: Mosaic Fusion
   widgets:
-    - command: pymif.overview
-      display_name: Overview Generator
     - command: pymif.convert
       display_name: Converter Plugin
     - command: pymif.export_widget
@@ -27,7 +22,6 @@ contributions:
     "napari/menu/plugins":
       - submenu: PyMIF
         items:
-          - command: pymif.overview
           - command: pymif.convert
           - command: pymif.export_widget
           - command: pymif.mosaic

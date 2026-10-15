@@ -29,7 +29,7 @@ It is developed for users of the [Mesoscopic Imaging Facility (MIF)](https://www
 - **Pyramids and subsetting**: multiscale generation, cropping, channel reordering, metadata updates. → [Python API](documentation/python-api.md)
 - **Mosaics**: raw tiles shown at their stage position and fused into one OME-Zarr image (3D or projection). → [Mosaics](documentation/mosaic.md)
 - **Command line**: one-off and CSV-batch conversion and mosaic fusion. → [Command line](documentation/cli.md)
-- **Napari widgets**: conversion with ROI selection, mosaic fusion, overview generation. → [Napari plugin](documentation/napari-plugin.md)
+- **Napari widgets**: conversion with ROI selection, mosaic fusion. → [Napari plugin](documentation/napari-plugin.md)
 - **Output tuning**: sharding, singleton axes, parallel writing, progress bars. → [Advanced writing options](documentation/advanced.md)
 
 ## Installation
@@ -71,7 +71,7 @@ pymif fuse -i ACQUISITION_FOLDER -z OUTPUT_ZARR -rds 4 8 8   # fuse raw tiles
 | [Python API](documentation/python-api.md) | export, empty datasets, axis-aware metadata, labels, region writes |
 | [Mosaics](documentation/mosaic.md) | raw tiles, placement check, fusion options |
 | [Command line](documentation/cli.md) | `pymif convert`, `pymif fuse` (one dataset or a CSV batch) |
-| [Napari plugin](documentation/napari-plugin.md) | converter, mosaic fusion and overview widgets |
+| [Napari plugin](documentation/napari-plugin.md) | converter and mosaic fusion widgets |
 | [Advanced writing options](documentation/advanced.md) | sharding, singleton axes, parallel writing, progress bar |
 | [Contributing](documentation/contributing.md) | documentation layout, adding a reader, `pymif.utils` |
 
