@@ -11,13 +11,18 @@ contributions:
     - id: pymif.export_widget
       python_name: pymif.napari._export_widget:export_widget
       title: Export Widget
+    - id: pymif.mosaic
+      python_name: pymif.napari._mosaic_widget:mosaic_widget
+      title: Mosaic Fusion
   widgets:
     - command: pymif.overview
       display_name: Overview Generator
     - command: pymif.convert
       display_name: Converter Plugin
     - command: pymif.export_widget
-      display_name: Export Viewer     
+      display_name: Export Viewer
+    - command: pymif.mosaic
+      display_name: Mosaic Fusion
   menus:
     "napari/menu/plugins":
       - submenu: PyMIF
@@ -25,3 +30,4 @@ contributions:
           - command: pymif.overview
           - command: pymif.convert
           - command: pymif.export_widget
+          - command: pymif.mosaic
