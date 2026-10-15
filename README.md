@@ -58,8 +58,8 @@ z.visualize()                                       # open in napari
 ```
 
 ```console
-pymif 2zarr -i INPUT_PATH -m MICROSCOPE -z OUTPUT_ZARR
-pymif mosaic2zarr -i ACQUISITION_FOLDER -z OUTPUT_ZARR -rds 4 8 8   # fuse raw tiles
+pymif convert -i INPUT_PATH -m MICROSCOPE -z OUTPUT_ZARR
+pymif fuse -i ACQUISITION_FOLDER -z OUTPUT_ZARR -rds 4 8 8   # fuse raw tiles
 ```
 
 ## Documentation
@@ -70,7 +70,7 @@ pymif mosaic2zarr -i ACQUISITION_FOLDER -z OUTPUT_ZARR -rds 4 8 8   # fuse raw t
 | [Readers and conventions](documentation/readers.md) | supported microscopes, shared reader behaviour, logging |
 | [Python API](documentation/python-api.md) | export, empty datasets, axis-aware metadata, labels, region writes |
 | [Mosaics](documentation/mosaic.md) | raw tiles, placement check, fusion options |
-| [Command line](documentation/cli.md) | `pymif 2zarr`, `pymif batch2zarr`, `pymif mosaic2zarr`, `pymif batch-mosaic2zarr` |
+| [Command line](documentation/cli.md) | `pymif convert`, `pymif fuse` (one dataset or a CSV batch) |
 | [Napari plugin](documentation/napari-plugin.md) | converter, mosaic fusion and overview widgets |
 | [Advanced writing options](documentation/advanced.md) | sharding, singleton axes, parallel writing, progress bar |
 | [Contributing](documentation/contributing.md) | documentation layout, adding a reader, `pymif.utils` |

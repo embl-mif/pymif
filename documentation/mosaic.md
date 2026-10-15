@@ -89,7 +89,7 @@ The projection is computed at full resolution along z and then downsampled in y/
 | `overwrite` | bool | replace an existing output |
 | `temp_dir` | path | where the temporary fused level 0 goes (default: next to the output) |
 
-Every other option of `to_zarr` is passed through unchanged, exactly as for `pymif 2zarr`: `chunks` (in output axis order, `c, z, y, x` or `c, y, x`), `shards`, `shard_target_mb`, `shard_exclude_axes`, `zarr_format`, `ngff_version`, `compressor`, `compressor_level`, `drop_singleton`, `num_workers` (write threads) and `storage_options`. See [Advanced writing options](advanced.md). As with `2zarr`, a single fused channel is written without its channel axis unless `drop_singleton=False`.
+Every other option of `to_zarr` is passed through unchanged, exactly as for `pymif convert`: `chunks` (in output axis order, `c, z, y, x` or `c, y, x`), `shards`, `shard_target_mb`, `shard_exclude_axes`, `zarr_format`, `ngff_version`, `compressor`, `compressor_level`, `drop_singleton`, `num_workers` (write threads) and `storage_options`. See [Advanced writing options](advanced.md). As with `pymif convert`, a single fused channel is written without its channel axis unless `drop_singleton=False`.
 
 ```python
 mosaic.fuse(
@@ -130,11 +130,11 @@ Raw tiles usually have no pyramid, so every fusion reads the full-resolution dat
 
 ## Command line
 
-`pymif mosaic2zarr` fuses one mosaic and `pymif batch-mosaic2zarr` fuses many from a CSV file. Every `2zarr` option is available with the same flags. See [Command line](cli.md#mosaics).
+`pymif fuse` fuses one mosaic, or many from a CSV file with `--batch`. Every output option of `pymif convert` is available with the same flags. See [Command line](cli.md#fuse-a-mosaic).
 
 ```console
-pymif mosaic2zarr -i /path/to/2026-10-14_103957 -z acq_3D.ome.zarr -rds 4 8 8 -b midline -nl 3
-pymif mosaic2zarr -i /path/to/2026-10-14_103957 -z acq_MIP.ome.zarr -rds 1 8 8 -p max -b midline
+pymif fuse -i /path/to/2026-10-14_103957 -z acq_3D.ome.zarr -rds 4 8 8 -b midline -nl 3
+pymif fuse -i /path/to/2026-10-14_103957 -z acq_MIP.ome.zarr -rds 1 8 8 -p max -b midline
 ```
 
 ## Napari
@@ -145,7 +145,7 @@ pymif mosaic2zarr -i /path/to/2026-10-14_103957 -z acq_MIP.ome.zarr -rds 1 8 8 -
 2. **Show tiles**: show the selected channels and groups as one layer per tile at its stage position, with one linked contrast per channel. Every displayed plane reads data from all shown tiles, so show only a few channels or groups at a time.
 3. **Fuse to OME-Zarr**: the main fusion options, with a live estimate of the output size. *Tiles to fuse* can be set to *visible layers only* or *selected layers only*: tiles whose layer is hidden (eye icon off) or not selected in the layer list are then left blank, and *Blank in all channels* also blanks that position in the other channels. Tiles that are not shown in napari are fused normally. The output path follows the parameters (for example `<acquisition>_3D_ds4-8-8.ome.zarr`) until you type your own; dropping a folder on the output field writes the result inside that folder. When fusion finishes, the result can be opened directly.
 
-4. **Batch CSV export**: *Append to batch CSV* adds the current settings, including the tiles left blank, as a row of a CSV file. Run the file later, for example on a workstation close to the data, with `pymif batch-mosaic2zarr -i mosaic_batch.csv`.
+4. **Batch CSV export**: *Append to batch CSV* adds the current settings, including the tiles left blank, as a row of a CSV file. Run the file later, for example on a workstation close to the data, with `pymif fuse --batch mosaic_batch.csv`.
 
 Loading and fusion run in the background, and their progress is shown in the log at the bottom.
 
@@ -171,4 +171,4 @@ class MyMosaicManager(MosaicManager):
         ]
 ```
 
-`visualize()`, `fuse()`, `mosaic2zarr` and the napari widget then work unchanged. Use picklable tile data (such as `H5Array`) so that fusion can read it in worker processes.
+`visualize()`, `fuse()`, `pymif fuse` and the napari widget then work unchanged. Use picklable tile data (such as `H5Array`) so that fusion can read it in worker processes.

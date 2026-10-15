@@ -29,10 +29,10 @@ _PROJECTIONS = {"none (3D)": None, "max": "max", "sum": "sum"}
 #: Which tiles the fusion reads; the others are left blank (see ``skipped_tile_ids``).
 TILE_MODES = {"all tiles": None, "visible layers only": "visible", "selected layers only": "selected"}
 
-#: Columns of the CSV read by ``pymif batch-mosaic2zarr``.
+#: Columns of the CSV read by ``pymif fuse --batch``.
 MOSAIC_BATCH_COLUMNS = [
     "input", "microscope", "output",
-    "read_downsample", "projection", "blend", "channels", "groups", "skip_tiles",
+    "downsample", "projection", "blend", "channels", "groups", "skip_tiles",
     "midline_axis", "out_dtype", "read_workers", "temp_dir", "overwrite",
     "chunk_size", "max_size(MB)", "scene_index", "zarr_format", "downscale_factor", "subset",
     "channel_colors", "channel_names", "num_levels", "shards", "shard_target_mb", "shard_exclude_axes",
@@ -143,13 +143,13 @@ def skipped_tile_ids(layers, selection, mosaic_path, mode: Optional[str], all_ch
 
 def batch_row(*, input_path, microscope: str, output, values: dict, all_groups: Sequence[str],
               skip_ids: Sequence[str]) -> dict:
-    """One ``pymif batch-mosaic2zarr`` CSV row from the fusion widget ``values``."""
+    """One ``pymif fuse --batch`` CSV row from the fusion widget ``values``."""
     groups = list(values["groups"])
     return {
         "input": str(Path(input_path)),
         "microscope": microscope,
         "output": str(Path(output)),
-        "read_downsample": f"{values['ds_z']} {values['ds_y']} {values['ds_x']}",
+        "downsample": f"{values['ds_z']} {values['ds_y']} {values['ds_x']}",
         "projection": _PROJECTIONS[values["projection"]] or "none",
         "blend": values["blend"],
         "channels": " ".join(values["channels"]),
@@ -454,7 +454,7 @@ def mosaic_widget():
         viewer.layers.selection.events.changed.connect(_update_plan)
         viewer.layers.events.removed.connect(_update_plan)
 
-    # ----- 4. batch CSV export (run later with pymif batch-mosaic2zarr) -----
+    # ----- 4. batch CSV export (run later with pymif fuse --batch) -----
     @magicgui(
         call_button="Append to batch CSV",
         batch_csv_path={"widget_type": "FileEdit", "mode": "w", "label": "Batch CSV",
@@ -472,7 +472,7 @@ def mosaic_widget():
         path = append_batch_csv(batch_csv_path, row, MOSAIC_BATCH_COLUMNS)
         blank = f", {len(skip_ids)} tile id(s) left blank" if skip_ids else ""
         print(f"Appended {Path(row['output']).name} to {path}{blank}. Run it with:\n"
-              f"  pymif batch-mosaic2zarr -i \"{path}\"")
+              f"  pymif fuse --batch \"{path}\"")
     for name in ("projection", "ds_z", "ds_y", "ds_x"):
         getattr(fuse_widget, name).changed.connect(_update_output)
 

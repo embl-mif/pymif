@@ -891,7 +891,7 @@ def convert_widget():
             "num_workers": "" if int(make_convert_widget.num_workers.value) <= 0 else str(int(make_convert_widget.num_workers.value)),
         }
         csv_path = _append_batch_csv(csv_path, row)
-        print(f"Appended batch row to {csv_path}")
+        print(f"Appended batch row to {csv_path}. Run it with:\n  pymif convert --batch \"{csv_path}\"")
 
     make_batch_csv_widget.batch_csv_path.value = str((Path(make_visualize_widget.input_path.value).parent if make_visualize_widget.input_path.value else Path.cwd()) / "batch.csv")
     make_batch_csv_widget.enabled = False

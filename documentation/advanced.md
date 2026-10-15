@@ -29,7 +29,7 @@ dataset.to_zarr("out.zarr", shards=(1, 1, 8, 2160, 4096))
 ```
 
 ```console
-pymif 2zarr -i INPUT -m opera -z OUT.zarr -sh auto -stm 256 -sea t c   # or: -sh none to disable
+pymif convert -i INPUT -m opera -z OUT.zarr -sh auto -stm 256 -sea t c   # or: -sh none to disable
 ```
 
 - `shards="auto"` picks a shard shape per pyramid level and leaves small levels unsharded.
@@ -55,7 +55,7 @@ dataset.to_zarr("out.zarr", num_workers=4)
 ```
 
 ```console
-pymif 2zarr -i INPUT -m opera -z OUT.zarr -nw 4
+pymif convert -i INPUT -m opera -z OUT.zarr -nw 4
 ```
 
 How it works:

@@ -39,9 +39,9 @@ def _run(monkeypatch, *argv):
     cli.main()
 
 
-def test_mosaic2zarr_3d_with_2zarr_options(acquisition, tmp_path, monkeypatch):
+def test_fuse_3d_with_convert_options(acquisition, tmp_path, monkeypatch):
     out = tmp_path / "out_3D.ome.zarr"
-    _run(monkeypatch, "mosaic2zarr", "-i", str(acquisition), "-z", str(out),
+    _run(monkeypatch, "fuse", "-i", str(acquisition), "-z", str(out),
          "-rds", "2", "2", "2", "-b", "midline", "-nl", "2", "-df", "1", "2", "2",
          "-cs", "1", "2", "4", "4", "-sh", "none", "-cn", "gfp", "rfp", "-cc", "lime", "magenta",
          "-rw", "2", "-nw", "2")
@@ -58,13 +58,13 @@ def test_mosaic2zarr_3d_with_2zarr_options(acquisition, tmp_path, monkeypatch):
 
     # same command again fails without --overwrite, works with it
     with pytest.raises(FileExistsError):
-        _run(monkeypatch, "mosaic2zarr", "-i", str(acquisition), "-z", str(out), "-rds", "2")
-    _run(monkeypatch, "mosaic2zarr", "-i", str(acquisition), "-z", str(out), "-rds", "2", "-ow", "true")
+        _run(monkeypatch, "fuse", "-i", str(acquisition), "-z", str(out), "-rds", "2")
+    _run(monkeypatch, "fuse", "-i", str(acquisition), "-z", str(out), "--downsample", "2", "--overwrite")
 
 
-def test_mosaic2zarr_mip_subset_and_groups(acquisition, tmp_path, monkeypatch):
+def test_fuse_mip_subset_and_groups(acquisition, tmp_path, monkeypatch):
     out = tmp_path / "mip.ome.zarr"
-    _run(monkeypatch, "mosaic2zarr", "-i", str(acquisition), "-z", str(out), "-m", "luxendo",
+    _run(monkeypatch, "fuse", "-i", str(acquisition), "-z", str(out), "-m", "luxendo",
          "-p", "max", "-s", "c=1;y=2:6", "-g", "L", "-ms", "1", "-zf", "2")
     z = mm.ZarrManager(str(out))
     assert z.metadata["axes"] == "yx"  # single channel dropped (drop_singleton default)
@@ -74,10 +74,10 @@ def test_mosaic2zarr_mip_subset_and_groups(acquisition, tmp_path, monkeypatch):
     assert (out / ".zattrs").exists()  # zarr v2
 
 
-def test_mosaic2zarr_skip_tiles(acquisition, tmp_path, monkeypatch):
+def test_fuse_skip_tiles(acquisition, tmp_path, monkeypatch):
     full, skipped = tmp_path / "full.ome.zarr", tmp_path / "skipped.ome.zarr"
-    _run(monkeypatch, "mosaic2zarr", "-i", str(acquisition), "-z", str(full), "-p", "max", "-sh", "none")
-    _run(monkeypatch, "mosaic2zarr", "-i", str(acquisition), "-z", str(skipped), "-p", "max", "-sh", "none",
+    _run(monkeypatch, "fuse", "-i", str(acquisition), "-z", str(full), "-p", "max", "-sh", "none")
+    _run(monkeypatch, "fuse", "-i", str(acquisition), "-z", str(skipped), "-p", "max", "-sh", "none",
          "-st", "2-x01-y00", "GFP/1-x00-y00")
     a = mm.ZarrManager(str(full)).data[0].compute()
     b = mm.ZarrManager(str(skipped)).data[0].compute()
@@ -87,7 +87,7 @@ def test_mosaic2zarr_skip_tiles(acquisition, tmp_path, monkeypatch):
     # the first L tile only in GFP (channel 0); px 0..14 is covered by it alone
     assert (b[0, :, :14] == 0).all() and (b[1, :, :14] > 0).all()
     with pytest.raises(KeyError):
-        _run(monkeypatch, "mosaic2zarr", "-i", str(acquisition), "-z", str(tmp_path / "x.zarr"), "-st", "nope")
+        _run(monkeypatch, "fuse", "-i", str(acquisition), "-z", str(tmp_path / "x.zarr"), "-st", "nope")
 
 
 def test_mosaic_convert_matches_tile_layout(acquisition, tmp_path):
@@ -100,27 +100,53 @@ def test_mosaic_convert_matches_tile_layout(acquisition, tmp_path):
     assert img.shape[-1] == (63 - -15 + 32) // 2
 
 
-def test_batch_mosaic2zarr(acquisition, tmp_path, monkeypatch):
+def test_fuse_batch(acquisition, tmp_path, monkeypatch):
     csv = tmp_path / "batch.csv"
     pd.DataFrame([
         {"input": str(acquisition), "microscope": "luxendo", "output": str(tmp_path / "a.ome.zarr"),
-         "read_downsample": "1 2 2", "projection": "none", "blend": "midline", "num_levels": 2,
+         "downsample": "1 2 2", "projection": "none", "blend": "midline", "num_levels": 2,
          "shards": "auto", "channels": "RFP", "overwrite": "true"},
         {"input": str(acquisition), "microscope": "", "output": str(tmp_path / "b.ome.zarr"),
-         "read_downsample": "", "projection": "max", "blend": "", "num_levels": "",
+         "downsample": "", "projection": "max", "blend": "", "num_levels": "",
          "shards": "none", "channels": "", "overwrite": ""},
     ]).to_csv(csv, index=False)
-    _run(monkeypatch, "batch-mosaic2zarr", "-i", str(csv))
+    _run(monkeypatch, "fuse", "--batch", str(csv))
     a = mm.ZarrManager(str(tmp_path / "a.ome.zarr"))
     assert a.metadata["axes"] == "zyx" and len(a.data) == 2
     b = mm.ZarrManager(str(tmp_path / "b.ome.zarr"))
     assert b.metadata["axes"] == "cyx" and b.metadata["channel_names"] == ["GFP", "RFP"]
 
-    # the alias without the dash works too (row a overwrites its output)
+    # a CSV written before the rename (read_downsample column) still runs (row a overwrites its output)
     only_a = tmp_path / "only_a.csv"
-    pd.read_csv(csv).iloc[:1].to_csv(only_a, index=False)
-    _run(monkeypatch, "batchmosaic2zarr", "-i", str(only_a))
+    pd.read_csv(csv).iloc[:1].rename(columns={"downsample": "read_downsample"}).to_csv(only_a, index=False)
+    _run(monkeypatch, "fuse", "--batch", str(only_a))
     assert mm.ZarrManager(str(tmp_path / "a.ome.zarr")).metadata["axes"] == "zyx"
+
+
+def test_old_command_names_still_work(acquisition, tmp_path, monkeypatch, capsys):
+    out = tmp_path / "old.ome.zarr"
+    _run(monkeypatch, "mosaic2zarr", "-i", str(acquisition), "-z", str(out), "--read_downsample",
+         "2", "-p", "max", "-ow", "true")
+    assert "is now `pymif fuse`" in capsys.readouterr().err
+    csv = tmp_path / "old.csv"
+    pd.DataFrame([{"input": str(acquisition), "microscope": "luxendo", "output": str(out),
+                   "read_downsample": "2", "projection": "max", "overwrite": "true"}]).to_csv(csv, index=False)
+    for old in ("batch-mosaic2zarr", "batchmosaic2zarr"):
+        _run(monkeypatch, old, "-i", str(csv))
+        assert "is now `pymif fuse --batch`" in capsys.readouterr().err
+
+    src = tmp_path / "src.zarr"
+    mm.ZarrManager(str(out)).to_zarr(str(src))
+    _run(monkeypatch, "2zarr", "-i", str(src), "-z", str(tmp_path / "conv.zarr"), "-sh", "none")
+    assert "is now `pymif convert`" in capsys.readouterr().err
+    _run(monkeypatch, "convert", "-i", str(src), "-z", str(tmp_path / "conv2.zarr"), "-sh", "none")
+    assert "is now" not in capsys.readouterr().err
+
+
+def test_convert_and_fuse_need_input_or_batch(monkeypatch, tmp_path):
+    for argv in (["convert"], ["fuse"], ["fuse", "-i", str(tmp_path)], ["fuse", "--batch", __file__, "-z", "x"]):
+        with pytest.raises(SystemExit):
+            _run(monkeypatch, *argv)
 
 
 def test_subset_to_crop():

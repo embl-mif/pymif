@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -403,7 +404,7 @@ def zarr_convert(
     dataset = mm.ZarrManager(path=zarr_path)
 
 def _batch_row_kwargs(v, columns) -> Dict[str, Any]:
-    """``zarr_convert`` options of one batch CSV row (shared by batch2zarr and batch-mosaic2zarr)."""
+    """``zarr_convert`` options of one batch CSV row (shared by ``convert --batch`` and ``fuse --batch``)."""
     kwargs: Dict[str, Any] = {}
 
     # Prioritize chunk_size over max_size if both are present
@@ -446,16 +447,20 @@ def _batch_row_kwargs(v, columns) -> Dict[str, Any]:
     return kwargs
 
 
+#: Parsed arguments that are not options of the conversion functions.
+_NOT_CONVERSION_OPTIONS = {"runmode", "mode", "command", "renamed_to", "batch", "input_file"}
+
+
 def convert_batch(args):
     """Runmode to convert batch of imaged to zarr
 
     Args:
         args (args): parsed arguments
     """
-    cli = f"pymif batch2zarr --input {args.input_file}"
-    print(f"Converting batch.\nRunning through: {cli}")
+    csv_path = getattr(args, "input_file", args)  # parsed arguments or a path
+    print(f"Converting batch.\nRunning through: pymif convert --batch {csv_path}")
 
-    database = pd.read_csv(args.input_file)
+    database = pd.read_csv(csv_path)
     print(database)
 
     for i, v in database.iterrows():
@@ -481,7 +486,7 @@ def convert_single(args):
         args (args): parsed arguments
     """
     cli = (
-        f'pymif 2zarr --input {args.input_path} --zarr_path {args.zarr_path} '
+        f'pymif convert --input_path {args.input_path} --zarr_path {args.zarr_path} '
         f'--microscope {args.microscope} --max_size {args.max_size} '
         f'--scene_index {args.scene_index} --channel_names {args.channel_names} '
         f'--channel_colors {args.channel_colors} --zarr_format {args.zarr_format} '
@@ -492,7 +497,7 @@ def convert_single(args):
         f'--drop_singleton {args.drop_singleton} --num_workers {args.num_workers}'
     )
     print(f'Converting single file.\nRunning through: {cli}')
-    exclude = {"runmode"}
+    exclude = _NOT_CONVERSION_OPTIONS
     conv_kwargs = {
         k: v
         for k, v in vars(args).items()
@@ -506,7 +511,7 @@ def convert_single(args):
 
 
 # ---------------------------------------------------------------------------
-# Mosaics: mosaic2zarr / batch-mosaic2zarr
+# Mosaics: fuse / fuse --batch
 # ---------------------------------------------------------------------------
 
 def _mosaic_manager_name_map() -> Dict[str, Any]:
@@ -557,7 +562,7 @@ def _int_triplet(value, default=(1, 1, 1)) -> Tuple[int, int, int]:
 
 
 def _subset_to_crop(subset, channel_names: List[str]):
-    """Split a 2zarr subset into a fusion crop (z/y/x) and a channel selection (c)."""
+    """Split a convert-style subset into a fusion crop (z/y/x) and a channel selection (c)."""
     subset = _normalize_subset(subset) or {}
     if "T" in subset:
         raise ValueError("A mosaic has no time axis: remove t from --subset.")
@@ -610,9 +615,9 @@ def mosaic_convert(
     temp_dir: Optional[str] = None,
     overwrite: bool = False,
 ):
-    """Fuse a mosaic into an OME-Zarr image (CLI helper for ``pymif mosaic2zarr``).
+    """Fuse a mosaic into an OME-Zarr image (CLI helper for ``pymif fuse``).
 
-    The 2zarr options (``max_size`` ... ``num_workers``) have the same meaning as in
+    The ``convert`` options (``max_size`` ... ``num_workers``) have the same meaning as in
     :func:`zarr_convert`, applied to the fused output; ``subset`` crops it (z/y/x in
     output voxels) and selects channels (c). The other options are those of
     :func:`pymif.mosaic_manager.fuse_tiles`: ``read_downsample`` is its ``ds`` and
@@ -706,7 +711,7 @@ def convert_mosaic_single(args):
     kwargs = {
         k: v
         for k, v in vars(args).items()
-        if k != "runmode" and v is not None and not (isinstance(v, str) and v.strip() == "")
+        if k not in _NOT_CONVERSION_OPTIONS and v is not None and not (isinstance(v, str) and v.strip() == "")
     }
     if "chunk_size" in kwargs:
         kwargs.pop("max_size", None)
@@ -715,8 +720,9 @@ def convert_mosaic_single(args):
 
 def convert_mosaic_batch(args):
     """Runmode to fuse a batch of mosaics listed in a CSV file."""
-    print(f"Fusing a batch of mosaics from {args.input_file}")
-    database = pd.read_csv(args.input_file)
+    csv_path = getattr(args, "input_file", args)  # parsed arguments or a path
+    print(f"Fusing a batch of mosaics from {csv_path}")
+    database = pd.read_csv(csv_path)
     print(database)
     columns = database.columns
     for _, v in database.iterrows():
@@ -727,8 +733,9 @@ def convert_mosaic_batch(args):
             "microscope": v["microscope"] if "microscope" in columns and _present(v.get("microscope")) else None,
             **_batch_row_kwargs(v, columns),
         }
-        if "read_downsample" in columns and _present(v.get("read_downsample")):
-            kwargs["read_downsample"] = _int_triplet(str(v["read_downsample"]))
+        for key in ("downsample", "read_downsample"):  # read_downsample: the earlier column name
+            if key in columns and _present(v.get(key)):
+                kwargs["read_downsample"] = _int_triplet(str(v[key]))
         for key in ("projection", "blend", "midline_axis", "out_dtype", "temp_dir"):
             if key in columns and _present(v.get(key)):
                 kwargs[key] = str(v[key]).strip()
@@ -742,21 +749,19 @@ def convert_mosaic_batch(args):
         mosaic_convert(**kwargs)
 
 
-def main():
-    """Main fxn
-
-        Here the PyMIF will decide which runmode to execute based on the positional argument after pymif command.
-    """
-    args = _parse_arguments()
-    if args.runmode == 0:
-        convert_single(args)
-    elif args.runmode == 1:
-        convert_batch(args)
-    elif args.runmode == 2:
-        convert_mosaic_single(args)
-    elif args.runmode == 3:
-        convert_mosaic_batch(args)
-    # TODO There is room for more runmodes possibly in the future
+def main(argv=None):
+    """Entry point of the ``pymif`` command: ``pymif convert`` or ``pymif fuse``."""
+    args = _parse_arguments(argv)
+    if args.renamed_to:
+        print(f"Note: `pymif {args.command}` is now `{args.renamed_to}`; the old name still works for now.",
+              file=sys.stderr)
+    runners = {
+        "convert": convert_single,
+        "convert_batch": convert_batch,
+        "fuse": convert_mosaic_single,
+        "fuse_batch": convert_mosaic_batch,
+    }
+    runners[args.mode](args)
 
 if __name__ == "__main__":
     main()

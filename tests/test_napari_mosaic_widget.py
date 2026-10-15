@@ -217,10 +217,10 @@ def test_batch_csv_export_runs_with_the_cli(app, tmp_path, monkeypatch):
     assert len(table) == 2
     row = table.iloc[0]
     assert row["microscope"] == "luxendo" and row["projection"] == "max"
-    assert row["read_downsample"] == "1 2 2" and row["blend"] == "midline" and row["groups"] == ""
+    assert row["downsample"] == "1 2 2" and row["blend"] == "midline" and row["groups"] == ""
 
     pd.read_csv(csv).iloc[:1].to_csv(csv, index=False)
-    monkeypatch.setattr(sys, "argv", ["pymif", "batch-mosaic2zarr", "-i", str(csv)])
+    monkeypatch.setattr(sys, "argv", ["pymif", "fuse", "--batch", str(csv)])
     cli.main()
     assert mm.ZarrManager(str(out)).metadata["axes"] == "yx"
 
@@ -232,7 +232,7 @@ def test_batch_row_groups_and_skips():
     row = mw.batch_row(input_path="acq", microscope="luxendo", output="out.zarr", values=values,
                        all_groups=["L", "R"], skip_ids=["A/s1", "s2"])
     assert row["groups"] == "L" and row["skip_tiles"] == "A/s1 s2" and row["projection"] == "none"
-    assert row["channels"] == "A B" and row["overwrite"] == "true" and row["read_downsample"] == "4 8 8"
+    assert row["channels"] == "A B" and row["overwrite"] == "true" and row["downsample"] == "4 8 8"
 
 
 def test_widget_leaves_hidden_tiles_blank(app, monkeypatch):

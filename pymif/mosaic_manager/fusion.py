@@ -12,7 +12,7 @@ Fusion runs in two steps:
 2. The fused level 0 (already downsampled, so small compared with the raw tiles)
    is written to the final OME-Zarr with :meth:`MicroscopeManager.to_zarr`, so
    pyramid levels, chunks, sharding, compression, zarr format and singleton axes
-   behave exactly as for any other PyMIF conversion (``pymif 2zarr``).
+   behave exactly as for any other PyMIF conversion (``pymif convert``).
 """
 from __future__ import annotations
 
@@ -595,7 +595,7 @@ def fuse_tiles(
         Show progress bars.
     **write_options
         Any other :meth:`~pymif.microscope_manager.MicroscopeManager.to_zarr`
-        option, as for ``pymif 2zarr``: ``chunks``, ``shards``, ``shard_target_mb``,
+        option, as for ``pymif convert``: ``chunks``, ``shards``, ``shard_target_mb``,
         ``shard_exclude_axes``, ``zarr_format``, ``ngff_version``, ``compressor``,
         ``compressor_level``, ``drop_singleton``, ``num_workers``, ``storage_options``.
         ``chunks`` is given in the output axis order (``c, z, y, x``, or ``c, y, x``
