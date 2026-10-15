@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from pymif.mosaic_manager import Mosaic, Tile, fuse_tiles
+from pymif.mosaic_manager import MosaicManager, Tile, fuse_tiles
 
 
 def _tile(value, origin, shape=(4, 8, 8), channel="A", group=None, vox=(1.0, 1.0, 1.0)):
@@ -105,7 +105,7 @@ def test_validation(tmp_path):
 
 
 def test_mosaic_base_inspection():
-    class M(Mosaic):
+    class M(MosaicManager):
         def _scan(self):
             return [_tile(1, (0, 0, 0), channel="A", group="L"), _tile(2, (0, 0, 20), channel="B", group="R")]
 
@@ -115,3 +115,28 @@ def test_mosaic_base_inspection():
     lo, hi = m.bounding_box()
     assert lo == (0, 0, 0) and hi == (4, 8, 28)
     assert m.tile(0).data[0].shape == (4, 8, 8)
+
+
+def test_h5_tiles_with_worker_processes(tmp_path):
+    import h5py
+
+    from pymif.mosaic_manager import H5Array
+
+    rng = np.random.default_rng(1)
+    tiles = []
+    for i in range(3):
+        f = tmp_path / f"t{i}.h5"
+        with h5py.File(f, "w") as h:
+            h["Data"] = rng.integers(0, 1000, (8, 16, 16), dtype=np.uint16)
+        tiles.append(Tile(H5Array(f), (0, 0, 8 * i), (1.0, 1.0, 1.0), "A", "L" if i < 2 else "R"))
+
+    kw = dict(ds=(2, 2, 2), blend="midline", chunks=(1, 4, 8, 8))
+    serial = fuse_tiles(tiles, tmp_path / "s.zarr", workers=1, **kw)
+    procs = fuse_tiles(tiles, tmp_path / "p.zarr", workers=2, executor="process", **kw)
+    assert np.array_equal(_read(serial), _read(procs))
+
+    mip = fuse_tiles(tiles, tmp_path / "m.zarr", projection="max", workers=2, ds=(1, 1, 1), chunks=(1, 8, 8))
+    expected = np.zeros((16, 32), np.uint16)
+    for i, t in enumerate(tiles):
+        np.maximum(expected[:, 8 * i : 8 * i + 16], t.data[:].max(axis=0), out=expected[:, 8 * i : 8 * i + 16])
+    assert np.array_equal(_read(mip).reshape(16, 32), expected)

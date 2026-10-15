@@ -18,7 +18,7 @@ logger = logging.getLogger("pymif")
 _COLORMAPS = ("green", "magenta", "cyan", "yellow", "red", "blue")
 
 
-class Mosaic(ABC):
+class MosaicManager(ABC):
     """A set of separately acquired, positioned tiles (not yet one image).
 
     Unlike a :class:`~pymif.microscope_manager.MicroscopeManager`, which wraps one
@@ -27,7 +27,7 @@ class Mosaic(ABC):
 
     Mosaics can be used as context managers so that open file handles are closed::
 
-        with mosaic_manager.LuxendoMosaic("raw_folder") as mosaic:
+        with mosaic_manager.LuxendoMosaicManager("raw_folder") as mosaic:
             mosaic.fuse("overview.ome.zarr", ds=(4, 8, 8), projection="max")
     """
 
@@ -96,20 +96,50 @@ class Mosaic(ABC):
         z, y, x = t.shape
         return da.from_array(t.data, chunks=(min(16, z), min(1024, y), min(1024, x)))
 
-    def visualize(self, tiles: Optional[Sequence[Tile]] = None, viewer: "napari.Viewer | None" = None):
-        """Show every tile in napari at its position (one colour per channel) to check placement."""
+    def visualize(
+        self,
+        tiles: Optional[Sequence[Tile]] = None,
+        viewer: "napari.Viewer | None" = None,
+        ds: Sequence[int] = (1, 1, 1),
+    ):
+        """Show tiles in napari, each as its own layer at its stage position.
+
+        One colour per channel and additive blending, so overlaps and gaps are
+        easy to see. Data stays lazy: only the planes napari displays are read.
+
+        Parameters
+        ----------
+        tiles
+            Tiles to show (default: all), e.g. ``mosaic.select(channel="cFos-647")``.
+            Every displayed plane reads whole HDF5 chunks of every tile, so
+            showing fewer tiles keeps napari responsive.
+        viewer
+            Viewer to add the layers to; a new one is created by default.
+        ds
+            ``(z, y, x)`` stride for a lighter preview (every n-th voxel).
+        """
         import napari
 
+        from ..utils.visualize import units_for_axes
+
         viewer = viewer or napari.Viewer()
+        ds = tuple(int(v) for v in ds)
+        units = units_for_axes({"axes": "zyx", "units": (self.tiles[0].units,) * 3}, "zyx")
+        extra = {} if units is None else {"units": units}
         names = self.channels
-        for i, t in enumerate(self.tiles if tiles is None else tiles):
+        for t in self.tiles if tiles is None else tiles:
+            i = self.tiles.index(t)
+            data = self._lazy(t)[:: ds[0], :: ds[1], :: ds[2]]
+            label = t.attrs.get("stack") or i
             viewer.add_image(
-                self._lazy(t),
-                name=f"{t.channel} [{i}]",
-                scale=t.voxel_size,
+                data,
+                name=f"{t.channel} {t.group or ''} [{label}]".replace("  ", " "),
+                scale=tuple(v * d for v, d in zip(t.voxel_size, ds)),
                 translate=t.origin,
                 colormap=_COLORMAPS[names.index(t.channel) % len(_COLORMAPS)],
                 blending="additive",
+                metadata={"mosaic_tile": i},
+                **extra,
             )
         return viewer
 
@@ -136,7 +166,7 @@ class Mosaic(ABC):
                 logger.warning("Failed to close file: %s", e)
         self._open_files = []
 
-    def __enter__(self) -> "Mosaic":
+    def __enter__(self) -> "MosaicManager":
         return self
 
     def __exit__(self, exc_type, exc, tb) -> None:

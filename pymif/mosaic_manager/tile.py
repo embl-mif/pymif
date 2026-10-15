@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional, Tuple
 import numpy as np
 
 
-@dataclass
+@dataclass(eq=False)
 class Tile:
     """One acquired tile of a mosaic: a lazy ``(z, y, x)`` array and where it sits.
 

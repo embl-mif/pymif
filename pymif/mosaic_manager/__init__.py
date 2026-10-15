@@ -1,3 +1,7 @@
 from .tile import Tile
-from .mosaic import Mosaic
-from .fusion import fuse_tiles
+from .h5_array import H5Array
+from .mosaic import MosaicManager
+from .fusion import FusionPlan, fuse_tiles, plan_fusion
+from .luxendo_mosaic_manager import LuxendoMosaicManager
+from .opera_mosaic_manager import OperaMosaicManager
+from .zeiss_mosaic_manager import ZeissMosaicManager
