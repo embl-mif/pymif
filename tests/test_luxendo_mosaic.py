@@ -8,7 +8,7 @@ import numpy as np
 from pymif.mosaic_manager import LuxendoMosaicManager
 
 
-def _write_tile(folder, name, desc, stack, tx, ty, tz, shape=(4, 8, 6), value=1):
+def _write_tile(folder, name, desc, stack, tx, ty, tz, shape=(4, 8, 6), value=1, time_point=None):
     folder.mkdir(parents=True, exist_ok=True)
     with h5py.File(folder / f"{name}.lux.h5", "w") as f:
         f["Data"] = np.full(shape, value, np.uint16)
@@ -17,6 +17,7 @@ def _write_tile(folder, name, desc, stack, tx, ty, tz, shape=(4, 8, 6), value=1)
         "channel_description": desc,
         "stack": stack,
         "stack_description": "brain",
+        **({} if time_point is None else {"time_point": str(time_point)}),
         "voxel_size_um": {"width": 2.0, "height": 2.0, "depth": 3.0},
         "image_size_vx": {"width": shape[2], "height": shape[1], "depth": shape[0]},
         "affine_to_sample": [
@@ -56,3 +57,38 @@ def test_luxendo_scan(tmp_path):
     assert zm.metadata["channel_names"] == ["GFP"]
     # as for pymif 2zarr, a single channel axis is dropped by default
     assert m.fuse(tmp_path / "g.zarr", progress=False).metadata["axes"] == "zyx"
+
+
+def test_timelapse_is_refused(tmp_path):
+    import pytest
+
+    from pymif.mosaic_manager import MosaicManager, Tile
+
+    # (a) numbered acquisitions of the same stack in one folder
+    a = tmp_path / "a" / "raw" / "stack_1-x00-y00_GFP-L"
+    _write_tile(a, "Cam_bottom_00000", "GFP-L", "1-x00-y00", 0.0, 0.0, 0.0, time_point=0)
+    _write_tile(a, "Cam_bottom_00001", "GFP-L", "1-x00-y00", 0.0, 0.0, 0.0, time_point=1)
+    with pytest.raises(NotImplementedError, match="single timepoint"):
+        LuxendoMosaicManager(tmp_path / "a", progress=False)
+
+    # (b) one folder per timepoint: the JSON timepoints differ
+    for tp in (0, 1):
+        _write_tile(tmp_path / "b" / "raw" / f"stack_1-x00-y00_GFP-L_tp{tp}", "Cam_bottom_00000", "GFP-L",
+                    "1-x00-y00", 0.0, 0.0, 0.0, time_point=tp)
+    with pytest.raises(NotImplementedError, match=r"timepoints \['0', '1'\]"):
+        LuxendoMosaicManager(tmp_path / "b", progress=False)
+
+    # a retake is still fine, and one timepoint loads
+    c = tmp_path / "c" / "raw" / "stack_1-x00-y00_GFP-L"
+    _write_tile(c, "Cam_bottom_00000", "GFP-L", "1-x00-y00", 0.0, 0.0, 0.0, time_point=3)
+    _write_tile(c, "Cam_bottom_00000_R_1", "GFP-L", "1-x00-y00", 0.0, 0.0, 0.0, time_point=3)
+    assert LuxendoMosaicManager(tmp_path / "c", progress=False).tiles[0].attrs["time_point"] == "3"
+
+    # any reader: tiles reporting several timepoints are refused by the base class
+    class M(MosaicManager):
+        def _scan(self):
+            return [Tile(np.zeros((2, 2, 2), np.uint16), (0, 0, 0), (1, 1, 1), "A", attrs={"time_point": tp})
+                    for tp in (0, 1)]
+
+    with pytest.raises(NotImplementedError):
+        M(".")

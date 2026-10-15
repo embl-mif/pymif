@@ -11,7 +11,7 @@ from typing import List, Optional
 from tqdm.auto import tqdm
 
 from .h5_array import H5Array
-from .mosaic import MosaicManager
+from .mosaic import MosaicManager, single_timepoint_error
 from .tile import Tile
 
 logger = logging.getLogger("pymif")
@@ -95,6 +95,13 @@ class LuxendoMosaicManager(MosaicManager):
         h5s = [n for n in names if n.endswith(".lux.h5") and n[: -len(".lux.h5")] + ".json" in names]
         if not h5s:  # e.g. only main_raw.lux.h5 (no image data)
             return None
+        # Several files of one stack are retakes (*_R_<n>) of the same acquisition; different
+        # base names are separate acquisitions of that stack, i.e. a timelapse.
+        bases = sorted({re.sub(r"(_R_\d+)?\.lux\.h5$", "", n) for n in h5s})
+        if len(bases) > 1:
+            raise single_timepoint_error(
+                f"{len(bases)} acquisitions of the same stack in {folder} ({', '.join(b + '.lux.h5' for b in bases)})"
+            )
         h5s.sort(key=lambda n: cls._retake(Path(n)))
         for skipped in h5s[:-1]:
             logger.info("Skipping %s (superseded by retake %s)", skipped, h5s[-1])
@@ -138,6 +145,7 @@ class LuxendoMosaicManager(MosaicManager):
                 "stack_description": info.get("stack_description"),
                 "grid": (int(grid.group(1)), int(grid.group(2))) if grid else None,
                 "channel_description": desc,
+                "time_point": info.get("time_point"),
                 "path": str(h5),
             },
         )

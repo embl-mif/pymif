@@ -12,6 +12,10 @@ A mosaic manager is different from a [microscope manager](readers.md): a `Micros
 
 `LuxendoMosaicManager` is for the **raw** tiles. Data already fused by the Luxendo software is read with `LuxendoManager`.
 
+```{note}
+Mosaics are supported for a **single timepoint** so far. Loading a timelapse stops with an error that says so: several acquisitions of the same stack in one folder, or tiles whose metadata report different timepoints.
+```
+
 A runnable walk-through with synthetic data is in [examples/10_mosaic_fusion.ipynb](https://github.com/embl-mif/pymif/blob/main/examples/10_mosaic_fusion.ipynb).
 
 ## Load and inspect

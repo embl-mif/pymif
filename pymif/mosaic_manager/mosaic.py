@@ -18,6 +18,16 @@ logger = logging.getLogger("pymif")
 _COLORMAPS = ("green", "magenta", "cyan", "yellow", "red", "blue")
 
 
+def single_timepoint_error(found: str) -> NotImplementedError:
+    """Error (also logged as a warning) for mosaics with more than one timepoint."""
+    message = (
+        "Timelapse mosaics are not supported yet: mosaic loading and fusion are implemented "
+        f"for a single timepoint so far. Found: {found}."
+    )
+    logger.warning(message)
+    return NotImplementedError(message)
+
+
 def _centre_block(shape: Sequence[int], block: int) -> Tuple[slice, ...]:
     """Slices of a ``block``-sized cube at the centre of ``shape``, aligned to ``block``."""
     out = []
@@ -74,6 +84,10 @@ class MosaicManager(ABC):
         self.tiles: List[Tile] = self._scan()
         if not self.tiles:
             raise FileNotFoundError(f"No tiles found in {self.path}.")
+        # Readers that know the timepoint store it as attrs["time_point"].
+        timepoints = sorted({str(t.attrs["time_point"]) for t in self.tiles if t.attrs.get("time_point") is not None})
+        if len(timepoints) > 1:
+            raise single_timepoint_error(f"tiles at timepoints {timepoints} in {self.path}")
 
     @abstractmethod
     def _scan(self) -> List[Tile]:
