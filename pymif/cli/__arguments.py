@@ -379,7 +379,7 @@ def _add_mosaic_arguments(parser):
     """Fusion options of ``mosaic2zarr``."""
     parser.add_argument(
         '-rds', '--read_downsample', nargs='+', type=int, metavar='FACTOR',
-        help='Downsampling applied while reading the tiles: one value or Z Y X, e.g. -rds 4 8 8. Default: 1 (full resolution).',
+        help='Downsampling applied while reading the tiles (block mean): one value or Z Y X, e.g. -rds 4 8 8. Default: 1 (full resolution).',
     )
     parser.add_argument(
         '-p', '--projection', choices=['none', 'max', 'sum'], default='none',
@@ -389,10 +389,6 @@ def _add_mosaic_arguments(parser):
         '-b', '--blend', choices=['max', 'sum', 'count', 'midline'], default='max',
         help='How overlapping tiles are merged: max, sum (overlaps brighter), count (tiles per voxel, '
              'no pixel data read), midline (each tile group, e.g. illumination side, on its own side of the overlap).',
-    )
-    parser.add_argument(
-        '-dm', '--downsample_method', choices=['mean', 'stride'], default='mean',
-        help='Block average (mean) or every n-th voxel (stride) for --read_downsample.',
     )
     parser.add_argument('-ch', '--channels', nargs='+', help='Tile channels to fuse, in output order. Default: all.')
     parser.add_argument('-g', '--groups', nargs='+', help='Tile groups to fuse (e.g. L R). Default: all.')
@@ -577,7 +573,7 @@ def _parse_arguments():
         chunk_size | max_size(MB) | scene_index | zarr_format | downscale_factor | subset | channel_colors |
         channel_names | num_levels | shards | shard_target_mb | shard_exclude_axes | drop_singleton | num_workers
         and any of the fusion columns
-        read_downsample | projection | blend | downsample_method | channels | groups | skip_tiles |
+        read_downsample | projection | blend | channels | groups | skip_tiles |
         midline_axis | out_dtype | read_workers | temp_dir | overwrite
         Example:
         input                    | microscope | output                 | read_downsample | projection | blend   | num_levels | shards

@@ -32,7 +32,7 @@ TILE_MODES = {"all tiles": None, "visible layers only": "visible", "selected lay
 #: Columns of the CSV read by ``pymif batch-mosaic2zarr``.
 MOSAIC_BATCH_COLUMNS = [
     "input", "microscope", "output",
-    "read_downsample", "projection", "blend", "downsample_method", "channels", "groups", "skip_tiles",
+    "read_downsample", "projection", "blend", "channels", "groups", "skip_tiles",
     "midline_axis", "out_dtype", "read_workers", "temp_dir", "overwrite",
     "chunk_size", "max_size(MB)", "scene_index", "zarr_format", "downscale_factor", "subset",
     "channel_colors", "channel_names", "num_levels", "shards", "shard_target_mb", "shard_exclude_axes",
@@ -95,7 +95,6 @@ def fuse_kwargs(
     ds_z: int,
     ds_y: int,
     ds_x: int,
-    downsample: str,
     levels: int,
     workers: int,
     overwrite: bool,
@@ -106,7 +105,6 @@ def fuse_kwargs(
         "projection": _PROJECTIONS[projection],
         "blend": blend,
         "ds": (int(ds_z), int(ds_y), int(ds_x)),
-        "downsample": downsample,
         "levels": int(levels),
         "workers": int(workers),
         "overwrite": bool(overwrite),
@@ -154,7 +152,6 @@ def batch_row(*, input_path, microscope: str, output, values: dict, all_groups: 
         "read_downsample": f"{values['ds_z']} {values['ds_y']} {values['ds_x']}",
         "projection": _PROJECTIONS[values["projection"]] or "none",
         "blend": values["blend"],
-        "downsample_method": values["downsample"],
         "channels": " ".join(values["channels"]),
         # every group selected = the default (all); "(none)" is how the CLI sees a missing group
         "groups": "" if set(groups) == set(all_groups) else " ".join("None" if g == NO_GROUP else g for g in groups),
@@ -325,7 +322,6 @@ def mosaic_widget():
         ds_z={"label": "Downsample Z", "min": 1, "max": 256, "value": 4},
         ds_y={"label": "Downsample Y", "min": 1, "max": 256, "value": 8},
         ds_x={"label": "Downsample X", "min": 1, "max": 256, "value": 8},
-        downsample={"label": "Downsampling", "choices": list(mos.fusion.DOWNSAMPLINGS), "value": "mean"},
         levels={"label": "Resolution levels", "min": 1, "max": 10, "value": 3},
         workers={"label": "Workers", "min": 1, "max": 64, "value": 4},
         overwrite={"label": "Overwrite output", "widget_type": "CheckBox", "value": False},
@@ -342,7 +338,6 @@ def mosaic_widget():
         ds_z=4,
         ds_y=8,
         ds_x=8,
-        downsample="mean",
         levels=3,
         workers=4,
         overwrite=False,
@@ -352,7 +347,7 @@ def mosaic_widget():
         mosaic = state["mosaic"]
         tiles = select_tiles(mosaic, channels, groups)
         kwargs = fuse_kwargs(channels=channels, projection=projection, blend=blend, ds_z=ds_z,
-                             ds_y=ds_y, ds_x=ds_x, downsample=downsample, levels=levels,
+                             ds_y=ds_y, ds_x=ds_x, levels=levels,
                              workers=workers, overwrite=overwrite)
         skip = _skipped_tiles()
         kwargs["skip"] = skip
@@ -454,7 +449,7 @@ def mosaic_widget():
     def batch_widget(batch_csv_path: Path = Path("mosaic_batch.csv")):
         mosaic = state["mosaic"]
         values = {name: getattr(fuse_widget, name).value for name in
-                  ("channels", "groups", "projection", "blend", "ds_z", "ds_y", "ds_x", "downsample",
+                  ("channels", "groups", "projection", "blend", "ds_z", "ds_y", "ds_x",
                    "levels", "workers", "overwrite")}
         skip_ids = _skip_ids()
         row = batch_row(input_path=state["input_path"], microscope=state["microscope"],

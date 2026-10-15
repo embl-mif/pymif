@@ -62,16 +62,13 @@ def test_projection_max_is_2d(tmp_path):
     assert img[3, 3] == 99 and img.sum() == 99
 
 
-def test_downsample_mean_and_stride(tmp_path):
+def test_downsample_is_block_mean(tmp_path):
     data = np.arange(4 * 8 * 8, dtype=np.uint16).reshape(4, 8, 8)
     t = Tile(data, (0, 0, 0), (1.0, 1.0, 1.0), "A")
     zm = fuse_tiles([t], tmp_path / "m.zarr", ds=(2, 2, 2), chunks=(1, 2, 4, 4))
     expected = data.reshape(2, 2, 4, 2, 4, 2).mean(axis=(1, 3, 5))
     assert np.allclose(_read(zm).reshape(2, 4, 4), np.rint(expected))
     assert zm.metadata["scales"][0] == (2.0, 2.0, 2.0)
-
-    zs = fuse_tiles([t], tmp_path / "s.zarr", ds=(2, 2, 2), downsample="stride", chunks=(1, 2, 4, 4))
-    assert np.array_equal(_read(zs).reshape(2, 4, 4), data[::2, ::2, ::2])
 
 
 def test_channels_and_levels(tmp_path):

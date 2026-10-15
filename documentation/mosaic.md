@@ -71,10 +71,9 @@ The projection is computed at full resolution along z and then downsampled in y/
 
 | Option | Values | Meaning |
 |---|---|---|
-| `ds` | `(z, y, x)` integers | downsampling applied while reading (default `(1, 1, 1)`) |
+| `ds` | `(z, y, x)` integers | downsampling applied while reading: each output voxel is the mean of its block (default `(1, 1, 1)`) |
 | `projection` | `None`, `"max"`, `"sum"` | 3D volume (default) or a 2D projection along z |
 | `blend` | `"max"`, `"sum"`, `"count"`, `"midline"` | how overlapping tiles are merged, see below |
-| `downsample` | `"mean"`, `"stride"` | block average (default) or every n-th voxel (faster) |
 | `channels` | list of names | tile channels to fuse, in output order (default: all) |
 | `channel_names`, `channel_colors` | lists | names and colours (hex or matplotlib names) of the output channels |
 | `crop` | `{"z": slice, "y": slice, "x": slice}` | part of the output to write, in output voxels (after `ds`) |

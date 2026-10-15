@@ -601,7 +601,6 @@ def mosaic_convert(
     read_downsample: Optional[Any] = None,
     projection: Optional[str] = "none",
     blend: str = "max",
-    downsample_method: str = "mean",
     channels: Optional[List[str]] = None,
     groups: Optional[List[str]] = None,
     skip_tiles: Optional[List[str]] = None,
@@ -616,8 +615,8 @@ def mosaic_convert(
     The 2zarr options (``max_size`` ... ``num_workers``) have the same meaning as in
     :func:`zarr_convert`, applied to the fused output; ``subset`` crops it (z/y/x in
     output voxels) and selects channels (c). The other options are those of
-    :func:`pymif.mosaic_manager.fuse_tiles`: ``read_downsample`` is its ``ds``,
-    ``downsample_method`` its ``downsample`` and ``read_workers`` its ``workers``.
+    :func:`pymif.mosaic_manager.fuse_tiles`: ``read_downsample`` is its ``ds`` and
+    ``read_workers`` its ``workers``.
     """
     from pymif.mosaic_manager import fuse_tiles, plan_fusion
 
@@ -684,7 +683,6 @@ def mosaic_convert(
         ds=ds,
         projection=projection,
         blend=blend,
-        downsample=downsample_method,
         channels=plan.channels,
         channel_names=channel_names,
         channel_colors=channel_colors,
@@ -731,7 +729,7 @@ def convert_mosaic_batch(args):
         }
         if "read_downsample" in columns and _present(v.get("read_downsample")):
             kwargs["read_downsample"] = _int_triplet(str(v["read_downsample"]))
-        for key in ("projection", "blend", "downsample_method", "midline_axis", "out_dtype", "temp_dir"):
+        for key in ("projection", "blend", "midline_axis", "out_dtype", "temp_dir"):
             if key in columns and _present(v.get(key)):
                 kwargs[key] = str(v[key]).strip()
         for key in ("channels", "groups", "skip_tiles"):

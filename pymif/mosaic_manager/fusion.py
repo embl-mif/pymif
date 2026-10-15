@@ -39,7 +39,6 @@ logger = logging.getLogger("pymif")
 
 BLENDS = ("max", "sum", "count", "midline")
 PROJECTIONS = (None, "max", "sum")
-DOWNSAMPLINGS = ("mean", "stride")
 
 #: Number of full-resolution z planes read at once (bounds memory per worker).
 _SLAB_PLANES = 64
@@ -110,10 +109,8 @@ def _crop_bounds(crop, grid: Tuple[int, int, int]) -> List[Tuple[int, int]]:
     return bounds
 
 
-def _downsample(block: np.ndarray, ds: Tuple[int, int, int], how: str) -> np.ndarray:
-    """Downsample a block whose shape is a multiple of ``ds`` to float32."""
-    if how == "stride":
-        return block[:: ds[0], :: ds[1], :: ds[2]].astype(np.float32)
+def _downsample(block: np.ndarray, ds: Tuple[int, int, int]) -> np.ndarray:
+    """Block-mean downsample a block whose shape is a multiple of ``ds``, to float32."""
     if ds == (1, 1, 1):
         return block.astype(np.float32)
     nz, ny, nx = block.shape
@@ -198,7 +195,7 @@ def _read_block(job) -> np.ndarray:
 
     Returns float32 ``(h, w)`` for projections, ``(d, h, w)`` otherwise.
     """
-    p, region, depth, ds, projection, downsample = job
+    p, region, depth, ds, projection = job
     k0, k1, j0, j1, i0, i1 = _overlap(p, region, depth)
     oz, oy, ox = p.offset
     dz, dy, dx = ds
@@ -220,14 +217,14 @@ def _read_block(job) -> np.ndarray:
             else:
                 part = raw.sum(axis=0, dtype=np.float32)
                 reduced = part if reduced is None else reduced + part
-        return _downsample(reduced[None], (1, dy, dx), downsample)[0]
+        return _downsample(reduced[None], (1, dy, dx))[0]
 
     out = np.empty((k1 - k0, j1 - j0, i1 - i0), np.float32)
     step = max(1, _SLAB_PLANES // dz)
     for a in range(k0, k1, step):
         b = min(a + step, k1)
         raw = np.asarray(data[(a - oz) * dz : (b - oz) * dz, src_y, src_x])
-        out[a - k0 : b - k0] = _downsample(raw, ds, downsample)
+        out[a - k0 : b - k0] = _downsample(raw, ds)
     return out
 
 
@@ -286,7 +283,7 @@ def _finish_region(r: _Region, entries, arr, depth: int, blend, dtype, flat: boo
         arr[r.channel_index, :, y0:y1, x0:x1] = block
 
 
-def _fuse_level0(regions, arr, *, depth, ds, projection, blend, downsample, dtype,
+def _fuse_level0(regions, arr, *, depth, ds, projection, blend, dtype,
                  workers: int, executor: str, progress: bool) -> None:
     """Fuse and write every region of level 0.
 
@@ -308,7 +305,7 @@ def _fuse_level0(regions, arr, *, depth, ds, projection, blend, downsample, dtyp
             for r in regions:
                 entries = []
                 for p in r.placed:
-                    job = None if blend == "count" else (p, r.bounds, depth, ds, projection, downsample)
+                    job = None if blend == "count" else (p, r.bounds, depth, ds, projection)
                     entries.append((p, pool.submit(_read_block, job) if pool is not None and job else job))
                 open_regions.append((r, entries))
                 while len(open_regions) > window:
@@ -478,7 +475,6 @@ def fuse_tiles(
     ds: Sequence[int] = (1, 1, 1),
     projection: Optional[str] = None,
     blend: str = "max",
-    downsample: str = "mean",
     channels: Optional[Sequence[str]] = None,
     channel_names: Optional[Sequence[str]] = None,
     channel_colors: Optional[Sequence[str]] = None,
@@ -505,7 +501,8 @@ def fuse_tiles(
     out
         Output ``.ome.zarr`` path.
     ds
-        ``(z, y, x)`` integer downsampling factors applied while reading the tiles.
+        ``(z, y, x)`` integer downsampling factors applied while reading the tiles
+        (each output voxel is the mean of its block).
     projection
         ``None`` for a 3D volume, ``"max"``/``"sum"`` for a 2D projection along z.
     blend
@@ -518,8 +515,6 @@ def fuse_tiles(
         * ``"midline"`` -- ``max`` within each tile ``group``; where groups
           overlap, every group is used on its own side of the middle of the
           overlap, along ``midline_axis``.
-    downsample
-        ``"mean"`` (block average) or ``"stride"`` (every n-th voxel, faster).
     channels
         Tile channels to fuse, in output order. Default: all, in tile order.
     channel_names, channel_colors
@@ -574,8 +569,6 @@ def fuse_tiles(
 
     if executor not in ("auto", "process", "thread"):
         raise ValueError("executor must be 'auto', 'process' or 'thread'.")
-    if downsample not in DOWNSAMPLINGS:
-        raise ValueError(f"downsample must be one of {DOWNSAMPLINGS}, got {downsample!r}.")
     _check_write_options(write_options)
     plan = plan_fusion(tiles, ds=ds, projection=projection, blend=blend, channels=channels,
                        crop=crop, skip=skip, out_dtype=out_dtype, midline_axis=midline_axis)
@@ -627,7 +620,7 @@ def fuse_tiles(
         if auto:
             picklable = all(getattr(t.data, "picklable", False) for t in plan.tiles)
             executor = "process" if workers > 1 and picklable else "thread"
-        options = dict(depth=depth, ds=ds, projection=projection, blend=blend, downsample=downsample,
+        options = dict(depth=depth, ds=ds, projection=projection, blend=blend,
                        dtype=out_dtype, workers=workers, progress=progress)
         try:
             _fuse_level0(regions, level0, executor=executor, **options)

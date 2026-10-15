@@ -44,9 +44,9 @@ def test_default_output_names(tmp_path):
 
 def test_fuse_kwargs():
     kw = mw.fuse_kwargs(channels=("A",), projection="none (3D)", blend="count", ds_z=2, ds_y=4,
-                        ds_x=4, downsample="stride", levels=2, workers=3, overwrite=True)
+                        ds_x=4, levels=2, workers=3, overwrite=True)
     assert kw == {"channels": ["A"], "projection": None, "blend": "count", "ds": (2, 4, 4),
-                  "downsample": "stride", "levels": 2, "workers": 3, "overwrite": True}
+                  "levels": 2, "workers": 3, "overwrite": True}
 
 
 def test_widget_populates_and_plans(app, tmp_path):
@@ -227,7 +227,7 @@ def test_batch_csv_export_runs_with_the_cli(app, tmp_path, monkeypatch):
 
 def test_batch_row_groups_and_skips():
     values = {"channels": ["A", "B"], "groups": ["L"], "projection": "none (3D)", "blend": "max",
-              "ds_z": 4, "ds_y": 8, "ds_x": 8, "downsample": "mean", "levels": 3, "workers": 4,
+              "ds_z": 4, "ds_y": 8, "ds_x": 8, "levels": 3, "workers": 4,
               "overwrite": True}
     row = mw.batch_row(input_path="acq", microscope="luxendo", output="out.zarr", values=values,
                        all_groups=["L", "R"], skip_ids=["A/s1", "s2"])
