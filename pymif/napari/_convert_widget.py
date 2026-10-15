@@ -5,7 +5,8 @@ import numpy as np
 import pandas as pd
 from magicgui import magicgui
 import pymif.microscope_manager as mm
-from ._layout import compose_dock, make_button_holder
+from ._batch_csv import append_batch_csv
+from ._layout import compose_dock, enable_drag_and_drop, make_button_holder
 from ._layout import make_section as _make_section
 from ._dataset_helpers import axis_index as _axis_index
 from ._dataset_helpers import axis_size as _axis_size
@@ -75,63 +76,7 @@ layer_utils.compute_multiscale_level = conservative_compute_multiscale_level
 # MagicGUI controls
 # -------------------------
 
-class EmittingStream(QObject):
-    """Qt-compatible text stream used to forward console output to the widget."""
-
-    text_written = Signal(str)
-
-    def write(self, text):
-        """Emit written text to the Qt signal."""
-        self.text_written.emit(str(text))
-
-    def flush(self):
-        """Provide a file-like ``flush`` method for compatibility."""
-        pass
-
-    def isatty(self):
-        """Report that this stream is not an interactive terminal."""
-        return False
-    
-def make_log_appender(log_widget):
-    """Return a slot that appends timestamped console output to ``log_widget``.
-
-    Progress bars (tqdm) redraw themselves by writing ``"\\r"`` followed by the
-    new bar. Those writes replace the previous progress line instead of adding
-    a new line each time; any other output starts a new line.
-    """
-    state = {"progress_start": None}  # document position where the current bar starts
-
-    def append_with_time(text):
-        if not text.strip():
-            if "\n" in text:  # tqdm ends a finished bar with a bare newline
-                state["progress_start"] = None
-            return
-
-        is_progress = text.startswith("\r")
-        ts = datetime.now().strftime("[%H:%M:%S] ")
-        html = f"<span style='color:#ffffff;'>{ts}{text.strip()}</span><br>"
-
-        cursor = QTextCursor(log_widget.document())
-        cursor.movePosition(QTextCursor.End)
-        if is_progress:
-            if state["progress_start"] is None:
-                state["progress_start"] = cursor.position()
-            else:  # drop the previous redraw of this bar
-                cursor.setPosition(state["progress_start"], QTextCursor.KeepAnchor)
-                cursor.removeSelectedText()
-        else:
-            state["progress_start"] = None
-
-        # insertHtml does NOT add an automatic newline like append()
-        cursor.insertHtml(html)  # we add exactly one <br> per line
-
-        # auto-scroll
-        end = log_widget.textCursor()
-        end.movePosition(QTextCursor.End)
-        log_widget.setTextCursor(end)
-        log_widget.ensureCursorVisible()
-
-    return append_with_time
+from ._log import EmittingStream, make_log_appender  # noqa: F401  (re-exported)
 
 
 def dataset_reader(microscope):
@@ -295,21 +240,7 @@ def _channel_colors_from_metadata(dataset, selected_channel_names):
 
 
 def _append_batch_csv(csv_path, row):
-    csv_path = Path(csv_path)
-    if csv_path.suffix.lower() != ".csv":
-        csv_path = csv_path.with_suffix(".csv")
-    csv_path.parent.mkdir(parents=True, exist_ok=True)
-    new_row = pd.DataFrame([row])
-    if csv_path.exists() and csv_path.stat().st_size > 0:
-        try:
-            existing = pd.read_csv(csv_path, dtype=str).fillna("")
-            combined = pd.concat([existing, new_row], ignore_index=True)
-        except Exception:
-            combined = new_row
-    else:
-        combined = new_row
-    combined = combined.reindex(columns=BATCH_CSV_COLUMNS, fill_value="")
-    combined.to_csv(csv_path, index=False)
+    return append_batch_csv(csv_path, row, BATCH_CSV_COLUMNS)
 
 def _compact_advanced_rows(widget, insert_after):
     """Regroup the "Additional parameters" of the converter into compact rows.
@@ -723,42 +654,6 @@ def convert_widget():
     _state = {"dataset": None}
     _syncing = {"roi": False, "z": False}
 
-    def enable_drag_and_drop(file_edit: FileEdit):
-        """Allow dropping a file or folder onto a magicgui FileEdit."""
-
-        # FileEdit is a container; find the actual QLineEdit inside it
-        qline = file_edit.native.findChild(QLineEdit)
-
-        if qline is None:
-            raise RuntimeError("Could not find QLineEdit inside FileEdit")
-
-        qline.setAcceptDrops(True)
-
-        def dragEnterEvent(event):
-            if event.mimeData().hasUrls():
-                event.acceptProposedAction()
-            else:
-                event.ignore()
-
-        def dropEvent(event):
-            urls = event.mimeData().urls()
-            if not urls:
-                event.ignore()
-                return
-
-            path = Path(urls[0].toLocalFile()).resolve()
-
-            print("Dropped path:", path)
-            print("Exists:", path.exists())
-            print("Is dir:", path.is_dir())
-            print("Is file:", path.is_file())
-
-            file_edit.value = str(path)
-
-            event.acceptProposedAction()
-
-        qline.dragEnterEvent = dragEnterEvent
-        qline.dropEvent = dropEvent
 
     @magicgui(
         call_button="Visualize in napari",
@@ -995,8 +890,8 @@ def convert_widget():
             "drop_singleton": str(bool(make_convert_widget.drop_singleton.value)).lower(),
             "num_workers": "" if int(make_convert_widget.num_workers.value) <= 0 else str(int(make_convert_widget.num_workers.value)),
         }
-        _append_batch_csv(csv_path, row)
-        print(f"Appended batch row to {csv_path.resolve()}")
+        csv_path = _append_batch_csv(csv_path, row)
+        print(f"Appended batch row to {csv_path}. Run it with:\n  pymif convert --batch \"{csv_path}\"")
 
     make_batch_csv_widget.batch_csv_path.value = str((Path(make_visualize_widget.input_path.value).parent if make_visualize_widget.input_path.value else Path.cwd()) / "batch.csv")
     make_batch_csv_widget.enabled = False

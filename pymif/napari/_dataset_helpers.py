@@ -1,7 +1,7 @@
 """Dataset helpers shared by the napari widgets (no Qt dependency, so unit-testable)."""
 from __future__ import annotations
 
-from pymif.microscope_manager.utils.visualize import units_for_axes
+from pymif.utils.visualize import units_for_axes
 
 
 def dataset_axes(dataset) -> str:

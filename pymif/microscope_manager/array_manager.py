@@ -7,8 +7,8 @@ import dask.array as da
 import numpy as np
 
 from .microscope_manager import MicroscopeManager
-from .utils.ngff import parse_channel_color
-from .utils.axes import normalize_axes, infer_axes_from_ndim, spatial_axes_in_order, normalize_data_type
+from ..utils.ngff import parse_channel_color
+from ..utils.axes import normalize_axes, infer_axes_from_ndim, spatial_axes_in_order, normalize_data_type
 
 
 class ArrayManager(MicroscopeManager):

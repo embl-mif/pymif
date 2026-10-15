@@ -9,8 +9,9 @@
     "06_labels_append_inside_existing_zarr.ipynb",
     "07_create_new_zarr_dataset_with_labels.ipynb",
     "08_metadata_subset_pyramid_and_channels.ipynb",
-    "09_legacy_options_v04_and_troubleshooting.ipynb"
+    "09_legacy_options_v04_and_troubleshooting.ipynb",
+    "10_mosaic_fusion.ipynb"
   ],
   "readme": "README.md",
-  "purpose": "Examples for the current PyMIF manager API, OME-Zarr groups, labels, and legacy options."
+  "purpose": "Examples for the current PyMIF manager API, OME-Zarr groups, labels, mosaic fusion, and legacy options."
 }

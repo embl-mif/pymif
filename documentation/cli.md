@@ -1,0 +1,93 @@
+# Command line
+
+The `pymif` command has two subcommands:
+
+| Command | Does |
+|---|---|
+| `pymif convert` | convert a dataset to OME-Zarr, or every dataset listed in a CSV file with `--batch` |
+| `pymif fuse` | fuse the raw tiles of a mosaic into one OME-Zarr image, or every mosaic listed in a CSV file with `--batch` |
+
+`pymif -h` lists them, and `pymif convert -h` / `pymif fuse -h` show every option, examples and the batch CSV columns. `pymif --version` prints the installed version.
+
+Each command runs either one dataset (`-i INPUT -z OUTPUT`) or a CSV file (`--batch FILE.csv`), never both. In a batch file, one row is one run and the columns take the place of the options.
+
+## Convert a dataset
+
+```console
+pymif convert -i INPUT_PATH -m MICROSCOPE -z OUTPUT_ZARR
+pymif convert --batch datasets.csv
+```
+
+`-m` is one of `luxendo`, `opera`, `viventis`, `zeiss`, `zarr`, `zarrv04`, `scape`; leave it out to detect it from the input path. The output options:
+
+| Flag | Meaning |
+|---|---|
+| `-cs`, `--chunk_size` | chunk size, one value per axis of the dataset |
+| `-ms`, `--max_size` | max chunk size in MB (ignored with `-cs`) |
+| `-si`, `--scene_index` | scene of a `.czi` file |
+| `-cn`, `--channel_names` / `-cc`, `--channel_colors` | names and colours (hex or matplotlib names) of the channels |
+| `-zf`, `--zarr_format` | 2 (NGFF 0.4) or 3 (NGFF 0.5, default) |
+| `-df`, `--downscale_factor` / `-nl`, `--num_levels` | pyramid factor and number of levels (estimated if omitted) |
+| `-s`, `--subset` | crop or select before writing, e.g. `"y=10:100:2;x=20:80;c=0,2"` |
+| `-sh`, `-stm`, `-sea` | sharding (see [Advanced writing options](advanced.md)) |
+| `-ds`, `--drop_singleton` | drop size-1 `t`/`c`/`z` axes (default true) |
+| `-nw`, `--num_workers` | write threads |
+
+The batch CSV has the columns `input`, `microscope`, `output`, plus any of `chunk_size`, `max_size(MB)`, `scene_index`, `zarr_format`, `downscale_factor`, `subset`, `channel_colors`, `channel_names`, `num_levels`, `shards`, `shard_target_mb`, `shard_exclude_axes`, `drop_singleton`, `num_workers`. The napari converter writes such rows with *Append to batch CSV*.
+
+## Fuse a mosaic
+
+`fuse` fuses the raw tiles of a mosaic (see [Mosaics](mosaic.md)) into one OME-Zarr image:
+
+```console
+# 3D, downsampled 4 (z) x 8 (y) x 8 (x), illumination sides cut at the middle of their overlap
+pymif fuse -i /path/to/2026-10-14_103957 -z acq_3D.ome.zarr -rds 4 8 8 -b midline -nl 3
+
+# 2D maximum projection, downsampled 8 x 8 in y/x
+pymif fuse -i /path/to/2026-10-14_103957 -z acq_MIP.ome.zarr -rds 1 8 8 -p max -b midline
+
+# where are the tiles? (overlaps are brighter)
+pymif fuse -i /path/to/2026-10-14_103957 -z acq_tiles.ome.zarr -rds 1 8 8 -p max -b sum
+
+# many mosaics from a CSV file
+pymif fuse --batch mosaics.csv
+```
+
+The fusion options:
+
+| Flag | Meaning |
+|---|---|
+| `-m`, `--microscope` | `luxendo`, `opera`, `zeiss`; auto-detected for raw Luxendo acquisitions |
+| `-rds`, `--downsample` | downsampling while reading (block mean): one value or `Z Y X` (default 1) |
+| `-p`, `--projection` | `none` (3D, default), `max` or `sum` |
+| `-b`, `--blend` | `max` (default), `sum` or `midline` |
+| `-ch`, `--channels` / `-g`, `--groups` | tile channels and groups (e.g. `L R`) to fuse |
+| `-st`, `--skip_tiles` | tiles to leave blank: `channel/stack` ids such as `cFos-647/1-x00-y00`, or a stack such as `1-x00-y00` for every channel |
+| `-ma`, `--midline_axis` | `x` (default), `y` or `z` |
+| `-od`, `--out_dtype` | output dtype |
+| `-rw`, `--read_workers` | tiles read in parallel processes (default 4); not to be confused with `-nw` (write threads) |
+| `-td`, `--temp_dir` | folder for the temporary fused level 0 (a local disk is faster) |
+| `-ow`, `--overwrite` | replace an existing output |
+
+Every output option of `convert` is available too, applied to the fused output. Two read differently for a mosaic: `-cs` is given in `C Z Y X` order (`C Y X` for projections), and `-s/--subset` crops the fused output (`z`/`y`/`x` in output voxels, after `-rds`) and selects channels (`c`), e.g. `"z=0:100;y=200:900;c=1"`. `-si` is reserved for Zeiss mosaics (not implemented yet).
+
+The batch CSV has the columns `input`, `microscope`, `output`, plus any of the output columns of `convert --batch` and of the fusion columns `downsample`, `projection`, `blend`, `channels`, `groups`, `skip_tiles`, `midline_axis`, `out_dtype`, `read_workers`, `temp_dir`, `overwrite`. Leave a cell empty for the default; lists are space separated. The napari *Mosaic Fusion* widget writes such rows with *Append to batch CSV*.
+
+```text
+input,microscope,output,downsample,projection,blend,num_levels,shards
+/path/to/acquisition_1,luxendo,/path/to/acq1_3D.ome.zarr,4 8 8,none,midline,3,auto
+/path/to/acquisition_1,luxendo,/path/to/acq1_MIP.ome.zarr,1 8 8,max,midline,,none
+```
+
+## Old command names
+
+The commands used to have other names. They still work, with their original options, and print a one-line notice with the new name:
+
+| Old | New |
+|---|---|
+| `pymif 2zarr` | `pymif convert` |
+| `pymif batch2zarr -i FILE.csv` | `pymif convert --batch FILE.csv` |
+| `pymif mosaic2zarr` (`-ow true`) | `pymif fuse` (`--overwrite`) |
+| `pymif batch-mosaic2zarr -i FILE.csv` | `pymif fuse --batch FILE.csv` |
+
+Batch CSV files written before the rename (with a `read_downsample` column) still run.

@@ -6,8 +6,8 @@ from dask import delayed
 from tifffile import imread
 
 from .microscope_manager import MicroscopeManager
-from .utils.metadata import build_metadata
-from .utils.ome import parse_ome_xml, xml_attr
+from ..utils.metadata import build_metadata
+from ..utils.ome import parse_ome_xml, xml_attr
 
 
 class ViventisManager(MicroscopeManager):

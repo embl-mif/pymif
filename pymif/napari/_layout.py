@@ -1,10 +1,14 @@
 """Layout helpers that keep the PyMIF napari widgets usable at any dock size."""
 from __future__ import annotations
 
+from pathlib import Path
+from typing import Callable, Optional
+
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import (
     QFrame,
     QHBoxLayout,
+    QLineEdit,
     QPushButton,
     QScrollArea,
     QSizePolicy,
@@ -100,3 +104,39 @@ def compose_dock(content: QWidget, bottom: QWidget | None = None) -> QWidget:
     outer.addWidget(splitter)
     container.splitter = splitter  # exposed for tests / callers
     return container
+
+
+def enable_drag_and_drop(file_edit, transform: Optional[Callable[[Path], Path]] = None) -> None:
+    """Let a magicgui ``FileEdit`` accept a file or folder dropped from the file explorer.
+
+    ``transform`` maps the dropped path to the value to set (e.g. a file to its
+    folder); by default the dropped path is used as is. Paths are not resolved,
+    so a mapped network drive (``Y:\...``) keeps its drive letter.
+    """
+    line = file_edit.native.findChild(QLineEdit)
+    if line is None:
+        raise RuntimeError("Could not find the QLineEdit inside the FileEdit.")
+    line.setAcceptDrops(True)
+    line.setPlaceholderText("Drop a file or folder here, or browse")
+
+    def dropped_path(event) -> Optional[Path]:
+        urls = [u for u in event.mimeData().urls() if u.isLocalFile()]
+        return Path(urls[0].toLocalFile()) if urls else None
+
+    def accept_paths(event):
+        if dropped_path(event) is not None:
+            event.acceptProposedAction()
+        else:
+            event.ignore()
+
+    def drop(event):
+        path = dropped_path(event)
+        if path is None:
+            event.ignore()
+            return
+        file_edit.value = transform(path) if transform else path
+        event.acceptProposedAction()
+
+    line.dragEnterEvent = accept_paths
+    line.dragMoveEvent = accept_paths
+    line.dropEvent = drop

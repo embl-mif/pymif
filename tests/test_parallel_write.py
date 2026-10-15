@@ -11,8 +11,8 @@ import zarr
 
 import pymif.microscope_manager as mm
 from pymif.cli.pymif import convert_batch
-from pymif.microscope_manager.utils import ngff
-from pymif.microscope_manager.utils.ngff import ZarrWriteConfig, _resolve_num_workers
+from pymif.utils import ngff
+from pymif.utils.ngff import ZarrWriteConfig, _resolve_num_workers
 
 
 def _manager(shape=(1, 2, 8, 128, 128), chunks=(1, 1, 2, 32, 32), source=None):
@@ -120,7 +120,7 @@ def test_all_levels_computed_in_one_pass_reads_source_once(tmp_path):
 def test_compute_false_returns_tasks_without_writing(tmp_path):
     mgr, data = _manager()
     out = tmp_path / "d.zarr"
-    from pymif.microscope_manager.utils.to_zarr import to_zarr
+    from pymif.utils.to_zarr import to_zarr
 
     tasks = to_zarr(str(out), mgr.data, mgr.metadata,
                     config=ZarrWriteConfig(compute=False, drop_singleton=False))

@@ -1,10 +1,10 @@
 import dask.array as da
 
-from pymif.microscope_manager.utils.pyramid import build_pyramid
-from pymif.microscope_manager.utils.write_image_region import (
+from pymif.utils.pyramid import build_pyramid
+from pymif.utils.write_image_region import (
     _scale_index as _scale_image_index,
 )
-from pymif.microscope_manager.utils.write_label_region import (
+from pymif.utils.write_label_region import (
     _scale_index as _scale_label_index,
 )
 

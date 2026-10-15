@@ -4,7 +4,7 @@ from __future__ import annotations
 import pytest
 
 import pymif.microscope_manager as mm
-from pymif.microscope_manager.utils.ngff import ome_color_to_hex, parse_color
+from pymif.utils.ngff import ome_color_to_hex, parse_color
 
 
 @pytest.mark.parametrize(

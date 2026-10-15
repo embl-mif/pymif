@@ -14,6 +14,7 @@ Recommended order:
 8. `07_create_new_zarr_dataset_with_labels.ipynb`
 9. `08_metadata_subset_pyramid_and_channels.ipynb`
 10. `09_legacy_options_v04_and_troubleshooting.ipynb`
+11. `10_mosaic_fusion.ipynb`: fuse the raw tiles of a mosaic into a 3D volume or a 2D MIP
 
 The notebooks write small synthetic examples to `pymif_tutorial_output/` in the working directory where you run them.
 
