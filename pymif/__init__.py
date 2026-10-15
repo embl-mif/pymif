@@ -5,3 +5,5 @@ except ImportError:  # pragma: no cover - only when running from an unbuilt sour
 
 from . import microscope_manager
 from . import cli
+
+from . import mosaic_manager
