@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, List, Optional, Sequence, Tuple, TYPE_CHECKING
+from typing import Any, Dict, List, Optional, Sequence, Tuple, TYPE_CHECKING
 
 import dask.array as da
 import numpy as np
@@ -16,6 +16,43 @@ if TYPE_CHECKING:
 logger = logging.getLogger("pymif")
 
 _COLORMAPS = ("green", "magenta", "cyan", "yellow", "red", "blue")
+
+
+def _centre_block(shape: Sequence[int], block: int) -> Tuple[slice, ...]:
+    """Slices of a ``block``-sized cube at the centre of ``shape``, aligned to ``block``."""
+    out = []
+    for n in shape:
+        size = min(block, n)
+        start = min(n // 2 // block * block, n - size)
+        out.append(slice(start, start + size))
+    return tuple(out)
+
+
+def _central_tiles(tiles: Sequence[Tile], n: int) -> List[Tile]:
+    """Up to ``n`` tiles, taken in turn from each group, closest to their group's centre (in y/x)."""
+    ranked = []
+    for g in dict.fromkeys(t.group for t in tiles):
+        members = [t for t in tiles if t.group == g]
+        lo = np.min([t.extent[0] for t in members], axis=0)[1:]
+        hi = np.max([t.extent[1] for t in members], axis=0)[1:]
+        centre = (lo + hi) / 2
+        dist = [np.linalg.norm((np.add(t.extent[0], t.extent[1])[1:] / 2) - centre) for t in members]
+        ranked.append([members[i] for i in np.argsort(dist, kind="stable")])
+    picks = []
+    for k in range(max(len(r) for r in ranked)):  # round robin over groups
+        picks += [r[k] for r in ranked if k < len(r)]
+    return picks[:n]
+
+
+def _link_layers(groups) -> None:
+    """Link contrast and gamma within every group of napari layers (if napari supports it)."""
+    try:
+        from napari.experimental import link_layers
+    except ImportError:  # pragma: no cover - older napari
+        return
+    for layers in groups:
+        if len(layers) > 1:
+            link_layers(list(layers), ("contrast_limits", "gamma"))
 
 
 class MosaicManager(ABC):
@@ -96,16 +133,43 @@ class MosaicManager(ABC):
         z, y, x = t.shape
         return da.from_array(t.data, chunks=(min(16, z), min(1024, y), min(1024, x)))
 
+    def contrast_limits(
+        self,
+        tiles: Optional[Sequence[Tile]] = None,
+        n_tiles: int = 6,
+        block: int = 64,
+        percentiles: Tuple[float, float] = (0.5, 99.9),
+    ) -> Dict[str, Tuple[float, float]]:
+        """Display range of every channel, estimated from a small sample.
+
+        For each channel, one ``block``-sized cube is read from the centre of up to
+        ``n_tiles`` tiles (about 0.5 MB each for uint16 and ``block=64``, the HDF5
+        chunk size of Luxendo tiles), and the given percentiles of those voxels are
+        returned as ``(low, high)``. The sampled tiles are the ones closest to the
+        centre of each tile group (e.g. each illumination side), where the sample
+        usually is; edge tiles often only show background.
+        """
+        tiles = list(self.tiles if tiles is None else tiles)
+        limits = {}
+        for channel in dict.fromkeys(t.channel for t in tiles):
+            picks = _central_tiles([t for t in tiles if t.channel == channel], n_tiles)
+            sample = np.concatenate([np.asarray(t.data[_centre_block(t.shape, block)]).ravel() for t in picks])
+            low, high = (float(v) for v in np.percentile(sample, percentiles))
+            limits[channel] = (low, high if high > low else low + 1)
+        return limits
+
     def visualize(
         self,
         tiles: Optional[Sequence[Tile]] = None,
         viewer: "napari.Viewer | None" = None,
-        ds: Sequence[int] = (1, 1, 1),
+        contrast_limits: "str | Dict[str, Tuple[float, float]] | None" = "auto",
     ):
         """Show tiles in napari, each as its own layer at its stage position.
 
         One colour per channel and additive blending, so overlaps and gaps are
         easy to see. Data stays lazy: only the planes napari displays are read.
+        All tiles of a channel share one contrast setting, and their layers are
+        linked: changing the contrast or gamma of one tile changes all of them.
 
         Parameters
         ----------
@@ -115,32 +179,45 @@ class MosaicManager(ABC):
             showing fewer tiles keeps napari responsive.
         viewer
             Viewer to add the layers to; a new one is created by default.
-        ds
-            ``(z, y, x)`` stride for a lighter preview (every n-th voxel).
+        contrast_limits
+            ``"auto"`` (default) estimates them per channel with
+            :meth:`contrast_limits`; a ``{channel: (low, high)}`` dict uses those;
+            ``None`` lets napari compute them per tile (slow on large tiles).
         """
         import napari
 
         from ..utils.visualize import units_for_axes
 
+        tiles = list(self.tiles if tiles is None else tiles)
+        if isinstance(contrast_limits, str):
+            contrast_limits = self.contrast_limits(tiles)
         viewer = viewer or napari.Viewer()
-        ds = tuple(int(v) for v in ds)
         units = units_for_axes({"axes": "zyx", "units": (self.tiles[0].units,) * 3}, "zyx")
         extra = {} if units is None else {"units": units}
         names = self.channels
-        for t in self.tiles if tiles is None else tiles:
+        by_channel: Dict[str, list] = {}
+        for t in tiles:
             i = self.tiles.index(t)
-            data = self._lazy(t)[:: ds[0], :: ds[1], :: ds[2]]
+            limits = (contrast_limits or {}).get(t.channel)
             label = t.attrs.get("stack") or i
-            viewer.add_image(
-                data,
+            layer = viewer.add_image(
+                self._lazy(t),
                 name=f"{t.channel} {t.group or ''} [{label}]".replace("  ", " "),
-                scale=tuple(v * d for v, d in zip(t.voxel_size, ds)),
+                scale=t.voxel_size,
                 translate=t.origin,
                 colormap=_COLORMAPS[names.index(t.channel) % len(_COLORMAPS)],
                 blending="additive",
+                contrast_limits=limits,
                 metadata={"mosaic_tile": i},
                 **extra,
             )
+            if limits is not None and np.issubdtype(t.dtype, np.integer):
+                # napari sets the slider range to the limits; allow the whole dtype range
+                info = np.iinfo(t.dtype)
+                layer.contrast_limits_range = (info.min, info.max)
+                layer.contrast_limits = limits
+            by_channel.setdefault(t.channel, []).append(layer)
+        _link_layers(by_channel.values())
         return viewer
 
     # ------------------------------------------------------------------

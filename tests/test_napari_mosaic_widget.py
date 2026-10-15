@@ -74,16 +74,38 @@ def test_widget_populates_and_plans(app, tmp_path):
     assert Path(fw.output_path.value) == custom
 
 
-def test_visualize_places_tiles():
+def test_visualize_places_tiles_with_shared_contrast():
     from napari.components import ViewerModel
 
     m = FakeMosaic(".")
     v = ViewerModel()
-    m.visualize(tiles=m.select(channel="A"), viewer=v, ds=(1, 2, 2))
+    m.visualize(tiles=m.select(channel="A"), viewer=v)
     assert len(v.layers) == 2
     assert tuple(v.layers[1].translate) == (0, 0, 8)
-    assert tuple(v.layers[1].scale) == (1, 2, 2)
-    assert v.layers[1].data.shape == (8, 8, 8)
+    assert tuple(v.layers[1].scale) == (1, 1, 1)
+    assert v.layers[1].data.shape == (8, 16, 16)
+    # one contrast for the channel, linked across its tiles
+    assert tuple(v.layers[0].contrast_limits) == tuple(v.layers[1].contrast_limits)
+    assert tuple(v.layers[0].contrast_limits_range) == (0, 65535)
+    v.layers[0].contrast_limits = (0, 500)
+    assert tuple(v.layers[1].contrast_limits) == (0, 500)
+
+
+def test_contrast_limits_sample_tile_centres():
+    from pymif.mosaic_manager.mosaic import _centre_block
+
+    assert _centre_block((2079, 1024, 1024), 64) == (slice(1024, 1088), slice(512, 576), slice(512, 576))
+    assert _centre_block((8, 16, 16), 64) == (slice(0, 8), slice(0, 16), slice(0, 16))
+
+    rng = np.random.default_rng(0)
+
+    class Noisy(MosaicManager):
+        def _scan(self):
+            return [Tile(rng.integers(100, 200, (8, 16, 16)).astype(np.uint16), (0, 0, 16 * i),
+                         (1.0, 1.0, 1.0), "A") for i in range(10)]
+
+    low, high = Noisy(".").contrast_limits()["A"]
+    assert 100 <= low < 110 and 190 < high <= 199
 
 
 def test_drop_helpers(tmp_path):
@@ -124,3 +146,15 @@ def test_drag_and_drop_on_folder_fields(app, tmp_path):
     out_dir.mkdir()
     _drop(dock.fuse_widget.output_path, out_dir)
     assert Path(dock.fuse_widget.output_path.value) == out_dir / "fused.ome.zarr"
+
+
+def test_contrast_uses_central_tiles_of_each_group():
+    from pymif.mosaic_manager.mosaic import _central_tiles
+
+    tiles = [
+        Tile(np.zeros((2, 4, 4), np.uint16), (0, 4 * iy, 4 * ix + (100 if g == "R" else 0)), (1.0, 1.0, 1.0), "A", g)
+        for g in ("L", "R") for iy in range(3) for ix in range(3)
+    ]
+    picks = _central_tiles(tiles, 2)
+    assert [(t.group, t.origin[1:]) for t in picks] == [("L", (4.0, 4.0)), ("R", (4.0, 104.0))]
+    assert len(_central_tiles(tiles, 6)) == 6

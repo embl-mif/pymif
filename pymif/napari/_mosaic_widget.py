@@ -106,6 +106,12 @@ def _scan_worker(reader, path):
 
 
 @thread_worker
+def _contrast_worker(mosaic, tiles):
+    """Read the small contrast sample in the background (it is slow on network drives)."""
+    return mosaic.contrast_limits(tiles)
+
+
+@thread_worker
 def _fuse_worker(tiles, out, kwargs):
     """Run the fusion in the background and return the written dataset."""
     return mos.fuse_tiles(tiles, out, **kwargs)
@@ -200,22 +206,38 @@ def mosaic_widget():
         call_button="Show tiles in napari",
         channels={"widget_type": "Select", "choices": [], "allow_multiple": True},
         groups={"widget_type": "Select", "choices": [], "allow_multiple": True},
-        stride_z={"label": "Stride Z", "min": 1, "max": 256, "value": 1},
-        stride_y={"label": "Stride Y", "min": 1, "max": 256, "value": 1},
-        stride_x={"label": "Stride X", "min": 1, "max": 256, "value": 1},
         clear_layers={"label": "Remove existing layers", "widget_type": "CheckBox", "value": True},
     )
-    def show_widget(channels=(), groups=(), stride_z=1, stride_y=1, stride_x=1, clear_layers=True):
+    def show_widget(channels=(), groups=(), clear_layers=True):
         mosaic = state["mosaic"]
         tiles = select_tiles(mosaic, channels, groups)
         if not tiles:
             print("No tile matches the selected channels and groups.")
             return
-        if clear_layers:
-            viewer.layers.clear()
-        mosaic.visualize(tiles=tiles, viewer=viewer, ds=(stride_z, stride_y, stride_x))
-        viewer.reset_view()
-        print(f"Showing {len(tiles)} tiles as separate layers.")
+        _capture()
+        print(f"Estimating contrast from a few tiles of {', '.join(dict.fromkeys(t.channel for t in tiles))} ...")
+        worker = _contrast_worker(mosaic, tiles)
+        _busy(True)
+
+        @worker.returned.connect
+        def _done(limits):
+            for channel, (low, high) in limits.items():
+                print(f"{channel}: contrast {low:.0f} - {high:.0f} (linked across its tiles)")
+            if clear_layers:
+                viewer.layers.clear()
+            mosaic.visualize(tiles=tiles, viewer=viewer, contrast_limits=limits)
+            viewer.reset_view()
+            print(f"Showing {len(tiles)} tiles as separate layers.")
+            _busy(False)
+            _release()
+
+        @worker.errored.connect
+        def _failed(err):
+            print(f"Showing tiles failed: {err}")
+            _busy(False)
+            _release()
+
+        worker.start()
 
     # ----- 3. fusion -----
     @magicgui(

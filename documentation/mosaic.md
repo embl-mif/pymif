@@ -23,7 +23,7 @@ mosaic.groups            # ['L', 'R']  (illumination side)
 mosaic.bounding_box()    # ((zmin, ymin, xmin), (zmax, ymax, xmax)) in micrometer
 
 # Check placement: one napari layer per tile, at its stage position
-mosaic.visualize(tiles=mosaic.select(channel="cFos-647"), ds=(1, 4, 4))
+mosaic.visualize(tiles=mosaic.select(channel="cFos-647"))
 
 # Fuse (3D by default) and get the result back as a ZarrManager
 zm = mosaic.fuse("fused.ome.zarr", ds=(4, 8, 8), blend="midline", levels=3, workers=4)
@@ -31,6 +31,8 @@ zm = mosaic.fuse("fused.ome.zarr", ds=(4, 8, 8), blend="midline", levels=3, work
 # 2D maximum projection along z instead
 mosaic.fuse("mip.ome.zarr", ds=(1, 8, 8), projection="max")
 ```
+
+`visualize()` gives all tiles of a channel the same contrast, estimated from a small sample: a 64³-voxel block from the centre of up to 6 tiles, about 3 MB of reads per channel (`mosaic.contrast_limits()`). The layers of a channel are linked, so changing the contrast or gamma of one tile changes all of them. Pass `contrast_limits={"cFos-647": (100, 2000)}` to set them yourself.
 
 `mosaic.tiles` is a list of `Tile` objects: a lazy `(z, y, x)` array (`data`), the position of its first voxel (`origin`), `voxel_size`, `channel`, an optional `group` and reader-specific `attrs`. `mosaic.tile(i)` returns one tile as an `ArrayManager`.
 
@@ -80,7 +82,7 @@ Raw tiles usually have no pyramid, so every fusion reads the full-resolution dat
 `Plugins > PyMIF > Mosaic Fusion` opens a widget with three boxes:
 
 1. **Mosaic loading**: choose the microscope and the acquisition folder (browse, or drag and drop it, or any file inside it, from the file explorer), then *Load tiles*.
-2. **Show tiles**: show the selected channels and groups as one layer per tile at its stage position, optionally strided for a lighter preview. Every displayed plane reads data from all shown tiles, so show only a few channels or groups at a time.
+2. **Show tiles**: show the selected channels and groups as one layer per tile at its stage position. Every displayed plane reads data from all shown tiles, so show only a few channels or groups at a time.
 3. **Fuse to OME-Zarr**: every option above, with a live estimate of the output size. The output path follows the parameters (for example `<acquisition>_3D_ds4-8-8.ome.zarr`) until you type your own; dropping a folder on the output field writes the result inside that folder. When fusion finishes, the result can be opened directly.
 
 Loading and fusion run in the background, and their progress is shown in the log at the bottom.
