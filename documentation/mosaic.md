@@ -79,9 +79,9 @@ Raw tiles usually have no pyramid, so every fusion reads the full-resolution dat
 
 `Plugins > PyMIF > Mosaic Fusion` opens a widget with three boxes:
 
-1. **Mosaic loading**: choose the microscope and the acquisition folder, then *Load tiles*.
+1. **Mosaic loading**: choose the microscope and the acquisition folder (browse, or drag and drop it, or any file inside it, from the file explorer), then *Load tiles*.
 2. **Show tiles**: show the selected channels and groups as one layer per tile at its stage position, optionally strided for a lighter preview. Every displayed plane reads data from all shown tiles, so show only a few channels or groups at a time.
-3. **Fuse to OME-Zarr**: every option above, with a live estimate of the output size. The output path follows the parameters (for example `<acquisition>_3D_ds4-8-8.ome.zarr`) until you type your own. When fusion finishes, the result can be opened directly.
+3. **Fuse to OME-Zarr**: every option above, with a live estimate of the output size. The output path follows the parameters (for example `<acquisition>_3D_ds4-8-8.ome.zarr`) until you type your own; dropping a folder on the output field writes the result inside that folder. When fusion finishes, the result can be opened directly.
 
 Loading and fusion run in the background, and their progress is shown in the log at the bottom.
 

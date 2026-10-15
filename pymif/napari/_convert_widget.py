@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from magicgui import magicgui
 import pymif.microscope_manager as mm
-from ._layout import compose_dock, make_button_holder
+from ._layout import compose_dock, enable_drag_and_drop, make_button_holder
 from ._layout import make_section as _make_section
 from ._dataset_helpers import axis_index as _axis_index
 from ._dataset_helpers import axis_size as _axis_size
@@ -667,42 +667,6 @@ def convert_widget():
     _state = {"dataset": None}
     _syncing = {"roi": False, "z": False}
 
-    def enable_drag_and_drop(file_edit: FileEdit):
-        """Allow dropping a file or folder onto a magicgui FileEdit."""
-
-        # FileEdit is a container; find the actual QLineEdit inside it
-        qline = file_edit.native.findChild(QLineEdit)
-
-        if qline is None:
-            raise RuntimeError("Could not find QLineEdit inside FileEdit")
-
-        qline.setAcceptDrops(True)
-
-        def dragEnterEvent(event):
-            if event.mimeData().hasUrls():
-                event.acceptProposedAction()
-            else:
-                event.ignore()
-
-        def dropEvent(event):
-            urls = event.mimeData().urls()
-            if not urls:
-                event.ignore()
-                return
-
-            path = Path(urls[0].toLocalFile()).resolve()
-
-            print("Dropped path:", path)
-            print("Exists:", path.exists())
-            print("Is dir:", path.is_dir())
-            print("Is file:", path.is_file())
-
-            file_edit.value = str(path)
-
-            event.acceptProposedAction()
-
-        qline.dragEnterEvent = dragEnterEvent
-        qline.dropEvent = dropEvent
 
     @magicgui(
         call_button="Visualize in napari",

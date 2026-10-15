@@ -84,3 +84,43 @@ def test_visualize_places_tiles():
     assert tuple(v.layers[1].translate) == (0, 0, 8)
     assert tuple(v.layers[1].scale) == (1, 2, 2)
     assert v.layers[1].data.shape == (8, 8, 8)
+
+
+def test_drop_helpers(tmp_path):
+    f = tmp_path / "a.json"
+    f.write_text("{}")
+    assert mw.folder_of(f) == tmp_path
+    assert mw.folder_of(tmp_path) == tmp_path
+    assert mw.output_for_drop(tmp_path, tmp_path / "x" / "acq_3D_ds4-8-8.ome.zarr") == tmp_path / "acq_3D_ds4-8-8.ome.zarr"
+    assert mw.output_for_drop(tmp_path / "y.ome.zarr", Path()) == tmp_path / "y.ome.zarr"
+    assert mw.output_for_drop(tmp_path, Path()) == tmp_path / "fused.ome.zarr"
+
+
+def _drop(file_edit, path):
+    from qtpy.QtCore import QMimeData, QPointF, Qt, QUrl
+    from qtpy.QtGui import QDropEvent
+    from qtpy.QtWidgets import QLineEdit
+
+    data = QMimeData()
+    data.setUrls([QUrl.fromLocalFile(str(path))])
+    event = QDropEvent(QPointF(2, 2), Qt.DropAction.CopyAction, data,
+                       Qt.MouseButton.NoButton, Qt.KeyboardModifier.NoModifier)
+    file_edit.native.findChild(QLineEdit).dropEvent(event)
+    assert event.isAccepted()
+
+
+def test_drag_and_drop_on_folder_fields(app, tmp_path):
+    dock = mw.mosaic_widget()
+    tile_json = tmp_path / "raw" / "stack_1" / "Cam_bottom_00000.json"
+    tile_json.parent.mkdir(parents=True)
+    tile_json.write_text("{}")
+
+    _drop(dock.load_widget.input_path, tmp_path)
+    assert Path(dock.load_widget.input_path.value) == tmp_path
+    _drop(dock.load_widget.input_path, tile_json)  # a file stands for its folder
+    assert Path(dock.load_widget.input_path.value) == tile_json.parent
+
+    out_dir = tmp_path / "out"
+    out_dir.mkdir()
+    _drop(dock.fuse_widget.output_path, out_dir)
+    assert Path(dock.fuse_widget.output_path.value) == out_dir / "fused.ome.zarr"

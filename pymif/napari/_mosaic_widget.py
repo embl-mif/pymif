@@ -10,7 +10,7 @@ from napari.qt.threading import thread_worker
 from qtpy.QtWidgets import QHBoxLayout, QLabel, QPushButton, QSizePolicy, QTextEdit, QVBoxLayout, QWidget
 
 from pymif import mosaic_manager as mos
-from ._layout import compose_dock, make_button_holder, make_section
+from ._layout import compose_dock, enable_drag_and_drop, make_button_holder, make_section
 from ._log import EmittingStream, make_log_appender
 
 #: Mosaic readers offered in the widget (Opera and Zeiss are placeholders for now).
@@ -54,6 +54,23 @@ def default_output(input_path: Path, projection: Optional[str], ds: Sequence[int
     else:
         kind = ("MIP" if projection == "max" else "SIP") + "_ds" + "-".join(str(v) for v in ds[1:])
     return input_path / f"{input_path.name}_{kind}.ome.zarr"
+
+
+def folder_of(path: Path) -> Path:
+    """Dropped on the acquisition field: a file stands for its folder."""
+    path = Path(path)
+    return path.parent if path.is_file() else path
+
+
+def output_for_drop(path: Path, current: Path) -> Path:
+    """Dropped on the output field: a ``.zarr`` is used as is, a plain folder
+    receives the current output name (``fused.ome.zarr`` if there is none)."""
+    path = Path(path)
+    if path.suffix == ".zarr":
+        return path
+    folder = path if path.is_dir() else path.parent
+    name = Path(current).name if Path(current).suffix == ".zarr" else "fused.ome.zarr"
+    return folder / name
 
 
 def fuse_kwargs(
@@ -312,6 +329,10 @@ def mosaic_widget():
         getattr(fuse_widget, name).changed.connect(_update_plan)
     for name in ("projection", "ds_z", "ds_y", "ds_x"):
         getattr(fuse_widget, name).changed.connect(_update_output)
+
+    enable_drag_and_drop(load_widget.input_path, folder_of)
+    enable_drag_and_drop(fuse_widget.output_path,
+                         lambda p: output_for_drop(p, fuse_widget.output_path.value))
 
     # ----- layout -----
     ui = {}
