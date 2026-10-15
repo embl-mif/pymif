@@ -330,8 +330,9 @@ def _fuse_level0(regions, arr, *, depth, ds, projection, blend, downsample, dtyp
 class FusionPlan:
     """Level-0 geometry of a fusion, computed without reading any pixel data."""
 
-    tiles: List[Tile]
+    tiles: List[Tile]  # tiles that are read (skipped tiles excluded)
     placed: Dict[str, List[_Placed]]  # per output channel, offsets relative to the output grid
+    layout: Dict[str, List[_Placed]]  # like ``placed`` but including skipped tiles
     channels: List[str]
     ds: Tuple[int, int, int]
     blend: str
@@ -341,6 +342,7 @@ class FusionPlan:
     shape: Tuple[int, ...]  # level 0, in ``axes`` order
     scale: Tuple[float, ...]  # level-0 voxel size of the spatial axes
     origin: Tuple[float, float, float]  # sample position of output voxel [0, 0, 0]
+    n_skipped: int = 0  # tiles left blank
 
     @property
     def nbytes(self) -> int:
@@ -352,7 +354,8 @@ class FusionPlan:
         dims = " x ".join(str(v) for v in self.shape[1:])
         vox = " x ".join(f"{v:.3g}" for v in self.scale)
         size = f"{self.nbytes / 1e9:.2f} GB" if self.nbytes >= 1e8 else f"{self.nbytes / 1e6:.1f} MB"
-        return f"{len(self.channels)} ch x {dims} px ({self.axes}), {size}, voxel {vox} {self.tiles[0].units}"
+        blank = f", {self.n_skipped} tile(s) left blank" if self.n_skipped else ""
+        return f"{len(self.channels)} ch x {dims} px ({self.axes}), {size}, voxel {vox} {self.tiles[0].units}{blank}"
 
 
 def plan_fusion(
@@ -363,6 +366,7 @@ def plan_fusion(
     blend: str = "max",
     channels: Optional[Sequence[str]] = None,
     crop: Optional[dict] = None,
+    skip: Optional[Sequence[Tile]] = None,
     out_dtype=None,
     midline_axis: str = "x",
 ) -> FusionPlan:
@@ -403,6 +407,13 @@ def plan_fusion(
         placed = [p for p in placed if _overlap(p, (0, grid[1], 0, grid[2]), grid[0]) is not None]
         if not placed:
             raise ValueError("No tile intersects the crop.")
+    layout = {n: [p for p in placed if p.tile.channel == n] for n in names}
+    # skipped tiles keep their place in the geometry (the output does not shrink) but are not read
+    skipped = {id(t) for t in skip or ()}
+    n_skipped = sum(id(p.tile) in skipped for p in placed)
+    placed = [p for p in placed if id(p.tile) not in skipped]
+    if not placed:
+        raise ValueError("Every tile is skipped: nothing to fuse.")
     placed_by_channel = {n: [p for p in placed if p.tile.channel == n] for n in names}
 
     if blend == "midline" and all(t.group is None for t in tiles):
@@ -419,6 +430,7 @@ def plan_fusion(
     return FusionPlan(
         tiles=[p.tile for p in placed],
         placed=placed_by_channel,
+        layout=layout,
         channels=names,
         ds=ds,
         blend=blend,
@@ -428,6 +440,7 @@ def plan_fusion(
         shape=(len(names),) + tuple(spatial),
         scale=tuple(out_vox[1:] if flat else out_vox),
         origin=origin,
+        n_skipped=n_skipped,
     )
 
 
@@ -470,6 +483,7 @@ def fuse_tiles(
     channel_names: Optional[Sequence[str]] = None,
     channel_colors: Optional[Sequence[str]] = None,
     crop: Optional[dict] = None,
+    skip: Optional[Sequence[Tile]] = None,
     levels: int = 1,
     downscale_factor=2,
     workers: int = 1,
@@ -515,6 +529,10 @@ def fuse_tiles(
         Part of the output to write, in output voxels (after ``ds``), e.g.
         ``{"y": slice(100, 900), "z": slice(0, 50)}``. For projections, a ``z``
         crop limits the planes that are projected.
+    skip
+        Tiles to leave blank: they are not read, but the output keeps the size and
+        position it has with them, so their area stays 0 (where no other tile
+        covers it). With ``blend="midline"`` they still count for the cut position.
     levels
         Number of pyramid levels.
     downscale_factor
@@ -560,7 +578,7 @@ def fuse_tiles(
         raise ValueError(f"downsample must be one of {DOWNSAMPLINGS}, got {downsample!r}.")
     _check_write_options(write_options)
     plan = plan_fusion(tiles, ds=ds, projection=projection, blend=blend, channels=channels,
-                       crop=crop, out_dtype=out_dtype, midline_axis=midline_axis)
+                       crop=crop, skip=skip, out_dtype=out_dtype, midline_axis=midline_axis)
     blend, out_dtype, names, ds = plan.blend, plan.dtype, plan.channels, plan.ds
     flat = projection is not None
     n_ch = len(names)
@@ -597,7 +615,7 @@ def fuse_tiles(
         regions = []
         for ci, n in enumerate(names):
             placed = plan.placed[n]
-            midline = (axis, _midline_ranges(placed, axis)) if blend == "midline" else None
+            midline = (axis, _midline_ranges(plan.layout[n], axis)) if blend == "midline" else None
             for y0 in range(0, plan.shape[-2], cy):
                 for x0 in range(0, plan.shape[-1], cx):
                     bounds = (y0, min(y0 + cy, plan.shape[-2]), x0, min(x0 + cx, plan.shape[-1]))

@@ -69,7 +69,25 @@ def test_mosaic2zarr_mip_subset_and_groups(acquisition, tmp_path, monkeypatch):
     z = mm.ZarrManager(str(out))
     assert z.metadata["axes"] == "yx"  # single channel dropped (drop_singleton default)
     assert z.data[0].shape[0] == 4
+    # only the L tiles (x from -15 to 45 um, 2 um voxels) are fused
+    assert z.data[0].shape[1] == (45 - -15) // 2
     assert (out / ".zattrs").exists()  # zarr v2
+
+
+def test_mosaic2zarr_skip_tiles(acquisition, tmp_path, monkeypatch):
+    full, skipped = tmp_path / "full.ome.zarr", tmp_path / "skipped.ome.zarr"
+    _run(monkeypatch, "mosaic2zarr", "-i", str(acquisition), "-z", str(full), "-p", "max", "-sh", "none")
+    _run(monkeypatch, "mosaic2zarr", "-i", str(acquisition), "-z", str(skipped), "-p", "max", "-sh", "none",
+         "-st", "2-x01-y00", "GFP/1-x00-y00")
+    a = mm.ZarrManager(str(full)).data[0].compute()
+    b = mm.ZarrManager(str(skipped)).data[0].compute()
+    assert a.shape == b.shape                     # the output keeps its size
+    # the last R tile (x 63..95 um -> px 39..55) is gone in both channels
+    assert (b[:, :, 42:] == 0).all() and (a[:, :, 42:] > 0).all()
+    # the first L tile only in GFP (channel 0); px 0..14 is covered by it alone
+    assert (b[0, :, :14] == 0).all() and (b[1, :, :14] > 0).all()
+    with pytest.raises(KeyError):
+        _run(monkeypatch, "mosaic2zarr", "-i", str(acquisition), "-z", str(tmp_path / "x.zarr"), "-st", "nope")
 
 
 def test_mosaic_convert_count_matches_tile_layout(acquisition, tmp_path):

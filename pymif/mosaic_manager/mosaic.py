@@ -106,6 +106,35 @@ class MosaicManager(ABC):
             out.append(t)
         return out
 
+    def tile_id(self, tile: Tile) -> str:
+        """Stable name of a tile, ``"<channel>/<stack>"`` (e.g. ``"cFos-647/1-x00-y00"``).
+
+        ``<stack>`` is the reader's stack name (``attrs["stack"]``) or, without
+        one, the tile index. Used to skip tiles from the command line or a batch CSV.
+        """
+        key = tile.attrs.get("stack")
+        return f"{tile.channel}/{self.tiles.index(tile) if key is None else key}"
+
+    def tiles_by_ids(self, ids: Sequence[str]) -> List[Tile]:
+        """Tiles named by ``ids``: ``"<channel>/<stack>"`` for one tile, or ``"<stack>"``
+        for that stack position in every channel. Unknown ids raise ``KeyError``."""
+        by_id = {self.tile_id(t): t for t in self.tiles}
+        by_stack: Dict[str, List[Tile]] = {}
+        for tid, t in by_id.items():
+            by_stack.setdefault(tid.split("/", 1)[1], []).append(t)
+        out: List[Tile] = []
+        unknown = []
+        for i in ids:
+            found = [by_id[i]] if i in by_id else by_stack.get(i)
+            if not found:
+                unknown.append(i)
+                continue
+            out += [t for t in found if t not in out]
+        if unknown:
+            raise KeyError(f"Unknown tile id(s) {unknown}; ids look like {next(iter(by_id))!r} "
+                           f"(channel/stack) or {next(iter(by_stack))!r} (stack, all channels).")
+        return out
+
     def bounding_box(self, tiles: Optional[Sequence[Tile]] = None) -> Tuple[Tuple[float, ...], Tuple[float, ...]]:
         """``(min, max)`` corners, ``(z, y, x)``, of ``tiles`` (default: all)."""
         tiles = list(self.tiles if tiles is None else tiles)
@@ -208,7 +237,7 @@ class MosaicManager(ABC):
                 colormap=_COLORMAPS[names.index(t.channel) % len(_COLORMAPS)],
                 blending="additive",
                 contrast_limits=limits,
-                metadata={"mosaic_tile": i},
+                metadata={"mosaic_tile": i, "mosaic_tile_id": self.tile_id(t), "mosaic_path": str(self.path)},
                 **extra,
             )
             if limits is not None and np.issubdtype(t.dtype, np.integer):
@@ -224,11 +253,21 @@ class MosaicManager(ABC):
     # fusion
     # ------------------------------------------------------------------
 
-    def fuse(self, out: str | Path, **kwargs):
-        """Fuse the tiles into an OME-Zarr image; see :func:`~pymif.mosaic_manager.fuse_tiles`."""
+    def fuse(self, out: str | Path, skip: Optional[Sequence["Tile | str"]] = None, **kwargs):
+        """Fuse the tiles into an OME-Zarr image; see :func:`~pymif.mosaic_manager.fuse_tiles`.
+
+        ``skip`` lists tiles to leave blank, as ``Tile`` objects or as ids accepted by
+        :meth:`tiles_by_ids` (``"cFos-647/1-x00-y00"``, or ``"1-x00-y00"`` for every channel).
+        """
         from .fusion import fuse_tiles
 
-        return fuse_tiles(self.tiles, out, **kwargs)
+        if skip:
+            skip = self._resolve_skip(skip)
+        return fuse_tiles(self.tiles, out, skip=skip, **kwargs)
+
+    def _resolve_skip(self, skip) -> List[Tile]:
+        ids = [s for s in skip if isinstance(s, str)]
+        return [s for s in skip if not isinstance(s, str)] + (self.tiles_by_ids(ids) if ids else [])
 
     # ------------------------------------------------------------------
     # resources

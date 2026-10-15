@@ -10,6 +10,7 @@ from napari.qt.threading import thread_worker
 from qtpy.QtWidgets import QHBoxLayout, QLabel, QPushButton, QSizePolicy, QTextEdit, QVBoxLayout, QWidget
 
 from pymif import mosaic_manager as mos
+from ._batch_csv import append_batch_csv
 from ._layout import compose_dock, enable_drag_and_drop, make_button_holder, make_section
 from ._log import EmittingStream, make_log_appender
 
@@ -24,6 +25,19 @@ MOSAIC_READERS = {
 NO_GROUP = "(none)"
 
 _PROJECTIONS = {"none (3D)": None, "max": "max", "sum": "sum"}
+
+#: Which tiles the fusion reads; the others are left blank (see ``skipped_tile_ids``).
+TILE_MODES = {"all tiles": None, "visible layers only": "visible", "selected layers only": "selected"}
+
+#: Columns of the CSV read by ``pymif batch-mosaic2zarr``.
+MOSAIC_BATCH_COLUMNS = [
+    "input", "microscope", "output",
+    "read_downsample", "projection", "blend", "downsample_method", "channels", "groups", "skip_tiles",
+    "midline_axis", "out_dtype", "read_workers", "temp_dir", "overwrite",
+    "chunk_size", "max_size(MB)", "scene_index", "zarr_format", "downscale_factor", "subset",
+    "channel_colors", "channel_names", "num_levels", "shards", "shard_target_mb", "shard_exclude_axes",
+    "drop_singleton", "num_workers",
+]
 
 _TITLE_STYLE = "QLabel { font-weight: bold; font-size: 13px; padding: 2px 0px; }"
 
@@ -99,6 +113,58 @@ def fuse_kwargs(
     }
 
 
+def tile_layers(layers, mosaic_path) -> list:
+    """The napari layers that show a tile of the mosaic loaded from ``mosaic_path``."""
+    return [
+        layer for layer in layers
+        if (getattr(layer, "metadata", None) or {}).get("mosaic_path") == str(mosaic_path)
+        and "mosaic_tile_id" in layer.metadata
+    ]
+
+
+def skipped_tile_ids(layers, selection, mosaic_path, mode: Optional[str], all_channels: bool = False) -> list[str]:
+    """Ids of the tiles to leave blank, from the tile layers shown in napari.
+
+    ``mode="visible"`` skips the tiles whose layer is hidden (eye icon off),
+    ``mode="selected"`` the tiles whose layer is not selected in the layer list,
+    ``None`` none. Tiles without a layer (e.g. a channel that is not shown) are
+    fused normally. With ``all_channels`` the same stack position is skipped in
+    every channel (the ids are then stack names, e.g. ``"1-x00-y00"``).
+    """
+    if mode is None:
+        return []
+    ids = []
+    for layer in tile_layers(layers, mosaic_path):
+        keep = layer.visible if mode == "visible" else layer in selection
+        if not keep:
+            ids.append(layer.metadata["mosaic_tile_id"])
+    if all_channels:
+        ids = list(dict.fromkeys(i.split("/", 1)[1] for i in ids))
+    return ids
+
+
+def batch_row(*, input_path, microscope: str, output, values: dict, all_groups: Sequence[str],
+              skip_ids: Sequence[str]) -> dict:
+    """One ``pymif batch-mosaic2zarr`` CSV row from the fusion widget ``values``."""
+    groups = list(values["groups"])
+    return {
+        "input": str(Path(input_path)),
+        "microscope": microscope,
+        "output": str(Path(output)),
+        "read_downsample": f"{values['ds_z']} {values['ds_y']} {values['ds_x']}",
+        "projection": _PROJECTIONS[values["projection"]] or "none",
+        "blend": values["blend"],
+        "downsample_method": values["downsample"],
+        "channels": " ".join(values["channels"]),
+        # every group selected = the default (all); "(none)" is how the CLI sees a missing group
+        "groups": "" if set(groups) == set(all_groups) else " ".join("None" if g == NO_GROUP else g for g in groups),
+        "skip_tiles": " ".join(skip_ids),
+        "num_levels": str(values["levels"]),
+        "read_workers": str(values["workers"]),
+        "overwrite": str(bool(values["overwrite"])).lower(),
+    }
+
+
 @thread_worker
 def _scan_worker(reader, path):
     """Scan the acquisition folder in the background (opens every tile's metadata)."""
@@ -152,6 +218,7 @@ def mosaic_widget():
         has_mosaic = state["mosaic"] is not None
         show_widget.enabled = has_mosaic and not busy
         fuse_widget.enabled = has_mosaic and not busy
+        batch_widget.enabled = has_mosaic and not busy
         ui["fuse_holder"].setEnabled(has_mosaic and not busy)
 
     # ----- 1. loading -----
@@ -198,6 +265,8 @@ def mosaic_widget():
         print("Extent (z, y, x): " + ", ".join(f"{a:.0f}..{b:.0f}" for a, b in zip(lo, hi))
               + f" {mosaic.tiles[0].units}")
         state["input_path"] = input_path
+        state["microscope"] = load_widget.microscope.value
+        batch_widget.batch_csv_path.value = input_path.parent / "mosaic_batch.csv"
         _update_output(force=True)
         _update_plan()
 
@@ -226,6 +295,8 @@ def mosaic_widget():
             if clear_layers:
                 viewer.layers.clear()
             mosaic.visualize(tiles=tiles, viewer=viewer, contrast_limits=limits)
+            for layer in tile_layers(viewer.layers, mosaic.path):  # hiding a tile updates the size estimate
+                layer.events.visible.connect(_update_plan)
             viewer.reset_view()
             print(f"Showing {len(tiles)} tiles as separate layers.")
             _busy(False)
@@ -244,6 +315,11 @@ def mosaic_widget():
         call_button="Fuse to OME-Zarr",
         channels={"widget_type": "Select", "choices": [], "allow_multiple": True},
         groups={"widget_type": "Select", "choices": [], "allow_multiple": True},
+        tiles_to_fuse={"label": "Tiles to fuse", "choices": list(TILE_MODES), "value": "all tiles",
+                       "tooltip": "Tiles whose layer is hidden (or not selected) are not read and stay blank; "
+                                  "the output keeps its full size. Tiles that are not shown are fused."},
+        skip_all_channels={"label": "Blank in all channels", "widget_type": "CheckBox", "value": False,
+                           "tooltip": "Leave a skipped tile's position blank in every channel."},
         projection={"choices": list(_PROJECTIONS), "value": "none (3D)"},
         blend={"choices": list(mos.fusion.BLENDS), "value": "max"},
         ds_z={"label": "Downsample Z", "min": 1, "max": 256, "value": 4},
@@ -259,6 +335,8 @@ def mosaic_widget():
     def fuse_widget(
         channels=(),
         groups=(),
+        tiles_to_fuse="all tiles",
+        skip_all_channels=False,
         projection="none (3D)",
         blend="max",
         ds_z=4,
@@ -276,8 +354,10 @@ def mosaic_widget():
         kwargs = fuse_kwargs(channels=channels, projection=projection, blend=blend, ds_z=ds_z,
                              ds_y=ds_y, ds_x=ds_x, downsample=downsample, levels=levels,
                              workers=workers, overwrite=overwrite)
+        skip = _skipped_tiles()
+        kwargs["skip"] = skip
         try:
-            plan = mos.plan_fusion(tiles, **{k: kwargs[k] for k in ("channels", "projection", "blend", "ds")})
+            plan = mos.plan_fusion(tiles, **{k: kwargs[k] for k in ("channels", "projection", "blend", "ds", "skip")})
         except ValueError as e:
             print(f"Cannot fuse: {e}")
             return
@@ -325,7 +405,19 @@ def mosaic_widget():
             projection=_PROJECTIONS[v["projection"]],
             blend=v["blend"],
             channels=list(v["channels"]),
+            skip=_skipped_tiles(),
         )
+
+    def _skip_ids() -> list:
+        mode = TILE_MODES[fuse_widget.tiles_to_fuse.value]
+        if viewer is None or mode is None or state["mosaic"] is None:
+            return []
+        return skipped_tile_ids(viewer.layers, viewer.layers.selection, state["mosaic"].path, mode,
+                                fuse_widget.skip_all_channels.value)
+
+    def _skipped_tiles() -> list:
+        ids = _skip_ids()
+        return state["mosaic"].tiles_by_ids(ids) if ids else []
 
     def _update_plan(*_):
         try:
@@ -346,8 +438,32 @@ def mosaic_widget():
             fuse_widget.output_path.value = new
             state["auto_output"] = new
 
-    for name in ("channels", "groups", "projection", "blend", "ds_z", "ds_y", "ds_x"):
+    for name in ("channels", "groups", "tiles_to_fuse", "skip_all_channels", "projection", "blend",
+                 "ds_z", "ds_y", "ds_x"):
         getattr(fuse_widget, name).changed.connect(_update_plan)
+    if viewer is not None:
+        viewer.layers.selection.events.changed.connect(_update_plan)
+        viewer.layers.events.removed.connect(_update_plan)
+
+    # ----- 4. batch CSV export (run later with pymif batch-mosaic2zarr) -----
+    @magicgui(
+        call_button="Append to batch CSV",
+        batch_csv_path={"widget_type": "FileEdit", "mode": "w", "label": "Batch CSV",
+                        "filter": "*.csv"},
+    )
+    def batch_widget(batch_csv_path: Path = Path("mosaic_batch.csv")):
+        mosaic = state["mosaic"]
+        values = {name: getattr(fuse_widget, name).value for name in
+                  ("channels", "groups", "projection", "blend", "ds_z", "ds_y", "ds_x", "downsample",
+                   "levels", "workers", "overwrite")}
+        skip_ids = _skip_ids()
+        row = batch_row(input_path=state["input_path"], microscope=state["microscope"],
+                        output=fuse_widget.output_path.value, values=values,
+                        all_groups=group_labels(mosaic), skip_ids=skip_ids)
+        path = append_batch_csv(batch_csv_path, row, MOSAIC_BATCH_COLUMNS)
+        blank = f", {len(skip_ids)} tile id(s) left blank" if skip_ids else ""
+        print(f"Appended {Path(row['output']).name} to {path}{blank}. Run it with:\n"
+              f"  pymif batch-mosaic2zarr -i \"{path}\"")
     for name in ("projection", "ds_z", "ds_y", "ds_x"):
         getattr(fuse_widget, name).changed.connect(_update_output)
 
@@ -379,6 +495,8 @@ def mosaic_widget():
     layout.addWidget(make_section(title("Mosaic loading:"), load_widget.native))
     layout.addWidget(make_section(title("Show tiles:"), show_widget.native))
     layout.addWidget(make_section(title("Fuse to OME-Zarr:"), fuse_widget.native, plan_label, ui["fuse_holder"]))
+    batch_widget.native.layout().setContentsMargins(0, 0, 0, 0)
+    layout.addWidget(make_section(title("Batch CSV export:"), batch_widget.native))
     layout.addStretch(1)
 
     clear_btn = QPushButton("Clear")
@@ -396,5 +514,6 @@ def mosaic_widget():
     dock = compose_dock(container, bottom=make_section(header, log_widget))
     # exposed for tests
     dock.load_widget, dock.show_widget, dock.fuse_widget = load_widget, show_widget, fuse_widget
+    dock.batch_widget = batch_widget
     dock.plan_label, dock.state, dock.populate = plan_label, state, _populate
     return dock

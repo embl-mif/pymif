@@ -396,6 +396,11 @@ def _add_mosaic_arguments(parser):
     )
     parser.add_argument('-ch', '--channels', nargs='+', help='Tile channels to fuse, in output order. Default: all.')
     parser.add_argument('-g', '--groups', nargs='+', help='Tile groups to fuse (e.g. L R). Default: all.')
+    parser.add_argument(
+        '-st', '--skip_tiles', nargs='+',
+        help='Tiles to leave blank (not read; the output keeps its full size): "channel/stack" ids such as '
+             'cFos-647/1-x00-y00, or a stack such as 1-x00-y00 for every channel.',
+    )
     parser.add_argument('-ma', '--midline_axis', choices=['x', 'y', 'z'], default='x',
                         help='Axis along which blend=midline separates the groups.')
     parser.add_argument('-od', '--out_dtype', help='Output dtype, e.g. uint16 or float32. Default: input dtype '
@@ -572,8 +577,8 @@ def _parse_arguments():
         chunk_size | max_size(MB) | scene_index | zarr_format | downscale_factor | subset | channel_colors |
         channel_names | num_levels | shards | shard_target_mb | shard_exclude_axes | drop_singleton | num_workers
         and any of the fusion columns
-        read_downsample | projection | blend | downsample_method | channels | groups | midline_axis |
-        out_dtype | read_workers | temp_dir | overwrite
+        read_downsample | projection | blend | downsample_method | channels | groups | skip_tiles |
+        midline_axis | out_dtype | read_workers | temp_dir | overwrite
         Example:
         input                    | microscope | output                 | read_downsample | projection | blend   | num_levels | shards
         /path/to/acquisition_1   | luxendo    | /path/to/acq1_3D.zarr  | 4 8 8           | none       | midline | 3          | auto

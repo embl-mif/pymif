@@ -158,3 +158,108 @@ def test_contrast_uses_central_tiles_of_each_group():
     picks = _central_tiles(tiles, 2)
     assert [(t.group, t.origin[1:]) for t in picks] == [("L", (4.0, 4.0)), ("R", (4.0, 104.0))]
     assert len(_central_tiles(tiles, 6)) == 6
+
+
+def test_skipped_tile_ids_from_layers():
+    from napari.components import ViewerModel
+
+    m = FakeMosaic(".")
+    for i, t in enumerate(m.tiles):
+        t.attrs["stack"] = f"s{i % 2}"
+    v = ViewerModel()
+    m.visualize(viewer=v, contrast_limits={"A": (0, 10), "B": (0, 10)})
+    layers = mw.tile_layers(v.layers, m.path)
+    assert len(layers) == 4
+    assert mw.skipped_tile_ids(v.layers, v.layers.selection, m.path, None) == []
+
+    layers[1].visible = False                       # A/s1 hidden
+    assert mw.skipped_tile_ids(v.layers, v.layers.selection, m.path, "visible") == ["A/s1"]
+    assert mw.skipped_tile_ids(v.layers, v.layers.selection, m.path, "visible", all_channels=True) == ["s1"]
+    assert m.tiles_by_ids(["s1"]) == [m.tiles[1], m.tiles[3]]
+
+    v.layers.selection = {layers[0], layers[2]}     # only A/s0 and B/s0 selected
+    assert mw.skipped_tile_ids(v.layers, v.layers.selection, m.path, "selected") == ["A/s1", "B/s1"]
+    # layers of another mosaic are ignored
+    assert mw.skipped_tile_ids(v.layers, v.layers.selection, "elsewhere", "visible") == []
+
+
+def test_batch_csv_export_runs_with_the_cli(app, tmp_path, monkeypatch):
+    import sys
+
+    import pandas as pd
+
+    import pymif.microscope_manager as mm
+    from pymif.cli import pymif as cli
+    from pymif.mosaic_manager import LuxendoMosaicManager
+
+    from .test_luxendo_mosaic import _write_tile
+
+    acq = tmp_path / "acq"  # one dye, left and right side
+    for stack, side, tx in (("1-x00-y00", "L", 0.0), ("2-x00-y00", "R", 20.0)):
+        _write_tile(acq / "raw" / f"stack_{stack}_GFP-{side}", "Cam_bottom_00000", f"GFP-{side}", stack,
+                    tx, 0.0, 30.0, shape=(8, 16, 16), value=5)
+
+    dock = mw.mosaic_widget()
+    mosaic = LuxendoMosaicManager(acq, progress=False)
+    dock.state["mosaic"] = mosaic
+    dock.populate(mosaic, acq)
+    fw = dock.fuse_widget
+    fw.projection.value = "max"
+    fw.ds_z.value, fw.ds_y.value, fw.ds_x.value = 1, 2, 2
+    out = tmp_path / "fused.ome.zarr"
+    fw.output_path.value = out
+    csv = tmp_path / "batch.csv"
+    dock.batch_widget.batch_csv_path.value = csv
+    dock.batch_widget()
+    dock.batch_widget()                              # appends a second row
+
+    table = pd.read_csv(csv, dtype=str).fillna("")
+    assert len(table) == 2
+    row = table.iloc[0]
+    assert row["microscope"] == "luxendo" and row["projection"] == "max"
+    assert row["read_downsample"] == "1 2 2" and row["blend"] == "midline" and row["groups"] == ""
+
+    pd.read_csv(csv).iloc[:1].to_csv(csv, index=False)
+    monkeypatch.setattr(sys, "argv", ["pymif", "batch-mosaic2zarr", "-i", str(csv)])
+    cli.main()
+    assert mm.ZarrManager(str(out)).metadata["axes"] == "yx"
+
+
+def test_batch_row_groups_and_skips():
+    values = {"channels": ["A", "B"], "groups": ["L"], "projection": "none (3D)", "blend": "max",
+              "ds_z": 4, "ds_y": 8, "ds_x": 8, "downsample": "mean", "levels": 3, "workers": 4,
+              "overwrite": True}
+    row = mw.batch_row(input_path="acq", microscope="luxendo", output="out.zarr", values=values,
+                       all_groups=["L", "R"], skip_ids=["A/s1", "s2"])
+    assert row["groups"] == "L" and row["skip_tiles"] == "A/s1 s2" and row["projection"] == "none"
+    assert row["channels"] == "A B" and row["overwrite"] == "true" and row["read_downsample"] == "4 8 8"
+
+
+def test_widget_leaves_hidden_tiles_blank(app, monkeypatch):
+    from napari.components import ViewerModel
+
+    viewer = ViewerModel()  # same layer list and selection as a viewer, without OpenGL
+    monkeypatch.setattr(mw, "current_viewer", lambda: viewer)
+    dock = mw.mosaic_widget()
+    m = FakeMosaic(".")
+    for t in m.tiles:  # stack names, as real readers give, so positions match across channels
+        t.attrs["stack"] = f"pos-{t.group}"
+    dock.state["mosaic"] = m
+    dock.populate(m, Path("."))
+    m.visualize(viewer=viewer, contrast_limits={"A": (0, 10), "B": (0, 10)})
+    fw = dock.fuse_widget
+    fw.ds_z.value, fw.ds_y.value, fw.ds_x.value = 1, 1, 1
+    assert "left blank" not in dock.plan_label.text()
+
+    fw.tiles_to_fuse.value = "visible layers only"
+    mw.tile_layers(viewer.layers, m.path)[0].visible = False
+    fw.blend.value = "max"  # any change refreshes the estimate
+    assert "1 tile(s) left blank" in dock.plan_label.text()
+    fw.skip_all_channels.value = True               # same position in channel B too
+    assert "2 tile(s) left blank" in dock.plan_label.text()
+    assert "x 8 x 16 x 24 px" in dock.plan_label.text()  # output keeps its full size
+
+    fw.skip_all_channels.value = False
+    fw.tiles_to_fuse.value = "selected layers only"
+    viewer.layers.selection = set(mw.tile_layers(viewer.layers, m.path)[:3])  # 3 of the 4 tiles
+    assert "1 tile(s) left blank" in dock.plan_label.text()

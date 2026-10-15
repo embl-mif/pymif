@@ -78,6 +78,7 @@ The projection is computed at full resolution along z and then downsampled in y/
 | `channels` | list of names | tile channels to fuse, in output order (default: all) |
 | `channel_names`, `channel_colors` | lists | names and colours (hex or matplotlib names) of the output channels |
 | `crop` | `{"z": slice, "y": slice, "x": slice}` | part of the output to write, in output voxels (after `ds`) |
+| `skip` | tiles or tile ids | tiles to leave blank, see below |
 | `levels`, `downscale_factor` | integer, integer or `(z, y, x)` | pyramid levels (default 1) and factor between them (default 2) |
 | `workers` | integer | tiles read in parallel (default 1) |
 | `out_dtype` | dtype | default: input dtype, `float32` for `sum`, `uint16` for `count` |
@@ -97,6 +98,12 @@ mosaic.fuse(
     chunks=(1, 32, 512, 512), shards="auto", shard_target_mb=512, zarr_format=3,
     workers=4, num_workers=8, temp_dir="D:/scratch",
 )
+```
+
+Skipping tiles: `skip` lists tiles that are not read, for example tiles outside the sample or a failed stack. The output keeps the size and position it has with them, and their area stays 0 where no other tile covers it. Tiles are given as `Tile` objects or as ids: `"cFos-647/1-x00-y00"` (`channel/stack`, see `mosaic.tile_id(tile)`) for one tile, or `"1-x00-y00"` for that position in every channel.
+
+```python
+mosaic.fuse("acq_MIP.ome.zarr", projection="max", ds=(1, 8, 8), skip=["1-x00-y00", "cFos-647/2-x05-y03"])
 ```
 
 Blend modes:
@@ -132,7 +139,9 @@ pymif mosaic2zarr -i /path/to/2026-10-14_103957 -z acq_MIP.ome.zarr -rds 1 8 8 -
 
 1. **Mosaic loading**: choose the microscope and the acquisition folder (browse, or drag and drop it, or any file inside it, from the file explorer), then *Load tiles*.
 2. **Show tiles**: show the selected channels and groups as one layer per tile at its stage position, with one linked contrast per channel. Every displayed plane reads data from all shown tiles, so show only a few channels or groups at a time.
-3. **Fuse to OME-Zarr**: the main fusion options, with a live estimate of the output size. The output path follows the parameters (for example `<acquisition>_3D_ds4-8-8.ome.zarr`) until you type your own; dropping a folder on the output field writes the result inside that folder. When fusion finishes, the result can be opened directly.
+3. **Fuse to OME-Zarr**: the main fusion options, with a live estimate of the output size. *Tiles to fuse* can be set to *visible layers only* or *selected layers only*: tiles whose layer is hidden (eye icon off) or not selected in the layer list are then left blank, and *Blank in all channels* also blanks that position in the other channels. Tiles that are not shown in napari are fused normally. The output path follows the parameters (for example `<acquisition>_3D_ds4-8-8.ome.zarr`) until you type your own; dropping a folder on the output field writes the result inside that folder. When fusion finishes, the result can be opened directly.
+
+4. **Batch CSV export**: *Append to batch CSV* adds the current settings, including the tiles left blank, as a row of a CSV file. Run the file later, for example on a workstation close to the data, with `pymif batch-mosaic2zarr -i mosaic_batch.csv`.
 
 Loading and fusion run in the background, and their progress is shown in the log at the bottom.
 

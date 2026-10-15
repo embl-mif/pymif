@@ -189,3 +189,44 @@ def test_write_options_are_forwarded(tmp_path):
     with pytest.raises(ValueError):
         fuse_tiles(tiles, tmp_path / "x.zarr", channel_names=["only one"])
     assert not any(p.name.endswith(".level0.zarr") for p in tmp_path.iterdir())  # temp store removed
+
+
+def test_skipped_tiles_are_left_blank(tmp_path):
+    # three 8-px tiles at x = 0, 6, 12 (2-px overlaps); skipping the last one must not shrink the output
+    tiles = [_tile(10 * (i + 1), (0, 0, 6 * i)) for i in range(3)]
+    full = _read(fuse_tiles(tiles, tmp_path / "full.zarr", progress=False))
+    zm = fuse_tiles(tiles, tmp_path / "skip.zarr", skip=[tiles[2]], progress=False)
+    img = _read(zm)
+    assert img.shape == full.shape == (4, 8, 20)
+    assert (img[..., 14:] == 0).all()             # only the skipped tile covered this
+    assert (img[..., 12:14] == 20).all()          # overlap now only from tile 1
+    assert np.array_equal(img[..., :12], full[..., :12])
+
+    count = _read(fuse_tiles(tiles, tmp_path / "count.zarr", blend="count", skip=[tiles[1]], progress=False))
+    assert (count[..., :8] == 1).all() and (count[..., 8:12] == 0).all() and (count[..., 12:] == 1).all()
+
+    from pymif.mosaic_manager import plan_fusion
+    assert "1 tile(s) left blank" in plan_fusion(tiles, skip=[tiles[0]]).summary()
+    with pytest.raises(ValueError):
+        plan_fusion(tiles, skip=tiles)
+
+
+def test_tile_ids_and_skip_by_id(tmp_path):
+    class M(MosaicManager):
+        def _scan(self):
+            out = []
+            for ch in ("A", "B"):
+                for i in range(2):
+                    t = _tile(5, (0, 0, 8 * i), channel=ch)
+                    t.attrs["stack"] = f"1-x0{i}-y00"
+                    out.append(t)
+            return out
+
+    m = M(".")
+    assert m.tile_id(m.tiles[0]) == "A/1-x00-y00"
+    assert m.tiles_by_ids(["B/1-x01-y00"]) == [m.tiles[3]]
+    assert m.tiles_by_ids(["1-x01-y00"]) == [m.tiles[1], m.tiles[3]]  # every channel
+    with pytest.raises(KeyError):
+        m.tiles_by_ids(["nope"])
+    img = _read(m.fuse(tmp_path / "o.zarr", skip=["1-x01-y00"], progress=False))
+    assert img.shape == (2, 4, 8, 16) and (img[..., 8:] == 0).all()

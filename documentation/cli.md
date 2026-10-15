@@ -75,13 +75,14 @@ The fusion options:
 | `-b`, `--blend` | `max` (default), `sum`, `count` or `midline` |
 | `-dm`, `--downsample_method` | `mean` (default) or `stride` |
 | `-ch`, `--channels` / `-g`, `--groups` | tile channels and groups (e.g. `L R`) to fuse |
+| `-st`, `--skip_tiles` | tiles to leave blank: `channel/stack` ids such as `cFos-647/1-x00-y00`, or a stack such as `1-x00-y00` for every channel |
 | `-ma`, `--midline_axis` | `x` (default), `y` or `z` |
 | `-od`, `--out_dtype` | output dtype |
 | `-rw`, `--read_workers` | tiles read in parallel processes (default 4) |
 | `-td`, `--temp_dir` | folder for the temporary fused level 0 (a local disk is faster) |
 | `-ow`, `--overwrite` | `true` to replace an existing output |
 
-`batch-mosaic2zarr` reads a CSV file with the columns `input`, `microscope`, `output`, plus any of the `2zarr` columns (`chunk_size`, `max_size(MB)`, `scene_index`, `zarr_format`, `downscale_factor`, `subset`, `channel_colors`, `channel_names`, `num_levels`, `shards`, `shard_target_mb`, `shard_exclude_axes`, `drop_singleton`, `num_workers`) and of the fusion columns (`read_downsample`, `projection`, `blend`, `downsample_method`, `channels`, `groups`, `midline_axis`, `out_dtype`, `read_workers`, `temp_dir`, `overwrite`). Leave a cell empty for the default; lists are space separated.
+`batch-mosaic2zarr` reads a CSV file with the columns `input`, `microscope`, `output`, plus any of the `2zarr` columns (`chunk_size`, `max_size(MB)`, `scene_index`, `zarr_format`, `downscale_factor`, `subset`, `channel_colors`, `channel_names`, `num_levels`, `shards`, `shard_target_mb`, `shard_exclude_axes`, `drop_singleton`, `num_workers`) and of the fusion columns (`read_downsample`, `projection`, `blend`, `downsample_method`, `channels`, `groups`, `skip_tiles`, `midline_axis`, `out_dtype`, `read_workers`, `temp_dir`, `overwrite`). Leave a cell empty for the default; lists are space separated. The napari *Mosaic Fusion* widget writes such rows with *Append to batch CSV*.
 
 ```text
 input,microscope,output,read_downsample,projection,blend,num_levels,shards

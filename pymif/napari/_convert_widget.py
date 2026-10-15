@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from magicgui import magicgui
 import pymif.microscope_manager as mm
+from ._batch_csv import append_batch_csv
 from ._layout import compose_dock, enable_drag_and_drop, make_button_holder
 from ._layout import make_section as _make_section
 from ._dataset_helpers import axis_index as _axis_index
@@ -239,21 +240,7 @@ def _channel_colors_from_metadata(dataset, selected_channel_names):
 
 
 def _append_batch_csv(csv_path, row):
-    csv_path = Path(csv_path)
-    if csv_path.suffix.lower() != ".csv":
-        csv_path = csv_path.with_suffix(".csv")
-    csv_path.parent.mkdir(parents=True, exist_ok=True)
-    new_row = pd.DataFrame([row])
-    if csv_path.exists() and csv_path.stat().st_size > 0:
-        try:
-            existing = pd.read_csv(csv_path, dtype=str).fillna("")
-            combined = pd.concat([existing, new_row], ignore_index=True)
-        except Exception:
-            combined = new_row
-    else:
-        combined = new_row
-    combined = combined.reindex(columns=BATCH_CSV_COLUMNS, fill_value="")
-    combined.to_csv(csv_path, index=False)
+    return append_batch_csv(csv_path, row, BATCH_CSV_COLUMNS)
 
 def _compact_advanced_rows(widget, insert_after):
     """Regroup the "Additional parameters" of the converter into compact rows.
@@ -903,8 +890,8 @@ def convert_widget():
             "drop_singleton": str(bool(make_convert_widget.drop_singleton.value)).lower(),
             "num_workers": "" if int(make_convert_widget.num_workers.value) <= 0 else str(int(make_convert_widget.num_workers.value)),
         }
-        _append_batch_csv(csv_path, row)
-        print(f"Appended batch row to {csv_path.resolve()}")
+        csv_path = _append_batch_csv(csv_path, row)
+        print(f"Appended batch row to {csv_path}")
 
     make_batch_csv_widget.batch_csv_path.value = str((Path(make_visualize_widget.input_path.value).parent if make_visualize_widget.input_path.value else Path.cwd()) / "batch.csv")
     make_batch_csv_widget.enabled = False

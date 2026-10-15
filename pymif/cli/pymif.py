@@ -604,6 +604,7 @@ def mosaic_convert(
     downsample_method: str = "mean",
     channels: Optional[List[str]] = None,
     groups: Optional[List[str]] = None,
+    skip_tiles: Optional[List[str]] = None,
     midline_axis: str = "x",
     out_dtype: Optional[str] = None,
     read_workers: int = 4,
@@ -618,7 +619,7 @@ def mosaic_convert(
     :func:`pymif.mosaic_manager.fuse_tiles`: ``read_downsample`` is its ``ds``,
     ``downsample_method`` its ``downsample`` and ``read_workers`` its ``workers``.
     """
-    from pymif.mosaic_manager import plan_fusion
+    from pymif.mosaic_manager import fuse_tiles, plan_fusion
 
     reader, resolved = _resolve_mosaic_manager(input_path, microscope)
     print(f"\n--->Using mosaic manager: {reader.__name__} ({resolved})")
@@ -634,11 +635,15 @@ def mosaic_convert(
         if not tiles:
             raise ValueError(f"No tile in groups {sorted(wanted)}; available: {mosaic.groups}.")
 
+    skip = mosaic.tiles_by_ids(list(skip_tiles)) if skip_tiles else None
+    if skip:
+        print(f"Leaving {len(skip)} tile(s) blank: {[mosaic.tile_id(t) for t in skip]}")
+
     ds = _int_triplet(read_downsample)
     projection = None if projection in (None, "none", "None", "") else projection
     crop, selected = _subset_to_crop(subset, channels or list(dict.fromkeys(t.channel for t in tiles)))
     plan = plan_fusion(tiles, ds=ds, projection=projection, blend=blend, channels=selected,
-                       crop=crop, out_dtype=out_dtype, midline_axis=midline_axis)
+                       crop=crop, skip=skip, out_dtype=out_dtype, midline_axis=midline_axis)
     print(f"\n--->Output: {plan.summary()}")
 
     plan_md = {"axes": plan.axes, "size": [plan.shape], "dtype": str(plan.dtype)}
@@ -673,7 +678,8 @@ def mosaic_convert(
     print(f"PYRAMID LEVELS: {num_levels}, DOWNSCALE FACTOR: {factor}.")
     print(f"WRITE OPTIONS: {write_kwargs}")
     print("\n--->Fusing to zarr")
-    mosaic.fuse(
+    fuse_tiles(
+        tiles,
         zarr_path,
         ds=ds,
         projection=projection,
@@ -683,6 +689,7 @@ def mosaic_convert(
         channel_names=channel_names,
         channel_colors=channel_colors,
         crop=crop,
+        skip=skip,
         levels=int(num_levels),
         downscale_factor=factor,
         workers=int(read_workers),
@@ -727,7 +734,7 @@ def convert_mosaic_batch(args):
         for key in ("projection", "blend", "downsample_method", "midline_axis", "out_dtype", "temp_dir"):
             if key in columns and _present(v.get(key)):
                 kwargs[key] = str(v[key]).strip()
-        for key in ("channels", "groups"):
+        for key in ("channels", "groups", "skip_tiles"):
             if key in columns and _present(v.get(key)):
                 kwargs[key] = str(v[key]).split()
         if "read_workers" in columns and _present(v.get("read_workers")):
