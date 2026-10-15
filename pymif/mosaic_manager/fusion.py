@@ -305,11 +305,11 @@ class FusionPlan:
         return math.prod(self.sizes[0]) * self.dtype.itemsize
 
     def summary(self) -> str:
-        """One line such as ``2 ch x 260 x 1100 x 1500 px (czyx), 1.71 GB, voxel 12 x 11.7 x 11.7 micrometer``."""
+        """One line such as ``2 ch x 260 x 1100 x 1500 px (czyx), 1.71 GB, voxel 12 x 11.7 x 11.7 micrometer`` (MB below 0.1 GB)."""
         dims = " x ".join(str(v) for v in self.sizes[0][1:])
         vox = " x ".join(f"{v:.3g}" for v in self.scales[0])
-        return (f"{len(self.channels)} ch x {dims} px ({self.axes}), {self.nbytes / 1e9:.2f} GB, "
-                f"voxel {vox} {self.tiles[0].units}")
+        size = f"{self.nbytes / 1e9:.2f} GB" if self.nbytes >= 1e8 else f"{self.nbytes / 1e6:.1f} MB"
+        return f"{len(self.channels)} ch x {dims} px ({self.axes}), {size}, voxel {vox} {self.tiles[0].units}"
 
 
 def plan_fusion(
