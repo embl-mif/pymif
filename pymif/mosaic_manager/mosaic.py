@@ -84,10 +84,16 @@ class MosaicManager(ABC):
         self.tiles: List[Tile] = self._scan()
         if not self.tiles:
             raise FileNotFoundError(f"No tiles found in {self.path}.")
-        # Readers that know the timepoint store it as attrs["time_point"].
-        timepoints = sorted({str(t.attrs["time_point"]) for t in self.tiles if t.attrs.get("time_point") is not None})
-        if len(timepoints) > 1:
-            raise single_timepoint_error(f"tiles at timepoints {timepoints} in {self.path}")
+        self._check_single_timepoint()
+
+    def _check_single_timepoint(self) -> None:
+        """Refuse timelapses: loading and fusion handle one timepoint so far.
+
+        Readers already give every tile its ``timepoint``; supporting timelapses
+        means removing this check and making the fusion loop over :attr:`timepoints`.
+        """
+        if len(self.timepoints) > 1:
+            raise single_timepoint_error(f"tiles at timepoints {self.timepoints} in {self.path}")
 
     @abstractmethod
     def _scan(self) -> List[Tile]:
@@ -101,6 +107,11 @@ class MosaicManager(ABC):
     def channels(self) -> List[str]:
         """Channel names in order of first appearance."""
         return list(dict.fromkeys(t.channel for t in self.tiles))
+
+    @property
+    def timepoints(self) -> List[int]:
+        """Timepoints of the tiles, sorted (``[0]`` for a single timepoint)."""
+        return sorted({t.timepoint for t in self.tiles})
 
     @property
     def groups(self) -> List[Optional[str]]:

@@ -11,7 +11,7 @@ from typing import List, Optional
 from tqdm.auto import tqdm
 
 from .h5_array import H5Array
-from .mosaic import MosaicManager, single_timepoint_error
+from .mosaic import MosaicManager
 from .tile import Tile
 
 logger = logging.getLogger("pymif")
@@ -29,6 +29,8 @@ class LuxendoMosaicManager(MosaicManager):
       (``autofluo-488-L`` and ``autofluo-488-R`` both give ``autofluo-488``), so
       both halves of a sample end up in the same fused channel;
     * ``group``: the illumination side, ``"L"`` or ``"R"`` (used by ``blend="midline"``);
+    * ``timepoint``: the JSON ``time_point`` (mosaics with several timepoints are
+      refused for now, see :class:`~pymif.mosaic_manager.MosaicManager`);
     * ``attrs``: ``stack``, ``stack_description``, ``grid`` (``(ix, iy)``),
       ``channel_description`` and ``path``.
 
@@ -53,12 +55,14 @@ class LuxendoMosaicManager(MosaicManager):
         root = self.path / "raw" if (self.path / "raw").is_dir() else self.path
         folders = [root] + sorted(e.path for e in os.scandir(root) if e.is_dir())
         with ThreadPoolExecutor(max_workers=self.scan_workers) as pool:
-            found = list(tqdm(pool.map(self._latest_h5, folders), total=len(folders),
+            found = list(tqdm(pool.map(self._acquisitions, folders), total=len(folders),
                               desc="scanning tiles", unit="folder", disable=not self.progress))
-        files = [h5 for h5 in found if h5 is not None]
-        if not files:  # other layouts: search the whole tree
-            files = [h5 for h5 in map(self._latest_h5, sorted({h.parent for h in self.path.rglob("*.lux.h5")}))
-                     if h5 is not None]
+        if not any(found):  # other layouts: search the whole tree
+            found = [self._acquisitions(f) for f in sorted({h.parent for h in self.path.rglob("*.lux.h5")})]
+        # Several acquisitions of one stack (one per timepoint): their rank is the
+        # fallback timepoint when the JSON has no time_point.
+        files = [h5 for acquisitions in found for h5 in acquisitions]
+        rank = {h5: i for acquisitions in found for i, h5 in enumerate(acquisitions)}
         if not files:
             return []
 
@@ -71,7 +75,7 @@ class LuxendoMosaicManager(MosaicManager):
         expected = self._shape(infos[0])
         if first.shape != expected:
             raise ValueError(f"{files[0]}: data shape {first.shape} does not match the JSON image size {expected}.")
-        return [self._tile_from(h5, info, first.dtype) for h5, info in zip(files, infos)]
+        return [self._tile_from(h5, info, first.dtype, default_timepoint=rank[h5]) for h5, info in zip(files, infos)]
 
     def __init__(self, path, scan_workers: int = 16, progress: bool = True):
         """
@@ -89,23 +93,25 @@ class LuxendoMosaicManager(MosaicManager):
         super().__init__(path)
 
     @classmethod
-    def _latest_h5(cls, folder) -> Optional[Path]:
-        """Latest retake among the ``*.lux.h5`` files of ``folder`` that have a ``.json`` sibling."""
+    def _acquisitions(cls, folder) -> List[Path]:
+        """The ``*.lux.h5`` acquisitions of a stack folder (those with a ``.json`` sibling).
+
+        Files sharing a base name are retakes (``*_R_<n>``) of one acquisition and
+        only the latest is kept. Different base names are separate acquisitions of
+        the same stack (e.g. timepoints); they are returned in name order.
+        """
         names = set(os.listdir(folder))
         h5s = [n for n in names if n.endswith(".lux.h5") and n[: -len(".lux.h5")] + ".json" in names]
-        if not h5s:  # e.g. only main_raw.lux.h5 (no image data)
-            return None
-        # Several files of one stack are retakes (*_R_<n>) of the same acquisition; different
-        # base names are separate acquisitions of that stack, i.e. a timelapse.
-        bases = sorted({re.sub(r"(_R_\d+)?\.lux\.h5$", "", n) for n in h5s})
-        if len(bases) > 1:
-            raise single_timepoint_error(
-                f"{len(bases)} acquisitions of the same stack in {folder} ({', '.join(b + '.lux.h5' for b in bases)})"
-            )
-        h5s.sort(key=lambda n: cls._retake(Path(n)))
-        for skipped in h5s[:-1]:
-            logger.info("Skipping %s (superseded by retake %s)", skipped, h5s[-1])
-        return Path(folder) / h5s[-1]
+        by_base = {}  # e.g. main_raw.lux.h5 (no .json, no image data) never gets here
+        for n in h5s:
+            by_base.setdefault(re.sub(r"(_R_\d+)?\.lux\.h5$", "", n), []).append(n)
+        out = []
+        for base in sorted(by_base):
+            files = sorted(by_base[base], key=lambda n: cls._retake(Path(n)))
+            for skipped in files[:-1]:
+                logger.info("Skipping %s (superseded by retake %s)", skipped, files[-1])
+            out.append(Path(folder) / files[-1])
+        return out
 
     @staticmethod
     def _read_info(h5: Path) -> dict:
@@ -117,8 +123,11 @@ class LuxendoMosaicManager(MosaicManager):
         return (size["depth"], size["height"], size["width"])
 
     @classmethod
-    def _tile_from(cls, h5: Path, info: Optional[dict] = None, dtype=None) -> Tile:
-        """Tile of one ``.lux.h5`` file; the file is only opened when ``dtype`` is not given."""
+    def _tile_from(cls, h5: Path, info: Optional[dict] = None, dtype=None, default_timepoint: int = 0) -> Tile:
+        """Tile of one ``.lux.h5`` file; the file is only opened when ``dtype`` is not given.
+
+        The timepoint is the JSON ``time_point``, or ``default_timepoint`` without one.
+        """
         info = cls._read_info(h5) if info is None else info
         size, vox = info["image_size_vx"], info["voxel_size_um"]
         aff = info["affine_to_sample"][1]
@@ -140,12 +149,12 @@ class LuxendoMosaicManager(MosaicManager):
             voxel_size=(vox["depth"], vox["height"], vox["width"]),
             channel=re.sub(r"[-_][LR]$", "", desc),
             group=side.group(1) if side else None,
+            timepoint=int(info["time_point"]) if info.get("time_point") not in (None, "") else default_timepoint,
             attrs={
                 "stack": info["stack"],
                 "stack_description": info.get("stack_description"),
                 "grid": (int(grid.group(1)), int(grid.group(2))) if grid else None,
                 "channel_description": desc,
-                "time_point": info.get("time_point"),
                 "path": str(h5),
             },
         )

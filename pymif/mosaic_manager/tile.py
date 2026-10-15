@@ -28,6 +28,10 @@ class Tile:
     group
         Optional label of tiles that should be merged among themselves first,
         e.g. ``"L"``/``"R"`` illumination side. Used by ``blend="midline"``.
+    timepoint
+        Index of the timepoint the tile belongs to (``0`` for a single timepoint).
+        Mosaics with more than one timepoint are not supported yet:
+        :class:`~pymif.mosaic_manager.MosaicManager` refuses them.
     attrs
         Free-form, reader specific metadata (stack, grid position, ...).
     """
@@ -37,6 +41,7 @@ class Tile:
     voxel_size: Tuple[float, float, float]
     channel: str
     group: Optional[str] = None
+    timepoint: int = 0
     attrs: Dict[str, Any] = field(default_factory=dict)
     units: str = "micrometer"
 
@@ -44,6 +49,7 @@ class Tile:
         if len(self.data.shape) != 3:
             raise ValueError(f"Tile data must be 3D (z, y, x), got shape {tuple(self.data.shape)}.")
         self.origin = tuple(float(v) + 0.0 for v in self.origin)  # + 0.0 turns -0.0 into 0.0
+        self.timepoint = int(self.timepoint)
         self.voxel_size = tuple(float(v) for v in self.voxel_size)
         if len(self.origin) != 3 or len(self.voxel_size) != 3:
             raise ValueError("origin and voxel_size must have three (z, y, x) values.")
