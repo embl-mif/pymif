@@ -140,3 +140,52 @@ def test_h5_tiles_with_worker_processes(tmp_path):
     for i, t in enumerate(tiles):
         np.maximum(expected[:, 8 * i : 8 * i + 16], t.data[:].max(axis=0), out=expected[:, 8 * i : 8 * i + 16])
     assert np.array_equal(_read(mip).reshape(16, 32), expected)
+
+
+def test_crop_on_output_grid(tmp_path):
+    data = np.arange(4 * 8 * 8, dtype=np.uint16).reshape(4, 8, 8)
+    tiles = [Tile(data, (0, 0, 0), (1.0, 1.0, 1.0), "A"), Tile(data + 1000, (0, 0, 8), (1.0, 1.0, 1.0), "A")]
+    zm = fuse_tiles(tiles, tmp_path / "c.zarr", crop={"z": slice(1, 3), "y": slice(2, 6), "x": slice(6, 10)},
+                    chunks=(1, 2, 4, 4), progress=False)
+    img = _read(zm)
+    assert img.shape == (2, 4, 4)
+    assert np.array_equal(img[..., :2], data[1:3, 2:6, 6:8])
+    assert np.array_equal(img[..., 2:], data[1:3, 2:6, 0:2] + 1000)
+    assert zm.metadata["scales"][0] == (1.0, 1.0, 1.0)
+
+    # z crop of a projection only projects those planes
+    mip = fuse_tiles(tiles[:1], tmp_path / "m.zarr", projection="max", crop={"z": slice(0, 2)}, progress=False)
+    assert np.array_equal(_read(mip), data[:2].max(axis=0))
+
+    with pytest.raises(ValueError):
+        fuse_tiles(tiles, tmp_path / "e.zarr", crop={"x": slice(0, 10, 2)})
+
+
+def test_write_options_are_forwarded(tmp_path):
+    import json
+
+    rng = np.random.default_rng(2)
+    tiles = [Tile(rng.integers(0, 100, (8, 32, 32), dtype=np.uint16), (0, 0, 24 * i), (1.0, 1.0, 1.0), ch)
+             for ch in ("A", "B") for i in range(2)]
+    zm = fuse_tiles(
+        tiles, tmp_path / "o.ome.zarr",
+        channel_names=["dapi", "gfp"], channel_colors=["blue", "00FF00"],
+        levels=3, downscale_factor=(1, 2, 2), chunks=(1, 4, 16, 16),
+        shards=(1, 8, 32, 32), zarr_format=3, compressor="blosc", progress=False,
+    )
+    md = zm.metadata
+    assert md["channel_names"] == ["dapi", "gfp"]
+    assert md["channel_colors"] == ["0000FF", "00FF00"]
+    assert [s[-3:] for s in md["size"]] == [(8, 32, 56), (8, 16, 28), (8, 8, 14)]
+    meta = json.loads((tmp_path / "o.ome.zarr" / "0" / "zarr.json").read_text())
+    assert meta["chunk_grid"]["configuration"]["chunk_shape"] == [1, 8, 32, 32]  # shard
+    assert any(c["name"] == "sharding_indexed" for c in meta["codecs"])
+
+    v2 = fuse_tiles(tiles, tmp_path / "v2.zarr", zarr_format=2, progress=False)
+    assert (tmp_path / "v2.zarr" / ".zattrs").exists() and v2.metadata["channel_names"] == ["A", "B"]
+
+    with pytest.raises(TypeError):
+        fuse_tiles(tiles, tmp_path / "x.zarr", not_an_option=1)
+    with pytest.raises(ValueError):
+        fuse_tiles(tiles, tmp_path / "x.zarr", channel_names=["only one"])
+    assert not any(p.name.endswith(".level0.zarr") for p in tmp_path.iterdir())  # temp store removed

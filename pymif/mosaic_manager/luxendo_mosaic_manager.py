@@ -117,7 +117,7 @@ class LuxendoMosaicManager(MosaicManager):
         aff = info["affine_to_sample"][1]
         tx, ty, tz = aff["translation"]
         sz = aff["matrix"][2][2]  # um per plane, signed (stage z direction)
-        desc = info.get("channel_description", info["channel"])
+        desc = info.get("channel_description") or info["channel"]
         side = re.search(r"[-_]([LR])$", desc)
 
         data = H5Array(h5, shape=cls._shape(info), dtype=dtype)

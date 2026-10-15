@@ -43,7 +43,7 @@ class Tile:
     def __post_init__(self) -> None:
         if len(self.data.shape) != 3:
             raise ValueError(f"Tile data must be 3D (z, y, x), got shape {tuple(self.data.shape)}.")
-        self.origin = tuple(float(v) for v in self.origin)
+        self.origin = tuple(float(v) + 0.0 for v in self.origin)  # + 0.0 turns -0.0 into 0.0
         self.voxel_size = tuple(float(v) for v in self.voxel_size)
         if len(self.origin) != 3 or len(self.voxel_size) != 3:
             raise ValueError("origin and voxel_size must have three (z, y, x) values.")

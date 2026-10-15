@@ -277,7 +277,7 @@ def mosaic_widget():
                              ds_y=ds_y, ds_x=ds_x, downsample=downsample, levels=levels,
                              workers=workers, overwrite=overwrite)
         try:
-            plan = mos.plan_fusion(tiles, **{k: kwargs[k] for k in ("channels", "projection", "blend", "ds", "levels")})
+            plan = mos.plan_fusion(tiles, **{k: kwargs[k] for k in ("channels", "projection", "blend", "ds")})
         except ValueError as e:
             print(f"Cannot fuse: {e}")
             return
@@ -317,7 +317,7 @@ def mosaic_widget():
         if mosaic is None:
             return None
         v = {name: getattr(fuse_widget, name).value for name in
-             ("channels", "projection", "blend", "ds_z", "ds_y", "ds_x", "levels")}
+             ("channels", "projection", "blend", "ds_z", "ds_y", "ds_x")}
         tiles = select_tiles(mosaic, v["channels"], fuse_widget.groups.value)
         return mos.plan_fusion(
             tiles,
@@ -325,7 +325,6 @@ def mosaic_widget():
             projection=_PROJECTIONS[v["projection"]],
             blend=v["blend"],
             channels=list(v["channels"]),
-            levels=v["levels"],
         )
 
     def _update_plan(*_):
@@ -347,7 +346,7 @@ def mosaic_widget():
             fuse_widget.output_path.value = new
             state["auto_output"] = new
 
-    for name in ("channels", "groups", "projection", "blend", "ds_z", "ds_y", "ds_x", "levels"):
+    for name in ("channels", "groups", "projection", "blend", "ds_z", "ds_y", "ds_x"):
         getattr(fuse_widget, name).changed.connect(_update_plan)
     for name in ("projection", "ds_z", "ds_y", "ds_x"):
         getattr(fuse_widget, name).changed.connect(_update_output)

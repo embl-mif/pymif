@@ -111,7 +111,7 @@ class MosaicManager(ABC):
         tiles = list(self.tiles if tiles is None else tiles)
         lo = np.min([t.extent[0] for t in tiles], axis=0)
         hi = np.max([t.extent[1] for t in tiles], axis=0)
-        return tuple(lo), tuple(hi)
+        return tuple(float(v) for v in lo), tuple(float(v) for v in hi)
 
     def tile(self, i: int):
         """Tile ``i`` as an :class:`~pymif.microscope_manager.ArrayManager` (axes ``zyx``)."""

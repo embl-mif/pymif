@@ -402,6 +402,50 @@ def zarr_convert(
     # --- Show metadata summary for updated dataset ---
     dataset = mm.ZarrManager(path=zarr_path)
 
+def _batch_row_kwargs(v, columns) -> Dict[str, Any]:
+    """``zarr_convert`` options of one batch CSV row (shared by batch2zarr and batch-mosaic2zarr)."""
+    kwargs: Dict[str, Any] = {}
+
+    # Prioritize chunk_size over max_size if both are present
+    if "chunk_size" in columns and _present(v.get("chunk_size")):
+        kwargs["chunk_size"] = parse_downscale_factor(v["chunk_size"])
+    elif "max_size(MB)" in columns and _present(v.get("max_size(MB)")):
+        kwargs["max_size"] = float(v["max_size(MB)"])
+
+    if "scene_index" in columns and _present(v.get("scene_index")):
+        kwargs["scene_index"] = int(v["scene_index"])
+
+    if "channel_names" in columns and _present(v.get("channel_names")):
+        kwargs["channel_names"] = [c.strip() for c in str(v["channel_names"]).split(" ")]
+
+    if "channel_colors" in columns and _present(v.get("channel_colors")):
+        kwargs["channel_colors"] = [parse_color(c.strip()) for c in str(v["channel_colors"]).split(" ")]
+
+    if "zarr_format" in columns and _present(v.get("zarr_format")):
+        kwargs["zarr_format"] = int(v["zarr_format"])
+
+    if "downscale_factor" in columns and _present(v.get("downscale_factor")):
+        kwargs["downscale_factor"] = parse_downscale_factor(v["downscale_factor"])
+
+    if "num_levels" in columns and _present(v.get("num_levels")):
+        kwargs["num_levels"] = int(v["num_levels"])
+
+    for key in ("subset", "shards", "shard_exclude_axes"):
+        if key in columns and _present(v.get(key)):
+            kwargs[key] = v[key]
+
+    if "shard_target_mb" in columns and _present(v.get("shard_target_mb")):
+        kwargs["shard_target_mb"] = float(v["shard_target_mb"])
+
+    if "drop_singleton" in columns and _present(v.get("drop_singleton")):
+        kwargs["drop_singleton"] = parse_bool(v["drop_singleton"])
+
+    if "num_workers" in columns and _present(v.get("num_workers")):
+        kwargs["num_workers"] = int(v["num_workers"])
+
+    return kwargs
+
+
 def convert_batch(args):
     """Runmode to convert batch of imaged to zarr
 
@@ -425,56 +469,8 @@ def convert_batch(args):
             "input_path": input_f,
             "zarr_path": output,
             "microscope": microscope,
+            **_batch_row_kwargs(v, database.columns),
         }
-
-        if "max_size(MB)" in database.columns and _present(v.get("max_size(MB)")):
-            conv_kwargs["max_size"] = float(v["max_size(MB)"])
-
-        # Prioritize chunk_size over max_size if both are present
-        if "chunk_size" in database.columns and _present(v.get("chunk_size")):
-            conv_kwargs["chunk_size"] = parse_downscale_factor(v["chunk_size"])
-            conv_kwargs.pop("max_size", None)
-        else:
-            if "max_size(MB)" in database.columns and _present(v.get("max_size(MB)")):
-                conv_kwargs["max_size"] = float(v["max_size(MB)"])
-
-        if "scene_index" in database.columns and _present(v.get("scene_index")):
-            conv_kwargs["scene_index"] = int(v["scene_index"])
-
-        if "channel_names" in database.columns and _present(v.get("channel_names")):
-            conv_kwargs["channel_names"] = [c.strip() for c in str(v["channel_names"]).split(" ")]
-
-        if "channel_colors" in database.columns and _present(v.get("channel_colors")):
-            conv_kwargs["channel_colors"] = [
-                parse_color(c.strip()) for c in str(v["channel_colors"]).split(" ")
-            ]
-
-        if "zarr_format" in database.columns and _present(v.get("zarr_format")):
-            conv_kwargs["zarr_format"] = int(v["zarr_format"])
-
-        if "downscale_factor" in database.columns and _present(v.get("downscale_factor")):
-            conv_kwargs["downscale_factor"] = parse_downscale_factor(v["downscale_factor"])
-
-        if "num_levels" in database.columns and _present(v.get("num_levels")):
-            conv_kwargs["num_levels"] = int(v["num_levels"])
-
-        if "subset" in database.columns and _present(v.get("subset")):
-            conv_kwargs["subset"] = v["subset"]
-
-        if "shards" in database.columns and _present(v.get("shards")):
-            conv_kwargs["shards"] = v["shards"]
-
-        if "shard_target_mb" in database.columns and _present(v.get("shard_target_mb")):
-            conv_kwargs["shard_target_mb"] = float(v["shard_target_mb"])
-
-        if "shard_exclude_axes" in database.columns and _present(v.get("shard_exclude_axes")):
-            conv_kwargs["shard_exclude_axes"] = v["shard_exclude_axes"]
-
-        if "drop_singleton" in database.columns and _present(v.get("drop_singleton")):
-            conv_kwargs["drop_singleton"] = parse_bool(v["drop_singleton"])
-
-        if "num_workers" in database.columns and _present(v.get("num_workers")):
-            conv_kwargs["num_workers"] = int(v["num_workers"])
 
         zarr_convert(**conv_kwargs)
 
@@ -508,6 +504,239 @@ def convert_single(args):
     # Convert 2 zarr
     zarr_convert(**conv_kwargs)
 
+
+# ---------------------------------------------------------------------------
+# Mosaics: mosaic2zarr / batch-mosaic2zarr
+# ---------------------------------------------------------------------------
+
+def _mosaic_manager_name_map() -> Dict[str, Any]:
+    from pymif import mosaic_manager as mos
+
+    return {
+        'luxendo': mos.LuxendoMosaicManager,
+        'opera': mos.OperaMosaicManager,
+        'zeiss': mos.ZeissMosaicManager,
+    }
+
+
+def _resolve_mosaic_manager(input_path: str, microscope: Optional[str] = None):
+    """Mosaic reader class from an explicit microscope name or by inspecting the folder."""
+    readers = _mosaic_manager_name_map()
+    if _present(microscope):
+        key = str(microscope).strip().lower()
+        if key not in readers:
+            raise TypeError(f'Mosaic microscope {microscope} not recognized. Should be one of {sorted(readers)}.')
+        return readers[key], key
+    path = Path(input_path)
+    if path.is_dir():
+        raw = path / "raw" if (path / "raw").is_dir() else path
+        if any(raw.glob("*/*.lux.h5")) or any(raw.glob("*.lux.h5")):
+            return readers["luxendo"], "luxendo"
+    raise TypeError(
+        'Could not auto-detect the mosaic type from the input path. '
+        f'Pass --microscope explicitly with one of {sorted(readers)}.'
+    )
+
+
+def _int_triplet(value, default=(1, 1, 1)) -> Tuple[int, int, int]:
+    """``None`` -> default, ``n`` -> ``(n, n, n)``, ``(y, x)`` -> ``(1, y, x)``, ``(z, y, x)`` as is."""
+    if value is None:
+        return tuple(default)
+    if isinstance(value, str):
+        value = parse_downscale_factor(value)
+    if isinstance(value, (int, np.integer)):
+        return (int(value),) * 3
+    value = tuple(int(v) for v in value)
+    if len(value) == 1:
+        return value * 3
+    if len(value) == 2:
+        return (1,) + value
+    if len(value) == 3:
+        return value
+    raise ValueError(f"Expected 1, 2 or 3 integers, got {value}.")
+
+
+def _subset_to_crop(subset, channel_names: List[str]):
+    """Split a 2zarr subset into a fusion crop (z/y/x) and a channel selection (c)."""
+    subset = _normalize_subset(subset) or {}
+    if "T" in subset:
+        raise ValueError("A mosaic has no time axis: remove t from --subset.")
+    channels = list(channel_names)
+    if "C" in subset:
+        sel = subset["C"]
+        if isinstance(sel, slice):
+            channels = channels[sel]
+        elif isinstance(sel, list):
+            channels = [channels[i] for i in sel]
+        else:
+            channels = [channels[int(sel)]]
+    crop = {}
+    for axis in "ZYX":
+        if axis in subset:
+            sel = subset[axis]
+            if isinstance(sel, list):
+                raise ValueError(f"--subset {axis.lower()}: use a range such as 10:200 (index lists are not supported for mosaics).")
+            crop[axis.lower()] = sel
+    return crop or None, channels
+
+
+def mosaic_convert(
+    input_path,
+    zarr_path,
+    microscope: Optional[str] = None,
+    max_size: Optional[float] = 100,
+    chunk_size: Optional[List[int]] = None,
+    scene_index: Optional[int] = None,
+    channel_names: Optional[List[str]] = None,
+    channel_colors: Optional[List[str]] = None,
+    zarr_format: Optional[int] = 3,
+    downscale_factor: Optional[Any] = 2,
+    num_levels: Optional[int] = None,
+    subset: Optional[Any] = None,
+    shards: Optional[Any] = "auto",
+    shard_target_mb: Optional[float] = None,
+    shard_exclude_axes: Optional[Any] = None,
+    drop_singleton: Optional[bool] = True,
+    num_workers: Optional[int] = None,
+    read_downsample: Optional[Any] = None,
+    projection: Optional[str] = "none",
+    blend: str = "max",
+    downsample_method: str = "mean",
+    channels: Optional[List[str]] = None,
+    groups: Optional[List[str]] = None,
+    midline_axis: str = "x",
+    out_dtype: Optional[str] = None,
+    read_workers: int = 4,
+    temp_dir: Optional[str] = None,
+    overwrite: bool = False,
+):
+    """Fuse a mosaic into an OME-Zarr image (CLI helper for ``pymif mosaic2zarr``).
+
+    The 2zarr options (``max_size`` ... ``num_workers``) have the same meaning as in
+    :func:`zarr_convert`, applied to the fused output; ``subset`` crops it (z/y/x in
+    output voxels) and selects channels (c). The other options are those of
+    :func:`pymif.mosaic_manager.fuse_tiles`: ``read_downsample`` is its ``ds``,
+    ``downsample_method`` its ``downsample`` and ``read_workers`` its ``workers``.
+    """
+    from pymif.mosaic_manager import plan_fusion
+
+    reader, resolved = _resolve_mosaic_manager(input_path, microscope)
+    print(f"\n--->Using mosaic manager: {reader.__name__} ({resolved})")
+    if scene_index is not None and resolved != "zeiss":
+        print(f"\tscene_index={scene_index} is ignored for {resolved} mosaics.")
+    mosaic = reader(input_path)
+    print(f"{len(mosaic.tiles)} tiles, channels {mosaic.channels}, groups {mosaic.groups}")
+
+    tiles = mosaic.tiles
+    if groups:
+        wanted = {str(g) for g in groups}
+        tiles = [t for t in tiles if str(t.group) in wanted]
+        if not tiles:
+            raise ValueError(f"No tile in groups {sorted(wanted)}; available: {mosaic.groups}.")
+
+    ds = _int_triplet(read_downsample)
+    projection = None if projection in (None, "none", "None", "") else projection
+    crop, selected = _subset_to_crop(subset, channels or list(dict.fromkeys(t.channel for t in tiles)))
+    plan = plan_fusion(tiles, ds=ds, projection=projection, blend=blend, channels=selected,
+                       crop=crop, out_dtype=out_dtype, midline_axis=midline_axis)
+    print(f"\n--->Output: {plan.summary()}")
+
+    plan_md = {"axes": plan.axes, "size": [plan.shape], "dtype": str(plan.dtype)}
+    if chunk_size is not None:
+        chunks = tuple(int(c) for c in chunk_size)
+        print(f"\tUsing user-provided chunk size: {chunks}")
+    else:
+        chunks, size_mb, _ = _select_chunk_size(plan_md, max_size if max_size is not None else 100)
+        print(f"\tUsing max_size={max_size} MB: chunk size {chunks}, {size_mb:.1f} MB.")
+
+    factor = _normalize_downscale_factor(downscale_factor)
+    if num_levels is None:
+        num_levels = _estimate_levels(plan_md, factor[1:] if projection else factor)
+
+    shards = _normalize_shards(shards)
+    shard_exclude_axes = _normalize_shard_exclude_axes(shard_exclude_axes)
+    write_kwargs = {
+        "zarr_format": int(zarr_format),
+        "ngff_version": "0.4" if int(zarr_format) == 2 else "0.5",
+        "drop_singleton": True if drop_singleton is None else parse_bool(drop_singleton),
+        "shards": shards,
+        "chunks": chunks,
+    }
+    if num_workers is not None:
+        write_kwargs["num_workers"] = int(num_workers)
+    if shards is not None:
+        if shard_target_mb is not None:
+            write_kwargs["shard_target_mb"] = float(shard_target_mb)
+        if shard_exclude_axes is not None:
+            write_kwargs["shard_exclude_axes"] = shard_exclude_axes
+
+    print(f"PYRAMID LEVELS: {num_levels}, DOWNSCALE FACTOR: {factor}.")
+    print(f"WRITE OPTIONS: {write_kwargs}")
+    print("\n--->Fusing to zarr")
+    mosaic.fuse(
+        zarr_path,
+        ds=ds,
+        projection=projection,
+        blend=blend,
+        downsample=downsample_method,
+        channels=plan.channels,
+        channel_names=channel_names,
+        channel_colors=channel_colors,
+        crop=crop,
+        levels=int(num_levels),
+        downscale_factor=factor,
+        workers=int(read_workers),
+        out_dtype=out_dtype,
+        midline_axis=midline_axis,
+        overwrite=bool(overwrite),
+        temp_dir=temp_dir,
+        **write_kwargs,
+    )
+    print(f"Saved {zarr_path}")
+
+
+def convert_mosaic_single(args):
+    """Runmode to fuse one mosaic to zarr."""
+    print(f"Fusing mosaic {args.input_path} -> {args.zarr_path}")
+    kwargs = {
+        k: v
+        for k, v in vars(args).items()
+        if k != "runmode" and v is not None and not (isinstance(v, str) and v.strip() == "")
+    }
+    if "chunk_size" in kwargs:
+        kwargs.pop("max_size", None)
+    mosaic_convert(**kwargs)
+
+
+def convert_mosaic_batch(args):
+    """Runmode to fuse a batch of mosaics listed in a CSV file."""
+    print(f"Fusing a batch of mosaics from {args.input_file}")
+    database = pd.read_csv(args.input_file)
+    print(database)
+    columns = database.columns
+    for _, v in database.iterrows():
+        print("-" * 20)
+        kwargs = {
+            "input_path": v["input"],
+            "zarr_path": v["output"],
+            "microscope": v["microscope"] if "microscope" in columns and _present(v.get("microscope")) else None,
+            **_batch_row_kwargs(v, columns),
+        }
+        if "read_downsample" in columns and _present(v.get("read_downsample")):
+            kwargs["read_downsample"] = _int_triplet(str(v["read_downsample"]))
+        for key in ("projection", "blend", "downsample_method", "midline_axis", "out_dtype", "temp_dir"):
+            if key in columns and _present(v.get(key)):
+                kwargs[key] = str(v[key]).strip()
+        for key in ("channels", "groups"):
+            if key in columns and _present(v.get(key)):
+                kwargs[key] = str(v[key]).split()
+        if "read_workers" in columns and _present(v.get("read_workers")):
+            kwargs["read_workers"] = int(v["read_workers"])
+        if "overwrite" in columns and _present(v.get("overwrite")):
+            kwargs["overwrite"] = parse_bool(v["overwrite"])
+        mosaic_convert(**kwargs)
+
+
 def main():
     """Main fxn
 
@@ -518,6 +747,10 @@ def main():
         convert_single(args)
     elif args.runmode == 1:
         convert_batch(args)
+    elif args.runmode == 2:
+        convert_mosaic_single(args)
+    elif args.runmode == 3:
+        convert_mosaic_batch(args)
     # TODO There is room for more runmodes possibly in the future
 
 if __name__ == "__main__":

@@ -273,6 +273,157 @@ def parse_subset_spec(value: str):
 
     return subset
 
+def _add_zarr_arguments(parser):
+    """OME-Zarr output options shared by ``2zarr`` and ``mosaic2zarr``."""
+    parser.add_argument(
+        '-cs', '--chunk_size',
+        required= False,
+        nargs= '+',
+        help= 'Chunk size in TCZYX format, or whatever axes are present in the dataset.',
+        type= int
+    )
+    parser.add_argument(
+        '-ms', '--max_size',
+        required= False,
+        help= 'Max chunk size in MB. Ignored if --chunk_size is provided.',
+        type= int
+    )
+    parser.add_argument(
+        '-si', '--scene_index',
+        required= False,
+        help= 'Scene index for .czi files.',
+        type= int
+    )
+    parser.add_argument(
+        '-cn', '--channel_names',
+        required= False,
+        nargs= '+',
+        help= 'Name of channels. Example: -cn bf gfp rfp'
+    )
+    parser.add_argument(
+        '-cc', '--channel_colors',
+        required= False,
+        type= parse_color,
+        nargs= '+',
+        help= 'Color(s) of channel(s). It needs to be hex or matplotlib color name. Example: -cc 0000FF cyan 00ff00'
+    )
+    parser.add_argument(
+        '-zf', '--zarr_format',
+        required=False,
+        choices=[2, 3],
+        type=int,
+        help='Output zarr format. Zarr v2 maps to NGFF 0.4 and Zarr v3 maps to NGFF 0.5.',
+    )
+    parser.add_argument(
+        '-df', '--downscale_factor',
+        required=False,
+        nargs='+',
+        type=int,
+        metavar='FACTOR',
+        help='Pyramid downsampling factor. Use one value for isotropic downsampling or three values for anisotropic Z Y X factors, e.g. -df 1 2 2.',
+    )
+    parser.add_argument(
+        '-nl', '--num_levels',
+        required=False,
+        type=int,
+        metavar='FACTOR',
+        help='Number of pyramidal levels.',
+    )
+    parser.add_argument(
+        '-s', '--subset',
+        required=False,
+        type=str,
+        help='Subset the input before pyramid generation. Format: axis=selection pairs separated by semicolons, e.g. "y=10:100:2;x=20:80". Use integers, comma-separated indices, or slices like 0:10:2.',
+    )
+    parser.add_argument(
+        '-sh', '--shards',
+        required=False,
+        nargs='+',
+        help=(
+            'Zarr v3 sharding for the output. Use "auto" to size shards automatically, '
+            'a shard shape matching the dataset axes, e.g. "-sh 1 1 8 2160 4096", or '
+            '"none" to disable sharding. With --zarr_format 2 sharding is not supported '
+            'and is set to none with a warning. Default: auto.'
+        ),
+    )
+    parser.add_argument(
+        '-stm', '--shard_target_mb',
+        required=False,
+        type=float,
+        help='Target uncompressed shard size in MB, used when --shards auto. Default: 1024.',
+    )
+    parser.add_argument(
+        '-sea', '--shard_exclude_axes',
+        required=False,
+        nargs='+',
+        help=(
+            'Axes that --shards auto never merges chunks along, e.g. "-sea t c". '
+            'Use "none" to allow every axis to merge. Default: t c.'
+        ),
+    )
+    parser.add_argument(
+        '-ds', '--drop_singleton',
+        required=False,
+        type=parse_bool,
+        help='Remove singleton t/c/z axes from the output ("true" or "false"). Default: true.',
+    )
+    parser.add_argument(
+        '-nw', '--num_workers',
+        required=False,
+        type=int,
+        help='Number of threads used to write the zarr in parallel. Default: half of the available cores, capped at 8.',
+    )
+
+
+def _add_mosaic_arguments(parser):
+    """Fusion options of ``mosaic2zarr``."""
+    parser.add_argument(
+        '-rds', '--read_downsample', nargs='+', type=int, metavar='FACTOR',
+        help='Downsampling applied while reading the tiles: one value or Z Y X, e.g. -rds 4 8 8. Default: 1 (full resolution).',
+    )
+    parser.add_argument(
+        '-p', '--projection', choices=['none', 'max', 'sum'], default='none',
+        help='"none" writes a 3D volume; "max"/"sum" write a 2D projection along z.',
+    )
+    parser.add_argument(
+        '-b', '--blend', choices=['max', 'sum', 'count', 'midline'], default='max',
+        help='How overlapping tiles are merged: max, sum (overlaps brighter), count (tiles per voxel, '
+             'no pixel data read), midline (each tile group, e.g. illumination side, on its own side of the overlap).',
+    )
+    parser.add_argument(
+        '-dm', '--downsample_method', choices=['mean', 'stride'], default='mean',
+        help='Block average (mean) or every n-th voxel (stride) for --read_downsample.',
+    )
+    parser.add_argument('-ch', '--channels', nargs='+', help='Tile channels to fuse, in output order. Default: all.')
+    parser.add_argument('-g', '--groups', nargs='+', help='Tile groups to fuse (e.g. L R). Default: all.')
+    parser.add_argument('-ma', '--midline_axis', choices=['x', 'y', 'z'], default='x',
+                        help='Axis along which blend=midline separates the groups.')
+    parser.add_argument('-od', '--out_dtype', help='Output dtype, e.g. uint16 or float32. Default: input dtype '
+                        '(float32 for blend=sum, uint16 for blend=count).')
+    parser.add_argument('-rw', '--read_workers', type=int, default=4,
+                        help='Tiles read in parallel (worker processes).')
+    parser.add_argument('-td', '--temp_dir', help='Folder for the temporary fused level 0. Default: next to the output.')
+    parser.add_argument('-ow', '--overwrite', type=parse_bool, default=False,
+                        help='Replace an existing output ("true" or "false").')
+
+
+def _adapt_zarr_help_for_mosaic(parser):
+    """Reword the shared 2zarr options where they mean something specific for a mosaic."""
+    helps = {
+        '--chunk_size': 'Output chunk size in C Z Y X (C Y X for projections) order.',
+        '--max_size': 'Max output chunk size in MB. Ignored if --chunk_size is provided.',
+        '--scene_index': 'Scene index, for Zeiss mosaics (not implemented yet).',
+        '--channel_names': 'Names of the output channels. Example: -cn autofluo cfos',
+        '--subset': 'Crop the fused output and/or select channels: axis=selection pairs separated by semicolons, '
+                    'e.g. "z=0:100;y=200:900;c=1". z/y/x are in output voxels (after --read_downsample); '
+                    'slices may not have a step.',
+    }
+    for action in parser._actions:
+        for flag, text in helps.items():
+            if flag in action.option_strings:
+                action.help = text
+
+
 def _parse_arguments():
     """Build and parse the PyMIF command line interface arguments."""
 
@@ -290,7 +441,7 @@ def _parse_arguments():
     subparsers = parser.add_subparsers(
         title='Runmodes',
         description= """\
-            PyMIF has TWO main runmodes, each with different and specific arguments.
+            PyMIF has several runmodes, each with different and specific arguments.
             Please consult each runmode's help manual before running any of them.
             Enjoy PyMIF!
         """,
@@ -320,104 +471,7 @@ def _parse_arguments():
         choices=['luxendo', 'opera', 'viventis', 'opera', 'zeiss', 'zarrv04', 'zarr', 'scape'],
         type=str,
     )
-    single_convert_parser.add_argument(
-        '-cs', '--chunk_size',
-        required= False,
-        nargs= '+',
-        help= 'Chunk size in TCZYX format, or whatever axes are present in the dataset.',
-        type= int
-    )
-    single_convert_parser.add_argument(
-        '-ms', '--max_size',
-        required= False,
-        help= 'Max chunk size in MB. Ignored if --chunk_size is provided.',
-        type= int
-    )
-    single_convert_parser.add_argument(
-        '-si', '--scene_index',
-        required= False,
-        help= 'Scene index for .czi files.',
-        type= int
-    )
-    single_convert_parser.add_argument(
-        '-cn', '--channel_names',
-        required= False,
-        nargs= '+',
-        help= 'Name of channels. Example: -cn bf gfp rfp'
-    )
-    single_convert_parser.add_argument(
-        '-cc', '--channel_colors',
-        required= False,
-        type= parse_color,
-        nargs= '+',
-        help= 'Color(s) of channel(s). It needs to be hex or matplotlib color name. Example: -cc 0000FF cyan 00ff00'
-    )
-    single_convert_parser.add_argument(
-        '-zf', '--zarr_format',
-        required=False,
-        choices=[2, 3],
-        type=int,
-        help='Output zarr format. Zarr v2 maps to NGFF 0.4 and Zarr v3 maps to NGFF 0.5.',
-    )
-    single_convert_parser.add_argument(
-        '-df', '--downscale_factor',
-        required=False,
-        nargs='+',
-        type=int,
-        metavar='FACTOR',
-        help='Pyramid downsampling factor. Use one value for isotropic downsampling or three values for anisotropic Z Y X factors, e.g. -df 1 2 2.',
-    )
-    single_convert_parser.add_argument(
-        '-nl', '--num_levels',
-        required=False,
-        type=int,
-        metavar='FACTOR',
-        help='Number of pyramidal levels.',
-    )
-    single_convert_parser.add_argument(
-        '-s', '--subset',
-        required=False,
-        type=str,
-        help='Subset the input before pyramid generation. Format: axis=selection pairs separated by semicolons, e.g. "y=10:100:2;x=20:80". Use integers, comma-separated indices, or slices like 0:10:2.',
-    )
-    single_convert_parser.add_argument(
-        '-sh', '--shards',
-        required=False,
-        nargs='+',
-        help=(
-            'Zarr v3 sharding for the output. Use "auto" to size shards automatically, '
-            'a shard shape matching the dataset axes, e.g. "-sh 1 1 8 2160 4096", or '
-            '"none" to disable sharding. With --zarr_format 2 sharding is not supported '
-            'and is set to none with a warning. Default: auto.'
-        ),
-    )
-    single_convert_parser.add_argument(
-        '-stm', '--shard_target_mb',
-        required=False,
-        type=float,
-        help='Target uncompressed shard size in MB, used when --shards auto. Default: 1024.',
-    )
-    single_convert_parser.add_argument(
-        '-sea', '--shard_exclude_axes',
-        required=False,
-        nargs='+',
-        help=(
-            'Axes that --shards auto never merges chunks along, e.g. "-sea t c". '
-            'Use "none" to allow every axis to merge. Default: t c.'
-        ),
-    )
-    single_convert_parser.add_argument(
-        '-ds', '--drop_singleton',
-        required=False,
-        type=parse_bool,
-        help='Remove singleton t/c/z axes from the output ("true" or "false"). Default: true.',
-    )
-    single_convert_parser.add_argument(
-        '-nw', '--num_workers',
-        required=False,
-        type=int,
-        help='Number of threads used to write the zarr in parallel. Default: half of the available cores, capped at 8.',
-    )
+    _add_zarr_arguments(single_convert_parser)
 
     # Required args
     requiredNamed = single_convert_parser.add_argument_group('Required Named arguments.')
@@ -471,6 +525,72 @@ def _parse_arguments():
         help= 'Path to input file.',
         type= valid_input_path
     )
+
+    #####################################################################################
+    # Mosaic fusion 2 zarr parser
+    mosaic_parser = subparsers.add_parser(
+        'mosaic2zarr',
+        help='Fuse the raw tiles of a mosaic (e.g. a raw Luxendo acquisition) into one OME-Zarr image.',
+        description=textwrap.dedent("""\
+            Fuse the raw tiles of a mosaic into one OME-Zarr image (3D, or a 2D projection with -p max).
+            Every 2zarr option is available with the same meaning; -s/--subset crops the fused output
+            (z/y/x in output voxels, after --read_downsample) and selects channels (c).
+            Examples:
+              pymif mosaic2zarr -i /path/to/2026-10-14_103957 -z out_3D.ome.zarr -rds 4 8 8 -b midline -nl 3
+              pymif mosaic2zarr -i /path/to/2026-10-14_103957 -z out_MIP.ome.zarr -rds 1 8 8 -p max
+        """),
+        formatter_class=MultilineDefaultsHelpFormatter,
+    )
+    mosaic_parser.add_argument('--runmode', help=argparse.SUPPRESS, default=2, type=int)
+    mosaic_parser.add_argument(
+        '-m', '--microscope',
+        required=False,
+        default=None,
+        choices=['luxendo', 'opera', 'zeiss'],
+        type=str,
+        help='Microscope of the mosaic. Leave empty to auto-detect (raw Luxendo acquisitions). '
+             'Opera and Zeiss mosaics are not implemented yet.',
+    )
+    _add_mosaic_arguments(mosaic_parser)
+    _add_zarr_arguments(mosaic_parser)
+    _adapt_zarr_help_for_mosaic(mosaic_parser)
+    requiredNamed = mosaic_parser.add_argument_group('Required Named arguments.')
+    requiredNamed.add_argument(
+        '-i', '--input_path', required=True, type=valid_input_path,
+        help='Acquisition folder (for Luxendo: the folder containing raw/).',
+    )
+    requiredNamed.add_argument(
+        '-z', '--zarr_path', required=True, type=os.path.abspath,
+        help='Path to the output .ome.zarr (use --overwrite true to replace an existing one).',
+    )
+
+    #####################################################################################
+    # Batch mosaic fusion parser
+    mosaic_block = """\
+        Fuse a batch of mosaics to zarr. The INPUT_FILE is a .csv file with the columns
+        input | microscope | output, plus any of the 2zarr columns
+        chunk_size | max_size(MB) | scene_index | zarr_format | downscale_factor | subset | channel_colors |
+        channel_names | num_levels | shards | shard_target_mb | shard_exclude_axes | drop_singleton | num_workers
+        and any of the fusion columns
+        read_downsample | projection | blend | downsample_method | channels | groups | midline_axis |
+        out_dtype | read_workers | temp_dir | overwrite
+        Example:
+        input                    | microscope | output                 | read_downsample | projection | blend   | num_levels | shards
+        /path/to/acquisition_1   | luxendo    | /path/to/acq1_3D.zarr  | 4 8 8           | none       | midline | 3          | auto
+        /path/to/acquisition_1   | luxendo    | /path/to/acq1_MIP.zarr | 1 8 8           | max        | midline |            | none
+        Leave a cell empty for the default. Lists (channels, groups, channel_names...) are space separated.
+    """
+    batch_mosaic_parser = subparsers.add_parser(
+        'batch-mosaic2zarr',
+        aliases=['batchmosaic2zarr'],
+        help='Fuse a batch of mosaics to zarr from a CSV file. See the batch-mosaic2zarr help manual for the columns.',
+        description=textwrap.dedent(mosaic_block),
+        formatter_class=MultilineDefaultsHelpFormatter,
+    )
+    batch_mosaic_parser.add_argument('--runmode', help=argparse.SUPPRESS, default=3, type=int)
+    requiredNamed = batch_mosaic_parser.add_argument_group('Required Named arguments.')
+    requiredNamed.add_argument('-i', '--input_file', required=True, type=valid_input_path,
+                               help='Path to the batch .csv file.')
 
     #####################################################################################
     # Possible other runmodes

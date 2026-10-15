@@ -52,5 +52,7 @@ def test_luxendo_scan(tmp_path):
     assert right.origin[2] == 5.0
     assert left.attrs["grid"] == (0, 0)
 
-    zm = m.fuse(tmp_path / "f.zarr", blend="midline", chunks=(1, 4, 8, 8), progress=False)
+    zm = m.fuse(tmp_path / "f.zarr", blend="midline", chunks=(1, 4, 8, 8), progress=False, drop_singleton=False)
     assert zm.metadata["channel_names"] == ["GFP"]
+    # as for pymif 2zarr, a single channel axis is dropped by default
+    assert m.fuse(tmp_path / "g.zarr", progress=False).metadata["axes"] == "zyx"
