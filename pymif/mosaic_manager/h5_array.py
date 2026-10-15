@@ -20,13 +20,18 @@ class H5Array:
     #: Tells ``fuse_tiles(executor="auto")`` that this data can be used in worker processes.
     picklable = True
 
-    def __init__(self, path: str | Path, dataset: str = "Data"):
+    def __init__(self, path: str | Path, dataset: str = "Data", shape=None, dtype=None):
+        """Pass ``shape`` and ``dtype`` when they are known (e.g. from metadata) to
+        avoid opening the file, which is slow on network drives."""
         self.path = str(path)
         self.dataset = dataset
-        with h5py.File(self.path, "r") as f:
-            d = f[dataset]
-            self.shape: Tuple[int, ...] = tuple(int(s) for s in d.shape)
-            self.dtype = np.dtype(d.dtype)
+        if shape is None or dtype is None:
+            with h5py.File(self.path, "r") as f:
+                d = f[dataset]
+                shape = d.shape if shape is None else shape
+                dtype = d.dtype if dtype is None else dtype
+        self.shape: Tuple[int, ...] = tuple(int(s) for s in shape)
+        self.dtype = np.dtype(dtype)
         self.ndim = len(self.shape)
 
     def __getitem__(self, key):
