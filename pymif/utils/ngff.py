@@ -74,7 +74,7 @@ class ZarrWriteConfig:
         Applies to both zarr v2 and v3. This only changes the write-time
         chunk shape; it does not touch ``metadata['chunksize']``, which is
         only used when a pyramid is built via
-        :func:`~pymif.microscope_manager.utils.pyramid.build_pyramid`.
+        :func:`~pymif.utils.pyramid.build_pyramid`.
     shards
         Zarr v3 sharding configuration, applied per pyramid level. One of:
 

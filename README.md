@@ -372,7 +372,7 @@ The most important API entry points to document and keep stable are:
 - `MicroscopeManager`
 - vendor reader classes in `pymif.microscope_manager`
 - `ZarrManager`
-- zarr-writing helpers in `pymif.microscope_manager.utils`
+- zarr-writing helpers in `pymif.utils`
 - CLI entry points in `pymif.cli`
 - napari widgets in `pymif.napari`
 
@@ -384,7 +384,7 @@ New microscope support is typically added by subclassing `MicroscopeManager` (ex
 
 ```python
 from pymif.microscope_manager import MicroscopeManager
-from pymif.microscope_manager.utils.metadata import ChannelInfo, build_metadata
+from pymif.utils.metadata import ChannelInfo, build_metadata
 
 
 class MyManager(MicroscopeManager):
@@ -411,7 +411,7 @@ class MyManager(MicroscopeManager):
         ...
 ```
 
-`build_metadata()` normalizes the units and colors for you, and the `pymif.microscope_manager.utils` package has helpers that the built-in readers share: `parse_channel_color` (vendor color formats to `RRGGBB`), `normalize_unit` / `to_micrometers`, `to_tczyx` (reorder or add axes), `parse_ome_xml` (OME-XML `<Pixels>` and channels) and `scale_for_level`.
+`build_metadata()` normalizes the units and colors for you, and the `pymif.utils` package has helpers that the built-in readers share: `parse_channel_color` (vendor color formats to `RRGGBB`), `normalize_unit` / `to_micrometers`, `to_tczyx` (reorder or add axes), `parse_ome_xml` (OME-XML `<Pixels>` and channels) and `scale_for_level`.
 
 The metadata must follow the PyMIF schema used across the repository, including:
 
@@ -432,7 +432,7 @@ The metadata must follow the PyMIF schema used across the repository, including:
 
 If a manager needs the data before it can describe it (like `ArrayManager`) or reads several datasets at once (like `ZarrManager`), it can override `read()` instead; it should still return `None` and fill `self.data` and `self.metadata`.
 
-### Layout of `pymif.microscope_manager.utils`
+### Layout of `pymif.utils`
 
 Shared helpers live in one place each, so readers, writers and the napari viewer behave the same way:
 

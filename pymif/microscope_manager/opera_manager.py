@@ -5,9 +5,9 @@ import tifffile
 import zarr
 
 from .microscope_manager import MicroscopeManager
-from .utils.axes import to_tczyx
-from .utils.metadata import build_metadata, scale_for_level
-from .utils.ome import parse_ome_xml
+from ..utils.axes import to_tczyx
+from ..utils.metadata import build_metadata, scale_for_level
+from ..utils.ome import parse_ome_xml
 
 
 class OperaManager(MicroscopeManager):

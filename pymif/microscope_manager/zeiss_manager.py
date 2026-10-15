@@ -5,8 +5,8 @@ from typing import Any, Dict, List, Optional, Tuple
 from bioio import BioImage
 
 from .microscope_manager import MicroscopeManager
-from .utils.metadata import ChannelInfo, build_metadata
-from .utils.units import to_micrometers
+from ..utils.metadata import ChannelInfo, build_metadata
+from ..utils.units import to_micrometers
 
 logger = logging.getLogger("pymif")
 

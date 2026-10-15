@@ -13,7 +13,7 @@ class ChannelInfo:
     """Name and display color of a single channel.
 
     ``color`` may be anything understood by
-    :func:`~pymif.microscope_manager.utils.ngff.parse_channel_color`; it is
+    :func:`~pymif.utils.ngff.parse_channel_color`; it is
     normalized to ``RRGGBB`` by :func:`build_metadata`.
     """
 

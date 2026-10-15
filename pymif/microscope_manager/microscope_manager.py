@@ -24,7 +24,7 @@ class MicroscopeManager(ABC):
     Subclasses implement two hooks and inherit :meth:`read`:
 
     * :meth:`_parse_metadata` -- return the normalized metadata dictionary
-      (see :func:`pymif.microscope_manager.utils.metadata.build_metadata`);
+      (see :func:`pymif.utils.metadata.build_metadata`);
     * :meth:`_build_dask_array` -- return one lazy dask array per pyramid level.
 
     Managers can be used as context managers so that any open file handle is
@@ -106,14 +106,14 @@ class MicroscopeManager(ABC):
         path : str
             Output zarr path.
         **kwargs
-            Keyword arguments forwarded to :class:`~pymif.microscope_manager.utils.ngff.ZarrWriteConfig`,
+            Keyword arguments forwarded to :class:`~pymif.utils.ngff.ZarrWriteConfig`,
             such as ``ngff_version``, ``zarr_format``, ``compressor``,
             ``compressor_level``, ``overwrite``, ``chunks``, ``shards``,
             ``shard_target_mb``, ``shard_exclude_axes`` or ``drop_singleton``
             (default ``True``: singleton t/c/z axes are removed on write).
         """
-        from .utils.to_zarr import to_zarr as _to_zarr
-        from .utils.ngff import ZarrWriteConfig
+        from ..utils.to_zarr import to_zarr as _to_zarr
+        from ..utils.ngff import ZarrWriteConfig
         return _to_zarr(path, 
                       self.data, 
                       self.metadata, 
@@ -141,7 +141,7 @@ class MicroscopeManager(ABC):
             Existing napari viewer to reuse. When omitted, a new viewer is
             created by the helper function.
         """
-        from .utils.visualize import visualize as _visualize
+        from ..utils.visualize import visualize as _visualize
         return _visualize(
             self.data,
             self.metadata,
@@ -162,7 +162,7 @@ class MicroscopeManager(ABC):
         ``self.metadata`` in-place. This is mainly useful for managers that
         initially expose only one resolution level.
         """
-        from .utils.pyramid import build_pyramid as _build_pyramid
+        from ..utils.pyramid import build_pyramid as _build_pyramid
         self.data, self.metadata = _build_pyramid(
             self.data, self.metadata, 
             num_levels=num_levels, 
@@ -194,7 +194,7 @@ class MicroscopeManager(ABC):
             new_order : List[int]
                 A permutation of the channel indices.
         """
-        from .utils.dataset_ops import reorder_channels as _reorder
+        from ..utils.dataset_ops import reorder_channels as _reorder
 
         self.data = _reorder(self.data, self.metadata, new_order)
         logger.info("Channels reordered to %s", list(new_order))
@@ -222,7 +222,7 @@ class MicroscopeManager(ABC):
             Unknown keys and channel updates that do not match the dataset
             are skipped with a warning; invalid values raise.
         """
-        from .utils.dataset_ops import apply_metadata_updates, known_updates
+        from ..utils.dataset_ops import apply_metadata_updates, known_updates
 
         apply_metadata_updates(self.data, self.metadata, known_updates(updates))
 
@@ -252,7 +252,7 @@ class MicroscopeManager(ABC):
         ValueError
             if index spacing is not uniform or out of bounds.
         """
-        from .utils.dataset_ops import subset_levels
+        from ..utils.dataset_ops import subset_levels
 
         self.data, self.metadata = subset_levels(
             self.data, self.metadata,

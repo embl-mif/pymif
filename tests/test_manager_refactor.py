@@ -11,18 +11,18 @@ import pytest
 import tifffile
 
 import pymif.microscope_manager as mm
-from pymif.microscope_manager.utils.axes import to_tczyx
-from pymif.microscope_manager.utils.dataset_ops import (
+from pymif.utils.axes import to_tczyx
+from pymif.utils.dataset_ops import (
     apply_metadata_updates,
     infer_downscale_factors,
     known_updates,
     reorder_channels,
     subset_levels,
 )
-from pymif.microscope_manager.utils.metadata import ChannelInfo, build_metadata, scale_for_level
-from pymif.microscope_manager.utils.ngff import parse_channel_color
-from pymif.microscope_manager.utils.ome import parse_ome_xml
-from pymif.microscope_manager.utils.units import normalize_unit, to_micrometers
+from pymif.utils.metadata import ChannelInfo, build_metadata, scale_for_level
+from pymif.utils.ngff import parse_channel_color
+from pymif.utils.ome import parse_ome_xml
+from pymif.utils.units import normalize_unit, to_micrometers
 
 
 # ---------------------------------------------------------------------------
@@ -333,8 +333,8 @@ def test_scape_accepts_path_and_legacy_keyword(tmp_path):
 # ---------------------------------------------------------------------------
 
 def test_color_helpers_single_source():
-    from pymif.microscope_manager.utils import colors, ngff
-    from pymif.microscope_manager.utils.visualize import _parse_color
+    from pymif.utils import colors, ngff
+    from pymif.utils.visualize import _parse_color
 
     # historical import locations keep working and point to the same objects
     assert ngff.parse_color is colors.parse_color
@@ -347,7 +347,7 @@ def test_color_helpers_single_source():
 
 
 def test_downsample_nearest_numpy_and_dask_agree():
-    from pymif.microscope_manager.utils.downsampling import downsample_nearest
+    from pymif.utils.downsampling import downsample_nearest
 
     arr = np.arange(2 * 5 * 7).reshape(2, 5, 7)
     out_np = downsample_nearest(arr, (2, 2), spatial_axes=(1, 2))
@@ -359,7 +359,7 @@ def test_downsample_nearest_numpy_and_dask_agree():
 
 
 def test_chunk_helpers():
-    from pymif.microscope_manager.utils.chunks import get_chunks, rechunk_to_shape, shape_tuple
+    from pymif.utils.chunks import get_chunks, rechunk_to_shape, shape_tuple
 
     assert shape_tuple((1, 2), 2) == (1, 2) and shape_tuple((1, 2), 3) is None
     assert shape_tuple("auto", 2) is None and shape_tuple((0, 2), 2) is None

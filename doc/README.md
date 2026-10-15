@@ -352,7 +352,7 @@ The most important API entry points to document and keep stable are:
 - `MicroscopeManager`
 - vendor reader classes in `pymif.microscope_manager`
 - `ZarrManager`
-- zarr-writing helpers in `pymif.microscope_manager.utils`
+- zarr-writing helpers in `pymif.utils`
 - CLI entry points in `pymif.cli`
 - napari widgets in `pymif.napari`
 
@@ -364,7 +364,7 @@ New microscope support is typically added by subclassing `MicroscopeManager` (ex
 
 ```python
 from pymif.microscope_manager import MicroscopeManager
-from pymif.microscope_manager.utils.metadata import ChannelInfo, build_metadata
+from pymif.utils.metadata import ChannelInfo, build_metadata
 
 
 class MyManager(MicroscopeManager):
@@ -387,7 +387,7 @@ class MyManager(MicroscopeManager):
         ...  # one lazy dask array per pyramid level, in TCZYX order
 ```
 
-`build_metadata()` normalizes units (`"µm"` -> `"micrometer"`) and channel colors (always `RRGGBB`). The helpers in `pymif.microscope_manager.utils` (`parse_channel_color`, `normalize_unit`, `to_micrometers`, `to_tczyx`, `parse_ome_xml`, `scale_for_level`) are shared by the built-in readers. Managers that need the data before they can describe it, or that read several datasets at once (like `ZarrManager`), may override `read()` instead.
+`build_metadata()` normalizes units (`"µm"` -> `"micrometer"`) and channel colors (always `RRGGBB`). The helpers in `pymif.utils` (`parse_channel_color`, `normalize_unit`, `to_micrometers`, `to_tczyx`, `parse_ome_xml`, `scale_for_level`) are shared by the built-in readers. Managers that need the data before they can describe it, or that read several datasets at once (like `ZarrManager`), may override `read()` instead.
 
 The metadata should follow the PyMIF schema used across the repository, including:
 
@@ -409,7 +409,7 @@ The metadata should follow the PyMIF schema used across the repository, includin
 
 For axis-aware zarr data, `scales` and `units` contain only the spatial axes present in `axes`, in that same order. For example, `axes="yx"` uses two scale values per pyramid level, while `axes="tczyx"` uses three spatial scale values for `z`, `y`, and `x`. Once that contract is respected, the new manager automatically benefits from the common PyMIF tooling such as `build_pyramid()`, `to_zarr()`, `visualize()`, `reorder_channels()`, `update_metadata()`, and `subset_dataset()`.
 
-### Layout of `pymif.microscope_manager.utils`
+### Layout of `pymif.utils`
 
 Shared helpers live in one place each, so readers, writers and the napari viewer behave the same way:
 

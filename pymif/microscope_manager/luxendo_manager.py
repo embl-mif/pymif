@@ -7,7 +7,7 @@ import dask.array as da
 import h5py
 
 from .microscope_manager import MicroscopeManager
-from .utils.metadata import ChannelInfo, build_metadata, scale_for_level
+from ..utils.metadata import ChannelInfo, build_metadata, scale_for_level
 
 
 class LuxendoManager(MicroscopeManager):

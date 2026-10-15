@@ -9,8 +9,8 @@ import dask.array as da
 import zarr
 
 from .microscope_manager import MicroscopeManager
-from .utils.axes import normalize_axes, normalize_data_type
-from .utils.ngff import _infer_data_type_from_group, _register_label_on_labels_group
+from ..utils.axes import normalize_axes, normalize_data_type
+from ..utils.ngff import _infer_data_type_from_group, _register_label_on_labels_group
 from collections.abc import Iterator, Sequence
 
 logger = logging.getLogger("pymif")
@@ -112,7 +112,7 @@ class ZarrManager(MicroscopeManager):
                 )
         else:
             if mode in ("w", "a"):
-                from .utils.ngff import ZarrWriteConfig, _resolve_format
+                from ..utils.ngff import ZarrWriteConfig, _resolve_format
 
                 cfg = ZarrWriteConfig(
                     ngff_version=self.ngff_version_override or (self.metadata or {}).get("ngff_version"),
@@ -126,7 +126,7 @@ class ZarrManager(MicroscopeManager):
                     zarr_format=resolved_zarr_format,
                 )
 
-                from .utils.create_empty_dataset import create_empty_dataset as _create_empty_dataset
+                from ..utils.create_empty_dataset import create_empty_dataset as _create_empty_dataset
                 _create_empty_dataset(
                     self.root,
                     self.metadata,
@@ -519,7 +519,7 @@ class ZarrManager(MicroscopeManager):
         ``metadata['axes']`` may be any unique subset of ``tczyx``. Use
         ``data_type='label'`` or ``is_label=True`` for label data.
         """
-        from .utils.create_empty_group import create_empty_group as _create_empty_group
+        from ..utils.create_empty_group import create_empty_group as _create_empty_group
 
         effective_data_type = normalize_data_type(data_type or metadata.get("data_type"), is_label=True if is_label else None)
         is_label = is_label or effective_data_type == "label"
@@ -592,7 +592,7 @@ class ZarrManager(MicroscopeManager):
         downscale_factor: int | Sequence[int] | None = None,
     ):
         """Write an image patch into a root or subgroup pyramid and refresh lower levels."""
-        from .utils.write_image_region import write_image_region as _write_image_region
+        from ..utils.write_image_region import write_image_region as _write_image_region
         return _write_image_region(
             root=self.root,
             mode=self.mode,
@@ -619,7 +619,7 @@ class ZarrManager(MicroscopeManager):
         downscale_factor: int | Sequence[int] | None = None,
     ):
         """Write a label patch into a label pyramid and regenerate coarser levels."""
-        from .utils.write_label_region import write_label_region as _write_label_region
+        from ..utils.write_label_region import write_label_region as _write_label_region
         return _write_label_region(
             root=self.root,
             mode=self.mode,
@@ -650,7 +650,7 @@ class ZarrManager(MicroscopeManager):
         Channel subsetting is skipped automatically for datasets without a
         channel axis, such as most label datasets.
         """
-        from .utils.dataset_ops import subset_levels
+        from ..utils.dataset_ops import subset_levels
 
         for name, dataset in self._iter_datasets(
             include_raw=True,
@@ -684,7 +684,7 @@ class ZarrManager(MicroscopeManager):
         """
         Build/rebuild pyramids for raw, groups, and labels.
         """
-        from .utils.pyramid import build_pyramid as _build_pyramid
+        from ..utils.pyramid import build_pyramid as _build_pyramid
 
         for name, dataset in self._iter_datasets(
             include_raw=True,
@@ -718,7 +718,7 @@ class ZarrManager(MicroscopeManager):
 
         Labels are skipped because they usually do not have a channel axis.
         """
-        from .utils.dataset_ops import reorder_channels as _reorder_channels
+        from ..utils.dataset_ops import reorder_channels as _reorder_channels
 
         for name, dataset in self._iter_datasets(
             include_raw=True,
@@ -752,7 +752,7 @@ class ZarrManager(MicroscopeManager):
 
         Channel-specific metadata is skipped for datasets without a channel axis.
         """
-        from .utils.dataset_ops import apply_metadata_updates, known_updates
+        from ..utils.dataset_ops import apply_metadata_updates, known_updates
 
         updates = known_updates(updates)  # warns once about unknown keys
 
@@ -790,8 +790,8 @@ class ZarrManager(MicroscopeManager):
         Image groups are written as root-level subgroups.
         Labels are written under /labels.
         """
-        from .utils.to_zarr import write_multiscale_to_group
-        from .utils.ngff import ZarrWriteConfig, _resolve_format
+        from ..utils.to_zarr import write_multiscale_to_group
+        from ..utils.ngff import ZarrWriteConfig, _resolve_format
 
         cfg = ZarrWriteConfig(**kwargs)
         ngff_version, zarr_format = _resolve_format(cfg)

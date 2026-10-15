@@ -8,9 +8,9 @@ from dask import delayed
 from tifffile import TiffFile, imread
 
 from .microscope_manager import MicroscopeManager
-from .utils.axes import to_tczyx
-from .utils.metadata import ChannelInfo, build_metadata
-from .utils.units import to_micrometers
+from ..utils.axes import to_tczyx
+from ..utils.metadata import ChannelInfo, build_metadata
+from ..utils.units import to_micrometers
 
 
 class ScapeManager(MicroscopeManager):
