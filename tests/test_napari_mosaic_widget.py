@@ -275,3 +275,101 @@ def test_apply_display_windows():
     assert tuple(v.layers[0].contrast_limits) == (100.0, 1200.0)
     assert tuple(v.layers[1].contrast_limits) == (5.0, 50.0)
     assert tuple(v.layers[0].contrast_limits_range) == (0, 65535)
+
+
+def _stacked_mosaic():
+    """FakeMosaic with stack names: s0 at x 0..16, s1 at x 8..24, in channels A and B."""
+    m = FakeMosaic(".")
+    for i, t in enumerate(m.tiles):
+        t.attrs["stack"] = f"s{i % 2}"
+    return m
+
+
+def test_tile_map_picks_stack_positions():
+    from napari.components import ViewerModel
+
+    m = _stacked_mosaic()
+    fp = mw.tile_footprints(m)
+    assert list(fp) == ["s0", "s1"]  # one rectangle per position, shared by both channels
+    assert fp["s1"].tolist() == [[0, 8], [16, 24]]
+
+    v = ViewerModel()
+    m.visualize(viewer=v, contrast_limits={"A": (0, 10), "B": (0, 10)})
+    layer = mw.add_tile_map(v, m)
+    assert mw.find_tile_map(v.layers, m.path) is layer and mw.find_tile_map(v.layers, "elsewhere") is None
+    assert mw.picked_stack_ids(layer) == ["s0", "s1"]
+    assert mw.picked_stack_ids(None) is None
+
+    assert mw.toggle_tile_at(layer, (0, 4, 20)) == "s1"      # 3D cursor position, 2D map
+    assert mw.picked_stack_ids(layer) == ["s0"]
+    assert mw.picked_tiles(m, m.tiles, ["s0"]) == [m.tiles[0], m.tiles[2]]
+    assert mw.picked_tiles(m, m.tiles, None) == m.tiles
+    assert not np.allclose(layer.face_color[0], layer.face_color[1])  # unpicked looks different
+    assert mw.toggle_tile_at(layer, (0, 100, 100)) is None   # no tile there
+    assert mw.toggle_tile_at(layer, (0, 4, 20)) == "s1"
+    assert mw.picked_stack_ids(layer) == ["s0", "s1"]
+
+    # the map cannot be edited, also after switching to 3D and back
+    assert not layer.editable
+    v.dims.ndisplay = 3
+    v.dims.ndisplay = 2
+    assert not layer.editable
+
+    # loading again replaces the map
+    assert mw.add_tile_map(v, m) is not layer and sum(lay.name.startswith(mw.TILE_MAP) for lay in v.layers) == 1
+
+
+class _Click:
+    """Minimal napari mouse event for the viewer drag callbacks."""
+
+    def __init__(self, position, pos=(10, 10)):
+        self.position, self.pos, self.button, self.type = position, np.array(pos), 1, "mouse_press"
+        self.modifiers = []
+
+
+def _press(viewer, event, moves=()):
+    gens = [cb(viewer, event) for cb in viewer.mouse_drag_callbacks]
+    gens = [g for g in gens if g is not None and next(g, StopIteration) is not StopIteration]
+    for pos in moves:
+        event.type, event.pos = "mouse_move", np.array(pos)
+        for g in gens:
+            next(g, None)
+    event.type = "mouse_release"
+    for g in gens:
+        next(g, None)
+
+
+def test_widget_fuses_and_exports_picked_tiles_only(app, monkeypatch):
+    from napari.components import ViewerModel
+
+    viewer = ViewerModel()
+    monkeypatch.setattr(mw, "current_viewer", lambda: viewer)
+    dock = mw.mosaic_widget()
+    m = _stacked_mosaic()
+    dock.state["mosaic"] = m
+    dock.populate(m, Path("."))
+    layer = mw.find_tile_map(viewer.layers, m.path)
+    assert layer is not None
+    fw = dock.fuse_widget
+    fw.ds_z.value, fw.ds_y.value, fw.ds_x.value = 1, 1, 1
+    assert "x 8 x 16 x 24 px" in dock.plan_label.text()
+
+    _press(viewer, _Click((0, 4, 20)), moves=[(30, 30)])  # a drag pans: nothing picked
+    assert mw.picked_stack_ids(layer) == ["s0", "s1"]
+    _press(viewer, _Click((0, 4, 20)), moves=[(11, 11)])  # a click with a little jitter
+    assert mw.picked_stack_ids(layer) == ["s0"]
+    assert "x 8 x 16 x 16 px" in dock.plan_label.text()   # the output fits the picked tiles
+
+    viewer.dims.ndisplay = 3                               # no picking in 3D
+    _press(viewer, _Click((0, 4, 20)))
+    assert mw.picked_stack_ids(layer) == ["s0"]
+    viewer.dims.ndisplay = 2
+
+    values = {name: getattr(fw, name).value for name in
+              ("channels", "groups", "projection", "blend", "ds_z", "ds_y", "ds_x", "levels", "workers", "overwrite")}
+    row = mw.batch_row(input_path="acq", microscope="luxendo", output="out.zarr", values=values,
+                       all_groups=["L", "R"], skip_ids=[], picked=["s0"], all_stacks={"s0", "s1"})
+    assert row["tiles"] == "s0"
+    row = mw.batch_row(input_path="acq", microscope="luxendo", output="out.zarr", values=values,
+                       all_groups=["L", "R"], skip_ids=[], picked=["s0", "s1"], all_stacks={"s0", "s1"})
+    assert row["tiles"] == ""                             # every tile: the default
