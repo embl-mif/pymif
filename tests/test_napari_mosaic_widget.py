@@ -57,7 +57,7 @@ def test_widget_populates_and_plans(app, tmp_path):
     dock.populate(dock.state["mosaic"], tmp_path)
     fw = dock.fuse_widget
     assert list(fw.channels.value) == ["A", "B"]
-    assert fw.blend.value == "midline"  # two illumination groups
+    assert fw.blend.value == "sigmoid"
     assert list(dock.show_widget.channels.value) == ["A"]
 
     fw.ds_z.value, fw.ds_y.value, fw.ds_x.value = 1, 2, 2
@@ -217,7 +217,7 @@ def test_batch_csv_export_runs_with_the_cli(app, tmp_path, monkeypatch):
     assert len(table) == 2
     row = table.iloc[0]
     assert row["microscope"] == "luxendo" and row["projection"] == "max"
-    assert row["downsample"] == "1 2 2" and row["blend"] == "midline" and row["groups"] == ""
+    assert row["downsample"] == "1 2 2" and row["blend"] == "sigmoid" and row["groups"] == ""
 
     pd.read_csv(csv).iloc[:1].to_csv(csv, index=False)
     monkeypatch.setattr(sys, "argv", ["pymif", "fuse", "--batch", str(csv)])

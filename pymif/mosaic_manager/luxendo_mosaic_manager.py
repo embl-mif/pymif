@@ -28,7 +28,7 @@ class LuxendoMosaicManager(MosaicManager):
     * ``channel``: the dye, with the illumination side removed
       (``autofluo-488-L`` and ``autofluo-488-R`` both give ``autofluo-488``), so
       both halves of a sample end up in the same fused channel;
-    * ``group``: the illumination side, ``"L"`` or ``"R"`` (used by ``blend="midline"``);
+    * ``group``: the illumination side, ``"L"`` or ``"R"`` (used by ``blend="sigmoid"`` and ``"midline"``);
     * ``timepoint``: the JSON ``time_point`` (mosaics with several timepoints are
       refused for now, see :class:`~pymif.mosaic_manager.MosaicManager`);
     * ``attrs``: ``stack``, ``stack_description``, ``grid`` (``(ix, iy)``),
