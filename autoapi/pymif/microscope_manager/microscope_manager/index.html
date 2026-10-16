@@ -1,0 +1,393 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pymif.microscope_manager.microscope_manager &mdash; PyMIF 0.5.1.dev21+gdf76fddfa documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=da07648d"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="pymif.microscope_manager.opera_manager" href="../opera_manager/index.html" />
+    <link rel="prev" title="pymif.microscope_manager.luxendo_manager" href="../luxendo_manager/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            PyMIF
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing and extending PyMIF</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">pymif</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../_version/index.html">pymif._version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html">pymif.cli</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">pymif.microscope_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../mosaic_manager/index.html">pymif.mosaic_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../napari/index.html">pymif.napari</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../utils/index.html">pymif.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PyMIF</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../api_reference.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">pymif</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">pymif.microscope_manager</a></li>
+      <li class="breadcrumb-item active">pymif.microscope_manager.microscope_manager</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/pymif/microscope_manager/microscope_manager/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pymif.microscope_manager.microscope_manager">
+<span id="pymif-microscope-manager-microscope-manager"></span><h1>pymif.microscope_manager.microscope_manager<a class="headerlink" href="#module-pymif.microscope_manager.microscope_manager" title="Link to this heading"></a></h1>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.microscope_manager.microscope_manager.logger" title="pymif.microscope_manager.microscope_manager.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logger</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager" title="pymif.microscope_manager.microscope_manager.MicroscopeManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MicroscopeManager</span></code></a></p></td>
+<td><p>Abstract base class for managing microscope image datasets.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="pymif.microscope_manager.microscope_manager.logger">
+<span class="sig-prename descclassname"><span class="pre">pymif.microscope_manager.microscope_manager.</span></span><span class="sig-name descname"><span class="pre">logger</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/microscope_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.microscope_manager.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymif.microscope_manager.microscope_manager.MicroscopeManager">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pymif.microscope_manager.microscope_manager.</span></span><span class="sig-name descname"><span class="pre">MicroscopeManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/microscope_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Abstract base class for managing microscope image datasets.</p>
+<p>Provides shared functionality for reading, writing, visualizing,
+and managing multiscale image data and metadata.</p>
+<p>Subclasses implement two hooks and inherit <a class="reference internal" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager.read" title="pymif.microscope_manager.microscope_manager.MicroscopeManager.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code></a>:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager._parse_metadata" title="pymif.microscope_manager.microscope_manager.MicroscopeManager._parse_metadata"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_parse_metadata()</span></code></a> – return the normalized metadata dictionary
+(see <a class="reference internal" href="../../utils/metadata/index.html#pymif.utils.metadata.build_metadata" title="pymif.utils.metadata.build_metadata"><code class="xref py py-func docutils literal notranslate"><span class="pre">pymif.utils.metadata.build_metadata()</span></code></a>);</p></li>
+<li><p><a class="reference internal" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager._build_dask_array" title="pymif.microscope_manager.microscope_manager.MicroscopeManager._build_dask_array"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_build_dask_array()</span></code></a> – return one lazy dask array per pyramid level.</p></li>
+</ul>
+<p>Managers can be used as context managers so that any open file handle is
+closed automatically:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">mm</span><span class="o">.</span><span class="n">LuxendoManager</span><span class="p">(</span><span class="s2">"path/to/dataset"</span><span class="p">)</span> <span class="k">as</span> <span class="n">lux</span><span class="p">:</span>
+    <span class="n">lux</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="s2">"out.zarr"</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.microscope_manager.microscope_manager.MicroscopeManager.DEFAULT_CHUNKS">
+<span class="sig-name descname"><span class="pre">DEFAULT_CHUNKS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">8,</span> <span class="pre">4096,</span> <span class="pre">4096)</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/microscope_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager.DEFAULT_CHUNKS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.microscope_manager.microscope_manager.MicroscopeManager.data">
+<span class="sig-name descname"><span class="pre">data</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">dask.array.Array</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/microscope_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager.data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.microscope_manager.microscope_manager.MicroscopeManager.metadata">
+<span class="sig-name descname"><span class="pre">metadata</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/microscope_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager.metadata" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.microscope_manager.microscope_manager.MicroscopeManager._open_files">
+<span class="sig-name descname"><span class="pre">_open_files</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/microscope_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager._open_files" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.microscope_manager.microscope_manager.MicroscopeManager.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/microscope_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager.path" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.microscope_manager.microscope_manager.MicroscopeManager.chunks">
+<span class="sig-name descname"><span class="pre">chunks</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/microscope_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager.chunks" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.microscope_manager.MicroscopeManager.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/microscope_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager.read" title="Link to this definition"></a></dt>
+<dd><p>Parse the metadata and build the lazy dask pyramid.</p>
+<p>Populates <a class="reference internal" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager.metadata" title="pymif.microscope_manager.microscope_manager.MicroscopeManager.metadata"><code class="xref py py-attr docutils literal notranslate"><span class="pre">metadata</span></code></a> and <a class="reference internal" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager.data" title="pymif.microscope_manager.microscope_manager.MicroscopeManager.data"><code class="xref py py-attr docutils literal notranslate"><span class="pre">data</span></code></a> in place; nothing is
+returned. Called automatically by the constructors.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.microscope_manager.MicroscopeManager._parse_metadata">
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_parse_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/microscope_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager._parse_metadata" title="Link to this definition"></a></dt>
+<dd><p>Return the metadata dictionary describing the dataset.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.microscope_manager.MicroscopeManager._build_dask_array">
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_build_dask_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">dask.array.Array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/microscope_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager._build_dask_array" title="Link to this definition"></a></dt>
+<dd><p>Return one dask array per pyramid level, in the order given by <code class="docutils literal notranslate"><span class="pre">metadata[&quot;axes&quot;]</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.microscope_manager.MicroscopeManager._normalize_chunks">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_normalize_chunks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chunks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/microscope_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager._normalize_chunks" title="Link to this definition"></a></dt>
+<dd><p>Make <code class="docutils literal notranslate"><span class="pre">chunks</span></code> valid for an array of <code class="docutils literal notranslate"><span class="pre">shape</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>, non-iterables and tuples of the wrong length give
+<code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>; otherwise every chunk is clipped to <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">axis</span> <span class="pre">size]</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.microscope_manager.MicroscopeManager.to_zarr">
+<span class="sig-name descname"><span class="pre">to_zarr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/microscope_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager.to_zarr" title="Link to this definition"></a></dt>
+<dd><p>Write the current dataset to an OME-Zarr store.</p>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>path<span class="classifier">str</span></dt><dd><p>Output zarr path.</p>
+</dd>
+<dt><a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs</dt><dd><p>Keyword arguments forwarded to <a class="reference internal" href="../../utils/ngff/index.html#pymif.utils.ngff.ZarrWriteConfig" title="pymif.utils.ngff.ZarrWriteConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZarrWriteConfig</span></code></a>,
+such as <code class="docutils literal notranslate"><span class="pre">ngff_version</span></code>, <code class="docutils literal notranslate"><span class="pre">zarr_format</span></code>, <code class="docutils literal notranslate"><span class="pre">compressor</span></code>,
+<code class="docutils literal notranslate"><span class="pre">compressor_level</span></code>, <code class="docutils literal notranslate"><span class="pre">overwrite</span></code>, <code class="docutils literal notranslate"><span class="pre">chunks</span></code>, <code class="docutils literal notranslate"><span class="pre">shards</span></code>,
+<code class="docutils literal notranslate"><span class="pre">shard_target_mb</span></code>, <code class="docutils literal notranslate"><span class="pre">shard_exclude_axes</span></code> or <code class="docutils literal notranslate"><span class="pre">drop_singleton</span></code>
+(default <code class="docutils literal notranslate"><span class="pre">True</span></code>: singleton t/c/z axes are removed on write).</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.microscope_manager.MicroscopeManager.visualize">
+<span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_memory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">viewer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">napari.Viewer</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/microscope_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager.visualize" title="Link to this definition"></a></dt>
+<dd><p>Open the dataset in napari using the shared visualization helper.</p>
+<section id="id3">
+<h3>Parameters<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>start_level, stop_level<span class="classifier">int</span></dt><dd><p>Pyramid levels to expose. <code class="docutils literal notranslate"><span class="pre">stop_level=-1</span></code> means all available
+levels from <code class="docutils literal notranslate"><span class="pre">start_level</span></code> onward.</p>
+</dd>
+<dt>in_memory<span class="classifier">bool</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, compute the selected levels before handing them to
+napari. Otherwise keep the dask-backed lazy representation.</p>
+</dd>
+<dt>viewer<span class="classifier">napari.Viewer | None</span></dt><dd><p>Existing napari viewer to reuse. When omitted, a new viewer is
+created by the helper function.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.microscope_manager.MicroscopeManager.build_pyramid">
+<span class="sig-name descname"><span class="pre">build_pyramid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_levels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downscale_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/microscope_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager.build_pyramid" title="Link to this definition"></a></dt>
+<dd><p>Build additional pyramid levels from the current base-resolution data.</p>
+<p>The resulting data and scale metadata replace <code class="docutils literal notranslate"><span class="pre">self.data</span></code> and
+<code class="docutils literal notranslate"><span class="pre">self.metadata</span></code> in-place. This is mainly useful for managers that
+initially expose only one resolution level.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.microscope_manager.MicroscopeManager.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/microscope_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager.close" title="Link to this definition"></a></dt>
+<dd><p>Close all open resources, such as file handles.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.microscope_manager.MicroscopeManager.__enter__">
+<span class="sig-name descname"><span class="pre">__enter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager" title="pymif.microscope_manager.microscope_manager.MicroscopeManager"><span class="pre">MicroscopeManager</span></a></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/microscope_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager.__enter__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.microscope_manager.MicroscopeManager.__exit__">
+<span class="sig-name descname"><span class="pre">__exit__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tb</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/microscope_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager.__exit__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.microscope_manager.MicroscopeManager.reorder_channels">
+<span class="sig-name descname"><span class="pre">reorder_channels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/microscope_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager.reorder_channels" title="Link to this definition"></a></dt>
+<dd><p>Reorder the channel axis and update channel-related metadata.</p>
+<section id="id4">
+<h3>Parameters<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt>new_order<span class="classifier">List[int]</span></dt><dd><p>A permutation of the channel indices.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.microscope_manager.MicroscopeManager.update_metadata">
+<span class="sig-name descname"><span class="pre">update_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">updates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/microscope_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager.update_metadata" title="Link to this definition"></a></dt>
+<dd><p>Safely update entries in the metadata dictionary with validation.</p>
+<section id="id5">
+<h3>Parameters<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl>
+<dt>updates<span class="classifier">Dict[str, Any]</span></dt><dd><p>Dictionary of key-value updates.</p>
+<dl class="simple">
+<dt>Supports:</dt><dd><ul class="simple">
+<li><p>channel_names (list[str])</p></li>
+<li><p>channel_colors (list[str]): valid matplotlib colors or hex code</p></li>
+<li><p>scales (list[tuple])</p></li>
+<li><p>time_increment (float)</p></li>
+<li><p>time_increment_unit (str)</p></li>
+<li><p>units (tuple[str])</p></li>
+<li><p>data_type (<code class="docutils literal notranslate"><span class="pre">&quot;intensity&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;label&quot;</span></code>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="warnings">
+<h3>Warnings<a class="headerlink" href="#warnings" title="Link to this heading"></a></h3>
+<blockquote>
+<div><p>Unknown keys and channel updates that do not match the dataset
+are skipped with a warning; invalid values raise.</p>
+</div></blockquote>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.microscope_manager.MicroscopeManager.subset_dataset">
+<span class="sig-name descname"><span class="pre">subset_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rebuild_pyramid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/microscope_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.microscope_manager.MicroscopeManager.subset_dataset" title="Link to this definition"></a></dt>
+<dd><p>Subset the dataset by timepoints, channels, or spatial coordinates.</p>
+<section id="id6">
+<h3>Parameters<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>T, C, Z, Y, X<span class="classifier">Optional[Sequence[int]]</span></dt><dd><p>Optional sequences of indices for each axis.
+Must be uniformly spaced. For example:
+dataset.subset_dataset(T=np.arange(0, 10, 2), Z=[0,1,2])</p>
+</dd>
+<dt>rebuild_pyramid<span class="classifier">bool</span></dt><dd><p>Rebuild the same number of pyramid levels (with the original
+per-axis downscale factors) after subsetting.</p>
+</dd>
+</dl>
+</section>
+<section id="raises">
+<h3>Raises<a class="headerlink" href="#raises" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>ValueError</dt><dd><p>if index spacing is not uniform or out of bounds.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../luxendo_manager/index.html" class="btn btn-neutral float-left" title="pymif.microscope_manager.luxendo_manager" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../opera_manager/index.html" class="btn btn-neutral float-right" title="pymif.microscope_manager.opera_manager" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Nicola Gritti.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

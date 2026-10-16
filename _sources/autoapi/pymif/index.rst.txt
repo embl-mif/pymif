@@ -1,0 +1,35 @@
+pymif
+=====
+
+.. py:module:: pymif
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/pymif/_version/index
+   /autoapi/pymif/cli/index
+   /autoapi/pymif/microscope_manager/index
+   /autoapi/pymif/mosaic_manager/index
+   /autoapi/pymif/napari/index
+   /autoapi/pymif/utils/index
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   pymif.__version__
+
+
+Package Contents
+----------------
+
+.. py:data:: __version__
+   :value: '0.0.0'
+
+

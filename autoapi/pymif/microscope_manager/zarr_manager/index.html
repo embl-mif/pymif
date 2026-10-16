@@ -1,0 +1,514 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pymif.microscope_manager.zarr_manager &mdash; PyMIF 0.5.1.dev21+gdf76fddfa documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=da07648d"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="pymif.microscope_manager.zarr_v04_manager" href="../zarr_v04_manager/index.html" />
+    <link rel="prev" title="pymif.microscope_manager.viventis_manager" href="../viventis_manager/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            PyMIF
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing and extending PyMIF</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">pymif</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../_version/index.html">pymif._version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html">pymif.cli</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">pymif.microscope_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../mosaic_manager/index.html">pymif.mosaic_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../napari/index.html">pymif.napari</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../utils/index.html">pymif.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PyMIF</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../api_reference.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">pymif</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">pymif.microscope_manager</a></li>
+      <li class="breadcrumb-item active">pymif.microscope_manager.zarr_manager</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/pymif/microscope_manager/zarr_manager/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pymif.microscope_manager.zarr_manager">
+<span id="pymif-microscope-manager-zarr-manager"></span><h1>pymif.microscope_manager.zarr_manager<a class="headerlink" href="#module-pymif.microscope_manager.zarr_manager" title="Link to this heading"></a></h1>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.microscope_manager.zarr_manager.logger" title="pymif.microscope_manager.zarr_manager.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logger</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.microscope_manager.zarr_manager.ZarrDataset" title="pymif.microscope_manager.zarr_manager.ZarrDataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ZarrDataset</span></code></a></p></td>
+<td><p>All the operations on a read-only sequence.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.microscope_manager.zarr_manager.AttrDict" title="pymif.microscope_manager.zarr_manager.AttrDict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AttrDict</span></code></a></p></td>
+<td><p>Dictionary with optional attribute access for valid Python names.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.microscope_manager.zarr_manager.ZarrManager" title="pymif.microscope_manager.zarr_manager.ZarrManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ZarrManager</span></code></a></p></td>
+<td><p>A manager class for reading and handling OME-Zarr datasets.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.logger">
+<span class="sig-prename descclassname"><span class="pre">pymif.microscope_manager.zarr_manager.</span></span><span class="sig-name descname"><span class="pre">logger</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrDataset">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pymif.microscope_manager.zarr_manager.</span></span><span class="sig-name descname"><span class="pre">ZarrDataset</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrDataset" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">collections.abc.Sequence</span></code></p>
+<p>All the operations on a read-only sequence.</p>
+<p>Concrete subclasses must override __new__ or __init__,
+__getitem__, and __len__.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrDataset.data">
+<span class="sig-name descname"><span class="pre">data</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">dask.array.Array</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrDataset.data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrDataset.zarr_data">
+<span class="sig-name descname"><span class="pre">zarr_data</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrDataset.zarr_data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrDataset.metadata">
+<span class="sig-name descname"><span class="pre">metadata</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrDataset.metadata" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrDataset.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrDataset.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrDataset.path">
+<span class="sig-name descname"><span class="pre">path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrDataset.path" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrDataset.__len__">
+<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrDataset.__len__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrDataset.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrDataset.__getitem__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrDataset.__iter__">
+<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">collections.abc.Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">dask.array.Array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrDataset.__iter__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrDataset.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrDataset.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.AttrDict">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pymif.microscope_manager.zarr_manager.</span></span><span class="sig-name descname"><span class="pre">AttrDict</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.AttrDict" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></p>
+<p>Dictionary with optional attribute access for valid Python names.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.AttrDict.__getattr__">
+<span class="sig-name descname"><span class="pre">__getattr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.AttrDict.__getattr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pymif.microscope_manager.zarr_manager.</span></span><span class="sig-name descname"><span class="pre">ZarrManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'r'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ngff_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zarr_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../microscope_manager/index.html#pymif.microscope_manager.microscope_manager.MicroscopeManager" title="pymif.microscope_manager.microscope_manager.MicroscopeManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymif.microscope_manager.microscope_manager.MicroscopeManager</span></code></a></p>
+<p>A manager class for reading and handling OME-Zarr datasets.</p>
+<p>Supports both:
+- NGFF / OME-Zarr v0.4  -&gt; metadata in root/group attrs directly
+- NGFF / OME-Zarr v0.5  -&gt; metadata in attrs[“ome”]</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager.path" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager.chunks">
+<span class="sig-name descname"><span class="pre">chunks</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager.chunks" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager.mode">
+<span class="sig-name descname"><span class="pre">mode</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'r'</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager.mode" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager.metadata">
+<span class="sig-name descname"><span class="pre">metadata</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager.metadata" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager.ngff_version">
+<span class="sig-name descname"><span class="pre">ngff_version</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager.ngff_version" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager.ngff_version_override">
+<span class="sig-name descname"><span class="pre">ngff_version_override</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager.ngff_version_override" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager.zarr_format_override">
+<span class="sig-name descname"><span class="pre">zarr_format_override</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager.zarr_format_override" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager._get_image_meta">
+<span class="sig-name descname"><span class="pre">_get_image_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">zarr.Group</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager._get_image_meta" title="Link to this definition"></a></dt>
+<dd><p>Return the image metadata dictionary for either NGFF v0.4 or v0.5.</p>
+<p>v0.5 -&gt; group.attrs[“ome”]
+v0.4 -&gt; group.attrs</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager._get_multiscales">
+<span class="sig-name descname"><span class="pre">_get_multiscales</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">zarr.Group</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager._get_multiscales" title="Link to this definition"></a></dt>
+<dd><p>Return the NGFF <code class="docutils literal notranslate"><span class="pre">multiscales</span></code> block for <code class="docutils literal notranslate"><span class="pre">group</span></code> regardless of version.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager._get_omero">
+<span class="sig-name descname"><span class="pre">_get_omero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">zarr.Group</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager._get_omero" title="Link to this definition"></a></dt>
+<dd><p>Return the OMERO-style channel metadata stored on <code class="docutils literal notranslate"><span class="pre">group</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager._extract_metadata">
+<span class="sig-name descname"><span class="pre">_extract_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_levels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">dask.array.Array</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiscales</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omero</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'intensity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zarr_levels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager._extract_metadata" title="Link to this definition"></a></dt>
+<dd><p>Translate NGFF metadata blocks into the normalized PyMIF schema.</p>
+<p>The normalized schema is axis-aware: <code class="docutils literal notranslate"><span class="pre">axes</span></code> may be any unique
+combination of <code class="docutils literal notranslate"><span class="pre">t</span></code>, <code class="docutils literal notranslate"><span class="pre">c</span></code>, <code class="docutils literal notranslate"><span class="pre">z</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code> and <code class="docutils literal notranslate"><span class="pre">x</span></code>. Spatial <code class="docutils literal notranslate"><span class="pre">scales</span></code>
+and <code class="docutils literal notranslate"><span class="pre">units</span></code> are stored in the same order as the spatial axes appear in
+<code class="docutils literal notranslate"><span class="pre">axes</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager._read_multiscale_group">
+<span class="sig-name descname"><span class="pre">_read_multiscale_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">zarr.Group</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">dask.array.Array</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager._read_multiscale_group" title="Link to this definition"></a></dt>
+<dd><p>Load one multiscale image group as dask arrays plus normalized metadata.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager.read" title="Link to this definition"></a></dt>
+<dd><p>Read the root image plus discover additional image groups and labels.</p>
+<p>The root image is exposed through <code class="docutils literal notranslate"><span class="pre">self.data</span></code> and <code class="docutils literal notranslate"><span class="pre">self.metadata</span></code>.
+Additional multiscale subgroups are indexed in <code class="docutils literal notranslate"><span class="pre">self.groups</span></code> and label
+pyramids in <code class="docutils literal notranslate"><span class="pre">self.labels</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager._parse_metadata">
+<span class="sig-name descname"><span class="pre">_parse_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager._parse_metadata" title="Link to this definition"></a></dt>
+<dd><p>Return the metadata dictionary describing the dataset.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager._build_dask_array">
+<span class="sig-name descname"><span class="pre">_build_dask_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">dask.array.Array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager._build_dask_array" title="Link to this definition"></a></dt>
+<dd><p>Return one dask array per pyramid level, in the order given by <code class="docutils literal notranslate"><span class="pre">metadata[&quot;axes&quot;]</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager._sync_raw_aliases">
+<span class="sig-name descname"><span class="pre">_sync_raw_aliases</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager._sync_raw_aliases" title="Link to this definition"></a></dt>
+<dd><p>Keep the old single-dataset API synchronized with the raw dataset.</p>
+<dl class="simple">
+<dt>This preserves:</dt><dd><p>d.data
+d.metadata
+d.zarr_data</p>
+</dd>
+<dt>as aliases to:</dt><dd><p>d.raw.data
+d.raw.metadata
+d.raw.zarr_data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager._iter_datasets">
+<span class="sig-name descname"><span class="pre">_iter_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_raw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager._iter_datasets" title="Link to this definition"></a></dt>
+<dd><p>Iterate over all datasets managed by ZarrManager.</p>
+<p>This is ZarrManager-specific because only ZarrManager knows about
+raw/groups/labels.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager._invalidate_zarr_data">
+<span class="sig-name descname"><span class="pre">_invalidate_zarr_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pymif.microscope_manager.zarr_manager.ZarrDataset" title="pymif.microscope_manager.zarr_manager.ZarrDataset"><span class="pre">ZarrDataset</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager._invalidate_zarr_data" title="Link to this definition"></a></dt>
+<dd><p>After lazy in-memory transformations, dataset.data no longer necessarily
+corresponds one-to-one to the original on-disk Zarr arrays.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager._load_group">
+<span class="sig-name descname"><span class="pre">_load_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager._load_group" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager._load_labels">
+<span class="sig-name descname"><span class="pre">_load_labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager._load_labels" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager.visualize_zarr">
+<span class="sig-name descname"><span class="pre">visualize_zarr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">viewer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">napari.Viewer</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">napari.Viewer</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager.visualize_zarr" title="Link to this definition"></a></dt>
+<dd><p>Open the root image and all multiscale subgroups in napari.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager.create_empty_group">
+<span class="sig-name descname"><span class="pre">create_empty_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager.create_empty_group" title="Link to this definition"></a></dt>
+<dd><p>Create an empty image subgroup or label subgroup and update this manager.</p>
+<p><code class="docutils literal notranslate"><span class="pre">metadata['axes']</span></code> may be any unique subset of <code class="docutils literal notranslate"><span class="pre">tczyx</span></code>. Use
+<code class="docutils literal notranslate"><span class="pre">data_type='label'</span></code> or <code class="docutils literal notranslate"><span class="pre">is_label=True</span></code> for label data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager.write_image_region">
+<span class="sig-name descname"><span class="pre">write_image_region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">slice</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">slice(None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">slice</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">slice(None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">slice</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">slice(None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">slice</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">slice(None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">slice</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">slice(None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downscale_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager.write_image_region" title="Link to this definition"></a></dt>
+<dd><p>Write an image patch into a root or subgroup pyramid and refresh lower levels.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager.write_label_region">
+<span class="sig-name descname"><span class="pre">write_label_region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">slice</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">slice(None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">slice</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">slice(None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">slice</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">slice(None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">slice</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">slice(None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downscale_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager.write_label_region" title="Link to this definition"></a></dt>
+<dd><p>Write a label patch into a label pyramid and regenerate coarser levels.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager.subset_dataset">
+<span class="sig-name descname"><span class="pre">subset_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rebuild_pyramid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager.subset_dataset" title="Link to this definition"></a></dt>
+<dd><p>Subset raw, groups, and labels.</p>
+<p>Channel subsetting is skipped automatically for datasets without a
+channel axis, such as most label datasets.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager.build_pyramid">
+<span class="sig-name descname"><span class="pre">build_pyramid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_levels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downscale_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager.build_pyramid" title="Link to this definition"></a></dt>
+<dd><p>Build/rebuild pyramids for raw, groups, and labels.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager.reorder_channels">
+<span class="sig-name descname"><span class="pre">reorder_channels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager.reorder_channels" title="Link to this definition"></a></dt>
+<dd><p>Reorder channels in raw and non-label image groups.</p>
+<p>Labels are skipped because they usually do not have a channel axis.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager.estimate_chromatic_shift">
+<span class="sig-name descname"><span class="pre">estimate_chromatic_shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reference_channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager.estimate_chromatic_shift" title="Link to this definition"></a></dt>
+<dd><p>Estimate the axial (Z) chromatic shift of each channel of the raw image.</p>
+<p>The shift is measured on the sample’s Z-facing surfaces (top and
+bottom), first on a coarse level and then on crops of a finer level.
+Keyword arguments are forwarded to
+<a class="reference internal" href="../../utils/chromatic_shift/index.html#pymif.utils.chromatic_shift.estimate_chromatic_shift" title="pymif.utils.chromatic_shift.estimate_chromatic_shift"><code class="xref py py-func docutils literal notranslate"><span class="pre">estimate_chromatic_shift()</span></code></a>
+(<code class="docutils literal notranslate"><span class="pre">timepoint</span></code>, <code class="docutils literal notranslate"><span class="pre">coarse_level</span></code>, <code class="docutils literal notranslate"><span class="pre">refine_level</span></code>, <code class="docutils literal notranslate"><span class="pre">max_shift</span></code>,
+<code class="docutils literal notranslate"><span class="pre">n_regions</span></code>, <code class="docutils literal notranslate"><span class="pre">crop_yx</span></code>, <code class="docutils literal notranslate"><span class="pre">min_z_normal</span></code>, <code class="docutils literal notranslate"><span class="pre">min_correlation</span></code>,
+<code class="docutils literal notranslate"><span class="pre">threshold</span></code>).</p>
+<p>Returns a JSON-serializable report whose <code class="docutils literal notranslate"><span class="pre">shifts</span></code> entry holds the
+correction per channel in the physical unit of the Z axis; it can be
+passed directly to <a class="reference internal" href="#pymif.microscope_manager.zarr_manager.ZarrManager.apply_chromatic_shift" title="pymif.microscope_manager.zarr_manager.ZarrManager.apply_chromatic_shift"><code class="xref py py-meth docutils literal notranslate"><span class="pre">apply_chromatic_shift()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager.apply_chromatic_shift">
+<span class="sig-name descname"><span class="pre">apply_chromatic_shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shifts</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">extent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'union'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pymif.microscope_manager.zarr_manager.ZarrManager" title="pymif.microscope_manager.zarr_manager.ZarrManager"><span class="pre">ZarrManager</span></a></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager.apply_chromatic_shift" title="Link to this definition"></a></dt>
+<dd><p>Write a copy of this store with each channel shifted along Z.</p>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>path</dt><dd><p>Output OME-Zarr store; must differ from the input.</p>
+</dd>
+<dt>shifts</dt><dd><p>One Z shift per channel in physical units (positive moves content
+towards higher Z), or the report of <a class="reference internal" href="#pymif.microscope_manager.zarr_manager.ZarrManager.estimate_chromatic_shift" title="pymif.microscope_manager.zarr_manager.ZarrManager.estimate_chromatic_shift"><code class="xref py py-meth docutils literal notranslate"><span class="pre">estimate_chromatic_shift()</span></code></a>.</p>
+</dd>
+<dt>extent</dt><dd><p><code class="docutils literal notranslate"><span class="pre">&quot;union&quot;</span></code> (default) grows Z so no channel loses data,
+<code class="docutils literal notranslate"><span class="pre">&quot;same&quot;</span></code> keeps the input size and <code class="docutils literal notranslate"><span class="pre">&quot;intersection&quot;</span></code> crops to
+the planes covered by every channel. Padding is rounded to whole
+planes of the coarsest level so all pyramid levels stay aligned.</p>
+</dd>
+<dt>order</dt><dd><p><code class="docutils literal notranslate"><span class="pre">1</span></code> interpolates linearly; <code class="docutils literal notranslate"><span class="pre">0</span></code> rounds each shift to whole
+planes, which leaves voxel values untouched.</p>
+</dd>
+<dt>include_groups, include_labels</dt><dd><p>Also write image subgroups (shifted like the raw image) and labels
+(padded or cropped to the new Z extent, following the reference
+channel).</p>
+</dd>
+<dt>overwrite, num_workers, progress</dt><dd><p>Same meaning as in <a class="reference internal" href="../../utils/ngff/index.html#pymif.utils.ngff.ZarrWriteConfig" title="pymif.utils.ngff.ZarrWriteConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZarrWriteConfig</span></code></a>.</p>
+</dd>
+</dl>
+<p>Every array keeps its source’s chunks, shards, codecs and dimension
+names, every group its attributes (pixel sizes, channel metadata…).
+Datasets must still match their on-disk arrays, so call this before
+in-memory edits such as <a class="reference internal" href="#pymif.microscope_manager.zarr_manager.ZarrManager.subset_dataset" title="pymif.microscope_manager.zarr_manager.ZarrManager.subset_dataset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">subset_dataset()</span></code></a>.</p>
+<p>Returns the output store opened as a new <a class="reference internal" href="#pymif.microscope_manager.zarr_manager.ZarrManager" title="pymif.microscope_manager.zarr_manager.ZarrManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZarrManager</span></code></a>.</p>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager.correct_chromatic_shift">
+<span class="sig-name descname"><span class="pre">correct_chromatic_shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">extent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'union'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">estimate_kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pymif.microscope_manager.zarr_manager.ZarrManager" title="pymif.microscope_manager.zarr_manager.ZarrManager"><span class="pre">ZarrManager</span></a></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager.correct_chromatic_shift" title="Link to this definition"></a></dt>
+<dd><p>Estimate the Z chromatic shift and write the corrected store in one go.</p>
+<p>Combines <a class="reference internal" href="#pymif.microscope_manager.zarr_manager.ZarrManager.estimate_chromatic_shift" title="pymif.microscope_manager.zarr_manager.ZarrManager.estimate_chromatic_shift"><code class="xref py py-meth docutils literal notranslate"><span class="pre">estimate_chromatic_shift()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">estimate_kwargs</span></code>) and
+<a class="reference internal" href="#pymif.microscope_manager.zarr_manager.ZarrManager.apply_chromatic_shift" title="pymif.microscope_manager.zarr_manager.ZarrManager.apply_chromatic_shift"><code class="xref py py-meth docutils literal notranslate"><span class="pre">apply_chromatic_shift()</span></code></a>. The estimate report is stored in the
+output root attribute <code class="docutils literal notranslate"><span class="pre">pymif_chromatic_shift</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager.update_metadata">
+<span class="sig-name descname"><span class="pre">update_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">updates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager.update_metadata" title="Link to this definition"></a></dt>
+<dd><p>Update metadata for raw, groups, and labels.</p>
+<p>Channel-specific metadata is skipped for datasets without a channel axis.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.microscope_manager.zarr_manager.ZarrManager.to_zarr">
+<span class="sig-name descname"><span class="pre">to_zarr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reread</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/microscope_manager/zarr_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.microscope_manager.zarr_manager.ZarrManager.to_zarr" title="Link to this definition"></a></dt>
+<dd><p>Write raw data, groups, and labels to a complete OME-Zarr store.</p>
+<p>Raw data is written directly to the root group.
+Image groups are written as root-level subgroups.
+Labels are written under /labels.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../viventis_manager/index.html" class="btn btn-neutral float-left" title="pymif.microscope_manager.viventis_manager" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../zarr_v04_manager/index.html" class="btn btn-neutral float-right" title="pymif.microscope_manager.zarr_v04_manager" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Nicola Gritti.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

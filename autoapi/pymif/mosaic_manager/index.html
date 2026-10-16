@@ -1,0 +1,830 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pymif.mosaic_manager &mdash; PyMIF 0.5.1.dev21+gdf76fddfa documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=da07648d"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="pymif.mosaic_manager.fusion" href="fusion/index.html" />
+    <link rel="prev" title="pymif.microscope_manager.zeiss_manager" href="../microscope_manager/zeiss_manager/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PyMIF
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing and extending PyMIF</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">pymif</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../_version/index.html">pymif._version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli/index.html">pymif.cli</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../microscope_manager/index.html">pymif.microscope_manager</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">pymif.mosaic_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../napari/index.html">pymif.napari</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../utils/index.html">pymif.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyMIF</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../api_reference.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">pymif</a></li>
+      <li class="breadcrumb-item active">pymif.mosaic_manager</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/autoapi/pymif/mosaic_manager/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pymif.mosaic_manager">
+<span id="pymif-mosaic-manager"></span><h1>pymif.mosaic_manager<a class="headerlink" href="#module-pymif.mosaic_manager" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="fusion/index.html">pymif.mosaic_manager.fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="h5_array/index.html">pymif.mosaic_manager.h5_array</a></li>
+<li class="toctree-l1"><a class="reference internal" href="luxendo_mosaic_manager/index.html">pymif.mosaic_manager.luxendo_mosaic_manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mosaic/index.html">pymif.mosaic_manager.mosaic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="opera_mosaic_manager/index.html">pymif.mosaic_manager.opera_mosaic_manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tile/index.html">pymif.mosaic_manager.tile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zeiss_mosaic_manager/index.html">pymif.mosaic_manager.zeiss_mosaic_manager</a></li>
+</ul>
+</div>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.mosaic_manager.Tile" title="pymif.mosaic_manager.Tile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Tile</span></code></a></p></td>
+<td><p>One acquired tile of a mosaic: a lazy <code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">y,</span> <span class="pre">x)</span></code> array and where it sits.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.mosaic_manager.H5Array" title="pymif.mosaic_manager.H5Array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">H5Array</span></code></a></p></td>
+<td><p>Lazy, picklable view of one HDF5 dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.mosaic_manager.MosaicManager" title="pymif.mosaic_manager.MosaicManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MosaicManager</span></code></a></p></td>
+<td><p>A set of separately acquired, positioned tiles (not yet one image).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.mosaic_manager.FusionPlan" title="pymif.mosaic_manager.FusionPlan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FusionPlan</span></code></a></p></td>
+<td><p>Level-0 geometry of a fusion, computed without reading any pixel data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.mosaic_manager.LuxendoMosaicManager" title="pymif.mosaic_manager.LuxendoMosaicManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LuxendoMosaicManager</span></code></a></p></td>
+<td><p>Raw Luxendo tiles (<code class="docutils literal notranslate"><span class="pre">*.lux.h5</span></code> + <code class="docutils literal notranslate"><span class="pre">*.json</span></code>) of one acquisition, before any fusion.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.mosaic_manager.OperaMosaicManager" title="pymif.mosaic_manager.OperaMosaicManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OperaMosaicManager</span></code></a></p></td>
+<td><p>Placeholder: raw Opera (Harmony) plate/field tiles, before fusion.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.mosaic_manager.ZeissMosaicManager" title="pymif.mosaic_manager.ZeissMosaicManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ZeissMosaicManager</span></code></a></p></td>
+<td><p>Placeholder: raw Zeiss CZI tile (mosaic) tiles, before fusion.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.mosaic_manager.display_windows" title="pymif.mosaic_manager.display_windows"><code class="xref py py-obj docutils literal notranslate"><span class="pre">display_windows</span></code></a>(→ List[Tuple[float, float]])</p></td>
+<td><p>Display window <code class="docutils literal notranslate"><span class="pre">(start,</span> <span class="pre">end)</span></code> of every channel of an OME-Zarr image, from its</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.mosaic_manager.fuse_tiles" title="pymif.mosaic_manager.fuse_tiles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fuse_tiles</span></code></a>(tiles, out, *[, ds, projection, blend, ...])</p></td>
+<td><p>Fuse <code class="docutils literal notranslate"><span class="pre">tiles</span></code> into an OME-Zarr image and return it as a <code class="docutils literal notranslate"><span class="pre">ZarrManager</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.mosaic_manager.plan_fusion" title="pymif.mosaic_manager.plan_fusion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plan_fusion</span></code></a>(, projection, blend, channels, crop, skip)</p></td>
+<td><p>Validate fusion arguments and compute the level-0 geometry (see <a class="reference internal" href="#pymif.mosaic_manager.fuse_tiles" title="pymif.mosaic_manager.fuse_tiles"><code class="xref py py-func docutils literal notranslate"><span class="pre">fuse_tiles()</span></code></a>).</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="package-contents">
+<h2>Package Contents<a class="headerlink" href="#package-contents" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.Tile">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">Tile</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.Tile" title="Link to this definition"></a></dt>
+<dd><p>One acquired tile of a mosaic: a lazy <code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">y,</span> <span class="pre">x)</span></code> array and where it sits.</p>
+<p>Placement is translation-only: <code class="docutils literal notranslate"><span class="pre">origin</span></code> is the position (in <code class="docutils literal notranslate"><span class="pre">units</span></code>) of
+voxel <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">0,</span> <span class="pre">0]</span></code> in the common sample frame and <code class="docutils literal notranslate"><span class="pre">voxel_size</span></code> the voxel
+spacing. All tiles of a mosaic must use the same units and voxel size.</p>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>data</dt><dd><p>Anything with <code class="docutils literal notranslate"><span class="pre">shape</span></code>, <code class="docutils literal notranslate"><span class="pre">dtype</span></code> and numpy-style slicing that returns
+array data: an <code class="docutils literal notranslate"><span class="pre">h5py.Dataset</span></code>, a dask or a numpy array. It is only
+read when a fusion needs it.</p>
+</dd>
+<dt>origin, voxel_size</dt><dd><p><code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">y,</span> <span class="pre">x)</span></code> position of the first voxel and voxel spacing.</p>
+</dd>
+<dt>channel</dt><dd><p>Channel (dye) name. Tiles with the same name are fused into one output
+channel.</p>
+</dd>
+<dt>group</dt><dd><p>Optional label of tiles that should be merged among themselves first,
+e.g. <code class="docutils literal notranslate"><span class="pre">&quot;L&quot;</span></code>/<code class="docutils literal notranslate"><span class="pre">&quot;R&quot;</span></code> illumination side. Used by <code class="docutils literal notranslate"><span class="pre">blend=&quot;sigmoid&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;midline&quot;</span></code>.</p>
+</dd>
+<dt>timepoint</dt><dd><p>Index of the timepoint the tile belongs to (<code class="docutils literal notranslate"><span class="pre">0</span></code> for a single timepoint).
+Mosaics with more than one timepoint are not supported yet:
+<a class="reference internal" href="#pymif.mosaic_manager.MosaicManager" title="pymif.mosaic_manager.MosaicManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">MosaicManager</span></code></a> refuses them.</p>
+</dd>
+<dt>attrs</dt><dd><p>Free-form, reader specific metadata (stack, grid position, …).</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.Tile.data">
+<span class="sig-name descname"><span class="pre">data</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.Tile.data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.Tile.origin">
+<span class="sig-name descname"><span class="pre">origin</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.Tile.origin" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.Tile.voxel_size">
+<span class="sig-name descname"><span class="pre">voxel_size</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.Tile.voxel_size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.Tile.channel">
+<span class="sig-name descname"><span class="pre">channel</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.Tile.channel" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.Tile.group">
+<span class="sig-name descname"><span class="pre">group</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.Tile.group" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.Tile.timepoint">
+<span class="sig-name descname"><span class="pre">timepoint</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.Tile.timepoint" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.Tile.attrs">
+<span class="sig-name descname"><span class="pre">attrs</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.Tile.attrs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.Tile.units">
+<span class="sig-name descname"><span class="pre">units</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'micrometer'</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.Tile.units" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.Tile.__post_init__">
+<span class="sig-name descname"><span class="pre">__post_init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.Tile.__post_init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.Tile.shape">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">shape</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.Tile.shape" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.Tile.dtype">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">dtype</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.dtype</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.Tile.dtype" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.Tile.extent">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">extent</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.Tile.extent" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">(min,</span> <span class="pre">max)</span></code> corners of the tile in sample coordinates.</p>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.H5Array">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">H5Array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.H5Array" title="Link to this definition"></a></dt>
+<dd><p>Lazy, picklable view of one HDF5 dataset.</p>
+<p>The file is opened for every read, so the object holds no handle: it can be
+sent to worker processes (which is what lets <a class="reference internal" href="#pymif.mosaic_manager.fuse_tiles" title="pymif.mosaic_manager.fuse_tiles"><code class="xref py py-func docutils literal notranslate"><span class="pre">fuse_tiles()</span></code></a>
+read many tiles in parallel despite h5py’s per-process lock) and needs no
+<code class="docutils literal notranslate"><span class="pre">close()</span></code>. It behaves like a read-only array: <code class="docutils literal notranslate"><span class="pre">shape</span></code>, <code class="docutils literal notranslate"><span class="pre">dtype</span></code>, <code class="docutils literal notranslate"><span class="pre">ndim</span></code>
+and numpy-style slicing, so <code class="docutils literal notranslate"><span class="pre">dask.array.from_array</span></code> accepts it directly.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.H5Array.picklable">
+<span class="sig-name descname"><span class="pre">picklable</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.H5Array.picklable" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.H5Array.path">
+<span class="sig-name descname"><span class="pre">path</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.H5Array.path" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.H5Array.dataset">
+<span class="sig-name descname"><span class="pre">dataset</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Data'</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.H5Array.dataset" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.H5Array.shape">
+<span class="sig-name descname"><span class="pre">shape</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.H5Array.shape" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.H5Array.dtype">
+<span class="sig-name descname"><span class="pre">dtype</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.H5Array.dtype" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.H5Array.ndim">
+<span class="sig-name descname"><span class="pre">ndim</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.H5Array.ndim" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.H5Array.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.H5Array.__getitem__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.H5Array.__len__">
+<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.H5Array.__len__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.H5Array.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.H5Array.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.MosaicManager">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">MosaicManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.MosaicManager" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>A set of separately acquired, positioned tiles (not yet one image).</p>
+<p>Unlike a <a class="reference internal" href="../microscope_manager/index.html#pymif.microscope_manager.MicroscopeManager" title="pymif.microscope_manager.MicroscopeManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">MicroscopeManager</span></code></a>, which wraps one
+image, a mosaic exposes the raw tiles lazily and fuses them on request with
+<a class="reference internal" href="#pymif.mosaic_manager.MosaicManager.fuse" title="pymif.mosaic_manager.MosaicManager.fuse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fuse()</span></code></a>. Subclasses implement <a class="reference internal" href="#pymif.mosaic_manager.MosaicManager._scan" title="pymif.mosaic_manager.MosaicManager._scan"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_scan()</span></code></a> only.</p>
+<p>Mosaics can be used as context managers so that open file handles are closed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">mosaic_manager</span><span class="o">.</span><span class="n">LuxendoMosaicManager</span><span class="p">(</span><span class="s2">"raw_folder"</span><span class="p">)</span> <span class="k">as</span> <span class="n">mosaic</span><span class="p">:</span>
+    <span class="n">mosaic</span><span class="o">.</span><span class="n">fuse</span><span class="p">(</span><span class="s2">"overview.ome.zarr"</span><span class="p">,</span> <span class="n">ds</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">projection</span><span class="o">=</span><span class="s2">"max"</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.MosaicManager.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.MosaicManager.path" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.MosaicManager._open_files">
+<span class="sig-name descname"><span class="pre">_open_files</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.MosaicManager._open_files" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.MosaicManager.tiles">
+<span class="sig-name descname"><span class="pre">tiles</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tile/index.html#pymif.mosaic_manager.tile.Tile" title="pymif.mosaic_manager.tile.Tile"><span class="pre">pymif.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.MosaicManager.tiles" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.MosaicManager._check_single_timepoint">
+<span class="sig-name descname"><span class="pre">_check_single_timepoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.MosaicManager._check_single_timepoint" title="Link to this definition"></a></dt>
+<dd><p>Refuse timelapses: loading and fusion handle one timepoint so far.</p>
+<p>Readers already give every tile its <code class="docutils literal notranslate"><span class="pre">timepoint</span></code>; supporting timelapses
+means removing this check and making the fusion loop over <a class="reference internal" href="#pymif.mosaic_manager.MosaicManager.timepoints" title="pymif.mosaic_manager.MosaicManager.timepoints"><code class="xref py py-attr docutils literal notranslate"><span class="pre">timepoints</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.MosaicManager._scan">
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_scan</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tile/index.html#pymif.mosaic_manager.tile.Tile" title="pymif.mosaic_manager.tile.Tile"><span class="pre">pymif.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.MosaicManager._scan" title="Link to this definition"></a></dt>
+<dd><p>Discover the tiles under <a class="reference internal" href="#pymif.mosaic_manager.MosaicManager.path" title="pymif.mosaic_manager.MosaicManager.path"><code class="xref py py-attr docutils literal notranslate"><span class="pre">path</span></code></a> (lazy data, positions in the sample frame).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.MosaicManager.channels">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.MosaicManager.channels" title="Link to this definition"></a></dt>
+<dd><p>Channel names in order of first appearance.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.MosaicManager.timepoints">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">timepoints</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.MosaicManager.timepoints" title="Link to this definition"></a></dt>
+<dd><p>Timepoints of the tiles, sorted (<code class="docutils literal notranslate"><span class="pre">[0]</span></code> for a single timepoint).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.MosaicManager.groups">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">groups</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.MosaicManager.groups" title="Link to this definition"></a></dt>
+<dd><p>Tile group labels in order of first appearance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.MosaicManager.select">
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">attrs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tile/index.html#pymif.mosaic_manager.tile.Tile" title="pymif.mosaic_manager.tile.Tile"><span class="pre">pymif.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.MosaicManager.select" title="Link to this definition"></a></dt>
+<dd><p>Tiles matching <code class="docutils literal notranslate"><span class="pre">channel</span></code>, <code class="docutils literal notranslate"><span class="pre">group</span></code> and any <code class="docutils literal notranslate"><span class="pre">attrs</span></code> entries, e.g. <code class="docutils literal notranslate"><span class="pre">select(stack=1)</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.MosaicManager.tile_id">
+<span class="sig-name descname"><span class="pre">tile_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="tile/index.html#pymif.mosaic_manager.tile.Tile" title="pymif.mosaic_manager.tile.Tile"><span class="pre">pymif.mosaic_manager.tile.Tile</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.MosaicManager.tile_id" title="Link to this definition"></a></dt>
+<dd><p>Stable name of a tile, <code class="docutils literal notranslate"><span class="pre">&quot;&lt;channel&gt;/&lt;stack&gt;&quot;</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;cFos-647/1-x00-y00&quot;</span></code>).</p>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;stack&gt;</span></code> is the reader’s stack name (<code class="docutils literal notranslate"><span class="pre">attrs[&quot;stack&quot;]</span></code>) or, without
+one, the tile index. Used to skip tiles from the command line or a batch CSV.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.MosaicManager.tiles_by_ids">
+<span class="sig-name descname"><span class="pre">tiles_by_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tile/index.html#pymif.mosaic_manager.tile.Tile" title="pymif.mosaic_manager.tile.Tile"><span class="pre">pymif.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.MosaicManager.tiles_by_ids" title="Link to this definition"></a></dt>
+<dd><p>Tiles named by <code class="docutils literal notranslate"><span class="pre">ids</span></code>: <code class="docutils literal notranslate"><span class="pre">&quot;&lt;channel&gt;/&lt;stack&gt;&quot;</span></code> for one tile, or <code class="docutils literal notranslate"><span class="pre">&quot;&lt;stack&gt;&quot;</span></code>
+for that stack position in every channel. Unknown ids raise <code class="docutils literal notranslate"><span class="pre">KeyError</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.MosaicManager.bounding_box">
+<span class="sig-name descname"><span class="pre">bounding_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tile/index.html#pymif.mosaic_manager.tile.Tile" title="pymif.mosaic_manager.tile.Tile"><span class="pre">pymif.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.MosaicManager.bounding_box" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">(min,</span> <span class="pre">max)</span></code> corners, <code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">y,</span> <span class="pre">x)</span></code>, of <code class="docutils literal notranslate"><span class="pre">tiles</span></code> (default: all).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.MosaicManager.tile">
+<span class="sig-name descname"><span class="pre">tile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.MosaicManager.tile" title="Link to this definition"></a></dt>
+<dd><p>Tile <code class="docutils literal notranslate"><span class="pre">i</span></code> as an <a class="reference internal" href="../microscope_manager/index.html#pymif.microscope_manager.ArrayManager" title="pymif.microscope_manager.ArrayManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArrayManager</span></code></a> (axes <code class="docutils literal notranslate"><span class="pre">zyx</span></code>).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.MosaicManager._lazy">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_lazy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="tile/index.html#pymif.mosaic_manager.tile.Tile" title="pymif.mosaic_manager.tile.Tile"><span class="pre">pymif.mosaic_manager.tile.Tile</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dask.array.Array</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.MosaicManager._lazy" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.MosaicManager.contrast_limits">
+<span class="sig-name descname"><span class="pre">contrast_limits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tile/index.html#pymif.mosaic_manager.tile.Tile" title="pymif.mosaic_manager.tile.Tile"><span class="pre">pymif.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_tiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percentiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0.5,</span> <span class="pre">99.9)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.MosaicManager.contrast_limits" title="Link to this definition"></a></dt>
+<dd><p>Display range of every channel, estimated from a small sample.</p>
+<p>For each channel, one <code class="docutils literal notranslate"><span class="pre">block</span></code>-sized cube is read from the centre of up to
+<code class="docutils literal notranslate"><span class="pre">n_tiles</span></code> tiles (about 0.5 MB each for uint16 and <code class="docutils literal notranslate"><span class="pre">block=64</span></code>, the HDF5
+chunk size of Luxendo tiles), and the given percentiles of those voxels are
+returned as <code class="docutils literal notranslate"><span class="pre">(low,</span> <span class="pre">high)</span></code>. The sampled tiles are the ones closest to the
+centre of each tile group (e.g. each illumination side), where the sample
+usually is; edge tiles often only show background.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.MosaicManager.visualize">
+<span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tile/index.html#pymif.mosaic_manager.tile.Tile" title="pymif.mosaic_manager.tile.Tile"><span class="pre">pymif.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">viewer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">napari.Viewer</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contrast_limits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'range'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.MosaicManager.visualize" title="Link to this definition"></a></dt>
+<dd><p>Show tiles in napari, each as its own layer at its stage position.</p>
+<p>One colour per channel and additive blending, so overlaps and gaps are
+easy to see. Data stays lazy: only the planes napari displays are read.
+All tiles of a channel share one contrast setting, and their layers are
+linked: changing the contrast or gamma of one tile changes all of them.</p>
+<section id="id1">
+<h3>Parameters<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>tiles</dt><dd><p>Tiles to show (default: all), e.g. <code class="docutils literal notranslate"><span class="pre">mosaic.select(channel=&quot;cFos-647&quot;)</span></code>.
+Every displayed plane reads whole HDF5 chunks of every tile, so
+showing fewer tiles keeps napari responsive.</p>
+</dd>
+<dt>viewer</dt><dd><p>Viewer to add the layers to; a new one is created by default.</p>
+</dd>
+<dt>contrast_limits</dt><dd><p><code class="docutils literal notranslate"><span class="pre">&quot;range&quot;</span></code> (default) uses the whole range of the data type (0 to
+65535 for uint16), which reads nothing: set the contrast of one tile
+and the linked tiles follow. <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> estimates it per channel with
+<a class="reference internal" href="#pymif.mosaic_manager.MosaicManager.contrast_limits" title="pymif.mosaic_manager.MosaicManager.contrast_limits"><code class="xref py py-meth docutils literal notranslate"><span class="pre">contrast_limits()</span></code></a> (reads a small sample, slow on network drives);
+a <code class="docutils literal notranslate"><span class="pre">{channel:</span> <span class="pre">(low,</span> <span class="pre">high)}</span></code> dict uses those, with the whole range for
+the channels it leaves out; <code class="docutils literal notranslate"><span class="pre">None</span></code> lets napari compute them per
+tile (slow on large tiles).</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.MosaicManager.fuse">
+<span class="sig-name descname"><span class="pre">fuse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pymif.mosaic_manager.Tile" title="pymif.mosaic_manager.Tile"><span class="pre">Tile</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.MosaicManager.fuse" title="Link to this definition"></a></dt>
+<dd><p>Fuse the tiles into an OME-Zarr image; see <a class="reference internal" href="#pymif.mosaic_manager.fuse_tiles" title="pymif.mosaic_manager.fuse_tiles"><code class="xref py py-func docutils literal notranslate"><span class="pre">fuse_tiles()</span></code></a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">skip</span></code> lists tiles to leave blank, as <code class="docutils literal notranslate"><span class="pre">Tile</span></code> objects or as ids accepted by
+<a class="reference internal" href="#pymif.mosaic_manager.MosaicManager.tiles_by_ids" title="pymif.mosaic_manager.MosaicManager.tiles_by_ids"><code class="xref py py-meth docutils literal notranslate"><span class="pre">tiles_by_ids()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">&quot;cFos-647/1-x00-y00&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;1-x00-y00&quot;</span></code> for every channel).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.MosaicManager._resolve_skip">
+<span class="sig-name descname"><span class="pre">_resolve_skip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skip</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tile/index.html#pymif.mosaic_manager.tile.Tile" title="pymif.mosaic_manager.tile.Tile"><span class="pre">pymif.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.MosaicManager._resolve_skip" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.MosaicManager.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.MosaicManager.close" title="Link to this definition"></a></dt>
+<dd><p>Close all open file handles.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.MosaicManager.__enter__">
+<span class="sig-name descname"><span class="pre">__enter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pymif.mosaic_manager.MosaicManager" title="pymif.mosaic_manager.MosaicManager"><span class="pre">MosaicManager</span></a></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.MosaicManager.__enter__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.MosaicManager.__exit__">
+<span class="sig-name descname"><span class="pre">__exit__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tb</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.MosaicManager.__exit__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.FusionPlan">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">FusionPlan</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.FusionPlan" title="Link to this definition"></a></dt>
+<dd><p>Level-0 geometry of a fusion, computed without reading any pixel data.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.FusionPlan.tiles">
+<span class="sig-name descname"><span class="pre">tiles</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tile/index.html#pymif.mosaic_manager.tile.Tile" title="pymif.mosaic_manager.tile.Tile"><span class="pre">pymif.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.FusionPlan.tiles" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.FusionPlan.placed">
+<span class="sig-name descname"><span class="pre">placed</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fusion/index.html#pymif.mosaic_manager.fusion._Placed" title="pymif.mosaic_manager.fusion._Placed"><span class="pre">_Placed</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.FusionPlan.placed" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.FusionPlan.layout">
+<span class="sig-name descname"><span class="pre">layout</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="fusion/index.html#pymif.mosaic_manager.fusion._Placed" title="pymif.mosaic_manager.fusion._Placed"><span class="pre">_Placed</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.FusionPlan.layout" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.FusionPlan.channels">
+<span class="sig-name descname"><span class="pre">channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.FusionPlan.channels" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.FusionPlan.ds">
+<span class="sig-name descname"><span class="pre">ds</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.FusionPlan.ds" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.FusionPlan.blend">
+<span class="sig-name descname"><span class="pre">blend</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.FusionPlan.blend" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.FusionPlan.dtype">
+<span class="sig-name descname"><span class="pre">dtype</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.dtype</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.FusionPlan.dtype" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.FusionPlan.axes">
+<span class="sig-name descname"><span class="pre">axes</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.FusionPlan.axes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.FusionPlan.grid_shape">
+<span class="sig-name descname"><span class="pre">grid_shape</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.FusionPlan.grid_shape" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.FusionPlan.shape">
+<span class="sig-name descname"><span class="pre">shape</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.FusionPlan.shape" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.FusionPlan.scale">
+<span class="sig-name descname"><span class="pre">scale</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.FusionPlan.scale" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.FusionPlan.origin">
+<span class="sig-name descname"><span class="pre">origin</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.FusionPlan.origin" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.FusionPlan.n_skipped">
+<span class="sig-name descname"><span class="pre">n_skipped</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.FusionPlan.n_skipped" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.FusionPlan.nbytes">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">nbytes</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.FusionPlan.nbytes" title="Link to this definition"></a></dt>
+<dd><p>Size of level 0 in bytes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.FusionPlan.summary">
+<span class="sig-name descname"><span class="pre">summary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.FusionPlan.summary" title="Link to this definition"></a></dt>
+<dd><p>One line such as <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">ch</span> <span class="pre">x</span> <span class="pre">260</span> <span class="pre">x</span> <span class="pre">1100</span> <span class="pre">x</span> <span class="pre">1500</span> <span class="pre">px</span> <span class="pre">(czyx),</span> <span class="pre">1.71</span> <span class="pre">GB,</span> <span class="pre">voxel</span> <span class="pre">12</span> <span class="pre">x</span> <span class="pre">11.7</span> <span class="pre">x</span> <span class="pre">11.7</span> <span class="pre">micrometer</span></code> (MB below 0.1 GB).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.display_windows">
+<span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">display_windows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.display_windows" title="Link to this definition"></a></dt>
+<dd><p>Display window <code class="docutils literal notranslate"><span class="pre">(start,</span> <span class="pre">end)</span></code> of every channel of an OME-Zarr image, from its
+OMERO metadata (written by <a class="reference internal" href="#pymif.mosaic_manager.fuse_tiles" title="pymif.mosaic_manager.fuse_tiles"><code class="xref py py-func docutils literal notranslate"><span class="pre">fuse_tiles()</span></code></a> from the fused values).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.fuse_tiles">
+<span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">fuse_tiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tile/index.html#pymif.mosaic_manager.tile.Tile" title="pymif.mosaic_manager.tile.Tile"><span class="pre">pymif.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sigmoid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tile/index.html#pymif.mosaic_manager.tile.Tile" title="pymif.mosaic_manager.tile.Tile"><span class="pre">pymif.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">levels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downscale_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">midline_axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'x'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigmoid_steepness</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">SIGMOID_STEEPNESS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">write_options</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.fuse_tiles" title="Link to this definition"></a></dt>
+<dd><p>Fuse <code class="docutils literal notranslate"><span class="pre">tiles</span></code> into an OME-Zarr image and return it as a <code class="docutils literal notranslate"><span class="pre">ZarrManager</span></code>.</p>
+<section id="id2">
+<h3>Parameters<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>tiles</dt><dd><p>Tiles to fuse (all must share voxel size and unit).</p>
+</dd>
+<dt>out</dt><dd><p>Output <code class="docutils literal notranslate"><span class="pre">.ome.zarr</span></code> path.</p>
+</dd>
+<dt>ds</dt><dd><p><code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">y,</span> <span class="pre">x)</span></code> integer downsampling factors applied while reading the tiles
+(each output voxel is the mean of its block).</p>
+</dd>
+<dt>projection</dt><dd><p><code class="docutils literal notranslate"><span class="pre">None</span></code> for a 3D volume, <code class="docutils literal notranslate"><span class="pre">&quot;max&quot;</span></code>/<code class="docutils literal notranslate"><span class="pre">&quot;sum&quot;</span></code> for a 2D projection along z.</p>
+</dd>
+<dt>blend</dt><dd><p>How tiles that overlap are merged:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;sigmoid&quot;</span></code> (default) – smooth transition: across an overlap, the
+share of each tile follows a sigmoid of the log ratio of the distances
+to the two tile borders, from 0 at a tile’s border through 1/2 in the
+middle of the overlap to 1 at the other tile’s border, so no seam is
+visible. The tiles of each <code class="docutils literal notranslate"><span class="pre">group</span></code> are fused separately, then the
+groups are merged the same way across their overlap along
+<code class="docutils literal notranslate"><span class="pre">midline_axis</span></code> (the switch is centred where <code class="docutils literal notranslate"><span class="pre">&quot;midline&quot;</span></code> cuts);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;max&quot;</span></code> – keep the brighter value;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;sum&quot;</span></code> – add the values, so overlaps show up as brighter bands;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;midline&quot;</span></code> – <code class="docutils literal notranslate"><span class="pre">max</span></code> within each tile <code class="docutils literal notranslate"><span class="pre">group</span></code>; where groups
+overlap, the image switches sharply from one group to the next at the
+middle of their overlap, along <code class="docutils literal notranslate"><span class="pre">midline_axis</span></code>.</p></li>
+</ul>
+</dd>
+<dt>channels</dt><dd><p>Tile channels to fuse, in output order. Default: all, in tile order.</p>
+</dd>
+<dt>channel_names, channel_colors</dt><dd><p>Names and colours (hex or matplotlib names) written for the output
+channels. Default: the tile channel names and the PyMIF palette.</p>
+</dd>
+<dt>crop</dt><dd><p>Part of the output to write, in output voxels (after <code class="docutils literal notranslate"><span class="pre">ds</span></code>), e.g.
+<code class="docutils literal notranslate"><span class="pre">{&quot;y&quot;:</span> <span class="pre">slice(100,</span> <span class="pre">900),</span> <span class="pre">&quot;z&quot;:</span> <span class="pre">slice(0,</span> <span class="pre">50)}</span></code>. For projections, a <code class="docutils literal notranslate"><span class="pre">z</span></code>
+crop limits the planes that are projected.</p>
+</dd>
+<dt>skip</dt><dd><p>Tiles to leave blank: they are not read, but the output keeps the size and
+position it has with them, so their area stays 0 (where no other tile
+covers it). With <code class="docutils literal notranslate"><span class="pre">blend=&quot;midline&quot;</span></code>/<code class="docutils literal notranslate"><span class="pre">&quot;sigmoid&quot;</span></code> they still count for
+the position of the switch between groups.</p>
+</dd>
+<dt>levels</dt><dd><p>Number of pyramid levels.</p>
+</dd>
+<dt>downscale_factor</dt><dd><p>Factor between pyramid levels: one integer or <code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">y,</span> <span class="pre">x)</span></code>.</p>
+</dd>
+<dt>workers</dt><dd><p>Number of tiles read in parallel.</p>
+</dd>
+<dt>executor</dt><dd><p><code class="docutils literal notranslate"><span class="pre">&quot;process&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;thread&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> (processes when <code class="docutils literal notranslate"><span class="pre">workers</span> <span class="pre">&gt;</span> <span class="pre">1</span></code> and
+every tile’s data is picklable, e.g. <a class="reference internal" href="#pymif.mosaic_manager.H5Array" title="pymif.mosaic_manager.H5Array"><code class="xref py py-class docutils literal notranslate"><span class="pre">H5Array</span></code></a>;
+threads otherwise). h5py serialises reads inside one process, so processes
+are what actually speeds up reading from HDF5 tiles.</p>
+</dd>
+<dt>out_dtype</dt><dd><p>Output dtype. Default: input dtype for <code class="docutils literal notranslate"><span class="pre">sigmoid</span></code>/<code class="docutils literal notranslate"><span class="pre">max</span></code>/<code class="docutils literal notranslate"><span class="pre">midline</span></code>,
+<code class="docutils literal notranslate"><span class="pre">float32</span></code> for <code class="docutils literal notranslate"><span class="pre">sum</span></code>.</p>
+</dd>
+<dt>midline_axis</dt><dd><p><code class="docutils literal notranslate"><span class="pre">&quot;x&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;y&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;z&quot;</span></code>: axis along which groups are separated
+(<code class="docutils literal notranslate"><span class="pre">midline</span></code> and <code class="docutils literal notranslate"><span class="pre">sigmoid</span></code>).</p>
+</dd>
+<dt>sigmoid_steepness</dt><dd><p>Steepness of the <code class="docutils literal notranslate"><span class="pre">sigmoid</span></code> transition (&gt; 0). The share of a tile
+goes from 10% to 90% over the central <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">2</span> <span class="pre">/</span> <span class="pre">(1</span> <span class="pre">+</span> <span class="pre">9</span> <span class="pre">**</span> <span class="pre">(1</span> <span class="pre">/</span> <span class="pre">s))</span></code>
+of the overlap: about 27% for the default 4, 14% for 8, 50% for 2.</p>
+</dd>
+<dt>overwrite</dt><dd><p>Replace <code class="docutils literal notranslate"><span class="pre">out</span></code> if it exists.</p>
+</dd>
+<dt>name</dt><dd><p>Image name stored in the metadata.</p>
+</dd>
+<dt>temp_dir</dt><dd><p>Folder for the temporary fused level 0 (deleted at the end). Default:
+next to <code class="docutils literal notranslate"><span class="pre">out</span></code>. A local disk is faster when <code class="docutils literal notranslate"><span class="pre">out</span></code> is on a network share.</p>
+</dd>
+<dt>progress</dt><dd><p>Show progress bars.</p>
+</dd>
+<dt><a href="#id3"><span class="problematic" id="id4">**</span></a>write_options</dt><dd><p>Any other <a class="reference internal" href="../microscope_manager/index.html#pymif.microscope_manager.MicroscopeManager.to_zarr" title="pymif.microscope_manager.MicroscopeManager.to_zarr"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_zarr()</span></code></a>
+option, as for <code class="docutils literal notranslate"><span class="pre">pymif</span> <span class="pre">convert</span></code>: <code class="docutils literal notranslate"><span class="pre">chunks</span></code>, <code class="docutils literal notranslate"><span class="pre">shards</span></code>, <code class="docutils literal notranslate"><span class="pre">shard_target_mb</span></code>,
+<code class="docutils literal notranslate"><span class="pre">shard_exclude_axes</span></code>, <code class="docutils literal notranslate"><span class="pre">zarr_format</span></code>, <code class="docutils literal notranslate"><span class="pre">ngff_version</span></code>, <code class="docutils literal notranslate"><span class="pre">compressor</span></code>,
+<code class="docutils literal notranslate"><span class="pre">compressor_level</span></code>, <code class="docutils literal notranslate"><span class="pre">drop_singleton</span></code>, <code class="docutils literal notranslate"><span class="pre">num_workers</span></code>, <code class="docutils literal notranslate"><span class="pre">storage_options</span></code>.
+<code class="docutils literal notranslate"><span class="pre">chunks</span></code> is given in the output axis order (<code class="docutils literal notranslate"><span class="pre">c,</span> <span class="pre">z,</span> <span class="pre">y,</span> <span class="pre">x</span></code>, or <code class="docutils literal notranslate"><span class="pre">c,</span> <span class="pre">y,</span> <span class="pre">x</span></code>
+for projections).</p>
+</dd>
+</dl>
+<p>The display window of every channel (OMERO <code class="docutils literal notranslate"><span class="pre">window</span></code> metadata) is set to the
+0.5th-99.9th percentile of the fused values, ignoring blank areas, so viewers
+open the result with a usable contrast; see <a class="reference internal" href="#pymif.mosaic_manager.display_windows" title="pymif.mosaic_manager.display_windows"><code class="xref py py-func docutils literal notranslate"><span class="pre">display_windows()</span></code></a>.</p>
+<p>Use <a class="reference internal" href="#pymif.mosaic_manager.plan_fusion" title="pymif.mosaic_manager.plan_fusion"><code class="xref py py-func docutils literal notranslate"><span class="pre">plan_fusion()</span></code></a> with the same arguments to get the output shape and
+size without reading or writing anything.</p>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.plan_fusion">
+<span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">plan_fusion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tile/index.html#pymif.mosaic_manager.tile.Tile" title="pymif.mosaic_manager.tile.Tile"><span class="pre">pymif.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sigmoid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tile/index.html#pymif.mosaic_manager.tile.Tile" title="pymif.mosaic_manager.tile.Tile"><span class="pre">pymif.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">midline_axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'x'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pymif.mosaic_manager.FusionPlan" title="pymif.mosaic_manager.FusionPlan"><span class="pre">FusionPlan</span></a></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.plan_fusion" title="Link to this definition"></a></dt>
+<dd><p>Validate fusion arguments and compute the level-0 geometry (see <a class="reference internal" href="#pymif.mosaic_manager.fuse_tiles" title="pymif.mosaic_manager.fuse_tiles"><code class="xref py py-func docutils literal notranslate"><span class="pre">fuse_tiles()</span></code></a>).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.LuxendoMosaicManager">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">LuxendoMosaicManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scan_workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.LuxendoMosaicManager" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mosaic/index.html#pymif.mosaic_manager.mosaic.MosaicManager" title="pymif.mosaic_manager.mosaic.MosaicManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymif.mosaic_manager.mosaic.MosaicManager</span></code></a></p>
+<p>Raw Luxendo tiles (<code class="docutils literal notranslate"><span class="pre">*.lux.h5</span></code> + <code class="docutils literal notranslate"><span class="pre">*.json</span></code>) of one acquisition, before any fusion.</p>
+<p>Not to be confused with <a class="reference internal" href="../microscope_manager/index.html#pymif.microscope_manager.LuxendoManager" title="pymif.microscope_manager.LuxendoManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">LuxendoManager</span></code></a>, which
+reads images already fused by the Luxendo software. This manager scans a raw
+acquisition folder such as <code class="docutils literal notranslate"><span class="pre">2026-10-14_103957</span></code> (tiles live in
+<code class="docutils literal notranslate"><span class="pre">raw/&lt;stack</span> <span class="pre">folder&gt;/Cam_*.lux.h5</span></code>) and exposes every tile lazily:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">channel</span></code>: the dye, with the illumination side removed
+(<code class="docutils literal notranslate"><span class="pre">autofluo-488-L</span></code> and <code class="docutils literal notranslate"><span class="pre">autofluo-488-R</span></code> both give <code class="docutils literal notranslate"><span class="pre">autofluo-488</span></code>), so
+both halves of a sample end up in the same fused channel;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">group</span></code>: the illumination side, <code class="docutils literal notranslate"><span class="pre">&quot;L&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;R&quot;</span></code> (used by <code class="docutils literal notranslate"><span class="pre">blend=&quot;sigmoid&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;midline&quot;</span></code>);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">timepoint</span></code>: the JSON <code class="docutils literal notranslate"><span class="pre">time_point</span></code> (mosaics with several timepoints are
+refused for now, see <a class="reference internal" href="#pymif.mosaic_manager.MosaicManager" title="pymif.mosaic_manager.MosaicManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">MosaicManager</span></code></a>);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">attrs</span></code>: <code class="docutils literal notranslate"><span class="pre">stack</span></code>, <code class="docutils literal notranslate"><span class="pre">stack_description</span></code>, <code class="docutils literal notranslate"><span class="pre">grid</span></code> (<code class="docutils literal notranslate"><span class="pre">(ix,</span> <span class="pre">iy)</span></code>),
+<code class="docutils literal notranslate"><span class="pre">channel_description</span></code> and <code class="docutils literal notranslate"><span class="pre">path</span></code>.</p></li>
+</ul>
+<p>Tile positions come from <code class="docutils literal notranslate"><span class="pre">affine_to_sample</span></code> in the JSON (the tile is centred
+on the stage translation in x/y; z is the plane position along the stacking
+direction). If a stack was re-acquired (<code class="docutils literal notranslate"><span class="pre">*_R_&lt;n&gt;.lux.h5</span></code>) only the latest
+retake is used. Tiles are <a class="reference internal" href="#pymif.mosaic_manager.H5Array" title="pymif.mosaic_manager.H5Array"><code class="xref py py-class docutils literal notranslate"><span class="pre">H5Array</span></code></a> objects, so no
+file stays open. Scanning reads only the JSON files (in parallel) and opens a
+single <code class="docutils literal notranslate"><span class="pre">.h5</span></code> file, which keeps loading fast on network drives.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.LuxendoMosaicManager._retake">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_retake</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h5</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.LuxendoMosaicManager._retake" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">Cam_bottom_00000.lux.h5</span></code> -&gt; 0, <code class="docutils literal notranslate"><span class="pre">Cam_bottom_00000_R_1.lux.h5</span></code> -&gt; 1.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.LuxendoMosaicManager._scan">
+<span class="sig-name descname"><span class="pre">_scan</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tile/index.html#pymif.mosaic_manager.tile.Tile" title="pymif.mosaic_manager.tile.Tile"><span class="pre">pymif.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.LuxendoMosaicManager._scan" title="Link to this definition"></a></dt>
+<dd><p>Discover the tiles under <code class="xref py py-attr docutils literal notranslate"><span class="pre">path</span></code> (lazy data, positions in the sample frame).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.LuxendoMosaicManager.scan_workers">
+<span class="sig-name descname"><span class="pre">scan_workers</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.LuxendoMosaicManager.scan_workers" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.LuxendoMosaicManager.progress">
+<span class="sig-name descname"><span class="pre">progress</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.LuxendoMosaicManager.progress" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.LuxendoMosaicManager._acquisitions">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_acquisitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.LuxendoMosaicManager._acquisitions" title="Link to this definition"></a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">*.lux.h5</span></code> acquisitions of a stack folder (those with a <code class="docutils literal notranslate"><span class="pre">.json</span></code> sibling).</p>
+<p>Files sharing a base name are retakes (<code class="docutils literal notranslate"><span class="pre">*_R_&lt;n&gt;</span></code>) of one acquisition and
+only the latest is kept. Different base names are separate acquisitions of
+the same stack (e.g. timepoints); they are returned in name order.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.LuxendoMosaicManager._read_info">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_read_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h5</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.LuxendoMosaicManager._read_info" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.LuxendoMosaicManager._shape">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.LuxendoMosaicManager._shape" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.LuxendoMosaicManager._tile_from">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_tile_from</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h5</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_timepoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="tile/index.html#pymif.mosaic_manager.tile.Tile" title="pymif.mosaic_manager.tile.Tile"><span class="pre">pymif.mosaic_manager.tile.Tile</span></a></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.LuxendoMosaicManager._tile_from" title="Link to this definition"></a></dt>
+<dd><p>Tile of one <code class="docutils literal notranslate"><span class="pre">.lux.h5</span></code> file; the file is only opened when <code class="docutils literal notranslate"><span class="pre">dtype</span></code> is not given.</p>
+<p>The timepoint is the JSON <code class="docutils literal notranslate"><span class="pre">time_point</span></code>, or <code class="docutils literal notranslate"><span class="pre">default_timepoint</span></code> without one.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.OperaMosaicManager">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">OperaMosaicManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.OperaMosaicManager" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mosaic/index.html#pymif.mosaic_manager.mosaic.MosaicManager" title="pymif.mosaic_manager.mosaic.MosaicManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymif.mosaic_manager.mosaic.MosaicManager</span></code></a></p>
+<p>Placeholder: raw Opera (Harmony) plate/field tiles, before fusion.</p>
+<p>Not implemented yet. Implement <a class="reference internal" href="#pymif.mosaic_manager.OperaMosaicManager._scan" title="pymif.mosaic_manager.OperaMosaicManager._scan"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_scan()</span></code></a> to return one
+<a class="reference internal" href="#pymif.mosaic_manager.Tile" title="pymif.mosaic_manager.Tile"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tile</span></code></a> per acquired tile (lazy <code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">y,</span> <span class="pre">x)</span></code> data,
+stage position as <code class="docutils literal notranslate"><span class="pre">origin</span></code>, voxel size, channel and optionally a <code class="docutils literal notranslate"><span class="pre">group</span></code>);
+<a class="reference internal" href="#pymif.mosaic_manager.MosaicManager.fuse" title="pymif.mosaic_manager.MosaicManager.fuse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fuse()</span></code></a>, <code class="docutils literal notranslate"><span class="pre">visualize</span></code> and the rest then
+work unchanged. See <a class="reference internal" href="#pymif.mosaic_manager.LuxendoMosaicManager" title="pymif.mosaic_manager.LuxendoMosaicManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">LuxendoMosaicManager</span></code></a> for a
+complete example. The existing <a class="reference internal" href="../microscope_manager/index.html#pymif.microscope_manager.OperaManager" title="pymif.microscope_manager.OperaManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">OperaManager</span></code></a> reads a
+single image and is unrelated.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.OperaMosaicManager._scan">
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_scan</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tile/index.html#pymif.mosaic_manager.tile.Tile" title="pymif.mosaic_manager.tile.Tile"><span class="pre">pymif.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.OperaMosaicManager._scan" title="Link to this definition"></a></dt>
+<dd><p>Discover the tiles under <code class="xref py py-attr docutils literal notranslate"><span class="pre">path</span></code> (lazy data, positions in the sample frame).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.ZeissMosaicManager">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">ZeissMosaicManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.ZeissMosaicManager" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mosaic/index.html#pymif.mosaic_manager.mosaic.MosaicManager" title="pymif.mosaic_manager.mosaic.MosaicManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymif.mosaic_manager.mosaic.MosaicManager</span></code></a></p>
+<p>Placeholder: raw Zeiss CZI tile (mosaic) tiles, before fusion.</p>
+<p>Not implemented yet. Implement <a class="reference internal" href="#pymif.mosaic_manager.ZeissMosaicManager._scan" title="pymif.mosaic_manager.ZeissMosaicManager._scan"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_scan()</span></code></a> to return one
+<a class="reference internal" href="#pymif.mosaic_manager.Tile" title="pymif.mosaic_manager.Tile"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tile</span></code></a> per acquired tile (lazy <code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">y,</span> <span class="pre">x)</span></code> data,
+stage position as <code class="docutils literal notranslate"><span class="pre">origin</span></code>, voxel size, channel and optionally a <code class="docutils literal notranslate"><span class="pre">group</span></code>);
+<a class="reference internal" href="#pymif.mosaic_manager.MosaicManager.fuse" title="pymif.mosaic_manager.MosaicManager.fuse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fuse()</span></code></a>, <code class="docutils literal notranslate"><span class="pre">visualize</span></code> and the rest then
+work unchanged. See <a class="reference internal" href="#pymif.mosaic_manager.LuxendoMosaicManager" title="pymif.mosaic_manager.LuxendoMosaicManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">LuxendoMosaicManager</span></code></a> for a
+complete example. The existing <a class="reference internal" href="../microscope_manager/index.html#pymif.microscope_manager.ZeissManager" title="pymif.microscope_manager.ZeissManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZeissManager</span></code></a> reads a
+single image and is unrelated.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.ZeissMosaicManager._scan">
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_scan</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="tile/index.html#pymif.mosaic_manager.tile.Tile" title="pymif.mosaic_manager.tile.Tile"><span class="pre">pymif.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.ZeissMosaicManager._scan" title="Link to this definition"></a></dt>
+<dd><p>Discover the tiles under <code class="xref py py-attr docutils literal notranslate"><span class="pre">path</span></code> (lazy data, positions in the sample frame).</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../microscope_manager/zeiss_manager/index.html" class="btn btn-neutral float-left" title="pymif.microscope_manager.zeiss_manager" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="fusion/index.html" class="btn btn-neutral float-right" title="pymif.mosaic_manager.fusion" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Nicola Gritti.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,290 @@
+pymif.cli.pymif
+===============
+
+.. py:module:: pymif.cli.pymif
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   pymif.cli.pymif._NOT_CONVERSION_OPTIONS
+   pymif.cli.pymif._ESTIMATE_OPTIONS
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.cli.pymif._axes
+   pymif.cli.pymif._axis_size
+   pymif.cli.pymif._dataset_size_mb
+   pymif.cli.pymif._select_chunk_size
+   pymif.cli.pymif._estimate_levels
+   pymif.cli.pymif._normalize_downscale_factor
+   pymif.cli.pymif._present
+   pymif.cli.pymif._normalize_shards
+   pymif.cli.pymif._normalize_shard_exclude_axes
+   pymif.cli.pymif._normalize_subset
+   pymif.cli.pymif._manager_name_map
+   pymif.cli.pymif._resolve_zarr_manager
+   pymif.cli.pymif.zarr_convert
+   pymif.cli.pymif._batch_row_kwargs
+   pymif.cli.pymif.convert_batch
+   pymif.cli.pymif.convert_single
+   pymif.cli.pymif._mosaic_manager_name_map
+   pymif.cli.pymif._resolve_mosaic_manager
+   pymif.cli.pymif._int_triplet
+   pymif.cli.pymif._subset_to_crop
+   pymif.cli.pymif.mosaic_convert
+   pymif.cli.pymif.convert_mosaic_single
+   pymif.cli.pymif.convert_mosaic_batch
+   pymif.cli.pymif._channel_index
+   pymif.cli.pymif._parse_shifts
+   pymif.cli.pymif._print_shift_report
+   pymif.cli.pymif.chromatic_shift_correct
+   pymif.cli.pymif._chromatic_shift_kwargs
+   pymif.cli.pymif.chromatic_shift_single
+   pymif.cli.pymif.chromatic_shift_batch
+   pymif.cli.pymif.main
+
+
+Module Contents
+---------------
+
+.. py:function:: _axes(metadata)
+
+.. py:function:: _axis_size(metadata, axis, default=1)
+
+.. py:function:: _dataset_size_mb(metadata)
+
+.. py:function:: _select_chunk_size(metadata, max_size)
+
+.. py:function:: _estimate_levels(metadata, downscale_factor)
+
+.. py:function:: _normalize_downscale_factor(value)
+
+.. py:function:: _present(value)
+
+.. py:function:: _normalize_shards(value)
+
+   Normalize a `shards` CLI/CSV/kwarg value into ``None``, ``"auto"`` or a tuple.
+
+
+.. py:function:: _normalize_shard_exclude_axes(value)
+
+   Normalize a `shard_exclude_axes` CLI/CSV/kwarg value into ``None`` or a tuple.
+
+
+.. py:function:: _normalize_subset(value)
+
+   Normalize a subset specification from the CLI or a batch CSV.
+
+
+.. py:function:: _manager_name_map() -> Dict[str, Any]
+
+.. py:function:: _resolve_zarr_manager(input_path: str, microscope: Optional[str] = None)
+
+   Resolve a manager class from an explicit microscope name or by inspecting the path.
+
+
+.. py:function:: zarr_convert(input_path, zarr_path, microscope: Optional[str] = None, max_size: Optional[int] = 100, chunk_size: Optional[List[int]] = None, scene_index: Optional[int] = 1, channel_names: Optional[List[str]] = None, channel_colors: Optional[List[str]] = None, zarr_format: Optional[int] = 3, downscale_factor: Optional[int] = 2, num_levels: Optional[int] = None, subset: Optional[dict] = None, shards: Optional[Any] = 'auto', shard_target_mb: Optional[float] = None, shard_exclude_axes: Optional[Any] = None, drop_singleton: Optional[bool] = True, num_workers: Optional[int] = None)
+
+   Helper function for CLI to convert a dataset to zarr given some parameters.
+
+   Parameters
+   ----------
+       input_path : str
+           Input path for the data to be converted.
+       zarr_path : str
+           Output .zarr path.
+       microscope : str
+           Microscope used to acquire input data.
+           One of "luxendo", "opera", "viventis", "zeiss", "zarrv04", "zarr".
+       max_size : Optional[int]
+           Max chunk size in MB. 
+
+           Default: 100
+       chunk_size : Optional[List[int]]
+           Chunk size in TCZYX format, or whatever axes are present in the dataset.
+           Default: None
+       scene_index : Optional[int]
+           Scene index for .czi files. 
+
+           Default: -1
+       channel_names : Optional[List[str]]
+           Name of channels.
+
+           Example: "-cn bf gfp rfp"
+
+           Default: None
+       channel_colors : Optional[List[str]]
+           Colors of channels (hex or matplotlib color name)
+
+           Example: "-cc 0000FF cyan 00ff00")
+
+           Default: None
+       zarr_format : Optional[int]
+           Output zarr format. Zarr v2 maps to NGFF 0.4 and Zarr v3 maps to NGFF 0.5.
+
+           Default: 3
+       downscale_factor : Optional[int]
+           Pyramid downsampling factor.
+
+           Example: "-df 1 2 2")
+
+           Default: 2
+       num_levels : Optional[int]
+           Number of pyramid levels.
+
+           Example: "-nl 3")
+
+           Default: None
+       subset : Optional[dict]
+           Axis subset to apply before chunk selection and pyramid generation.
+
+           Example: "--subset y=10:100:2;x=20:80"
+
+           Default: None
+       shards : Optional[str | List[int]]
+           Zarr v3 sharding for the output.
+
+           "auto" sizes shards automatically; a shape (matching the dataset's
+           axes) requests that shard shape explicitly; "none" disables sharding.
+           With zarr_format=2 sharding is set to none with a warning.
+
+           Example: "-sh auto", "-sh 1 1 8 2160 4096" or "-sh none"
+
+           Default: "auto"
+       shard_target_mb : Optional[float]
+           Target uncompressed shard size in MB, used when shards="auto".
+
+           Default: 1024 (pymif's own default; unset here means "let pymif choose")
+       shard_exclude_axes : Optional[List[str]]
+           Axes that shards="auto" never merges chunks along.
+
+           Example: "-sea t c" (default) or "-sea none" to allow every axis to merge.
+
+           Default: None (falls back to pymif's own default of t, c)
+       drop_singleton : Optional[bool]
+           Remove singleton t/c/z axes from the output dataset.
+
+           Example: "-ds false" to keep them.
+
+           Default: True
+       num_workers : Optional[int]
+           Number of threads used to write the zarr in parallel.
+
+           Example: "-nw 4"
+
+           Default: None (half of the available cores, capped at 8)
+
+
+.. py:function:: _batch_row_kwargs(v, columns) -> Dict[str, Any]
+
+   ``zarr_convert`` options of one batch CSV row (shared by ``convert --batch`` and ``fuse --batch``).
+
+
+.. py:data:: _NOT_CONVERSION_OPTIONS
+
+.. py:function:: convert_batch(args)
+
+   Runmode to convert batch of imaged to zarr
+
+   Args:
+       args (args): parsed arguments
+
+
+.. py:function:: convert_single(args)
+
+   Runmode to convert a single image to zarr
+
+   Args:
+       args (args): parsed arguments
+
+
+.. py:function:: _mosaic_manager_name_map() -> Dict[str, Any]
+
+.. py:function:: _resolve_mosaic_manager(input_path: str, microscope: Optional[str] = None)
+
+   Mosaic reader class from an explicit microscope name or by inspecting the folder.
+
+
+.. py:function:: _int_triplet(value, default=(1, 1, 1)) -> Tuple[int, int, int]
+
+   ``None`` -> default, ``n`` -> ``(n, n, n)``, ``(y, x)`` -> ``(1, y, x)``, ``(z, y, x)`` as is.
+
+
+.. py:function:: _subset_to_crop(subset, channel_names: List[str])
+
+   Split a convert-style subset into a fusion crop (z/y/x) and a channel selection (c).
+
+
+.. py:function:: mosaic_convert(input_path, zarr_path, microscope: Optional[str] = None, max_size: Optional[float] = 100, chunk_size: Optional[List[int]] = None, scene_index: Optional[int] = None, channel_names: Optional[List[str]] = None, channel_colors: Optional[List[str]] = None, zarr_format: Optional[int] = 3, downscale_factor: Optional[Any] = 2, num_levels: Optional[int] = None, subset: Optional[Any] = None, shards: Optional[Any] = 'auto', shard_target_mb: Optional[float] = None, shard_exclude_axes: Optional[Any] = None, drop_singleton: Optional[bool] = True, num_workers: Optional[int] = None, read_downsample: Optional[Any] = None, projection: Optional[str] = 'none', blend: str = 'sigmoid', sigmoid_steepness: Optional[float] = None, channels: Optional[List[str]] = None, groups: Optional[List[str]] = None, tiles: Optional[List[str]] = None, skip_tiles: Optional[List[str]] = None, midline_axis: str = 'x', out_dtype: Optional[str] = None, read_workers: int = 4, temp_dir: Optional[str] = None, overwrite: bool = False)
+
+   Fuse a mosaic into an OME-Zarr image (CLI helper for ``pymif fuse``).
+
+   The ``convert`` options (``max_size`` ... ``num_workers``) have the same meaning as in
+   :func:`zarr_convert`, applied to the fused output; ``subset`` crops it (z/y/x in
+   output voxels) and selects channels (c). ``tiles`` lists the only tiles to fuse
+   (ids as for ``skip_tiles``); the output then fits them. The other options are those of
+   :func:`pymif.mosaic_manager.fuse_tiles`: ``read_downsample`` is its ``ds`` and
+   ``read_workers`` its ``workers``.
+
+
+.. py:function:: convert_mosaic_single(args)
+
+   Runmode to fuse one mosaic to zarr.
+
+
+.. py:function:: convert_mosaic_batch(args)
+
+   Runmode to fuse a batch of mosaics listed in a CSV file.
+
+
+.. py:data:: _ESTIMATE_OPTIONS
+   :value: ('timepoint', 'max_shift', 'coarse_level', 'refine_level', 'n_regions', 'crop_yx',...
+
+
+.. py:function:: _channel_index(channel, channel_names: List[str]) -> int
+
+   Channel given as an index (``1``) or a name (``"cFos-647"``).
+
+
+.. py:function:: _parse_shifts(value) -> Any
+
+   ``--shifts`` values or batch cell: one number per channel, or the path to a JSON report.
+
+
+.. py:function:: _print_shift_report(report: Dict[str, Any]) -> None
+
+.. py:function:: chromatic_shift_correct(input_path: str, zarr_path: Optional[str] = None, *, report_path: Optional[str] = None, shifts: Any = None, reference_channel: Any = 0, extent: str = 'union', order: int = 1, include_groups: bool = True, include_labels: bool = True, overwrite: bool = False, num_workers: Optional[int] = None, fail_on_warning: bool = False, **estimate_kwargs) -> Dict[str, Any]
+
+   Measure the Z chromatic shift of an OME-Zarr image and write a corrected copy.
+
+   Without ``zarr_path`` only the estimate runs (and is saved to
+   ``report_path`` when given). ``shifts`` (one value per channel, a report
+   dict or the path to a JSON report) skips the estimate. With
+   ``fail_on_warning`` a report with warnings stops before anything is
+   written except the report. Returns the report, or the given shifts.
+
+
+.. py:function:: _chromatic_shift_kwargs(args) -> Dict[str, Any]
+
+.. py:function:: chromatic_shift_single(args)
+
+   Runmode to correct the chromatic shift of one OME-Zarr image.
+
+
+.. py:function:: chromatic_shift_batch(args)
+
+   Runmode to correct the chromatic shift of every OME-Zarr image listed in a CSV file.
+
+
+.. py:function:: main(argv=None)
+
+   Entry point of the ``pymif`` command: ``convert``, ``fuse`` or ``chromatic-shift``.
+
+

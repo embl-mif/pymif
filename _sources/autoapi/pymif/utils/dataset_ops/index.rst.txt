@@ -1,0 +1,118 @@
+pymif.utils.dataset_ops
+=======================
+
+.. py:module:: pymif.utils.dataset_ops
+
+.. autoapi-nested-parse::
+
+   Dataset-level operations shared by ``MicroscopeManager`` and ``ZarrManager``.
+
+   Each function works on a single ``(data, metadata)`` pair (a list of dask arrays
+   plus the PyMIF metadata dictionary) so that the single-dataset managers and the
+   multi-dataset ``ZarrManager`` (raw + groups + labels) run exactly the same
+   validation code.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   pymif.utils.dataset_ops.logger
+   pymif.utils.dataset_ops._VALIDATORS
+   pymif.utils.dataset_ops.VALID_UPDATE_KEYS
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.utils.dataset_ops._axes_of
+   pymif.utils.dataset_ops._n_spatial
+   pymif.utils.dataset_ops.channel_count
+   pymif.utils.dataset_ops._check_channel_values
+   pymif.utils.dataset_ops._check_scales
+   pymif.utils.dataset_ops._check_time_increment
+   pymif.utils.dataset_ops._check_time_unit
+   pymif.utils.dataset_ops._check_units
+   pymif.utils.dataset_ops._check_data_type
+   pymif.utils.dataset_ops.known_updates
+   pymif.utils.dataset_ops.apply_metadata_updates
+   pymif.utils.dataset_ops.reorder_channels
+   pymif.utils.dataset_ops.infer_downscale_factors
+   pymif.utils.dataset_ops.subset_levels
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+
+.. py:function:: _axes_of(metadata: dict[str, Any]) -> str
+
+.. py:function:: _n_spatial(metadata: dict[str, Any]) -> int
+
+.. py:function:: channel_count(data: collections.abc.Sequence[dask.array.Array], metadata: dict[str, Any]) -> Optional[int]
+
+   Number of channels of the base level, or ``None`` without a channel axis.
+
+
+.. py:function:: _check_channel_values(key, value, *, data, metadata, label)
+
+.. py:function:: _check_scales(key, value, *, data, metadata, label)
+
+.. py:function:: _check_time_increment(key, value, **_)
+
+.. py:function:: _check_time_unit(key, value, **_)
+
+.. py:function:: _check_units(key, value, *, metadata, label, **_)
+
+.. py:function:: _check_data_type(key, value, **_)
+
+.. py:data:: _VALIDATORS
+   :type:  dict[str, Callable[Ellipsis, tuple[Any, Optional[str]]]]
+
+.. py:data:: VALID_UPDATE_KEYS
+   :type:  tuple[str, Ellipsis]
+   :value: ('channel_names', 'channel_colors', 'scales', 'time_increment', 'time_increment_unit', 'units',...
+
+
+.. py:function:: known_updates(updates: dict[str, Any]) -> dict[str, Any]
+
+   Return only the supported entries of ``updates``, warning about the rest.
+
+
+.. py:function:: apply_metadata_updates(data: collections.abc.Sequence[dask.array.Array], metadata: dict[str, Any], updates: dict[str, Any], *, label: str = 'dataset', warn_no_channel_axis: bool = True) -> None
+
+   Validate ``updates`` against ``(data, metadata)`` and apply them in place.
+
+   Invalid values raise ``ValueError``/``TypeError``. Channel updates that do
+   not fit the dataset are skipped with a warning (silently when
+   ``warn_no_channel_axis`` is false and the dataset has no channel axis).
+   ``updates`` must already be filtered with :func:`known_updates`.
+
+
+.. py:function:: reorder_channels(data: collections.abc.Sequence[dask.array.Array], metadata: dict[str, Any], new_order: collections.abc.Sequence[int], *, label: str = 'dataset', skip_if_no_channel_axis: bool = False) -> list[dask.array.Array]
+
+   Return ``data`` with channels permuted; ``metadata`` is updated in place.
+
+
+.. py:function:: infer_downscale_factors(metadata: dict[str, Any]) -> int | tuple[int, Ellipsis]
+
+   Infer the per-spatial-axis downscale factors between pyramid levels 0 and 1.
+
+   Returns ``2`` for single-level data. Isotropic factors are returned as an
+   ``int``; anisotropic ones (e.g. ``(1, 2, 2)``) as a tuple in spatial-axis
+   order, so the original pyramid layout is rebuilt faithfully.
+
+
+.. py:function:: subset_levels(data: collections.abc.Sequence[dask.array.Array], metadata: dict[str, Any], *, T=None, C=None, Z=None, Y=None, X=None, rebuild_pyramid: bool = True, label: str = 'dataset') -> tuple[list[dask.array.Array], dict[str, Any]]
+
+   Subset the base level by axis selections and optionally rebuild the pyramid.
+
+   Selections on axes the dataset does not have are ignored. Indices are
+   validated against the dataset shape.
+
+

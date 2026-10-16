@@ -1,0 +1,26 @@
+pymif.utils.create_empty_dataset
+================================
+
+.. py:module:: pymif.utils.create_empty_dataset
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.utils.create_empty_dataset.create_empty_dataset
+
+
+Module Contents
+---------------
+
+.. py:function:: create_empty_dataset(root: zarr.Group, metadata: dict[str, Any], ngff_version: str | None = None, zarr_format: int | None = None, compressor: str | None = None, compressor_level: int = 3, data_type: str | None = None, shards: Any = None, shard_target_mb: float = 1024.0, shard_exclude_axes: Any = None)
+
+   Create an on-disk empty OME-Zarr image pyramid from metadata only.
+
+   This is used by :class:`pymif.microscope_manager.zarr_manager.ZarrManager`
+   when a new zarr store is opened in append/write mode with a metadata
+   dictionary but without image payload yet.
+
+

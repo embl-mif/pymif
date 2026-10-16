@@ -1,0 +1,279 @@
+pymif.utils.chromatic_shift
+===========================
+
+.. py:module:: pymif.utils.chromatic_shift
+
+.. autoapi-nested-parse::
+
+   Axial chromatic shift estimation and correction for multichannel volumes.
+
+   Light-sheet channels are often offset from each other along Z: the focal
+   planes of different wavelengths do not coincide, and the offset changes every
+   time the system is realigned. The offset is therefore estimated from the
+   sample itself:
+
+   1. A coarse pyramid level is segmented into a sample mask. Its surfaces that
+      face along Z (its lower- and upper-Z sides) are the one structure every
+      channel shares, through background and autofluorescence.
+   2. The Z-derivative of each channel is cross-correlated with the reference
+      channel inside a thin band around those surfaces, giving a coarse shift.
+   3. Small crops centred on Z-facing surface points are read from a finer level,
+      pre-shifted by the coarse estimate and correlated again. The correlation
+      curves of all crops are summed and the peak, refined to sub-plane accuracy
+      with a parabola fit, gives the final shift. Crops are balanced between
+      the lower and upper surfaces so that channel-dependent edge blur, which
+      biases the two in opposite directions, cancels out.
+
+   Lateral (YX-facing) edges are ignored on purpose: their profile is the same at
+   every Z, so they carry no information about an axial offset.
+
+   Shifts are corrections in the physical unit of the Z axis (usually
+   micrometers): the value for channel ``c`` is the displacement applied to that
+   channel, positive values moving its content towards higher Z indices. The
+   reference channel always gets ``0``.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   pymif.utils.chromatic_shift.logger
+   pymif.utils.chromatic_shift.Extent
+   pymif.utils.chromatic_shift.PROVENANCE_KEY
+   pymif.utils.chromatic_shift._FILTER_MARGIN
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.utils.chromatic_shift._require_axes
+   pymif.utils.chromatic_shift._zyx_spacings
+   pymif.utils.chromatic_shift._z_unit
+   pymif.utils.chromatic_shift._channel_volume
+   pymif.utils.chromatic_shift.normalize_shifts
+   pymif.utils.chromatic_shift._z_derivative
+   pymif.utils.chromatic_shift._sample_mask
+   pymif.utils.chromatic_shift._z_facing_surface
+   pymif.utils.chromatic_shift._ncc_curve
+   pymif.utils.chromatic_shift._subpixel_peak
+   pymif.utils.chromatic_shift._spread_surface_points
+   pymif.utils.chromatic_shift._auto_coarse_level
+   pymif.utils.chromatic_shift.estimate_chromatic_shift
+   pymif.utils.chromatic_shift._ceil_to_multiple
+   pymif.utils.chromatic_shift.plan_z_extent
+   pymif.utils.chromatic_shift._cast_like
+   pymif.utils.chromatic_shift.shift_along_axis
+   pymif.utils.chromatic_shift.shift_levels
+   pymif.utils.chromatic_shift._mirrored_array_kwargs
+   pymif.utils.chromatic_shift.write_chromatic_shift_corrected
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+
+.. py:data:: Extent
+
+.. py:data:: PROVENANCE_KEY
+   :value: 'pymif_chromatic_shift'
+
+
+.. py:data:: _FILTER_MARGIN
+   :value: 3
+
+
+.. py:function:: _require_axes(axes: Sequence[str], required: str, label: str) -> None
+
+.. py:function:: _zyx_spacings(metadata: dict[str, Any]) -> list[tuple[float, float, float]]
+
+   Per-level ``(z, y, x)`` voxel spacing from the normalized metadata.
+
+
+.. py:function:: _z_unit(metadata: dict[str, Any]) -> str | None
+
+.. py:function:: _channel_volume(level: dask.array.Array, axes: Sequence[str], timepoint: int, channel: int, region: tuple[slice, slice, slice] | None = None) -> dask.array.Array
+
+   Lazy ``zyx`` view of one timepoint and channel, optionally cropped.
+
+
+.. py:function:: normalize_shifts(shifts: Any, n_channels: int) -> numpy.ndarray
+
+   Accept a per-channel sequence or an :func:`estimate_chromatic_shift` result.
+
+
+.. py:function:: _z_derivative(vol: numpy.ndarray) -> numpy.ndarray
+
+   Gaussian-smoothed derivative along Z (axis 0).
+
+
+.. py:function:: _sample_mask(volumes: Sequence[numpy.ndarray], threshold: float | None) -> tuple[numpy.ndarray, numpy.ndarray]
+
+   Foreground mask of the sample and the channel-averaged image it came from.
+
+   Each channel is rescaled to roughly 0-1 (1st-99.5th percentile) before
+   averaging, so no channel dominates. ``threshold`` applies to that
+   averaged image; ``None`` uses Otsu. Only the largest connected component
+   is kept, with holes filled.
+
+
+.. py:function:: _z_facing_surface(mask: numpy.ndarray, spacing: Sequence[float], min_z_normal: float) -> tuple[numpy.ndarray, numpy.ndarray]
+
+   Surface voxels of ``mask`` whose outward normal points mostly along Z.
+
+   Returns the surface and the sign of the Z-gradient of the mask (``+1``
+   where the sample lies above the surface, ``-1`` below). Faces created
+   by the edge of the stack are not surfaces: the sample is just cut there.
+
+
+.. py:function:: _ncc_curve(a: numpy.ndarray, b: numpy.ndarray, max_lag: int, weight: numpy.ndarray | None = None) -> numpy.ndarray
+
+   Normalized cross-correlation of ``a`` with Z-shifted windows of ``b``.
+
+   ``b`` is ``2 * max_lag`` planes taller than ``a``; lag ``L`` compares
+   ``a`` with ``b[max_lag + L : max_lag + L + len(a)]``, so a peak at ``L``
+   means ``b`` is displaced by ``+L`` planes relative to ``a``. With a
+   boolean ``weight`` only those voxels of ``a`` take part.
+
+
+.. py:function:: _subpixel_peak(curve: numpy.ndarray) -> tuple[float, bool]
+
+   Peak position of ``curve`` with a parabola fit, and whether it hit the edge.
+
+
+.. py:function:: _spread_surface_points(surface: numpy.ndarray, facing: numpy.ndarray, strength: numpy.ndarray, n_points: int) -> numpy.ndarray
+
+   Pick up to ``n_points`` strong surface voxels spread evenly over YX.
+
+   The YX bounding box of the surface is split into a grid; each cell
+   contributes its strongest lower-surface and its strongest upper-surface
+   voxel, and the strongest of those are kept. Returns an ``(n, 3)`` array
+   of ``zyx`` indices.
+
+
+.. py:function:: _auto_coarse_level(data_levels: Sequence[dask.array.Array], axes: Sequence[str], min_planes: int = 16, min_yx: int = 32) -> int
+
+   Coarsest level that still shows the sample's Z surfaces.
+
+   The Z spacing of the level does not matter: the coarse estimate is
+   sub-plane and refinement absorbs an error of about one coarse plane, so
+   only enough planes and pixels to segment the sample are needed.
+
+
+.. py:function:: estimate_chromatic_shift(data_levels: Sequence[dask.array.Array], metadata: dict[str, Any], *, reference_channel: int = 0, timepoint: int = 0, coarse_level: int | None = None, refine_level: int | None = 0, max_shift: float | None = None, n_regions: int = 32, crop_yx: int = 64, min_z_normal: float = 0.7, min_correlation: float = 0.2, threshold: float | None = None) -> dict[str, Any]
+
+   Estimate the axial (Z) shift of every channel relative to a reference.
+
+   Parameters
+   ----------
+   data_levels, metadata
+       Multiscale pyramid (finest first) and normalized PyMIF metadata. The
+       axes must include ``c``, ``z``, ``y`` and ``x``.
+   reference_channel
+       Channel that stays in place; the others are aligned to it.
+   timepoint
+       Timepoint used for the estimate when there is a ``t`` axis.
+   coarse_level
+       Level used for the sample mask and the coarse estimate. ``None``
+       picks the coarsest level with at least 16 Z planes and 32 pixels in
+       Y and X.
+   refine_level
+       Level the surface crops are read from. ``None`` skips refinement
+       and returns the coarse estimate.
+   max_shift
+       Largest shift searched, in the physical unit of the Z axis. ``None``
+       searches up to 10% of the stack depth. Searching wide is cheap: only
+       the coarse level is affected.
+   n_regions
+       Number of surface crops used for refinement.
+   crop_yx
+       Y and X size of each crop, in pixels of ``refine_level``.
+   min_z_normal
+       Minimum ``|n_z|`` of the surface normal for a surface voxel to count
+       as Z-facing (``1`` = exactly horizontal surface).
+   min_correlation
+       Crops whose correlation peak is below this are left out.
+   threshold
+       Mask threshold on the channel-averaged, 0-1 rescaled coarse image.
+       ``None`` uses Otsu.
+
+   Returns
+   -------
+   dict
+       JSON-serializable report. ``shifts`` holds the correction per channel
+       (pass the whole dict to :func:`write_chromatic_shift_corrected`).
+       ``surface_shifts`` gives the median per-crop shift on the lower and
+       upper sample surface separately; a large difference between the two
+       points at channel-dependent edge blur rather than a pure offset.
+       ``spread`` is a robust standard deviation of the per-crop shifts
+       around their surface median, and ``regions`` lists every crop with
+       its position, shift and correlation so position-dependent shifts can
+       be spotted. ``warnings`` collects the warnings raised during the
+       estimate (search limit reached, no usable crop...), so pipelines can
+       fail on them without catching Python warnings.
+
+
+.. py:function:: _ceil_to_multiple(value: float, step: int) -> int
+
+.. py:function:: plan_z_extent(nz0: int, z_spacings: Sequence[float], shifts: numpy.ndarray, extent: Extent) -> tuple[float, float]
+
+   Z padding of the output in physical units, as ``(below, total)``.
+
+   ``below`` is the padding added before plane 0 (negative when cropping),
+   ``total`` the change in Z extent. Both are whole multiples of the
+   coarsest level's Z spacing, so every pyramid level is padded by a whole
+   number of planes and the levels stay aligned.
+
+   - ``"union"``: grow Z so no channel loses data.
+   - ``"same"``: keep the input size; data shifted out of the stack is lost.
+   - ``"intersection"``: crop Z to the planes every channel still covers.
+
+
+.. py:function:: _cast_like(arr: dask.array.Array, dtype: numpy.dtype) -> dask.array.Array
+
+.. py:function:: shift_along_axis(arr: dask.array.Array, axis: int, n_out: int, offset: float, order: int = 1) -> dask.array.Array
+
+   Return ``out[j] = arr[j - offset]`` along ``axis``, length ``n_out``.
+
+   Positions outside the input are filled with zeros. ``order=1`` uses
+   linear interpolation for fractional offsets; ``order=0`` rounds the
+   offset to whole planes, which copies the data without changing values.
+
+
+.. py:function:: shift_levels(data_levels: Sequence[dask.array.Array], metadata: dict[str, Any], shifts: numpy.ndarray | None, pad_below: float, pad_total: float, order: int = 1) -> list[dask.array.Array]
+
+   Lazily shift every channel of every level along Z and resize Z.
+
+   ``shifts`` (one per channel, physical units) is ``None`` for data
+   without a channel axis such as labels: those are only padded or cropped
+   to the new extent, always without interpolation.
+
+
+.. py:function:: _mirrored_array_kwargs(src: zarr.Array, shape: Sequence[int]) -> dict[str, Any]
+
+   ``create_array`` keywords reproducing ``src`` (codecs, chunks, shards...) at a new shape.
+
+
+.. py:function:: write_chromatic_shift_corrected(source_root: zarr.Group, datasets: Sequence[tuple[str, Any]], path: str | pathlib.Path, shifts: Any, *, extent: Extent = 'union', order: int = 1, overwrite: bool = True, num_workers: int | None = None, progress: bool = True) -> zarr.Group
+
+   Write a Z-shift-corrected copy of an OME-Zarr store.
+
+   ``datasets`` are ``(name, dataset)`` pairs as yielded by
+   ``ZarrManager._iter_datasets``, the raw image first; each dataset needs
+   ``data``, ``zarr_data`` (the source arrays), ``metadata`` and ``path``.
+   Every output array copies its source's chunks, shards, codecs, fill value
+   and dimension names, and every group copies its source attributes, so
+   the output has the structure of the input with only the Z size changed.
+   The applied correction is recorded in the root attribute
+   ``pymif_chromatic_shift``.
+
+   Image datasets whose channel count matches ``shifts`` are corrected
+   channel by channel. Datasets without a channel axis (labels) follow the
+   reference channel: they are only padded or cropped to the new Z extent.
+   Image datasets with a different channel count are skipped with a warning.
+
+

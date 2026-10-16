@@ -1,0 +1,30 @@
+pymif.microscope_manager.zarr_v04_manager
+=========================================
+
+.. py:module:: pymif.microscope_manager.zarr_v04_manager
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   pymif.microscope_manager.zarr_v04_manager.ZarrV04Manager
+
+
+Module Contents
+---------------
+
+.. py:class:: ZarrV04Manager(path, chunks: Tuple[int, Ellipsis] | None = None, metadata: dict[str, Any] | None = None)
+
+   Bases: :py:obj:`pymif.microscope_manager.zarr_manager.ZarrManager`
+
+
+   Backward-compatible reader for legacy NGFF/OME-Zarr v0.4 stores.
+
+   The original implementation assumed five-dimensional ``TCZYX`` data.  This
+   compatibility wrapper now delegates to :class:`ZarrManager`, which supports
+   both v0.4 and v0.5 metadata layouts and any unique subset of the image axes
+   ``t``, ``c``, ``z``, ``y`` and ``x``.
+
+

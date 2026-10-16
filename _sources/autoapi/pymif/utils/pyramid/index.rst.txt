@@ -1,0 +1,58 @@
+pymif.utils.pyramid
+===================
+
+.. py:module:: pymif.utils.pyramid
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   pymif.utils.pyramid.SpatialFactor
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.utils.pyramid._target_chunks
+   pymif.utils.pyramid.get_spatial_axes
+   pymif.utils.pyramid.factor_power
+   pymif.utils.pyramid.multiply_scales
+   pymif.utils.pyramid.build_pyramid
+
+
+Module Contents
+---------------
+
+.. py:data:: SpatialFactor
+
+.. py:function:: _target_chunks(data_level: dask.array.Array, metadata: Dict[str, Any]) -> tuple[int, Ellipsis]
+
+   Choose the level-independent chunk shape for a pyramid build.
+
+
+.. py:function:: get_spatial_axes(metadata: Dict[str, Any]) -> tuple[int, Ellipsis]
+
+   Return axis indices for all spatial axes present in metadata['axes'].
+
+
+.. py:function:: factor_power(factors: Sequence[int], exponent: int) -> tuple[int, Ellipsis]
+
+.. py:function:: multiply_scales(scales: Sequence[float], factors: Sequence[int]) -> tuple[float, Ellipsis]
+
+.. py:function:: build_pyramid(data_levels: List[dask.array.Array], metadata: Dict[str, Any], num_levels: int = 3, downscale_factor: SpatialFactor = 2, start_level: int = 0) -> Tuple[List[dask.array.Array], Dict[str, Any]]
+
+   Generate a multiscale pyramid and updated metadata for NGFF-compatible
+   OME-Zarr writing.
+
+   This function is axis-aware and uses metadata["axes"] to find Z, Y, X.
+
+   downscale_factor can be either:
+
+   - 2, meaning downsample Z, Y and X by 2
+   - (1, 2, 2), meaning keep Z unchanged and downsample only YX
+
+

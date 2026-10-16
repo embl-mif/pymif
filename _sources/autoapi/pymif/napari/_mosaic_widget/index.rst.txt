@@ -1,0 +1,258 @@
+pymif.napari._mosaic_widget
+===========================
+
+.. py:module:: pymif.napari._mosaic_widget
+
+.. autoapi-nested-parse::
+
+   napari widget to inspect raw mosaic tiles and fuse them into an OME-Zarr image.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   pymif.napari._mosaic_widget.MOSAIC_READERS
+   pymif.napari._mosaic_widget.NO_GROUP
+   pymif.napari._mosaic_widget._PROJECTIONS
+   pymif.napari._mosaic_widget.TILE_MODES
+   pymif.napari._mosaic_widget.TILE_MAP
+   pymif.napari._mosaic_widget._MAP_COLORS
+   pymif.napari._mosaic_widget._CLICK_TOLERANCE
+   pymif.napari._mosaic_widget.MOSAIC_BATCH_COLUMNS
+   pymif.napari._mosaic_widget._TITLE_STYLE
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.napari._mosaic_widget.group_labels
+   pymif.napari._mosaic_widget.select_tiles
+   pymif.napari._mosaic_widget.default_output
+   pymif.napari._mosaic_widget.folder_of
+   pymif.napari._mosaic_widget.output_for_drop
+   pymif.napari._mosaic_widget.fuse_kwargs
+   pymif.napari._mosaic_widget.tile_layers
+   pymif.napari._mosaic_widget.skipped_tile_ids
+   pymif.napari._mosaic_widget.stack_id
+   pymif.napari._mosaic_widget.tile_footprints
+   pymif.napari._mosaic_widget.add_tile_map
+   pymif.napari._mosaic_widget.find_tile_map
+   pymif.napari._mosaic_widget.refresh_tile_map
+   pymif.napari._mosaic_widget.tile_at
+   pymif.napari._mosaic_widget._box
+   pymif.napari._mosaic_widget.tiles_in_box
+   pymif.napari._mosaic_widget.show_drag_box
+   pymif.napari._mosaic_widget.boxed_picks
+   pymif.napari._mosaic_widget.set_picked
+   pymif.napari._mosaic_widget.toggle_tile_at
+   pymif.napari._mosaic_widget.picked_stack_ids
+   pymif.napari._mosaic_widget.picked_tiles
+   pymif.napari._mosaic_widget.batch_row
+   pymif.napari._mosaic_widget.shown_contrast_limits
+   pymif.napari._mosaic_widget.apply_display_windows
+   pymif.napari._mosaic_widget._scan_worker
+   pymif.napari._mosaic_widget._fuse_worker
+   pymif.napari._mosaic_widget.mosaic_widget
+
+
+Module Contents
+---------------
+
+.. py:data:: MOSAIC_READERS
+
+.. py:data:: NO_GROUP
+   :value: '(none)'
+
+
+.. py:data:: _PROJECTIONS
+
+.. py:data:: TILE_MODES
+
+.. py:data:: TILE_MAP
+   :value: 'tile map'
+
+
+.. py:data:: _MAP_COLORS
+
+.. py:data:: _CLICK_TOLERANCE
+   :value: 4
+
+
+.. py:data:: MOSAIC_BATCH_COLUMNS
+   :value: ['input', 'microscope', 'output', 'downsample', 'projection', 'blend', 'channels', 'groups',...
+
+
+.. py:data:: _TITLE_STYLE
+   :value: 'QLabel { font-weight: bold; font-size: 13px; padding: 2px 0px; }'
+
+
+.. py:function:: group_labels(mosaic) -> list[str]
+
+   Group names of a mosaic as shown in the widget.
+
+
+.. py:function:: select_tiles(mosaic, channels: Sequence[str], groups: Sequence[str])
+
+   Tiles whose channel is in ``channels`` and group label is in ``groups``.
+
+
+.. py:function:: default_output(input_path: pathlib.Path, projection: Optional[str], ds: Sequence[int]) -> pathlib.Path
+
+   ``<folder>/<name>_MIP_ds8-8.ome.zarr`` (projection) or ``<name>_3D_ds4-8-8.ome.zarr``.
+
+
+.. py:function:: folder_of(path: pathlib.Path) -> pathlib.Path
+
+   Dropped on the acquisition field: a file stands for its folder.
+
+
+.. py:function:: output_for_drop(path: pathlib.Path, current: pathlib.Path) -> pathlib.Path
+
+   Dropped on the output field: a ``.zarr`` is used as is, a plain folder
+   receives the current output name (``fused.ome.zarr`` if there is none).
+
+
+.. py:function:: fuse_kwargs(*, channels: Sequence[str], projection: str, blend: str, ds_z: int, ds_y: int, ds_x: int, levels: int, workers: int, overwrite: bool) -> dict
+
+   Map the fusion widget values onto :func:`~pymif.mosaic_manager.fuse_tiles` arguments.
+
+
+.. py:function:: tile_layers(layers, mosaic_path) -> list
+
+   The napari layers that show a tile of the mosaic loaded from ``mosaic_path``.
+
+
+.. py:function:: skipped_tile_ids(layers, selection, mosaic_path, mode: Optional[str], all_channels: bool = False) -> list[str]
+
+   Ids of the tiles to leave blank, from the tile layers shown in napari.
+
+   ``mode="visible"`` skips the tiles whose layer is hidden (eye icon off),
+   ``mode="selected"`` the tiles whose layer is not selected in the layer list,
+   ``None`` none. Tiles without a layer (e.g. a channel that is not shown) are
+   fused normally. With ``all_channels`` the same stack position is skipped in
+   every channel (the ids are then stack names, e.g. ``"1-x00-y00"``).
+
+
+.. py:function:: stack_id(mosaic, tile) -> str
+
+   Stack position of a tile, shared by all its channels (the ``<stack>`` of its tile id).
+
+
+.. py:function:: tile_footprints(mosaic) -> dict
+
+   ``{stack id: [[y0, x0], [y1, x1]]}``: the y/x rectangle covered by every stack
+   position (all its channels and sides), in sample coordinates.
+
+
+.. py:function:: add_tile_map(viewer, mosaic)
+
+   Add the tile map of ``mosaic`` to ``viewer`` (replacing any earlier one), all tiles picked.
+
+   One rectangle per stack position, labelled with its stack id. The layer cannot
+   be edited (napari would let you move or delete rectangles); :func:`toggle_tile_at`
+   picks or unpicks a tile.
+
+
+.. py:function:: find_tile_map(layers, mosaic_path)
+
+   The tile map layer of the mosaic loaded from ``mosaic_path``, or ``None``.
+
+
+.. py:function:: refresh_tile_map(layer, picked: Optional[Sequence[bool]] = None) -> None
+
+   Colour the rectangles of a tile map by their ``picked`` feature, or by ``picked``
+   if given (a preview that leaves the feature unchanged).
+
+
+.. py:function:: tile_at(layer, position) -> Optional[int]
+
+   Index of the tile-map rectangle under ``position`` (world coordinates), or ``None``.
+
+
+.. py:function:: _box(corner, opposite)
+
+   ``(lo, hi)`` y/x corners of the box between two world positions.
+
+
+.. py:function:: tiles_in_box(layer, corner, opposite) -> list[int]
+
+   Indices of the tile-map rectangles that lie, even partially, in the y/x box
+   between two world positions.
+
+
+.. py:function:: show_drag_box(viewer, tile_map, corner=None, opposite=None) -> None
+
+   Draw the box between two world positions over ``tile_map``, or remove it (no positions).
+
+   The box is a temporary shapes layer (``"tile map box"``) that only exists while
+   dragging. Adding it would select it, so the layer selection is restored at once
+   (it decides which tiles are fused in *selected layers only* mode).
+
+
+.. py:function:: boxed_picks(layer, indices: Sequence[int], picked: bool) -> list[bool]
+
+   The ``picked`` feature of a tile map with ``indices`` set to ``picked``.
+
+
+.. py:function:: set_picked(layer, indices: Sequence[int], picked: bool) -> None
+
+   Pick (or unpick) the tile-map rectangles ``indices``.
+
+
+.. py:function:: toggle_tile_at(layer, position) -> Optional[str]
+
+   Pick or unpick the tile under ``position`` (world coordinates) on a tile map.
+
+   Returns the stack id of the toggled tile, or ``None`` if no tile is there.
+
+
+.. py:function:: picked_stack_ids(layer) -> Optional[list[str]]
+
+   Stack ids picked on a tile map; ``None`` (every tile) without a map.
+
+
+.. py:function:: picked_tiles(mosaic, tiles, picked: Optional[Sequence[str]])
+
+   The ``tiles`` whose stack position is in ``picked`` (all of them if ``picked`` is ``None``).
+
+
+.. py:function:: batch_row(*, input_path, microscope: str, output, values: dict, all_groups: Sequence[str], skip_ids: Sequence[str], picked: Optional[Sequence[str]] = None, all_stacks: Sequence[str] = ()) -> dict
+
+   One ``pymif fuse --batch`` CSV row from the fusion widget ``values``.
+
+   ``picked`` are the stack ids picked on the tile map (``None``: all); the ``tiles``
+   column stays empty (every tile) when they cover ``all_stacks``.
+
+
+.. py:function:: shown_contrast_limits(layers, mosaic) -> dict
+
+   ``{channel: (low, high)}`` of the tile layers of ``mosaic`` shown in napari
+   (their contrast is linked per channel), to keep it when tiles are shown again.
+
+
+.. py:function:: apply_display_windows(layers, windows, dtype) -> None
+
+   Give the image layers of a fused result its stored display windows (one per
+   channel, in layer order), with the slider over the whole dtype range.
+
+
+.. py:function:: _scan_worker(reader, path)
+
+   Scan the acquisition folder in the background (opens every tile's metadata).
+
+
+.. py:function:: _fuse_worker(tiles, out, kwargs)
+
+   Run the fusion in the background and return the written dataset.
+
+
+.. py:function:: mosaic_widget()
+
+   Create the PyMIF mosaic widget: load raw tiles, show them, fuse them.
+
+

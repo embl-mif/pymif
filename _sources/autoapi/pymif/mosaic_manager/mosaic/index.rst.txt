@@ -1,0 +1,238 @@
+pymif.mosaic_manager.mosaic
+===========================
+
+.. py:module:: pymif.mosaic_manager.mosaic
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   pymif.mosaic_manager.mosaic.logger
+   pymif.mosaic_manager.mosaic._COLORMAPS
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   pymif.mosaic_manager.mosaic.MosaicManager
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.mosaic_manager.mosaic.single_timepoint_error
+   pymif.mosaic_manager.mosaic._centre_block
+   pymif.mosaic_manager.mosaic._central_tiles
+   pymif.mosaic_manager.mosaic._link_layers
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+
+.. py:data:: _COLORMAPS
+   :value: ('green', 'magenta', 'cyan', 'yellow', 'red', 'blue')
+
+
+.. py:function:: single_timepoint_error(found: str) -> NotImplementedError
+
+   Error (also logged as a warning) for mosaics with more than one timepoint.
+
+
+.. py:function:: _centre_block(shape: Sequence[int], block: int) -> Tuple[slice, Ellipsis]
+
+   Slices of a ``block``-sized cube at the centre of ``shape``, aligned to ``block``.
+
+
+.. py:function:: _central_tiles(tiles: Sequence[pymif.mosaic_manager.tile.Tile], n: int) -> List[pymif.mosaic_manager.tile.Tile]
+
+   Up to ``n`` tiles, taken in turn from each group, closest to their group's centre (in y/x).
+
+
+.. py:function:: _link_layers(groups) -> None
+
+   Link contrast and gamma within every group of napari layers (if napari supports it).
+
+
+.. py:class:: MosaicManager(path: str | pathlib.Path)
+
+   Bases: :py:obj:`abc.ABC`
+
+
+   A set of separately acquired, positioned tiles (not yet one image).
+
+   Unlike a :class:`~pymif.microscope_manager.MicroscopeManager`, which wraps one
+   image, a mosaic exposes the raw tiles lazily and fuses them on request with
+   :meth:`fuse`. Subclasses implement :meth:`_scan` only.
+
+   Mosaics can be used as context managers so that open file handles are closed::
+
+       with mosaic_manager.LuxendoMosaicManager("raw_folder") as mosaic:
+           mosaic.fuse("overview.ome.zarr", ds=(4, 8, 8), projection="max")
+
+
+   .. py:attribute:: path
+
+
+   .. py:attribute:: _open_files
+      :type:  list
+      :value: []
+
+
+
+   .. py:attribute:: tiles
+      :type:  List[pymif.mosaic_manager.tile.Tile]
+
+
+   .. py:method:: _check_single_timepoint() -> None
+
+      Refuse timelapses: loading and fusion handle one timepoint so far.
+
+      Readers already give every tile its ``timepoint``; supporting timelapses
+      means removing this check and making the fusion loop over :attr:`timepoints`.
+
+
+
+   .. py:method:: _scan() -> List[pymif.mosaic_manager.tile.Tile]
+      :abstractmethod:
+
+
+      Discover the tiles under :attr:`path` (lazy data, positions in the sample frame).
+
+
+
+   .. py:property:: channels
+      :type: List[str]
+
+
+      Channel names in order of first appearance.
+
+
+
+   .. py:property:: timepoints
+      :type: List[int]
+
+
+      Timepoints of the tiles, sorted (``[0]`` for a single timepoint).
+
+
+
+   .. py:property:: groups
+      :type: List[Optional[str]]
+
+
+      Tile group labels in order of first appearance.
+
+
+
+   .. py:method:: select(channel: Optional[str] = None, group: Optional[str] = None, **attrs: Any) -> List[pymif.mosaic_manager.tile.Tile]
+
+      Tiles matching ``channel``, ``group`` and any ``attrs`` entries, e.g. ``select(stack=1)``.
+
+
+
+   .. py:method:: tile_id(tile: pymif.mosaic_manager.tile.Tile) -> str
+
+      Stable name of a tile, ``"<channel>/<stack>"`` (e.g. ``"cFos-647/1-x00-y00"``).
+
+      ``<stack>`` is the reader's stack name (``attrs["stack"]``) or, without
+      one, the tile index. Used to skip tiles from the command line or a batch CSV.
+
+
+
+   .. py:method:: tiles_by_ids(ids: Sequence[str]) -> List[pymif.mosaic_manager.tile.Tile]
+
+      Tiles named by ``ids``: ``"<channel>/<stack>"`` for one tile, or ``"<stack>"``
+      for that stack position in every channel. Unknown ids raise ``KeyError``.
+
+
+
+   .. py:method:: bounding_box(tiles: Optional[Sequence[pymif.mosaic_manager.tile.Tile]] = None) -> Tuple[Tuple[float, Ellipsis], Tuple[float, Ellipsis]]
+
+      ``(min, max)`` corners, ``(z, y, x)``, of ``tiles`` (default: all).
+
+
+
+   .. py:method:: tile(i: int)
+
+      Tile ``i`` as an :class:`~pymif.microscope_manager.ArrayManager` (axes ``zyx``).
+
+
+
+   .. py:method:: _lazy(t: pymif.mosaic_manager.tile.Tile) -> dask.array.Array
+      :staticmethod:
+
+
+
+   .. py:method:: contrast_limits(tiles: Optional[Sequence[pymif.mosaic_manager.tile.Tile]] = None, n_tiles: int = 6, block: int = 64, percentiles: Tuple[float, float] = (0.5, 99.9)) -> Dict[str, Tuple[float, float]]
+
+      Display range of every channel, estimated from a small sample.
+
+      For each channel, one ``block``-sized cube is read from the centre of up to
+      ``n_tiles`` tiles (about 0.5 MB each for uint16 and ``block=64``, the HDF5
+      chunk size of Luxendo tiles), and the given percentiles of those voxels are
+      returned as ``(low, high)``. The sampled tiles are the ones closest to the
+      centre of each tile group (e.g. each illumination side), where the sample
+      usually is; edge tiles often only show background.
+
+
+
+   .. py:method:: visualize(tiles: Optional[Sequence[pymif.mosaic_manager.tile.Tile]] = None, viewer: napari.Viewer | None = None, contrast_limits: str | Dict[str, Tuple[float, float]] | None = 'range')
+
+      Show tiles in napari, each as its own layer at its stage position.
+
+      One colour per channel and additive blending, so overlaps and gaps are
+      easy to see. Data stays lazy: only the planes napari displays are read.
+      All tiles of a channel share one contrast setting, and their layers are
+      linked: changing the contrast or gamma of one tile changes all of them.
+
+      Parameters
+      ----------
+      tiles
+          Tiles to show (default: all), e.g. ``mosaic.select(channel="cFos-647")``.
+          Every displayed plane reads whole HDF5 chunks of every tile, so
+          showing fewer tiles keeps napari responsive.
+      viewer
+          Viewer to add the layers to; a new one is created by default.
+      contrast_limits
+          ``"range"`` (default) uses the whole range of the data type (0 to
+          65535 for uint16), which reads nothing: set the contrast of one tile
+          and the linked tiles follow. ``"auto"`` estimates it per channel with
+          :meth:`contrast_limits` (reads a small sample, slow on network drives);
+          a ``{channel: (low, high)}`` dict uses those, with the whole range for
+          the channels it leaves out; ``None`` lets napari compute them per
+          tile (slow on large tiles).
+
+
+
+   .. py:method:: fuse(out: str | pathlib.Path, skip: Optional[Sequence[Tile | str]] = None, **kwargs)
+
+      Fuse the tiles into an OME-Zarr image; see :func:`~pymif.mosaic_manager.fuse_tiles`.
+
+      ``skip`` lists tiles to leave blank, as ``Tile`` objects or as ids accepted by
+      :meth:`tiles_by_ids` (``"cFos-647/1-x00-y00"``, or ``"1-x00-y00"`` for every channel).
+
+
+
+   .. py:method:: _resolve_skip(skip) -> List[pymif.mosaic_manager.tile.Tile]
+
+
+   .. py:method:: close() -> None
+
+      Close all open file handles.
+
+
+
+   .. py:method:: __enter__() -> MosaicManager
+
+
+   .. py:method:: __exit__(exc_type, exc, tb) -> None
+
+

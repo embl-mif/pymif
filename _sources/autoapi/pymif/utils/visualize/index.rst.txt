@@ -1,0 +1,60 @@
+pymif.utils.visualize
+=====================
+
+.. py:module:: pymif.utils.visualize
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.utils.visualize._parse_color
+   pymif.utils.visualize._axis_scale
+   pymif.utils.visualize.units_for_axes
+   pymif.utils.visualize._axis_units
+   pymif.utils.visualize._set_axis_labels
+   pymif.utils.visualize.visualize
+
+
+Module Contents
+---------------
+
+.. py:function:: _parse_color(color: Union[int, str]) -> tuple[float, float, float]
+
+   Convert an OME int, hex string or color name to an RGB float tuple for napari.
+
+
+.. py:function:: _axis_scale(metadata: Dict[str, Any], axes: tuple[str, Ellipsis], level: int, *, drop_channel: bool) -> tuple[float, Ellipsis]
+
+.. py:function:: units_for_axes(metadata: Dict[str, Any], requested: Iterable[str])
+
+   Per-axis units for napari layers covering the axes ``requested``, or ``None``.
+
+   Layers added without units default to ``pixel``. napari then disables units
+   for rendering ("Inconsistent units across layers") as soon as it also holds
+   layers with physical units. Every layer that PyMIF adds, image or helper
+   (ROI, Z range...), therefore takes its units from here so they all agree
+   with each other and with a converted zarr opened by ``napari-ome-zarr``.
+
+   ``None`` is returned (so the caller omits ``units``) when napari has no
+   layer units or a unit cannot be parsed.
+
+
+.. py:function:: _axis_units(metadata: Dict[str, Any], axes: tuple[str, Ellipsis], *, drop_channel: bool)
+
+   Units of the axes shown by an image/label layer (channel axis optionally removed).
+
+
+.. py:function:: _set_axis_labels(viewer, axes: tuple[str, Ellipsis], *, drop_channel: bool) -> None
+
+.. py:function:: visualize(data_levels: List[dask.array.Array], metadata: Dict[str, Any], start_level: int = 0, stop_level: int = -1, in_memory: bool = False, viewer: napari.Viewer | None = None) -> napari.Viewer | None
+
+   Visualize an axis-aware multiscale dataset with napari.
+
+   Datasets without a ``t`` axis are passed to napari without an artificial time
+   dimension, so napari will not expose an active T slider.  Datasets without a
+   ``c`` axis are displayed as a single image/label layer rather than channel
+   layers.
+
+

@@ -1,0 +1,267 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PyMIF — microscopy I/O, OME-Zarr conversion, and NGFF utilities &mdash; PyMIF 0.5.1.dev21+gdf76fddfa documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=da07648d"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation and versioning" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            PyMIF
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing and extending PyMIF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">PyMIF</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">PyMIF — microscopy I/O, OME-Zarr conversion, and NGFF utilities</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pymif-microscopy-i-o-ome-zarr-conversion-and-ngff-utilities">
+<h1>PyMIF — microscopy I/O, OME-Zarr conversion, and NGFF utilities<a class="headerlink" href="#pymif-microscopy-i-o-ome-zarr-conversion-and-ngff-utilities" title="Link to this heading"></a></h1>
+<p><img alt="Python" src="https://img.shields.io/badge/python-3.12-green" />
+<a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/embl-mif/pymif.svg" /></a>
+<a class="reference external" href="https://github.com/embl-mif/pymif/actions/workflows/tests.yml"><img alt="Tests" src="https://github.com/embl-mif/pymif/actions/workflows/tests.yml/badge.svg" /></a>
+<a class="reference external" href="https://codecov.io/gh/embl-mif/pymif"><img alt="codecov" src="https://codecov.io/gh/embl-mif/pymif/graph/badge.svg" /></a>
+<a class="reference external" href="https://github.com/embl-mif/pymif/actions/workflows/documentation.yml"><img alt="Documentation" src="https://github.com/embl-mif/pymif/actions/workflows/documentation.yml/badge.svg" /></a>
+<a class="reference external" href="https://github.com/embl-mif/pymif/actions/workflows/docker-publish.yml"><img alt="Docker" src="https://github.com/embl-mif/pymif/actions/workflows/docker-publish.yml/badge.svg" /></a>
+<a class="reference external" href="https://github.com/embl-mif/pymif/releases"><img alt="GitHub release" src="https://img.shields.io/github/v/release/embl-mif/pymif.svg" /></a>
+<a class="reference external" href="https://github.com/embl-mif/pymif/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/embl-mif/pymif.svg?style=social" /></a></p>
+<p><strong>PyMIF</strong> is a Python package for reading microscopy datasets from multiple acquisition systems, building multiscale pyramids, writing <strong>OME-NGFF / OME-Zarr</strong>, and working with those datasets from Python, the command line and napari.</p>
+<p>It is developed for users of the <a class="reference external" href="https://www.embl.org/groups/mesoscopic-imaging-facility/">Mesoscopic Imaging Facility (MIF)</a>. The rendered documentation is at <strong><a class="reference external" href="https://embl-mif.github.io/pymif/">embl-mif.github.io/pymif</a></strong>.</p>
+<blockquote>
+<div><p>[!NOTE]
+PyMIF writes <strong>NGFF v0.5 / Zarr v3</strong> by default. <strong>NGFF v0.4 / Zarr v2</strong> datasets remain supported through <code class="docutils literal notranslate"><span class="pre">ZarrManager</span></code> and <code class="docutils literal notranslate"><span class="pre">ZarrV04Manager</span></code>.</p>
+</div></blockquote>
+<p><img alt="Demo" src="_images/demo.gif" /></p>
+<p><em>Demonstration of PyMIF usage. Data: near newborn mouse embryo (~1.5 cm long). Fluorescence signal: methylene blue + autofluorescence. Sample processed and imaged by Montserrat Coll at the Mesoscopic Imaging Facility. Video speed: 2.5× real speed.</em></p>
+<hr class="docutils" />
+<section id="what-pymif-does">
+<h2>What PyMIF does<a class="headerlink" href="#what-pymif-does" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Microscope managers</strong> read Luxendo, Opera, SCAPE, Viventis, Zeiss and OME-Zarr datasets into one lazy (Dask) API with a shared metadata schema. → <a class="reference internal" href="readers.html"><span class="std std-doc">Readers and conventions</span></a></p></li>
+<li><p><strong>OME-Zarr writing</strong>: full export, empty datasets and groups, image and label region updates, any subset of the <code class="docutils literal notranslate"><span class="pre">tczyx</span></code> axes. → <a class="reference internal" href="python-api.html"><span class="std std-doc">Python API</span></a></p></li>
+<li><p><strong>Pyramids and subsetting</strong>: multiscale generation, cropping, channel reordering, metadata updates. → <a class="reference internal" href="python-api.html"><span class="std std-doc">Python API</span></a></p></li>
+<li><p><strong>Mosaics</strong>: raw tiles shown at their stage position and fused into one OME-Zarr image (3D or projection). → <a class="reference internal" href="mosaic.html"><span class="std std-doc">Mosaics</span></a></p></li>
+<li><p><strong>Chromatic shift correction</strong>: the Z offset between channels measured on the sample itself, and a corrected copy with the same layout as the input. → <a class="reference internal" href="chromatic-shift.html"><span class="std std-doc">Chromatic shift correction</span></a></p></li>
+<li><p><strong>Command line</strong>: one-off and CSV-batch conversion, mosaic fusion and chromatic shift correction. → <a class="reference internal" href="cli.html"><span class="std std-doc">Command line</span></a></p></li>
+<li><p><strong>Napari widgets</strong>: conversion with ROI selection, mosaic fusion. → <a class="reference internal" href="napari-plugin.html"><span class="std std-doc">Napari plugin</span></a></p></li>
+<li><p><strong>Output tuning</strong>: sharding, singleton axes, parallel writing, progress bars. → <a class="reference internal" href="advanced.html"><span class="std std-doc">Advanced writing options</span></a></p></li>
+</ul>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">conda create -n pymif python=3.12</span>
+<span class="go">conda activate pymif</span>
+<span class="go">git clone https://github.com/embl-mif/pymif.git</span>
+<span class="go">cd pymif</span>
+<span class="go">pip install .            # or: pip install -e .[napari] for development with the napari widgets</span>
+</pre></div>
+</div>
+<p>Versioning, releases and development installs: <a class="reference internal" href="installation.html"><span class="std std-doc">Installation and versioning</span></a>.</p>
+</section>
+<section id="quick-start">
+<h2>Quick start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pymif.microscope_manager</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mm</span>
+
+<span class="n">source</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">ViventisManager</span><span class="p">(</span><span class="s2">"path/to/Position_1"</span><span class="p">)</span>   <span class="c1"># any microscope manager</span>
+<span class="n">source</span><span class="o">.</span><span class="n">build_pyramid</span><span class="p">(</span><span class="n">num_levels</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">source</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="s2">"output.zarr"</span><span class="p">)</span>                       <span class="c1"># NGFF v0.5 / Zarr v3</span>
+
+<span class="n">z</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">ZarrManager</span><span class="p">(</span><span class="s2">"output.zarr"</span><span class="p">)</span>
+<span class="n">z</span><span class="o">.</span><span class="n">visualize</span><span class="p">()</span>                                       <span class="c1"># open in napari</span>
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pymif convert -i INPUT_PATH -m MICROSCOPE -z OUTPUT_ZARR</span>
+<span class="go">pymif fuse -i ACQUISITION_FOLDER -z OUTPUT_ZARR -rds 4 8 8   # fuse raw tiles</span>
+<span class="go">pymif chromatic-shift -i INPUT_ZARR -z OUTPUT_ZARR -r shift.json   # align channels in Z</span>
+</pre></div>
+</div>
+</section>
+<section id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading"></a></h2>
+<p><strong>Getting started</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Page</p></th>
+<th class="head"><p>Contents</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="installation.html"><span class="std std-doc">Installation and versioning</span></a></p></td>
+<td><p>environments, extras, release labels</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="readers.html"><span class="std std-doc">Readers and conventions</span></a></p></td>
+<td><p>supported microscopes, shared reader behaviour, logging</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Working with data</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Page</p></th>
+<th class="head"><p>Contents</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="python-api.html"><span class="std std-doc">Python API</span></a></p></td>
+<td><p>export, empty datasets, axis-aware metadata, labels, region writes</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="mosaic.html"><span class="std std-doc">Mosaics</span></a></p></td>
+<td><p>raw tiles, placement check, fusion options</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="chromatic-shift.html"><span class="std std-doc">Chromatic shift correction</span></a></p></td>
+<td><p>measuring the Z offset between channels, the corrected dataset, checking the result, <code class="docutils literal notranslate"><span class="pre">pymif</span> <span class="pre">chromatic-shift</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="advanced.html"><span class="std std-doc">Advanced writing options</span></a></p></td>
+<td><p>sharding, singleton axes, parallel writing, progress bar</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Interfaces</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Page</p></th>
+<th class="head"><p>Contents</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="cli.html"><span class="std std-doc">Command line</span></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pymif</span> <span class="pre">convert</span></code>, <code class="docutils literal notranslate"><span class="pre">pymif</span> <span class="pre">fuse</span></code>, <code class="docutils literal notranslate"><span class="pre">pymif</span> <span class="pre">chromatic-shift</span></code> (one dataset or a CSV batch)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="napari-plugin.html"><span class="std std-doc">Napari plugin</span></a></p></td>
+<td><p>converter and mosaic fusion widgets</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Reference</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Page</p></th>
+<th class="head"><p>Contents</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://embl-mif.github.io/pymif/autoapi/pymif/index.html">API reference</a></p></td>
+<td><p>generated from the docstrings</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="contributing.html"><span class="std std-doc">Contributing</span></a></p></td>
+<td><p>package layout, adding a microscope manager or a mosaic manager, <code class="docutils literal notranslate"><span class="pre">pymif.utils</span></code>, documentation</p></td>
+</tr>
+</tbody>
+</table>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation and versioning" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Nicola Gritti.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

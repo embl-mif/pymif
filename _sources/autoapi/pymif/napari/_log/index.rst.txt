@@ -1,0 +1,72 @@
+pymif.napari._log
+=================
+
+.. py:module:: pymif.napari._log
+
+.. autoapi-nested-parse::
+
+   Console-to-log helpers shared by the PyMIF napari widgets.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   pymif.napari._log.EmittingStream
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.napari._log.make_log_appender
+
+
+Module Contents
+---------------
+
+.. py:class:: EmittingStream
+
+   Bases: :py:obj:`qtpy.QtCore.QObject`
+
+
+   Qt-compatible text stream used to forward console output to the widget.
+
+
+   .. py:attribute:: text_written
+
+
+   .. py:method:: write(text)
+
+      Emit written text to the Qt signal.
+
+
+
+   .. py:method:: flush()
+
+      Provide a file-like ``flush`` method for compatibility.
+
+
+
+   .. py:method:: isatty()
+
+      Report that this stream is not an interactive terminal.
+
+
+
+.. py:function:: make_log_appender(log_widget)
+
+   Return a slot that appends timestamped console output to ``log_widget``.
+
+   Progress bars (tqdm) redraw themselves by writing ``"\r"`` followed by the
+   new bar. Those writes replace the previous progress line instead of adding
+   a new line each time; any other output starts a new line.
+
+   The widget can be deleted while output still arrives, for example when its
+   dock was closed but ``sys.stdout`` still points at this stream. That output
+   then goes to the original console instead of raising.
+
+

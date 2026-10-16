@@ -1,0 +1,106 @@
+pymif.mosaic_manager.tile
+=========================
+
+.. py:module:: pymif.mosaic_manager.tile
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   pymif.mosaic_manager.tile.Tile
+
+
+Module Contents
+---------------
+
+.. py:class:: Tile
+
+   One acquired tile of a mosaic: a lazy ``(z, y, x)`` array and where it sits.
+
+   Placement is translation-only: ``origin`` is the position (in ``units``) of
+   voxel ``[0, 0, 0]`` in the common sample frame and ``voxel_size`` the voxel
+   spacing. All tiles of a mosaic must use the same units and voxel size.
+
+   Parameters
+   ----------
+   data
+       Anything with ``shape``, ``dtype`` and numpy-style slicing that returns
+       array data: an ``h5py.Dataset``, a dask or a numpy array. It is only
+       read when a fusion needs it.
+   origin, voxel_size
+       ``(z, y, x)`` position of the first voxel and voxel spacing.
+   channel
+       Channel (dye) name. Tiles with the same name are fused into one output
+       channel.
+   group
+       Optional label of tiles that should be merged among themselves first,
+       e.g. ``"L"``/``"R"`` illumination side. Used by ``blend="sigmoid"`` and ``"midline"``.
+   timepoint
+       Index of the timepoint the tile belongs to (``0`` for a single timepoint).
+       Mosaics with more than one timepoint are not supported yet:
+       :class:`~pymif.mosaic_manager.MosaicManager` refuses them.
+   attrs
+       Free-form, reader specific metadata (stack, grid position, ...).
+
+
+   .. py:attribute:: data
+      :type:  Any
+
+
+   .. py:attribute:: origin
+      :type:  Tuple[float, float, float]
+
+
+   .. py:attribute:: voxel_size
+      :type:  Tuple[float, float, float]
+
+
+   .. py:attribute:: channel
+      :type:  str
+
+
+   .. py:attribute:: group
+      :type:  Optional[str]
+      :value: None
+
+
+
+   .. py:attribute:: timepoint
+      :type:  int
+      :value: 0
+
+
+
+   .. py:attribute:: attrs
+      :type:  Dict[str, Any]
+
+
+   .. py:attribute:: units
+      :type:  str
+      :value: 'micrometer'
+
+
+
+   .. py:method:: __post_init__() -> None
+
+
+   .. py:property:: shape
+      :type: Tuple[int, int, int]
+
+
+
+   .. py:property:: dtype
+      :type: numpy.dtype
+
+
+
+   .. py:property:: extent
+      :type: Tuple[Tuple[float, Ellipsis], Tuple[float, Ellipsis]]
+
+
+      ``(min, max)`` corners of the tile in sample coordinates.
+
+
+

@@ -1,0 +1,135 @@
+pymif.utils.ome
+===============
+
+.. py:module:: pymif.utils.ome
+
+.. autoapi-nested-parse::
+
+   Minimal OME-XML helpers shared by the OME-TIFF based managers.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   pymif.utils.ome.T
+   pymif.utils.ome._NS
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   pymif.utils.ome.OmePixels
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.utils.ome.xml_attr
+   pymif.utils.ome._ome_channel_color
+   pymif.utils.ome.parse_ome_xml
+
+
+Module Contents
+---------------
+
+.. py:data:: T
+
+.. py:data:: _NS
+   :value: '{*}'
+
+
+.. py:function:: xml_attr(node: xml.etree.ElementTree.Element, name: str, cast: Callable[[str], T] = str, *, default: Any = ..., what: str = '') -> T
+
+   Read and convert an XML attribute.
+
+   Raises a ``ValueError`` naming the missing attribute when no ``default`` is
+   given, instead of a bare ``KeyError``.
+
+
+.. py:class:: OmePixels
+
+   Subset of the OME ``<Pixels>`` element used by PyMIF.
+
+
+   .. py:attribute:: size_t
+      :type:  int
+
+
+   .. py:attribute:: size_c
+      :type:  int
+
+
+   .. py:attribute:: size_z
+      :type:  int
+
+
+   .. py:attribute:: size_y
+      :type:  int
+
+
+   .. py:attribute:: size_x
+      :type:  int
+
+
+   .. py:attribute:: scale_zyx
+      :type:  tuple[float, float, float]
+
+
+   .. py:attribute:: units_zyx
+      :type:  tuple[str, str, str]
+
+
+   .. py:attribute:: time_increment
+      :type:  float
+
+
+   .. py:attribute:: time_increment_unit
+      :type:  str
+
+
+   .. py:attribute:: dtype
+      :type:  str
+
+
+   .. py:attribute:: channels
+      :type:  list[pymif.utils.metadata.ChannelInfo]
+      :value: []
+
+
+
+   .. py:attribute:: tiffdata
+      :type:  list[xml.etree.ElementTree.Element]
+      :value: []
+
+
+
+.. py:function:: _ome_channel_color(raw: str | None, color_format: str) -> str | None
+
+   Convert a ``<Channel Color=...>`` attribute according to ``color_format``.
+
+
+.. py:function:: parse_ome_xml(xml: str | bytes | xml.etree.ElementTree.Element, color_format: str = 'ome') -> OmePixels
+
+   Parse the first ``<Pixels>`` element of an OME-XML document.
+
+   Missing physical pixel sizes fall back to ``1.0`` with a warning so that
+   the user knows the voxel size was not recorded in the file.
+
+   Parameters
+   ----------
+   xml : str, bytes or Element
+       OME-XML document (or its root element).
+   color_format : {"ome", "auto"}
+       ``"ome"`` (default) reads integer channel colors as signed 32-bit RGBA
+       as the OME schema prescribes. ``"auto"`` additionally accepts plain
+       24-bit RGB integers, which some writers (Opera) use, and leaves absent
+       colors to the default palette.
+
+

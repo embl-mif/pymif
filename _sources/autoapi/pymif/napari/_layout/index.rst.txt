@@ -1,0 +1,82 @@
+pymif.napari._layout
+====================
+
+.. py:module:: pymif.napari._layout
+
+.. autoapi-nested-parse::
+
+   Layout helpers that keep the PyMIF napari widgets usable at any dock size.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   pymif.napari._layout.MIN_WIDTH
+   pymif.napari._layout.MIN_LOG_HEIGHT
+   pymif.napari._layout.MIN_CONTENT_HEIGHT
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.napari._layout.make_section
+   pymif.napari._layout.make_button_holder
+   pymif.napari._layout.compose_dock
+   pymif.napari._layout.enable_drag_and_drop
+
+
+Module Contents
+---------------
+
+.. py:data:: MIN_WIDTH
+   :value: 260
+
+
+.. py:data:: MIN_LOG_HEIGHT
+   :value: 140
+
+
+.. py:data:: MIN_CONTENT_HEIGHT
+   :value: 120
+
+
+.. py:function:: make_section(*widgets, margins=(6, 4, 6, 6), spacing=3)
+
+   Wrap widgets in a rounded, bordered frame to visually separate a block.
+
+   The border uses a translucent grey so it reads on both light and dark
+   napari themes. More widgets can be added later via ``section.layout()``.
+
+
+.. py:function:: make_button_holder(button: qtpy.QtWidgets.QPushButton) -> qtpy.QtWidgets.QWidget
+
+   A small holder for an action button.
+
+   Disable the *holder* to lock the button: a disabled parent keeps its
+   children disabled even if the button re-enables itself (magicgui does).
+
+
+.. py:function:: compose_dock(content: qtpy.QtWidgets.QWidget, bottom: qtpy.QtWidgets.QWidget | None = None) -> qtpy.QtWidgets.QWidget
+
+   Build the dock widget: scrollable content and an optional resizable bottom pane.
+
+   * ``content`` (all the boxes) goes in one scroll area, so nothing is ever cut
+     off, whatever the size or position of the dock (side or bottom).
+   * ``bottom`` (typically the log) sits under a splitter handle, so it can be
+     dragged taller or shorter.
+
+
+.. py:function:: enable_drag_and_drop(file_edit, transform: Optional[Callable[[pathlib.Path], pathlib.Path]] = None) -> None
+
+   Let a magicgui ``FileEdit`` accept a file or folder dropped from the file explorer.
+
+   ``transform`` maps the dropped path to the value to set (e.g. a file to its
+   folder); by default the dropped path is used as is. Paths are not resolved,
+   so a mapped network drive (``Y:\...``) keeps its drive letter.
+
+

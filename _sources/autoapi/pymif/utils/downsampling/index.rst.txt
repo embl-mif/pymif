@@ -1,0 +1,117 @@
+pymif.utils.downsampling
+========================
+
+.. py:module:: pymif.utils.downsampling
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   pymif.utils.downsampling.SpatialFactor
+   pymif.utils.downsampling.SpatialScale
+   pymif.utils.downsampling.SpatialIntFactor
+   pymif.utils.downsampling.SPATIAL_AXES
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.utils.downsampling.normalize_spatial_factor
+   pymif.utils.downsampling.normalize_spatial_factor_for_axes
+   pymif.utils.downsampling.spatial_factor_power
+   pymif.utils.downsampling.spatial_factor_power_for_axes
+   pymif.utils.downsampling.multiply_spatial_scales
+   pymif.utils.downsampling.relative_level_factors
+   pymif.utils.downsampling.relative_level_factors_for_axes
+   pymif.utils.downsampling.axis_names_from_multiscales
+   pymif.utils.downsampling._dataset_scale_vector
+   pymif.utils.downsampling.level_scale_ratios_from_multiscales
+   pymif.utils.downsampling.downsample_nearest
+
+
+Module Contents
+---------------
+
+.. py:type:: SpatialFactor
+   :canonical: int | float | Sequence[int | float]
+
+
+.. py:type:: SpatialScale
+   :canonical: tuple[float, ...]
+
+
+.. py:type:: SpatialIntFactor
+   :canonical: tuple[int, ...]
+
+
+.. py:data:: SPATIAL_AXES
+
+.. py:function:: normalize_spatial_factor(value: SpatialFactor, *, name: str = 'downscale_factor', allow_float: bool = True) -> SpatialScale | SpatialIntFactor
+
+   Normalize scalar or ZYX factor to a 3-tuple.
+
+   This helper keeps the old public behavior.  Axis-aware code should use
+   :func:`normalize_spatial_factor_for_axes`.
+
+   Scalar 2      -> (2, 2, 2)
+   Tuple (1,2,2) -> (1, 2, 2)
+
+
+.. py:function:: normalize_spatial_factor_for_axes(value: SpatialFactor, axes: str | collections.abc.Sequence[str], *, name: str = 'downscale_factor', allow_float: bool = True) -> SpatialScale | SpatialIntFactor
+
+   Normalize a factor to the spatial axes present in ``axes``.
+
+
+.. py:function:: spatial_factor_power(factor: SpatialFactor, exponent: int) -> SpatialScale
+
+.. py:function:: spatial_factor_power_for_axes(factor: SpatialFactor, axes: str | collections.abc.Sequence[str], exponent: int) -> SpatialScale
+
+.. py:function:: multiply_spatial_scales(scales: collections.abc.Sequence[int | float], factors: SpatialFactor) -> tuple[float, float, float]
+
+.. py:function:: relative_level_factors(total_levels: int, ref_level: int, downscale_factor: SpatialFactor = 2) -> list[SpatialScale]
+
+   Return level scale ratios relative to `ref_level`.
+
+   Example with downscale_factor=(1,2,2), ref_level=0:
+
+       level 0 -> (1, 1, 1)
+       level 1 -> (1, 2, 2)
+       level 2 -> (1, 4, 4)
+
+   Example with ref_level=1:
+
+       level 0 -> (1, 0.5, 0.5)
+       level 1 -> (1, 1, 1)
+       level 2 -> (1, 2, 2)
+
+
+.. py:function:: relative_level_factors_for_axes(total_levels: int, ref_level: int, axes: str | collections.abc.Sequence[str], downscale_factor: SpatialFactor = 2) -> list[SpatialScale]
+
+   Return axis-aware level scale ratios relative to ``ref_level``.
+
+
+.. py:function:: axis_names_from_multiscales(multiscales: dict[str, Any]) -> list[str]
+
+.. py:function:: _dataset_scale_vector(dataset: dict[str, Any]) -> collections.abc.Sequence[int | float] | None
+
+.. py:function:: level_scale_ratios_from_multiscales(multiscales: dict[str, Any], datasets: collections.abc.Sequence[dict[str, Any]], ref_level: int) -> list[SpatialScale] | None
+
+   Infer relative spatial level factors from NGFF multiscales metadata.
+
+   Returned tuples are ordered like the spatial axes in the metadata, not
+   necessarily legacy ZYX.
+
+
+.. py:function:: downsample_nearest(arr, factors: collections.abc.Sequence[int], spatial_axes: collections.abc.Sequence[int])
+
+   Nearest-neighbour downsampling by striding the spatial axes.
+
+   Works on NumPy and Dask arrays. Axes whose length is not divisible by the
+   factor are edge-padded first, so the output length is ``ceil(n / factor)``.
+   A factor of 1 leaves an axis untouched.
+
+

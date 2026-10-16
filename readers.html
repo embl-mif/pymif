@@ -1,0 +1,161 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Readers and conventions &mdash; PyMIF 0.5.1.dev21+gdf76fddfa documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=da07648d"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Python API" href="python-api.html" />
+    <link rel="prev" title="Installation and versioning" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PyMIF
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and versioning</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing and extending PyMIF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PyMIF</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Readers and conventions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/readers.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="readers-and-conventions">
+<h1>Readers and conventions<a class="headerlink" href="#readers-and-conventions" title="Link to this heading"></a></h1>
+<p>The microscope managers in <code class="docutils literal notranslate"><span class="pre">pymif.microscope_manager</span></code> read a dataset and normalize it to one shared API.</p>
+<p>The main reader classes currently exposed by <code class="docutils literal notranslate"><span class="pre">pymif.microscope_manager</span></code> are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ArrayManager</span></code> — wrap an in-memory NumPy or Dask array using PyMIF metadata conventions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LuxendoManager</span></code> — Luxendo XML + HDF5 datasets.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OperaManager</span></code> — Opera Phenix / Opera PE OME-TIFF style datasets.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ScapeManager</span></code> — Leica SCAPE OME-TIFF + XLIF datasets.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ViventisManager</span></code> — Viventis LS1 datasets.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ZeissManager</span></code> — Zeiss CZI datasets.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ZarrManager</span></code> — NGFF v0.4/v0.5 OME-Zarr datasets.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ZarrV04Manager</span></code> — compatibility reader for older v0.4-style datasets.</p></li>
+</ul>
+<p>All file-based readers share the same conventions:</p>
+<ul>
+<li><p>The dataset location is the first argument (<code class="docutils literal notranslate"><span class="pre">path</span></code>; for <code class="docutils literal notranslate"><span class="pre">ScapeManager</span></code> the OME-TIFF file) and <code class="docutils literal notranslate"><span class="pre">chunks</span></code> is an optional TCZYX tuple. When omitted, <code class="docutils literal notranslate"><span class="pre">chunks</span></code> defaults to the manager’s <code class="docutils literal notranslate"><span class="pre">DEFAULT_CHUNKS</span></code> (<code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">8,</span> <span class="pre">4096,</span> <span class="pre">4096)</span></code> for most readers, <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">8,</span> <span class="pre">1024,</span> <span class="pre">1024)</span></code> for <code class="docutils literal notranslate"><span class="pre">ScapeManager</span></code>, the native chunking for <code class="docutils literal notranslate"><span class="pre">ZeissManager</span></code>).</p></li>
+<li><p>The dataset is read in the constructor, so <code class="docutils literal notranslate"><span class="pre">.data</span></code> (one lazy dask array per pyramid level) and <code class="docutils literal notranslate"><span class="pre">.metadata</span></code> are available immediately. <code class="docutils literal notranslate"><span class="pre">read()</span></code> returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p>Managers can be used as context managers, which closes any open file handle (HDF5 files for <code class="docutils literal notranslate"><span class="pre">LuxendoManager</span></code>) on exit:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">mm</span><span class="o">.</span><span class="n">LuxendoManager</span><span class="p">(</span><span class="s2">"path/to/luxendo_folder"</span><span class="p">)</span> <span class="k">as</span> <span class="n">lux</span><span class="p">:</span>
+    <span class="n">lux</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="s2">"output.zarr"</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>The metadata uses one spelling everywhere: channel colors are <code class="docutils literal notranslate"><span class="pre">RRGGBB</span></code> hex strings (no <code class="docutils literal notranslate"><span class="pre">#</span></code>), spatial units are NGFF names such as <code class="docutils literal notranslate"><span class="pre">&quot;micrometer&quot;</span></code>, and time units are e.g. <code class="docutils literal notranslate"><span class="pre">&quot;second&quot;</span></code>.</p></li>
+<li><p>Progress messages (opened scenes, subsets, metadata updates, the Zarr tree printed when opening a store) go through the standard <code class="docutils literal notranslate"><span class="pre">logging</span></code> module under the <code class="docutils literal notranslate"><span class="pre">&quot;pymif&quot;</span></code> logger and are silent by default. Show them with:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">"</span><span class="si">%(message)s</span><span class="s2">"</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"pymif"</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>To support a new acquisition system, see <a class="reference internal" href="contributing.html#adding-a-microscope-manager"><span class="std std-ref">Adding a microscope manager</span></a>; for acquisitions saved as separate tiles, see <a class="reference internal" href="mosaic.html"><span class="std std-doc">Mosaics</span></a>.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation and versioning" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="python-api.html" class="btn btn-neutral float-right" title="Python API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Nicola Gritti.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

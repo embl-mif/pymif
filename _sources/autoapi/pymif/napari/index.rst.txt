@@ -1,0 +1,21 @@
+pymif.napari
+============
+
+.. py:module:: pymif.napari
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/pymif/napari/_batch_csv/index
+   /autoapi/pymif/napari/_convert_widget/index
+   /autoapi/pymif/napari/_dataset_helpers/index
+   /autoapi/pymif/napari/_export_widget/index
+   /autoapi/pymif/napari/_layout/index
+   /autoapi/pymif/napari/_log/index
+   /autoapi/pymif/napari/_mosaic_widget/index
+
+

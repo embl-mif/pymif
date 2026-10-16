@@ -1,0 +1,40 @@
+pymif._version
+==============
+
+.. py:module:: pymif._version
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   pymif._version.version
+   pymif._version.__version__
+   pymif._version.__version_tuple__
+   pymif._version.version_tuple
+   pymif._version.commit_id
+   pymif._version.__commit_id__
+
+
+Module Contents
+---------------
+
+.. py:data:: version
+   :type:  str
+
+.. py:data:: __version__
+   :type:  str
+
+.. py:data:: __version_tuple__
+   :type:  tuple[int | str, Ellipsis]
+
+.. py:data:: version_tuple
+   :type:  tuple[int | str, Ellipsis]
+
+.. py:data:: commit_id
+   :type:  str | None
+
+.. py:data:: __commit_id__
+   :type:  str | None
+

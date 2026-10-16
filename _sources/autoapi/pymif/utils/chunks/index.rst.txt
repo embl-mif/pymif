@@ -1,0 +1,39 @@
+pymif.utils.chunks
+==================
+
+.. py:module:: pymif.utils.chunks
+
+.. autoapi-nested-parse::
+
+   Chunk / shape helpers shared by the pyramid builder and the Zarr writer.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.utils.chunks.shape_tuple
+   pymif.utils.chunks.get_chunks
+   pymif.utils.chunks.rechunk_to_shape
+
+
+Module Contents
+---------------
+
+.. py:function:: shape_tuple(value: Any, ndim: int) -> tuple[int, Ellipsis] | None
+
+   Return a positive shape tuple of length ``ndim`` from ``value``, or ``None``.
+
+
+.. py:function:: get_chunks(arr: dask.array.Array) -> tuple[int, Ellipsis]
+
+   Return one normalized chunk tuple for a dask array.
+
+
+.. py:function:: rechunk_to_shape(arr: dask.array.Array, chunks: collections.abc.Sequence[int]) -> dask.array.Array
+
+   Rechunk ``arr`` to ``chunks``, clipped so no axis exceeds the array's extent.
+
+

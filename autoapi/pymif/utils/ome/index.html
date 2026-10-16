@@ -1,0 +1,301 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pymif.utils.ome &mdash; PyMIF 0.5.1.dev21+gdf76fddfa documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=da07648d"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="pymif.utils.pyramid" href="../pyramid/index.html" />
+    <link rel="prev" title="pymif.utils.ngff" href="../ngff/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            PyMIF
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing and extending PyMIF</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">pymif</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../_version/index.html">pymif._version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html">pymif.cli</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../microscope_manager/index.html">pymif.microscope_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../mosaic_manager/index.html">pymif.mosaic_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../napari/index.html">pymif.napari</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">pymif.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PyMIF</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../api_reference.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">pymif</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">pymif.utils</a></li>
+      <li class="breadcrumb-item active">pymif.utils.ome</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/pymif/utils/ome/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pymif.utils.ome">
+<span id="pymif-utils-ome"></span><h1>pymif.utils.ome<a class="headerlink" href="#module-pymif.utils.ome" title="Link to this heading"></a></h1>
+<p>Minimal OME-XML helpers shared by the OME-TIFF based managers.</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.utils.ome.T" title="pymif.utils.ome.T"><code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.utils.ome._NS" title="pymif.utils.ome._NS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_NS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.utils.ome.OmePixels" title="pymif.utils.ome.OmePixels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OmePixels</span></code></a></p></td>
+<td><p>Subset of the OME <code class="docutils literal notranslate"><span class="pre">&lt;Pixels&gt;</span></code> element used by PyMIF.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.utils.ome.xml_attr" title="pymif.utils.ome.xml_attr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xml_attr</span></code></a>(→ T)</p></td>
+<td><p>Read and convert an XML attribute.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.utils.ome._ome_channel_color" title="pymif.utils.ome._ome_channel_color"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_ome_channel_color</span></code></a>(→ str | None)</p></td>
+<td><p>Convert a <code class="docutils literal notranslate"><span class="pre">&lt;Channel</span> <span class="pre">Color=...&gt;</span></code> attribute according to <code class="docutils literal notranslate"><span class="pre">color_format</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.utils.ome.parse_ome_xml" title="pymif.utils.ome.parse_ome_xml"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_ome_xml</span></code></a>(→ OmePixels)</p></td>
+<td><p>Parse the first <code class="docutils literal notranslate"><span class="pre">&lt;Pixels&gt;</span></code> element of an OME-XML document.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="pymif.utils.ome.T">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.ome.</span></span><span class="sig-name descname"><span class="pre">T</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/ome.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.ome.T" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pymif.utils.ome._NS">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.ome.</span></span><span class="sig-name descname"><span class="pre">_NS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'{*}'</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/ome.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.ome._NS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.utils.ome.xml_attr">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.ome.</span></span><span class="sig-name descname"><span class="pre">xml_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">xml.etree.ElementTree.Element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cast</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#pymif.utils.ome.T" title="pymif.utils.ome.T"><span class="pre">T</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">...</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">what</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pymif.utils.ome.T" title="pymif.utils.ome.T"><span class="pre">T</span></a></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/ome.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.ome.xml_attr" title="Link to this definition"></a></dt>
+<dd><p>Read and convert an XML attribute.</p>
+<p>Raises a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> naming the missing attribute when no <code class="docutils literal notranslate"><span class="pre">default</span></code> is
+given, instead of a bare <code class="docutils literal notranslate"><span class="pre">KeyError</span></code>.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymif.utils.ome.OmePixels">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pymif.utils.ome.</span></span><span class="sig-name descname"><span class="pre">OmePixels</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/ome.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.ome.OmePixels" title="Link to this definition"></a></dt>
+<dd><p>Subset of the OME <code class="docutils literal notranslate"><span class="pre">&lt;Pixels&gt;</span></code> element used by PyMIF.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.utils.ome.OmePixels.size_t">
+<span class="sig-name descname"><span class="pre">size_t</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/ome.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.ome.OmePixels.size_t" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.utils.ome.OmePixels.size_c">
+<span class="sig-name descname"><span class="pre">size_c</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/ome.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.ome.OmePixels.size_c" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.utils.ome.OmePixels.size_z">
+<span class="sig-name descname"><span class="pre">size_z</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/ome.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.ome.OmePixels.size_z" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.utils.ome.OmePixels.size_y">
+<span class="sig-name descname"><span class="pre">size_y</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/ome.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.ome.OmePixels.size_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.utils.ome.OmePixels.size_x">
+<span class="sig-name descname"><span class="pre">size_x</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/ome.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.ome.OmePixels.size_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.utils.ome.OmePixels.scale_zyx">
+<span class="sig-name descname"><span class="pre">scale_zyx</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/ome.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.ome.OmePixels.scale_zyx" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.utils.ome.OmePixels.units_zyx">
+<span class="sig-name descname"><span class="pre">units_zyx</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/ome.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.ome.OmePixels.units_zyx" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.utils.ome.OmePixels.time_increment">
+<span class="sig-name descname"><span class="pre">time_increment</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/ome.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.ome.OmePixels.time_increment" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.utils.ome.OmePixels.time_increment_unit">
+<span class="sig-name descname"><span class="pre">time_increment_unit</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/ome.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.ome.OmePixels.time_increment_unit" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.utils.ome.OmePixels.dtype">
+<span class="sig-name descname"><span class="pre">dtype</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/ome.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.ome.OmePixels.dtype" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.utils.ome.OmePixels.channels">
+<span class="sig-name descname"><span class="pre">channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../metadata/index.html#pymif.utils.metadata.ChannelInfo" title="pymif.utils.metadata.ChannelInfo"><span class="pre">pymif.utils.metadata.ChannelInfo</span></a><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/ome.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.ome.OmePixels.channels" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.utils.ome.OmePixels.tiffdata">
+<span class="sig-name descname"><span class="pre">tiffdata</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">xml.etree.ElementTree.Element</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/ome.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.ome.OmePixels.tiffdata" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.utils.ome._ome_channel_color">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.ome.</span></span><span class="sig-name descname"><span class="pre">_ome_channel_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/ome.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.ome._ome_channel_color" title="Link to this definition"></a></dt>
+<dd><p>Convert a <code class="docutils literal notranslate"><span class="pre">&lt;Channel</span> <span class="pre">Color=...&gt;</span></code> attribute according to <code class="docutils literal notranslate"><span class="pre">color_format</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.utils.ome.parse_ome_xml">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.ome.</span></span><span class="sig-name descname"><span class="pre">parse_ome_xml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xml</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">xml.etree.ElementTree.Element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ome'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pymif.utils.ome.OmePixels" title="pymif.utils.ome.OmePixels"><span class="pre">OmePixels</span></a></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/ome.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.ome.parse_ome_xml" title="Link to this definition"></a></dt>
+<dd><p>Parse the first <code class="docutils literal notranslate"><span class="pre">&lt;Pixels&gt;</span></code> element of an OME-XML document.</p>
+<p>Missing physical pixel sizes fall back to <code class="docutils literal notranslate"><span class="pre">1.0</span></code> with a warning so that
+the user knows the voxel size was not recorded in the file.</p>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>xml<span class="classifier">str, bytes or Element</span></dt><dd><p>OME-XML document (or its root element).</p>
+</dd>
+<dt>color_format<span class="classifier">{“ome”, “auto”}</span></dt><dd><p><code class="docutils literal notranslate"><span class="pre">&quot;ome&quot;</span></code> (default) reads integer channel colors as signed 32-bit RGBA
+as the OME schema prescribes. <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> additionally accepts plain
+24-bit RGB integers, which some writers (Opera) use, and leaves absent
+colors to the default palette.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../ngff/index.html" class="btn btn-neutral float-left" title="pymif.utils.ngff" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../pyramid/index.html" class="btn btn-neutral float-right" title="pymif.utils.pyramid" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Nicola Gritti.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

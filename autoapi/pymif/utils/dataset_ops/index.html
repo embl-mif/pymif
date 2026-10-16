@@ -1,0 +1,321 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pymif.utils.dataset_ops &mdash; PyMIF 0.5.1.dev21+gdf76fddfa documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=da07648d"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="pymif.utils.downsampling" href="../downsampling/index.html" />
+    <link rel="prev" title="pymif.utils.create_empty_group" href="../create_empty_group/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            PyMIF
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing and extending PyMIF</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">pymif</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../_version/index.html">pymif._version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html">pymif.cli</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../microscope_manager/index.html">pymif.microscope_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../mosaic_manager/index.html">pymif.mosaic_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../napari/index.html">pymif.napari</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">pymif.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PyMIF</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../api_reference.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">pymif</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">pymif.utils</a></li>
+      <li class="breadcrumb-item active">pymif.utils.dataset_ops</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/pymif/utils/dataset_ops/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pymif.utils.dataset_ops">
+<span id="pymif-utils-dataset-ops"></span><h1>pymif.utils.dataset_ops<a class="headerlink" href="#module-pymif.utils.dataset_ops" title="Link to this heading"></a></h1>
+<p>Dataset-level operations shared by <code class="docutils literal notranslate"><span class="pre">MicroscopeManager</span></code> and <code class="docutils literal notranslate"><span class="pre">ZarrManager</span></code>.</p>
+<p>Each function works on a single <code class="docutils literal notranslate"><span class="pre">(data,</span> <span class="pre">metadata)</span></code> pair (a list of dask arrays
+plus the PyMIF metadata dictionary) so that the single-dataset managers and the
+multi-dataset <code class="docutils literal notranslate"><span class="pre">ZarrManager</span></code> (raw + groups + labels) run exactly the same
+validation code.</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.utils.dataset_ops.logger" title="pymif.utils.dataset_ops.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logger</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.utils.dataset_ops._VALIDATORS" title="pymif.utils.dataset_ops._VALIDATORS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_VALIDATORS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.utils.dataset_ops.VALID_UPDATE_KEYS" title="pymif.utils.dataset_ops.VALID_UPDATE_KEYS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VALID_UPDATE_KEYS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.utils.dataset_ops._axes_of" title="pymif.utils.dataset_ops._axes_of"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_axes_of</span></code></a>(→ str)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.utils.dataset_ops._n_spatial" title="pymif.utils.dataset_ops._n_spatial"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_n_spatial</span></code></a>(→ int)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.utils.dataset_ops.channel_count" title="pymif.utils.dataset_ops.channel_count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_count</span></code></a>(→ Optional[int])</p></td>
+<td><p>Number of channels of the base level, or <code class="docutils literal notranslate"><span class="pre">None</span></code> without a channel axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.utils.dataset_ops._check_channel_values" title="pymif.utils.dataset_ops._check_channel_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_check_channel_values</span></code></a>(key, value, *, data, metadata, label)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.utils.dataset_ops._check_scales" title="pymif.utils.dataset_ops._check_scales"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_check_scales</span></code></a>(key, value, *, data, metadata, label)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.utils.dataset_ops._check_time_increment" title="pymif.utils.dataset_ops._check_time_increment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_check_time_increment</span></code></a>(key, value, **_)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.utils.dataset_ops._check_time_unit" title="pymif.utils.dataset_ops._check_time_unit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_check_time_unit</span></code></a>(key, value, **_)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.utils.dataset_ops._check_units" title="pymif.utils.dataset_ops._check_units"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_check_units</span></code></a>(key, value, *, metadata, label, **_)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.utils.dataset_ops._check_data_type" title="pymif.utils.dataset_ops._check_data_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_check_data_type</span></code></a>(key, value, **_)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.utils.dataset_ops.known_updates" title="pymif.utils.dataset_ops.known_updates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">known_updates</span></code></a>(→ dict[str, Any])</p></td>
+<td><p>Return only the supported entries of <code class="docutils literal notranslate"><span class="pre">updates</span></code>, warning about the rest.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.utils.dataset_ops.apply_metadata_updates" title="pymif.utils.dataset_ops.apply_metadata_updates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_metadata_updates</span></code></a>(→ None)</p></td>
+<td><p>Validate <code class="docutils literal notranslate"><span class="pre">updates</span></code> against <code class="docutils literal notranslate"><span class="pre">(data,</span> <span class="pre">metadata)</span></code> and apply them in place.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.utils.dataset_ops.reorder_channels" title="pymif.utils.dataset_ops.reorder_channels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reorder_channels</span></code></a>(→ list[dask.array.Array])</p></td>
+<td><p>Return <code class="docutils literal notranslate"><span class="pre">data</span></code> with channels permuted; <code class="docutils literal notranslate"><span class="pre">metadata</span></code> is updated in place.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.utils.dataset_ops.infer_downscale_factors" title="pymif.utils.dataset_ops.infer_downscale_factors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">infer_downscale_factors</span></code></a>(→ int | tuple[int, Ellipsis])</p></td>
+<td><p>Infer the per-spatial-axis downscale factors between pyramid levels 0 and 1.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.utils.dataset_ops.subset_levels" title="pymif.utils.dataset_ops.subset_levels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subset_levels</span></code></a>(→ tuple[list[dask.array.Array], ...)</p></td>
+<td><p>Subset the base level by axis selections and optionally rebuild the pyramid.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="pymif.utils.dataset_ops.logger">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.dataset_ops.</span></span><span class="sig-name descname"><span class="pre">logger</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/dataset_ops.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.dataset_ops.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.utils.dataset_ops._axes_of">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.dataset_ops.</span></span><span class="sig-name descname"><span class="pre">_axes_of</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/dataset_ops.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.dataset_ops._axes_of" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.utils.dataset_ops._n_spatial">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.dataset_ops.</span></span><span class="sig-name descname"><span class="pre">_n_spatial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/dataset_ops.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.dataset_ops._n_spatial" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.utils.dataset_ops.channel_count">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.dataset_ops.</span></span><span class="sig-name descname"><span class="pre">channel_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">dask.array.Array</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/dataset_ops.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.dataset_ops.channel_count" title="Link to this definition"></a></dt>
+<dd><p>Number of channels of the base level, or <code class="docutils literal notranslate"><span class="pre">None</span></code> without a channel axis.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.utils.dataset_ops._check_channel_values">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.dataset_ops.</span></span><span class="sig-name descname"><span class="pre">_check_channel_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/dataset_ops.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.dataset_ops._check_channel_values" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.utils.dataset_ops._check_scales">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.dataset_ops.</span></span><span class="sig-name descname"><span class="pre">_check_scales</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/dataset_ops.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.dataset_ops._check_scales" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.utils.dataset_ops._check_time_increment">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.dataset_ops.</span></span><span class="sig-name descname"><span class="pre">_check_time_increment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/dataset_ops.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.dataset_ops._check_time_increment" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.utils.dataset_ops._check_time_unit">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.dataset_ops.</span></span><span class="sig-name descname"><span class="pre">_check_time_unit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/dataset_ops.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.dataset_ops._check_time_unit" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.utils.dataset_ops._check_units">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.dataset_ops.</span></span><span class="sig-name descname"><span class="pre">_check_units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/dataset_ops.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.dataset_ops._check_units" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.utils.dataset_ops._check_data_type">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.dataset_ops.</span></span><span class="sig-name descname"><span class="pre">_check_data_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/dataset_ops.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.dataset_ops._check_data_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pymif.utils.dataset_ops._VALIDATORS">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.dataset_ops.</span></span><span class="sig-name descname"><span class="pre">_VALIDATORS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="pre">Ellipsis</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/dataset_ops.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.dataset_ops._VALIDATORS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pymif.utils.dataset_ops.VALID_UPDATE_KEYS">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.dataset_ops.</span></span><span class="sig-name descname"><span class="pre">VALID_UPDATE_KEYS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('channel_names',</span> <span class="pre">'channel_colors',</span> <span class="pre">'scales',</span> <span class="pre">'time_increment',</span> <span class="pre">'time_increment_unit',</span> <span class="pre">'units',...</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/dataset_ops.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.dataset_ops.VALID_UPDATE_KEYS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.utils.dataset_ops.known_updates">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.dataset_ops.</span></span><span class="sig-name descname"><span class="pre">known_updates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">updates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/dataset_ops.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.dataset_ops.known_updates" title="Link to this definition"></a></dt>
+<dd><p>Return only the supported entries of <code class="docutils literal notranslate"><span class="pre">updates</span></code>, warning about the rest.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.utils.dataset_ops.apply_metadata_updates">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.dataset_ops.</span></span><span class="sig-name descname"><span class="pre">apply_metadata_updates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">dask.array.Array</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'dataset'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warn_no_channel_axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/dataset_ops.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.dataset_ops.apply_metadata_updates" title="Link to this definition"></a></dt>
+<dd><p>Validate <code class="docutils literal notranslate"><span class="pre">updates</span></code> against <code class="docutils literal notranslate"><span class="pre">(data,</span> <span class="pre">metadata)</span></code> and apply them in place.</p>
+<p>Invalid values raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>/<code class="docutils literal notranslate"><span class="pre">TypeError</span></code>. Channel updates that do
+not fit the dataset are skipped with a warning (silently when
+<code class="docutils literal notranslate"><span class="pre">warn_no_channel_axis</span></code> is false and the dataset has no channel axis).
+<code class="docutils literal notranslate"><span class="pre">updates</span></code> must already be filtered with <a class="reference internal" href="#pymif.utils.dataset_ops.known_updates" title="pymif.utils.dataset_ops.known_updates"><code class="xref py py-func docutils literal notranslate"><span class="pre">known_updates()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.utils.dataset_ops.reorder_channels">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.dataset_ops.</span></span><span class="sig-name descname"><span class="pre">reorder_channels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">dask.array.Array</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'dataset'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_if_no_channel_axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dask.array.Array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/dataset_ops.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.dataset_ops.reorder_channels" title="Link to this definition"></a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">data</span></code> with channels permuted; <code class="docutils literal notranslate"><span class="pre">metadata</span></code> is updated in place.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.utils.dataset_ops.infer_downscale_factors">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.dataset_ops.</span></span><span class="sig-name descname"><span class="pre">infer_downscale_factors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/dataset_ops.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.dataset_ops.infer_downscale_factors" title="Link to this definition"></a></dt>
+<dd><p>Infer the per-spatial-axis downscale factors between pyramid levels 0 and 1.</p>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">2</span></code> for single-level data. Isotropic factors are returned as an
+<code class="docutils literal notranslate"><span class="pre">int</span></code>; anisotropic ones (e.g. <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">2,</span> <span class="pre">2)</span></code>) as a tuple in spatial-axis
+order, so the original pyramid layout is rebuilt faithfully.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.utils.dataset_ops.subset_levels">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.dataset_ops.</span></span><span class="sig-name descname"><span class="pre">subset_levels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">dask.array.Array</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rebuild_pyramid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'dataset'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dask.array.Array</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/dataset_ops.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.dataset_ops.subset_levels" title="Link to this definition"></a></dt>
+<dd><p>Subset the base level by axis selections and optionally rebuild the pyramid.</p>
+<p>Selections on axes the dataset does not have are ignored. Indices are
+validated against the dataset shape.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../create_empty_group/index.html" class="btn btn-neutral float-left" title="pymif.utils.create_empty_group" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../downsampling/index.html" class="btn btn-neutral float-right" title="pymif.utils.downsampling" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Nicola Gritti.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

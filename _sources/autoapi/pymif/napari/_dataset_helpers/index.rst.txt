@@ -1,0 +1,65 @@
+pymif.napari._dataset_helpers
+=============================
+
+.. py:module:: pymif.napari._dataset_helpers
+
+.. autoapi-nested-parse::
+
+   Dataset helpers shared by the napari widgets (no Qt dependency, so unit-testable).
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.napari._dataset_helpers.dataset_axes
+   pymif.napari._dataset_helpers.axis_index
+   pymif.napari._dataset_helpers.axis_size
+   pymif.napari._dataset_helpers.scale_for_axes
+   pymif.napari._dataset_helpers.units_kwargs
+   pymif.napari._dataset_helpers.points_projection_kwargs
+
+
+Module Contents
+---------------
+
+.. py:function:: dataset_axes(dataset) -> str
+
+   Return normalized dataset axes, defaulting to legacy TCZYX metadata.
+
+
+.. py:function:: axis_index(dataset, axis)
+
+   Position of ``axis`` in the dataset axes, or ``None`` if absent.
+
+
+.. py:function:: axis_size(dataset, axis, default=1)
+
+   Size of ``axis`` at the base resolution level (``default`` if absent).
+
+
+.. py:function:: scale_for_axes(dataset, requested_axes)
+
+   Return a napari scale tuple for the requested spatial axis labels.
+
+
+.. py:function:: units_kwargs(dataset, requested_axes)
+
+   ``{"units": ...}`` for napari layers over ``requested_axes`` (empty if unavailable).
+
+   The ROI / Zrange / CropBox helper layers are scaled in physical units, so
+   they need the same units as the image layers; otherwise napari warns
+   "Inconsistent units across layers" and stops using units for rendering.
+
+
+.. py:function:: points_projection_kwargs()
+
+   Keyword arguments that make a napari ``Points`` layer show out-of-slice points.
+
+   napari 0.9 deprecated ``out_of_slice_display`` in favour of
+   ``projection_mode``; ``rescale_linear`` is what the old flag mapped to.
+   Older napari versions only know the old flag.
+
+

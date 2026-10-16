@@ -1,0 +1,147 @@
+pymif.napari._convert_widget
+============================
+
+.. py:module:: pymif.napari._convert_widget
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   pymif.napari._convert_widget.BATCH_CSV_COLUMNS
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.napari._convert_widget.conservative_compute_multiscale_level
+   pymif.napari._convert_widget.dataset_reader
+   pymif.napari._convert_widget._chunk_shape_for_dataset
+   pymif.napari._convert_widget._present_range
+   pymif.napari._convert_widget._set_range_widget
+   pymif.napari._convert_widget.get_chunk_size
+   pymif.napari._convert_widget.get_n_levels
+   pymif.napari._convert_widget._indices_to_expr
+   pymif.napari._convert_widget._range_to_indices
+   pymif.napari._convert_widget._subset_string_from_widget
+   pymif.napari._convert_widget._channel_colors_from_metadata
+   pymif.napari._convert_widget.output_summary
+   pymif.napari._convert_widget._append_batch_csv
+   pymif.napari._convert_widget._compact_advanced_rows
+   pymif.napari._convert_widget._run_conversion
+   pymif.napari._convert_widget.convert_worker
+   pymif.napari._convert_widget.convert_widget
+
+
+Module Contents
+---------------
+
+.. py:function:: conservative_compute_multiscale_level(requested_shape, shape_threshold, downsample_factors)
+
+   Computed desired level of the multiscale given requested field of view.
+
+   The level of the multiscale should be the lowest resolution such that
+   the requested shape is above the shape threshold. By passing a shape
+   threshold corresponding to the shape of the canvas on the screen this
+   ensures that we have at least one data pixel per screen pixel, but no
+   more than we need.
+
+   Parameters
+   ----------
+   requested_shape : tuple
+       Requested shape of field of view in data coordinates
+   shape_threshold : tuple
+       Maximum size of a displayed tile in pixels.
+   downsample_factors : list of tuple
+       Downsampling factors for each level of the multiscale. Must be increasing
+       for each level of the multiscale.
+
+   Returns
+   -------
+   level : int
+       Level of the multiscale to be viewing.
+
+
+.. py:function:: dataset_reader(microscope)
+
+   Return the PyMIF manager class matching the selected microscope key.
+
+
+.. py:function:: _chunk_shape_for_dataset(dataset, chunk_z=16, chunk_y=512, chunk_x=512)
+
+   Map widget Z/Y/X chunk values onto whatever axes the dataset has.
+
+
+.. py:function:: _present_range(dataset, axis, requested_range)
+
+   Return a clipped inclusive range tuple for a present axis, else None.
+
+
+.. py:function:: _set_range_widget(widget, size, enabled=True)
+
+.. py:function:: get_chunk_size(dataset_size, max_size_mb=100, axes='tczyx')
+
+   Estimate a chunk shape for any dataset axis subset.
+
+   The returned tuple follows ``axes``.  Legacy callers that pass a five-value
+   TCZYX size still receive a five-value chunk tuple.
+
+
+.. py:function:: get_n_levels(dataset_size, axes='tczyx')
+
+   Estimate a default number of pyramid levels from present spatial axes.
+
+
+.. py:data:: BATCH_CSV_COLUMNS
+   :value: ['input', 'microscope', 'output', 'chunk_size', 'max_size(MB)', 'scene_index', 'zarr_format',...
+
+
+.. py:function:: _indices_to_expr(indices)
+
+.. py:function:: _range_to_indices(range_value)
+
+.. py:function:: _subset_string_from_widget(dataset, t_range, z_range, y_range, x_range, channels)
+
+.. py:function:: _channel_colors_from_metadata(dataset, selected_channel_names)
+
+.. py:function:: output_summary(dataset, *, t_range, z_range, y_range, x_range, channels, drop_singleton=True)
+
+   Level-0 recap of the converted dataset, in the format of the mosaic fusion plan.
+
+   One line such as ``3 t x 2 ch x 120 x 1024 x 1024 px (tczyx), 1.51 GB,
+   voxel 2 x 0.65 x 0.65 micrometer``, following the selected ranges and
+   channels and, with ``drop_singleton``, the t/c/z axes dropped on write.
+
+
+.. py:function:: _append_batch_csv(csv_path, row)
+
+.. py:function:: _compact_advanced_rows(widget, insert_after)
+
+   Regroup the "Additional parameters" of the converter into compact rows.
+
+   Related controls (chunks, downscale, ...) share one row instead of one row
+   each. The magicgui widgets are moved, not copied, so ``widget.chunk_x`` and
+   friends keep working (values, ``enabled``, signals). Their original
+   one-per-row wrappers are hidden for good.
+
+   Returns the new row widgets; show or hide them together as one group.
+
+
+.. py:function:: _run_conversion(reader, path, scene_index, chunks, t_range, z_range, y_range, x_range, channels, n_levels, downscale_factor, output_path, file_format, zarr_format, shards='auto', shard_target_mb=None, shard_exclude_axes=None, drop_singleton=True, num_workers=None)
+
+   Run the conversion pipeline used by the napari worker thread.
+
+
+.. py:function:: convert_worker(**kwargs)
+
+   Background worker wrapper used by the napari conversion widget.
+
+
+.. py:function:: convert_widget()
+
+   Create the main PyMIF napari conversion widget.
+
+

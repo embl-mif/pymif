@@ -1,0 +1,62 @@
+pymif.utils.units
+=================
+
+.. py:module:: pymif.utils.units
+
+.. autoapi-nested-parse::
+
+   Unit normalization and conversion helpers shared by the microscope managers.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   pymif.utils.units._UNIT_ALIASES
+   pymif.utils.units._TO_MICROMETER
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.utils.units.normalize_unit
+   pymif.utils.units.to_micrometers
+
+
+Module Contents
+---------------
+
+.. py:data:: _UNIT_ALIASES
+   :type:  dict[str, str]
+
+.. py:data:: _TO_MICROMETER
+   :type:  dict[str, float]
+
+.. py:function:: normalize_unit(unit: str | None) -> str | None
+
+   Map common unit spellings (``um``, ``µm``, ``s`` ...) to NGFF unit names.
+
+   Unknown units are returned unchanged (stripped); empty values give ``None``.
+
+
+.. py:function:: to_micrometers(scales: collections.abc.Sequence[float], units: collections.abc.Sequence[str | None]) -> tuple[tuple[float, Ellipsis], tuple[str | None, Ellipsis]]
+
+   Convert per-axis lengths to micrometers when their unit is known.
+
+   Parameters
+   ----------
+   scales : sequence of float
+       One length per spatial axis.
+   units : sequence of str
+       The unit of each entry in ``scales``.
+
+   Returns
+   -------
+   (scales, units)
+       Converted tuples. Entries with an unknown unit are left untouched.
+
+

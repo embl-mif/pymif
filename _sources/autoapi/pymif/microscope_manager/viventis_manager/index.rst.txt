@@ -1,0 +1,58 @@
+pymif.microscope_manager.viventis_manager
+=========================================
+
+.. py:module:: pymif.microscope_manager.viventis_manager
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   pymif.microscope_manager.viventis_manager.ViventisManager
+
+
+Module Contents
+---------------
+
+.. py:class:: ViventisManager(path: str, chunks: Optional[Tuple[int, Ellipsis]] = None)
+
+   Bases: :py:obj:`pymif.microscope_manager.microscope_manager.MicroscopeManager`
+
+
+   Reader for Viventis microscope datasets with OME-TIFF and companion .ome XML files.
+
+   This class lazily loads data into a dask array and parses associated OME-XML metadata.
+
+
+   .. py:method:: _plane_files(tiffdata: List[xml.etree.ElementTree.Element]) -> Dict[Tuple[int, int], str]
+      :staticmethod:
+
+
+      Map ``(t, c)`` to the TIFF file holding that plane stack.
+
+
+
+   .. py:method:: _parse_metadata() -> Dict[str, Any]
+
+      Parse the companion `.ome` XML metadata file.
+
+      Returns
+      -------
+      Dict[str, Any]
+          Dictionary containing extracted metadata such as size, scales, units, channel info,
+          time increment, and TIFF file mapping (``plane_files``).
+
+
+
+   .. py:method:: _build_dask_array() -> List[dask.array.Array]
+
+      Lazily construct a dask array for the image data using tifffile and delayed loading.
+
+      Returns
+      -------
+      List[da.Array]
+          A list containing a single Dask array representing the full dataset (level 0).
+
+
+

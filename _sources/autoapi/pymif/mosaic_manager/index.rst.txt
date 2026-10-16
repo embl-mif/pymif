@@ -1,0 +1,662 @@
+pymif.mosaic_manager
+====================
+
+.. py:module:: pymif.mosaic_manager
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/pymif/mosaic_manager/fusion/index
+   /autoapi/pymif/mosaic_manager/h5_array/index
+   /autoapi/pymif/mosaic_manager/luxendo_mosaic_manager/index
+   /autoapi/pymif/mosaic_manager/mosaic/index
+   /autoapi/pymif/mosaic_manager/opera_mosaic_manager/index
+   /autoapi/pymif/mosaic_manager/tile/index
+   /autoapi/pymif/mosaic_manager/zeiss_mosaic_manager/index
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   pymif.mosaic_manager.Tile
+   pymif.mosaic_manager.H5Array
+   pymif.mosaic_manager.MosaicManager
+   pymif.mosaic_manager.FusionPlan
+   pymif.mosaic_manager.LuxendoMosaicManager
+   pymif.mosaic_manager.OperaMosaicManager
+   pymif.mosaic_manager.ZeissMosaicManager
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.mosaic_manager.display_windows
+   pymif.mosaic_manager.fuse_tiles
+   pymif.mosaic_manager.plan_fusion
+
+
+Package Contents
+----------------
+
+.. py:class:: Tile
+
+   One acquired tile of a mosaic: a lazy ``(z, y, x)`` array and where it sits.
+
+   Placement is translation-only: ``origin`` is the position (in ``units``) of
+   voxel ``[0, 0, 0]`` in the common sample frame and ``voxel_size`` the voxel
+   spacing. All tiles of a mosaic must use the same units and voxel size.
+
+   Parameters
+   ----------
+   data
+       Anything with ``shape``, ``dtype`` and numpy-style slicing that returns
+       array data: an ``h5py.Dataset``, a dask or a numpy array. It is only
+       read when a fusion needs it.
+   origin, voxel_size
+       ``(z, y, x)`` position of the first voxel and voxel spacing.
+   channel
+       Channel (dye) name. Tiles with the same name are fused into one output
+       channel.
+   group
+       Optional label of tiles that should be merged among themselves first,
+       e.g. ``"L"``/``"R"`` illumination side. Used by ``blend="sigmoid"`` and ``"midline"``.
+   timepoint
+       Index of the timepoint the tile belongs to (``0`` for a single timepoint).
+       Mosaics with more than one timepoint are not supported yet:
+       :class:`~pymif.mosaic_manager.MosaicManager` refuses them.
+   attrs
+       Free-form, reader specific metadata (stack, grid position, ...).
+
+
+   .. py:attribute:: data
+      :type:  Any
+
+
+   .. py:attribute:: origin
+      :type:  Tuple[float, float, float]
+
+
+   .. py:attribute:: voxel_size
+      :type:  Tuple[float, float, float]
+
+
+   .. py:attribute:: channel
+      :type:  str
+
+
+   .. py:attribute:: group
+      :type:  Optional[str]
+      :value: None
+
+
+
+   .. py:attribute:: timepoint
+      :type:  int
+      :value: 0
+
+
+
+   .. py:attribute:: attrs
+      :type:  Dict[str, Any]
+
+
+   .. py:attribute:: units
+      :type:  str
+      :value: 'micrometer'
+
+
+
+   .. py:method:: __post_init__() -> None
+
+
+   .. py:property:: shape
+      :type: Tuple[int, int, int]
+
+
+
+   .. py:property:: dtype
+      :type: numpy.dtype
+
+
+
+   .. py:property:: extent
+      :type: Tuple[Tuple[float, Ellipsis], Tuple[float, Ellipsis]]
+
+
+      ``(min, max)`` corners of the tile in sample coordinates.
+
+
+
+.. py:class:: H5Array(path: str | pathlib.Path, dataset: str = 'Data', shape=None, dtype=None)
+
+   Lazy, picklable view of one HDF5 dataset.
+
+   The file is opened for every read, so the object holds no handle: it can be
+   sent to worker processes (which is what lets :func:`~pymif.mosaic_manager.fuse_tiles`
+   read many tiles in parallel despite h5py's per-process lock) and needs no
+   ``close()``. It behaves like a read-only array: ``shape``, ``dtype``, ``ndim``
+   and numpy-style slicing, so ``dask.array.from_array`` accepts it directly.
+
+
+   .. py:attribute:: picklable
+      :value: True
+
+
+
+   .. py:attribute:: path
+      :value: ''
+
+
+
+   .. py:attribute:: dataset
+      :value: 'Data'
+
+
+
+   .. py:attribute:: shape
+      :type:  Tuple[int, Ellipsis]
+
+
+   .. py:attribute:: dtype
+
+
+   .. py:attribute:: ndim
+
+
+   .. py:method:: __getitem__(key)
+
+
+   .. py:method:: __len__() -> int
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: MosaicManager(path: str | pathlib.Path)
+
+   Bases: :py:obj:`abc.ABC`
+
+
+   A set of separately acquired, positioned tiles (not yet one image).
+
+   Unlike a :class:`~pymif.microscope_manager.MicroscopeManager`, which wraps one
+   image, a mosaic exposes the raw tiles lazily and fuses them on request with
+   :meth:`fuse`. Subclasses implement :meth:`_scan` only.
+
+   Mosaics can be used as context managers so that open file handles are closed::
+
+       with mosaic_manager.LuxendoMosaicManager("raw_folder") as mosaic:
+           mosaic.fuse("overview.ome.zarr", ds=(4, 8, 8), projection="max")
+
+
+   .. py:attribute:: path
+
+
+   .. py:attribute:: _open_files
+      :type:  list
+      :value: []
+
+
+
+   .. py:attribute:: tiles
+      :type:  List[pymif.mosaic_manager.tile.Tile]
+
+
+   .. py:method:: _check_single_timepoint() -> None
+
+      Refuse timelapses: loading and fusion handle one timepoint so far.
+
+      Readers already give every tile its ``timepoint``; supporting timelapses
+      means removing this check and making the fusion loop over :attr:`timepoints`.
+
+
+
+   .. py:method:: _scan() -> List[pymif.mosaic_manager.tile.Tile]
+      :abstractmethod:
+
+
+      Discover the tiles under :attr:`path` (lazy data, positions in the sample frame).
+
+
+
+   .. py:property:: channels
+      :type: List[str]
+
+
+      Channel names in order of first appearance.
+
+
+
+   .. py:property:: timepoints
+      :type: List[int]
+
+
+      Timepoints of the tiles, sorted (``[0]`` for a single timepoint).
+
+
+
+   .. py:property:: groups
+      :type: List[Optional[str]]
+
+
+      Tile group labels in order of first appearance.
+
+
+
+   .. py:method:: select(channel: Optional[str] = None, group: Optional[str] = None, **attrs: Any) -> List[pymif.mosaic_manager.tile.Tile]
+
+      Tiles matching ``channel``, ``group`` and any ``attrs`` entries, e.g. ``select(stack=1)``.
+
+
+
+   .. py:method:: tile_id(tile: pymif.mosaic_manager.tile.Tile) -> str
+
+      Stable name of a tile, ``"<channel>/<stack>"`` (e.g. ``"cFos-647/1-x00-y00"``).
+
+      ``<stack>`` is the reader's stack name (``attrs["stack"]``) or, without
+      one, the tile index. Used to skip tiles from the command line or a batch CSV.
+
+
+
+   .. py:method:: tiles_by_ids(ids: Sequence[str]) -> List[pymif.mosaic_manager.tile.Tile]
+
+      Tiles named by ``ids``: ``"<channel>/<stack>"`` for one tile, or ``"<stack>"``
+      for that stack position in every channel. Unknown ids raise ``KeyError``.
+
+
+
+   .. py:method:: bounding_box(tiles: Optional[Sequence[pymif.mosaic_manager.tile.Tile]] = None) -> Tuple[Tuple[float, Ellipsis], Tuple[float, Ellipsis]]
+
+      ``(min, max)`` corners, ``(z, y, x)``, of ``tiles`` (default: all).
+
+
+
+   .. py:method:: tile(i: int)
+
+      Tile ``i`` as an :class:`~pymif.microscope_manager.ArrayManager` (axes ``zyx``).
+
+
+
+   .. py:method:: _lazy(t: pymif.mosaic_manager.tile.Tile) -> dask.array.Array
+      :staticmethod:
+
+
+
+   .. py:method:: contrast_limits(tiles: Optional[Sequence[pymif.mosaic_manager.tile.Tile]] = None, n_tiles: int = 6, block: int = 64, percentiles: Tuple[float, float] = (0.5, 99.9)) -> Dict[str, Tuple[float, float]]
+
+      Display range of every channel, estimated from a small sample.
+
+      For each channel, one ``block``-sized cube is read from the centre of up to
+      ``n_tiles`` tiles (about 0.5 MB each for uint16 and ``block=64``, the HDF5
+      chunk size of Luxendo tiles), and the given percentiles of those voxels are
+      returned as ``(low, high)``. The sampled tiles are the ones closest to the
+      centre of each tile group (e.g. each illumination side), where the sample
+      usually is; edge tiles often only show background.
+
+
+
+   .. py:method:: visualize(tiles: Optional[Sequence[pymif.mosaic_manager.tile.Tile]] = None, viewer: napari.Viewer | None = None, contrast_limits: str | Dict[str, Tuple[float, float]] | None = 'range')
+
+      Show tiles in napari, each as its own layer at its stage position.
+
+      One colour per channel and additive blending, so overlaps and gaps are
+      easy to see. Data stays lazy: only the planes napari displays are read.
+      All tiles of a channel share one contrast setting, and their layers are
+      linked: changing the contrast or gamma of one tile changes all of them.
+
+      Parameters
+      ----------
+      tiles
+          Tiles to show (default: all), e.g. ``mosaic.select(channel="cFos-647")``.
+          Every displayed plane reads whole HDF5 chunks of every tile, so
+          showing fewer tiles keeps napari responsive.
+      viewer
+          Viewer to add the layers to; a new one is created by default.
+      contrast_limits
+          ``"range"`` (default) uses the whole range of the data type (0 to
+          65535 for uint16), which reads nothing: set the contrast of one tile
+          and the linked tiles follow. ``"auto"`` estimates it per channel with
+          :meth:`contrast_limits` (reads a small sample, slow on network drives);
+          a ``{channel: (low, high)}`` dict uses those, with the whole range for
+          the channels it leaves out; ``None`` lets napari compute them per
+          tile (slow on large tiles).
+
+
+
+   .. py:method:: fuse(out: str | pathlib.Path, skip: Optional[Sequence[Tile | str]] = None, **kwargs)
+
+      Fuse the tiles into an OME-Zarr image; see :func:`~pymif.mosaic_manager.fuse_tiles`.
+
+      ``skip`` lists tiles to leave blank, as ``Tile`` objects or as ids accepted by
+      :meth:`tiles_by_ids` (``"cFos-647/1-x00-y00"``, or ``"1-x00-y00"`` for every channel).
+
+
+
+   .. py:method:: _resolve_skip(skip) -> List[pymif.mosaic_manager.tile.Tile]
+
+
+   .. py:method:: close() -> None
+
+      Close all open file handles.
+
+
+
+   .. py:method:: __enter__() -> MosaicManager
+
+
+   .. py:method:: __exit__(exc_type, exc, tb) -> None
+
+
+.. py:class:: FusionPlan
+
+   Level-0 geometry of a fusion, computed without reading any pixel data.
+
+
+   .. py:attribute:: tiles
+      :type:  List[pymif.mosaic_manager.tile.Tile]
+
+
+   .. py:attribute:: placed
+      :type:  Dict[str, List[_Placed]]
+
+
+   .. py:attribute:: layout
+      :type:  Dict[str, List[_Placed]]
+
+
+   .. py:attribute:: channels
+      :type:  List[str]
+
+
+   .. py:attribute:: ds
+      :type:  Tuple[int, int, int]
+
+
+   .. py:attribute:: blend
+      :type:  str
+
+
+   .. py:attribute:: dtype
+      :type:  numpy.dtype
+
+
+   .. py:attribute:: axes
+      :type:  str
+
+
+   .. py:attribute:: grid_shape
+      :type:  Tuple[int, int, int]
+
+
+   .. py:attribute:: shape
+      :type:  Tuple[int, Ellipsis]
+
+
+   .. py:attribute:: scale
+      :type:  Tuple[float, Ellipsis]
+
+
+   .. py:attribute:: origin
+      :type:  Tuple[float, float, float]
+
+
+   .. py:attribute:: n_skipped
+      :type:  int
+      :value: 0
+
+
+
+   .. py:property:: nbytes
+      :type: int
+
+
+      Size of level 0 in bytes.
+
+
+
+   .. py:method:: summary() -> str
+
+      One line such as ``2 ch x 260 x 1100 x 1500 px (czyx), 1.71 GB, voxel 12 x 11.7 x 11.7 micrometer`` (MB below 0.1 GB).
+
+
+
+.. py:function:: display_windows(path) -> List[Tuple[float, float]]
+
+   Display window ``(start, end)`` of every channel of an OME-Zarr image, from its
+   OMERO metadata (written by :func:`fuse_tiles` from the fused values).
+
+
+.. py:function:: fuse_tiles(tiles: Sequence[pymif.mosaic_manager.tile.Tile], out: str | pathlib.Path, *, ds: Sequence[int] = (1, 1, 1), projection: Optional[str] = None, blend: str = 'sigmoid', channels: Optional[Sequence[str]] = None, channel_names: Optional[Sequence[str]] = None, channel_colors: Optional[Sequence[str]] = None, crop: Optional[dict] = None, skip: Optional[Sequence[pymif.mosaic_manager.tile.Tile]] = None, levels: int = 1, downscale_factor=2, workers: int = 1, executor: str = 'auto', out_dtype=None, midline_axis: str = 'x', sigmoid_steepness: float = SIGMOID_STEEPNESS, overwrite: bool = False, name: Optional[str] = None, temp_dir: str | pathlib.Path | None = None, progress: bool = True, **write_options)
+
+   Fuse ``tiles`` into an OME-Zarr image and return it as a ``ZarrManager``.
+
+   Parameters
+   ----------
+   tiles
+       Tiles to fuse (all must share voxel size and unit).
+   out
+       Output ``.ome.zarr`` path.
+   ds
+       ``(z, y, x)`` integer downsampling factors applied while reading the tiles
+       (each output voxel is the mean of its block).
+   projection
+       ``None`` for a 3D volume, ``"max"``/``"sum"`` for a 2D projection along z.
+   blend
+       How tiles that overlap are merged:
+
+       * ``"sigmoid"`` (default) -- smooth transition: across an overlap, the
+         share of each tile follows a sigmoid of the log ratio of the distances
+         to the two tile borders, from 0 at a tile's border through 1/2 in the
+         middle of the overlap to 1 at the other tile's border, so no seam is
+         visible. The tiles of each ``group`` are fused separately, then the
+         groups are merged the same way across their overlap along
+         ``midline_axis`` (the switch is centred where ``"midline"`` cuts);
+       * ``"max"`` -- keep the brighter value;
+       * ``"sum"`` -- add the values, so overlaps show up as brighter bands;
+       * ``"midline"`` -- ``max`` within each tile ``group``; where groups
+         overlap, the image switches sharply from one group to the next at the
+         middle of their overlap, along ``midline_axis``.
+   channels
+       Tile channels to fuse, in output order. Default: all, in tile order.
+   channel_names, channel_colors
+       Names and colours (hex or matplotlib names) written for the output
+       channels. Default: the tile channel names and the PyMIF palette.
+   crop
+       Part of the output to write, in output voxels (after ``ds``), e.g.
+       ``{"y": slice(100, 900), "z": slice(0, 50)}``. For projections, a ``z``
+       crop limits the planes that are projected.
+   skip
+       Tiles to leave blank: they are not read, but the output keeps the size and
+       position it has with them, so their area stays 0 (where no other tile
+       covers it). With ``blend="midline"``/``"sigmoid"`` they still count for
+       the position of the switch between groups.
+   levels
+       Number of pyramid levels.
+   downscale_factor
+       Factor between pyramid levels: one integer or ``(z, y, x)``.
+   workers
+       Number of tiles read in parallel.
+   executor
+       ``"process"``, ``"thread"`` or ``"auto"`` (processes when ``workers > 1`` and
+       every tile's data is picklable, e.g. :class:`~pymif.mosaic_manager.H5Array`;
+       threads otherwise). h5py serialises reads inside one process, so processes
+       are what actually speeds up reading from HDF5 tiles.
+   out_dtype
+       Output dtype. Default: input dtype for ``sigmoid``/``max``/``midline``,
+       ``float32`` for ``sum``.
+   midline_axis
+       ``"x"``, ``"y"`` or ``"z"``: axis along which groups are separated
+       (``midline`` and ``sigmoid``).
+   sigmoid_steepness
+       Steepness of the ``sigmoid`` transition (> 0). The share of a tile
+       goes from 10% to 90% over the central ``1 - 2 / (1 + 9 ** (1 / s))``
+       of the overlap: about 27% for the default 4, 14% for 8, 50% for 2.
+   overwrite
+       Replace ``out`` if it exists.
+   name
+       Image name stored in the metadata.
+   temp_dir
+       Folder for the temporary fused level 0 (deleted at the end). Default:
+       next to ``out``. A local disk is faster when ``out`` is on a network share.
+   progress
+       Show progress bars.
+   **write_options
+       Any other :meth:`~pymif.microscope_manager.MicroscopeManager.to_zarr`
+       option, as for ``pymif convert``: ``chunks``, ``shards``, ``shard_target_mb``,
+       ``shard_exclude_axes``, ``zarr_format``, ``ngff_version``, ``compressor``,
+       ``compressor_level``, ``drop_singleton``, ``num_workers``, ``storage_options``.
+       ``chunks`` is given in the output axis order (``c, z, y, x``, or ``c, y, x``
+       for projections).
+
+   The display window of every channel (OMERO ``window`` metadata) is set to the
+   0.5th-99.9th percentile of the fused values, ignoring blank areas, so viewers
+   open the result with a usable contrast; see :func:`display_windows`.
+
+   Use :func:`plan_fusion` with the same arguments to get the output shape and
+   size without reading or writing anything.
+
+
+.. py:function:: plan_fusion(tiles: Sequence[pymif.mosaic_manager.tile.Tile], *, ds: Sequence[int] = (1, 1, 1), projection: Optional[str] = None, blend: str = 'sigmoid', channels: Optional[Sequence[str]] = None, crop: Optional[dict] = None, skip: Optional[Sequence[pymif.mosaic_manager.tile.Tile]] = None, out_dtype=None, midline_axis: str = 'x') -> FusionPlan
+
+   Validate fusion arguments and compute the level-0 geometry (see :func:`fuse_tiles`).
+
+
+.. py:class:: LuxendoMosaicManager(path, scan_workers: int = 16, progress: bool = True)
+
+   Bases: :py:obj:`pymif.mosaic_manager.mosaic.MosaicManager`
+
+
+   Raw Luxendo tiles (``*.lux.h5`` + ``*.json``) of one acquisition, before any fusion.
+
+   Not to be confused with :class:`~pymif.microscope_manager.LuxendoManager`, which
+   reads images already fused by the Luxendo software. This manager scans a raw
+   acquisition folder such as ``2026-10-14_103957`` (tiles live in
+   ``raw/<stack folder>/Cam_*.lux.h5``) and exposes every tile lazily:
+
+   * ``channel``: the dye, with the illumination side removed
+     (``autofluo-488-L`` and ``autofluo-488-R`` both give ``autofluo-488``), so
+     both halves of a sample end up in the same fused channel;
+   * ``group``: the illumination side, ``"L"`` or ``"R"`` (used by ``blend="sigmoid"`` and ``"midline"``);
+   * ``timepoint``: the JSON ``time_point`` (mosaics with several timepoints are
+     refused for now, see :class:`~pymif.mosaic_manager.MosaicManager`);
+   * ``attrs``: ``stack``, ``stack_description``, ``grid`` (``(ix, iy)``),
+     ``channel_description`` and ``path``.
+
+   Tile positions come from ``affine_to_sample`` in the JSON (the tile is centred
+   on the stage translation in x/y; z is the plane position along the stacking
+   direction). If a stack was re-acquired (``*_R_<n>.lux.h5``) only the latest
+   retake is used. Tiles are :class:`~pymif.mosaic_manager.H5Array` objects, so no
+   file stays open. Scanning reads only the JSON files (in parallel) and opens a
+   single ``.h5`` file, which keeps loading fast on network drives.
+
+
+   .. py:method:: _retake(h5: pathlib.Path) -> int
+      :staticmethod:
+
+
+      ``Cam_bottom_00000.lux.h5`` -> 0, ``Cam_bottom_00000_R_1.lux.h5`` -> 1.
+
+
+
+   .. py:method:: _scan() -> List[pymif.mosaic_manager.tile.Tile]
+
+      Discover the tiles under :attr:`path` (lazy data, positions in the sample frame).
+
+
+
+   .. py:attribute:: scan_workers
+
+
+   .. py:attribute:: progress
+      :value: True
+
+
+
+   .. py:method:: _acquisitions(folder) -> List[pathlib.Path]
+      :classmethod:
+
+
+      The ``*.lux.h5`` acquisitions of a stack folder (those with a ``.json`` sibling).
+
+      Files sharing a base name are retakes (``*_R_<n>``) of one acquisition and
+      only the latest is kept. Different base names are separate acquisitions of
+      the same stack (e.g. timepoints); they are returned in name order.
+
+
+
+   .. py:method:: _read_info(h5: pathlib.Path) -> dict
+      :staticmethod:
+
+
+
+   .. py:method:: _shape(info: dict) -> tuple
+      :staticmethod:
+
+
+
+   .. py:method:: _tile_from(h5: pathlib.Path, info: Optional[dict] = None, dtype=None, default_timepoint: int = 0) -> pymif.mosaic_manager.tile.Tile
+      :classmethod:
+
+
+      Tile of one ``.lux.h5`` file; the file is only opened when ``dtype`` is not given.
+
+      The timepoint is the JSON ``time_point``, or ``default_timepoint`` without one.
+
+
+
+.. py:class:: OperaMosaicManager(path: str | pathlib.Path)
+
+   Bases: :py:obj:`pymif.mosaic_manager.mosaic.MosaicManager`
+
+
+   Placeholder: raw Opera (Harmony) plate/field tiles, before fusion.
+
+   Not implemented yet. Implement :meth:`_scan` to return one
+   :class:`~pymif.mosaic_manager.Tile` per acquired tile (lazy ``(z, y, x)`` data,
+   stage position as ``origin``, voxel size, channel and optionally a ``group``);
+   :meth:`~pymif.mosaic_manager.MosaicManager.fuse`, ``visualize`` and the rest then
+   work unchanged. See :class:`~pymif.mosaic_manager.LuxendoMosaicManager` for a
+   complete example. The existing :class:`~pymif.microscope_manager.OperaManager` reads a
+   single image and is unrelated.
+
+
+   .. py:method:: _scan() -> List[pymif.mosaic_manager.tile.Tile]
+      :abstractmethod:
+
+
+      Discover the tiles under :attr:`path` (lazy data, positions in the sample frame).
+
+
+
+.. py:class:: ZeissMosaicManager(path: str | pathlib.Path)
+
+   Bases: :py:obj:`pymif.mosaic_manager.mosaic.MosaicManager`
+
+
+   Placeholder: raw Zeiss CZI tile (mosaic) tiles, before fusion.
+
+   Not implemented yet. Implement :meth:`_scan` to return one
+   :class:`~pymif.mosaic_manager.Tile` per acquired tile (lazy ``(z, y, x)`` data,
+   stage position as ``origin``, voxel size, channel and optionally a ``group``);
+   :meth:`~pymif.mosaic_manager.MosaicManager.fuse`, ``visualize`` and the rest then
+   work unchanged. See :class:`~pymif.mosaic_manager.LuxendoMosaicManager` for a
+   complete example. The existing :class:`~pymif.microscope_manager.ZeissManager` reads a
+   single image and is unrelated.
+
+
+   .. py:method:: _scan() -> List[pymif.mosaic_manager.tile.Tile]
+      :abstractmethod:
+
+
+      Discover the tiles under :attr:`path` (lazy data, positions in the sample frame).
+
+
+

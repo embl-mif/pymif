@@ -1,0 +1,204 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Reference &mdash; PyMIF 0.5.1.dev21+gdf76fddfa documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=da07648d"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Contributing and extending PyMIF" href="../contributing.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyMIF
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing and extending PyMIF</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pymif/index.html">pymif</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyMIF</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/autoapi/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading"></a></h1>
+<p>This page contains auto-generated API reference documentation <a class="footnote-reference brackets" href="#f1" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pymif/index.html">pymif</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pymif/_version/index.html">pymif._version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymif/cli/index.html">pymif.cli</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pymif/cli/__arguments/index.html">pymif.cli.__arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/cli/pymif/index.html">pymif.cli.pymif</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pymif/microscope_manager/index.html">pymif.microscope_manager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pymif/microscope_manager/array_manager/index.html">pymif.microscope_manager.array_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/microscope_manager/luxendo_manager/index.html">pymif.microscope_manager.luxendo_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/microscope_manager/microscope_manager/index.html">pymif.microscope_manager.microscope_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/microscope_manager/opera_manager/index.html">pymif.microscope_manager.opera_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/microscope_manager/scape_manager/index.html">pymif.microscope_manager.scape_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/microscope_manager/viventis_manager/index.html">pymif.microscope_manager.viventis_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/microscope_manager/zarr_manager/index.html">pymif.microscope_manager.zarr_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/microscope_manager/zarr_v04_manager/index.html">pymif.microscope_manager.zarr_v04_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/microscope_manager/zeiss_manager/index.html">pymif.microscope_manager.zeiss_manager</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pymif/mosaic_manager/index.html">pymif.mosaic_manager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pymif/mosaic_manager/fusion/index.html">pymif.mosaic_manager.fusion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/mosaic_manager/h5_array/index.html">pymif.mosaic_manager.h5_array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/mosaic_manager/luxendo_mosaic_manager/index.html">pymif.mosaic_manager.luxendo_mosaic_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/mosaic_manager/mosaic/index.html">pymif.mosaic_manager.mosaic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/mosaic_manager/opera_mosaic_manager/index.html">pymif.mosaic_manager.opera_mosaic_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/mosaic_manager/tile/index.html">pymif.mosaic_manager.tile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/mosaic_manager/zeiss_mosaic_manager/index.html">pymif.mosaic_manager.zeiss_mosaic_manager</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pymif/napari/index.html">pymif.napari</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pymif/napari/_batch_csv/index.html">pymif.napari._batch_csv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/napari/_convert_widget/index.html">pymif.napari._convert_widget</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/napari/_dataset_helpers/index.html">pymif.napari._dataset_helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/napari/_export_widget/index.html">pymif.napari._export_widget</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/napari/_layout/index.html">pymif.napari._layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/napari/_log/index.html">pymif.napari._log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/napari/_mosaic_widget/index.html">pymif.napari._mosaic_widget</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pymif/utils/index.html">pymif.utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pymif/utils/axes/index.html">pymif.utils.axes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/utils/chromatic_shift/index.html">pymif.utils.chromatic_shift</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/utils/chunks/index.html">pymif.utils.chunks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/utils/colors/index.html">pymif.utils.colors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/utils/create_empty_dataset/index.html">pymif.utils.create_empty_dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/utils/create_empty_group/index.html">pymif.utils.create_empty_group</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/utils/dataset_ops/index.html">pymif.utils.dataset_ops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/utils/downsampling/index.html">pymif.utils.downsampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/utils/metadata/index.html">pymif.utils.metadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/utils/ngff/index.html">pymif.utils.ngff</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/utils/ome/index.html">pymif.utils.ome</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/utils/pyramid/index.html">pymif.utils.pyramid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/utils/subset/index.html">pymif.utils.subset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/utils/to_zarr/index.html">pymif.utils.to_zarr</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/utils/units/index.html">pymif.utils.units</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/utils/visualize/index.html">pymif.utils.visualize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/utils/write_image_region/index.html">pymif.utils.write_image_region</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/utils/write_label_region/index.html">pymif.utils.write_label_region</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pymif/utils/zoom/index.html">pymif.utils.zoom</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="f1" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Created with <a class="reference external" href="https://github.com/readthedocs/sphinx-autoapi">sphinx-autoapi</a></p>
+</aside>
+</aside>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../contributing.html" class="btn btn-neutral float-left" title="Contributing and extending PyMIF" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Nicola Gritti.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

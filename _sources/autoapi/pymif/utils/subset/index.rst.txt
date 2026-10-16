@@ -1,0 +1,47 @@
+pymif.utils.subset
+==================
+
+.. py:module:: pymif.utils.subset
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   pymif.utils.subset.Selection
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.utils.subset.subset_dask_array
+   pymif.utils.subset.validate_uniform_spacing
+   pymif.utils.subset._subset_list
+   pymif.utils.subset.subset_metadata
+
+
+Module Contents
+---------------
+
+.. py:data:: Selection
+
+.. py:function:: subset_dask_array(arr: dask.array.Array, axes: str, T: Selection = None, C: Selection = None, Z: Selection = None, Y: Selection = None, X: Selection = None) -> dask.array.Array
+
+   Subset a Dask array using axis labels rather than fixed TCZYX positions.
+
+
+.. py:function:: validate_uniform_spacing(indices: Sequence[int], name: str)
+
+   Ensure spacing between integer indices is uniform.
+
+
+.. py:function:: _subset_list(values, selection, axis_size)
+
+.. py:function:: subset_metadata(metadata: dict, T: Selection = None, C: Selection = None, Z: Selection = None, Y: Selection = None, X: Selection = None) -> dict
+
+   Update metadata after subsetting any available subset of image axes.
+
+

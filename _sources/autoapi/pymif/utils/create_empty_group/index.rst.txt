@@ -1,0 +1,40 @@
+pymif.utils.create_empty_group
+==============================
+
+.. py:module:: pymif.utils.create_empty_group
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.utils.create_empty_group._without_axis
+   pymif.utils.create_empty_group._metadata_for_legacy_label
+   pymif.utils.create_empty_group.create_empty_group
+
+
+Module Contents
+---------------
+
+.. py:function:: _without_axis(values, axis_index: int)
+
+.. py:function:: _metadata_for_legacy_label(metadata: dict[str, Any], requested_data_type: str, is_label: bool, explicit_data_type: str | None) -> dict[str, Any]
+
+   Keep old ``is_label=True`` calls working by dropping an image C axis.
+
+   New callers can request channelled labels explicitly with
+   ``data_type='label'`` and metadata whose axes include ``c``.  Old PyMIF
+   examples passed the intensity image metadata plus ``is_label=True``; those
+   should still create ``tzyx`` labels.
+
+
+.. py:function:: create_empty_group(root: zarr.Group, group_name: str, metadata: dict[str, Any], is_label: bool = False, ngff_version: str | None = None, zarr_format: int | None = None, compressor: str | None = None, compressor_level: int = 3, data_type: str | None = None, shards: Any = None, shard_target_mb: float = 1024.0, shard_exclude_axes: Any = None)
+
+   Create an empty image subgroup or label subgroup inside an existing root.
+
+   The subgroup inherits the root NGFF/zarr version so the hierarchy stays
+   internally consistent. When ``is_label`` is ``True`` the group is created
+   below ``labels/`` and the root label registry is updated.
+
+
