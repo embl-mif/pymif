@@ -668,11 +668,17 @@ def mosaic_widget():
                         output=fuse_widget.output_path.value, values=values,
                         all_groups=group_labels(mosaic), skip_ids=skip_ids, picked=_picked(),
                         all_stacks={stack_id(mosaic, t) for t in mosaic.tiles})
-        path = append_batch_csv(batch_csv_path, row, MOSAIC_BATCH_COLUMNS)
-        only = f", {len(row['tiles'].split())} picked stack position(s)" if row["tiles"] else ""
-        blank = f", {len(skip_ids)} tile id(s) left blank" if skip_ids else ""
-        print(f"Appended {Path(row['output']).name} to {path}{only}{blank}. Run it with:\n"
-              f"  pymif fuse --batch \"{path}\"")
+        _capture()  # print into this widget's log, not wherever sys.stdout points
+        try:
+            path = append_batch_csv(batch_csv_path, row, MOSAIC_BATCH_COLUMNS)
+            only = f", {len(row['tiles'].split())} picked stack position(s)" if row["tiles"] else ""
+            blank = f", {len(skip_ids)} tile id(s) left blank" if skip_ids else ""
+            print(f"Appended {Path(row['output']).name} to {path}{only}{blank}. Run it with:\n"
+                  f"  pymif fuse --batch \"{path}\"")
+        except OSError as e:
+            print(f"Could not write the batch CSV: {e}")
+        finally:
+            _release()
     for name in ("projection", "ds_z", "ds_y", "ds_x"):
         getattr(fuse_widget, name).changed.connect(_update_output)
 

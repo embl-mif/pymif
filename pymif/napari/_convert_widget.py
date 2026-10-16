@@ -1204,8 +1204,18 @@ def convert_widget():
     stdout_stream = EmittingStream()
     stderr_stream = EmittingStream()
 
+    previous_streams = (sys.stdout, sys.stderr)
     sys.stdout = stdout_stream
     sys.stderr = stderr_stream
+
+    def _restore_console(*_):
+        # Closing the widget deletes its log: output must not keep going to it.
+        if sys.stdout is stdout_stream:
+            sys.stdout = previous_streams[0]
+        if sys.stderr is stderr_stream:
+            sys.stderr = previous_streams[1]
+
+    log_widget.destroyed.connect(_restore_console)
 
     append_with_time = make_log_appender(log_widget)
 
