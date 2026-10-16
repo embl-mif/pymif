@@ -91,6 +91,7 @@ Shared helpers live in one place each, so readers, writers and the napari viewer
 | `downsampling` | factor math and `downsample_nearest` (NumPy or Dask) |
 | `metadata`, `ome` | `build_metadata`, `ChannelInfo`, `scale_for_level`, `parse_ome_xml` |
 | `dataset_ops` | validation and in-place edits shared by `MicroscopeManager` and `ZarrManager` (`subset_levels`, `reorder_channels`, `apply_metadata_updates`) |
+| `chromatic_shift` | axial chromatic shift estimation (`estimate_chromatic_shift`) and the structure-preserving corrected-store writer (`write_chromatic_shift_corrected`) |
 | `ngff` | `ZarrWriteConfig`, array creation (`_array_create_kwargs`), sharding, multiscales metadata (`_build_multiscales`) and the pyramid writers |
 
 Once that contract is respected, the new manager automatically benefits from the common PyMIF tooling such as `build_pyramid()`, `to_zarr()`, `visualize()`, `reorder_channels()`, `update_metadata()`, and `subset_dataset()`.

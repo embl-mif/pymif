@@ -741,6 +741,133 @@ class ZarrManager(MicroscopeManager):
 
         logger.info("Channels reordered to %s.", list(new_order))
 
+    def estimate_chromatic_shift(
+        self,
+        reference_channel: int = 0,
+        **kwargs,
+    ) -> Dict[str, Any]:
+        """Estimate the axial (Z) chromatic shift of each channel of the raw image.
+
+        The shift is measured on the sample's Z-facing surfaces (top and
+        bottom), first on a coarse level and then on crops of a finer level.
+        Keyword arguments are forwarded to
+        :func:`~pymif.utils.chromatic_shift.estimate_chromatic_shift`
+        (``timepoint``, ``coarse_level``, ``refine_level``, ``max_shift``,
+        ``n_regions``, ``crop_yx``, ``min_z_normal``, ``min_correlation``,
+        ``threshold``).
+
+        Returns a JSON-serializable report whose ``shifts`` entry holds the
+        correction per channel in the physical unit of the Z axis; it can be
+        passed directly to :meth:`apply_chromatic_shift`.
+        """
+        from ..utils.chromatic_shift import estimate_chromatic_shift as _estimate
+
+        return _estimate(
+            self.raw.data,
+            self.raw.metadata,
+            reference_channel=reference_channel,
+            **kwargs,
+        )
+
+    def apply_chromatic_shift(
+        self,
+        path: str | Path,
+        shifts,
+        *,
+        extent: str = "union",
+        order: int = 1,
+        include_groups: bool = True,
+        include_labels: bool = True,
+        overwrite: bool = True,
+        num_workers: int | None = None,
+        progress: bool = True,
+    ) -> "ZarrManager":
+        """Write a copy of this store with each channel shifted along Z.
+
+        Parameters
+        ----------
+        path
+            Output OME-Zarr store; must differ from the input.
+        shifts
+            One Z shift per channel in physical units (positive moves content
+            towards higher Z), or the report of :meth:`estimate_chromatic_shift`.
+        extent
+            ``"union"`` (default) grows Z so no channel loses data,
+            ``"same"`` keeps the input size and ``"intersection"`` crops to
+            the planes covered by every channel. Padding is rounded to whole
+            planes of the coarsest level so all pyramid levels stay aligned.
+        order
+            ``1`` interpolates linearly; ``0`` rounds each shift to whole
+            planes, which leaves voxel values untouched.
+        include_groups, include_labels
+            Also write image subgroups (shifted like the raw image) and labels
+            (padded or cropped to the new Z extent, following the reference
+            channel).
+        overwrite, num_workers, progress
+            Same meaning as in :class:`~pymif.utils.ngff.ZarrWriteConfig`.
+
+        Every array keeps its source's chunks, shards, codecs and dimension
+        names, every group its attributes (pixel sizes, channel metadata...).
+        Datasets must still match their on-disk arrays, so call this before
+        in-memory edits such as :meth:`subset_dataset`.
+
+        Returns the output store opened as a new :class:`ZarrManager`.
+        """
+        from ..utils.chromatic_shift import write_chromatic_shift_corrected
+
+        if Path(path).resolve() == Path(self.path).resolve():
+            raise ValueError("apply_chromatic_shift needs an output path different from the input.")
+
+        write_chromatic_shift_corrected(
+            self.root,
+            self._iter_datasets(
+                include_raw=True,
+                include_groups=include_groups,
+                include_labels=include_labels,
+            ),
+            path,
+            shifts,
+            extent=extent,
+            order=order,
+            overwrite=overwrite,
+            num_workers=num_workers,
+            progress=progress,
+        )
+        return ZarrManager(str(path), chunks=None, mode="r")
+
+    def correct_chromatic_shift(
+        self,
+        path: str | Path,
+        reference_channel: int = 0,
+        *,
+        extent: str = "union",
+        order: int = 1,
+        include_groups: bool = True,
+        include_labels: bool = True,
+        overwrite: bool = True,
+        num_workers: int | None = None,
+        progress: bool = True,
+        **estimate_kwargs,
+    ) -> "ZarrManager":
+        """Estimate the Z chromatic shift and write the corrected store in one go.
+
+        Combines :meth:`estimate_chromatic_shift` (``estimate_kwargs``) and
+        :meth:`apply_chromatic_shift`. The estimate report is stored in the
+        output root attribute ``pymif_chromatic_shift``.
+        """
+        report = self.estimate_chromatic_shift(reference_channel, **estimate_kwargs)
+        return self.apply_chromatic_shift(
+            path,
+            report,
+            extent=extent,
+            order=order,
+            include_groups=include_groups,
+            include_labels=include_labels,
+            overwrite=overwrite,
+            num_workers=num_workers,
+            progress=progress,
+        )
+
     def update_metadata(
         self,
         updates: Dict[str, Any],
