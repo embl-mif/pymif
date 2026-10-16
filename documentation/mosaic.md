@@ -152,24 +152,4 @@ Loading and fusion run in the background, and their progress is shown in the log
 
 ## Adding a mosaic reader
 
-Subclass `MosaicManager` and implement `_scan()`, which returns one `Tile` per acquired tile:
-
-```python
-from pymif.mosaic_manager import H5Array, MosaicManager, Tile
-
-
-class MyMosaicManager(MosaicManager):
-    def _scan(self):
-        return [
-            Tile(
-                data=H5Array(path, "Data"),        # any lazy array with shape/dtype/slicing
-                origin=(z0, y0, x0),               # position of voxel [0, 0, 0]
-                voxel_size=(dz, dy, dx),
-                channel="GFP",
-                group=None,                        # e.g. illumination side, for blend="sigmoid"/"midline"
-            )
-            for path, (z0, y0, x0) in ...
-        ]
-```
-
-`visualize()`, `fuse()`, `pymif fuse` and the napari widget then work unchanged. Use picklable tile data (such as `H5Array`) so that fusion can read it in worker processes.
+A new tile format only needs a `MosaicManager` subclass that implements `_scan()`, returning one `Tile` per acquired tile; `visualize()`, `fuse()`, `pymif fuse` and the napari widget then work unchanged. See [Adding a mosaic manager](contributing.md#adding-a-mosaic-manager) for the `Tile` fields, how to keep loading fast and fusion parallel, and where to register the reader.

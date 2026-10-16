@@ -6,15 +6,30 @@
 ```{toctree}
 :maxdepth: 2
 :hidden:
-:caption: User guide
+:caption: Getting started
 
 installation
 readers
+```
+
+```{toctree}
+:maxdepth: 2
+:hidden:
+:caption: Working with data
+
 python-api
 mosaic
+chromatic-shift
+advanced
+```
+
+```{toctree}
+:maxdepth: 2
+:hidden:
+:caption: Interfaces
+
 cli
 napari-plugin
-advanced
 ```
 
 ```{toctree}

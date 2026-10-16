@@ -109,31 +109,13 @@ z.write_image_region(
 )
 ```
 
-## Correct the axial chromatic shift between channels
+## Correct the chromatic shift between channels
 
-Light-sheet channels are often offset along Z, and the offset changes whenever the system is realigned. `ZarrManager` estimates it from the sample itself: the sample's lower and upper surfaces are visible in every channel (through background and autofluorescence), so each channel's Z-derivative is correlated with the reference channel around those surfaces, first on a coarse level and then on small crops of a finer level.
+`ZarrManager` can measure the axial (Z) offset between the channels of a light-sheet dataset on the sample itself and write a corrected copy with the same structure as the input:
 
 ```python
-import json
-from pathlib import Path
-import pymif.microscope_manager as mm
-
 z = mm.ZarrManager("input.zarr")
-
-# Shifts are corrections in the Z unit (usually micrometers), one per channel.
-report = z.estimate_chromatic_shift(reference_channel=0)   # searches up to 10% of the stack depth
-print(report["shifts"], report["spread"], report["surface_shifts"], report["warnings"])
-Path("chromatic_shift.json").write_text(json.dumps(report, indent=2))
-
-# Write a corrected copy. Chunks, shards, codecs, pixel sizes and channel
-# metadata are copied from the input; only the Z size changes.
-out = z.apply_chromatic_shift("corrected.zarr", report, extent="union", order=1)
-
-# Or both steps in one call:
 out = z.correct_chromatic_shift("corrected.zarr", reference_channel=0)
 ```
 
-- `extent="union"` grows Z so no channel loses data, `"same"` keeps the input size and `"intersection"` crops to the planes covered by every channel. Padding is rounded to whole planes of the coarsest level so all pyramid levels stay aligned; where input plane 0 ended up is stored in the output root attribute `pymif_chromatic_shift` (`z_offset`), together with the applied shifts.
-- `order=1` interpolates linearly; `order=0` rounds the shifts to whole planes and leaves voxel values untouched.
-- Image subgroups with the same channels are shifted like the raw image; labels are padded or cropped to the new extent, following the reference channel.
-- The estimate needs Z-facing sample surfaces inside the stack. If the sample fills the whole stack in Z it fails with a clear error; shifts measured on another dataset can then be passed to `apply_chromatic_shift` directly.
+See [Chromatic shift correction](chromatic-shift.md) for how the shift is measured, the options and how to check the result.
