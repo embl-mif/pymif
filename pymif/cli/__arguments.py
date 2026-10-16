@@ -388,10 +388,14 @@ def _add_mosaic_arguments(parser, legacy: bool = False):
         help='"none" writes a 3D volume; "max"/"sum" write a 2D projection along z.',
     )
     parser.add_argument(
-        '-b', '--blend', choices=['max', 'sum', 'midline'], default='max',
-        help='How overlapping tiles are merged: max, sum (overlaps brighter), or midline (each tile group, '
+        '-b', '--blend', choices=['sigmoid', 'max', 'sum', 'midline'], default='sigmoid',
+        help='How overlapping tiles are merged: sigmoid (default: smooth transition across every overlap, '
+             'between tiles and between tile groups), max, sum (overlaps brighter), or midline (each tile group, '
              'e.g. illumination side, up to the middle of the overlap, with a sharp switch there).',
     )
+    parser.add_argument('-ss', '--sigmoid_steepness', type=float,
+                        help='Steepness of the blend=sigmoid transition: higher is sharper. Default: 4 '
+                             '(the switch takes the central ~27%% of the overlap).')
     parser.add_argument('-ch', '--channels', nargs='+', help='Tile channels to fuse, in output order. Default: all.')
     parser.add_argument('-g', '--groups', nargs='+', help='Tile groups to fuse (e.g. L R). Default: all.')
     parser.add_argument(
@@ -405,7 +409,7 @@ def _add_mosaic_arguments(parser, legacy: bool = False):
              'cFos-647/1-x00-y00, or a stack such as 1-x00-y00 for every channel.',
     )
     parser.add_argument('-ma', '--midline_axis', choices=['x', 'y', 'z'], default='x',
-                        help='Axis along which blend=midline separates the groups.')
+                        help='Axis along which blend=midline/sigmoid separates the groups.')
     parser.add_argument('-od', '--out_dtype', help='Output dtype, e.g. uint16 or float32. Default: input dtype '
                         '(float32 for blend=sum).')
     parser.add_argument('-rw', '--read_workers', type=int, default=4,
@@ -464,7 +468,7 @@ FUSE_HELP = """\
     (z/y/x in output voxels, after --downsample) and selects channels (c).
 
     Examples:
-      pymif fuse -i /path/to/2026-10-14_103957 -z out_3D.ome.zarr -rds 4 8 8 -b midline -nl 3
+      pymif fuse -i /path/to/2026-10-14_103957 -z out_3D.ome.zarr -rds 4 8 8 -nl 3
       pymif fuse -i /path/to/2026-10-14_103957 -z out_MIP.ome.zarr -rds 1 8 8 -p max -b midline
       pymif fuse --batch mosaics.csv
 
@@ -472,10 +476,10 @@ FUSE_HELP = """\
     `pymif convert --batch` (chunk_size | max_size(MB) | zarr_format | downscale_factor | subset | channel_colors |
     channel_names | num_levels | shards | shard_target_mb | shard_exclude_axes | drop_singleton | num_workers)
     and of the fusion columns
-    downsample | projection | blend | channels | groups | tiles | skip_tiles | midline_axis | out_dtype |
-    read_workers | temp_dir | overwrite, e.g.
+    downsample | projection | blend | sigmoid_steepness | channels | groups | tiles | skip_tiles | midline_axis |
+    out_dtype | read_workers | temp_dir | overwrite, e.g.
       input                  | microscope | output                 | downsample | projection | blend   | num_levels
-      /path/to/acquisition_1 | luxendo    | /path/to/acq1_3D.zarr  | 4 8 8      | none       | midline | 3
+      /path/to/acquisition_1 | luxendo    | /path/to/acq1_3D.zarr  | 4 8 8      | none       | sigmoid | 3
       /path/to/acquisition_1 | luxendo    | /path/to/acq1_MIP.zarr | 1 8 8      | max        | midline |
     Leave a cell empty for the default. Lists (channels, groups, tiles, skip_tiles, channel_names...) are space
     separated.

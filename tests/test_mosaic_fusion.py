@@ -17,7 +17,7 @@ def _read(zm, level=0):
 def test_max_blend_places_and_merges(tmp_path):
     # Two 8-wide tiles overlapping in x on columns 4..8; the second is brighter.
     tiles = [_tile(10, (0, 0, 0)), _tile(30, (0, 0, 4))]
-    zm = fuse_tiles(tiles, tmp_path / "o.zarr", chunks=(1, 4, 8, 8))
+    zm = fuse_tiles(tiles, tmp_path / "o.zarr", blend="max", chunks=(1, 4, 8, 8))
     img = _read(zm)  # (c, z, y, x) -> singleton dims may be dropped by the reader
     img = img.reshape(4, 8, 12)
     assert img[..., :4].max() == 10
@@ -42,6 +42,58 @@ def test_midline_cuts_between_groups(tmp_path):
     img = _read(zm).reshape(4, 8, 12)
     assert (img[..., :6] == 10).all()   # left side owns up to the cut ...
     assert (img[..., 6:] == 200).all()  # ... right side owns the rest
+
+
+def test_sigmoid_is_the_default_and_smooth(tmp_path):
+    # 40-wide tiles overlapping on x 20..40: a monotonic S-curve centred on x = 30
+    tiles = [_tile(100, (0, 0, 0), shape=(4, 8, 40)), _tile(300, (0, 0, 20), shape=(4, 8, 40))]
+    img = _read(fuse_tiles(tiles, tmp_path / "o.zarr", progress=False)).reshape(4, 8, 60)
+    assert (img == img[:1, :1]).all(axis=(0, 1)).all()  # same profile on every row and plane
+    row = img[0, 0].astype(int)
+    assert (row[:20] == 100).all() and (row[40:] == 300).all()
+    assert (np.diff(row) >= 0).all() and np.diff(row).max() < 50  # no step
+    assert row[29] + row[30] == 400  # symmetric about the middle of the overlap
+    assert row[20] <= 101 and row[39] >= 299  # continuous at both tile borders
+
+    sharp = _read(fuse_tiles(tiles, tmp_path / "s.zarr", sigmoid_steepness=12, progress=False)).reshape(4, 8, 60)
+    assert np.diff(sharp[0, 0].astype(int)).max() > np.diff(row).max()
+    with pytest.raises(ValueError):
+        fuse_tiles(tiles, tmp_path / "x.zarr", sigmoid_steepness=0)
+
+
+def test_sigmoid_between_groups(tmp_path):
+    # same layout as test_midline_cuts_between_groups: the switch is centred on the midline cut (x = 6)
+    tiles = [_tile(10, (0, 0, 0), group="L"), _tile(200, (0, 0, 4), group="R")]
+    img = _read(fuse_tiles(tiles, tmp_path / "o.zarr", chunks=(1, 4, 8, 8), progress=False)).reshape(4, 8, 12)
+    row = img[0, 0].astype(int)
+    assert (row[:4] == 10).all() and (row[8:] == 200).all()
+    assert row[5] + row[6] == 210 and 10 < row[5] < row[6] < 200
+
+    # groups at the same position: still one side on each half, not their average
+    same = [_tile(10, (0, 0, 0), group="L", shape=(4, 8, 40)), _tile(200, (0, 0, 0), group="R", shape=(4, 8, 40))]
+    row = _read(fuse_tiles(same, tmp_path / "s.zarr", progress=False)).reshape(4, 8, 40)[0, 0].astype(int)
+    assert row[0] == 10 and row[-1] == 200 and row[19] + row[20] == 210
+
+    # a skipped tile of one group is filled by the other group
+    tiles = [_tile(10, (0, 0, 0), group="L"), _tile(10, (0, 0, 8), group="L"), _tile(200, (0, 0, 4), group="R")]
+    img = _read(fuse_tiles(tiles, tmp_path / "k.zarr", skip=[tiles[2]], progress=False))
+    assert (img == 10).all()
+
+
+def test_sigmoid_grid_corner_and_projection(tmp_path):
+    # 2 x 2 tiles of 30 px overlapping by 10: every overlap blends, the four-tile corner too
+    tiles = [Tile(np.full((4, 30, 30), v, np.uint16), (0, y, x), (1.0, 1.0, 1.0), "A")
+             for v, (y, x) in zip((100, 200, 300, 400), [(0, 0), (0, 20), (20, 0), (20, 20)])]
+    img = _read(fuse_tiles(tiles, tmp_path / "o.zarr", projection="max", progress=False)).reshape(50, 50)
+    assert img[0, 0] == 100 and img[0, -1] == 200 and img[-1, 0] == 300 and img[-1, -1] == 400
+    assert np.abs(np.diff(img.astype(int), axis=0)).max() < 200 / 2  # a hard seam would step by 200 ...
+    assert np.abs(np.diff(img.astype(int), axis=1)).max() < 100 / 2  # ... and by 100
+    assert abs(int(img[24:26, 24:26].mean()) - 250) <= 1  # the four tiles meet half way
+
+    serial = fuse_tiles(tiles, tmp_path / "s.zarr", chunks=(1, 4, 16, 16), progress=False)
+    threads = fuse_tiles(tiles, tmp_path / "t.zarr", chunks=(1, 4, 16, 16), workers=3, executor="thread",
+                         progress=False)
+    assert np.array_equal(_read(serial), _read(threads))
 
 
 def test_projection_max_is_2d(tmp_path):
@@ -123,7 +175,8 @@ def test_h5_tiles_with_worker_processes(tmp_path):
     procs = fuse_tiles(tiles, tmp_path / "p.zarr", workers=2, executor="process", **kw)
     assert np.array_equal(_read(serial), _read(procs))
 
-    mip = fuse_tiles(tiles, tmp_path / "m.zarr", projection="max", workers=2, ds=(1, 1, 1), chunks=(1, 8, 8))
+    mip = fuse_tiles(tiles, tmp_path / "m.zarr", projection="max", blend="max", workers=2, ds=(1, 1, 1),
+                    chunks=(1, 8, 8))
     expected = np.zeros((16, 32), np.uint16)
     for i, t in enumerate(tiles):
         np.maximum(expected[:, 8 * i : 8 * i + 16], t.data[:].max(axis=0), out=expected[:, 8 * i : 8 * i + 16])
@@ -182,8 +235,8 @@ def test_write_options_are_forwarded(tmp_path):
 def test_skipped_tiles_are_left_blank(tmp_path):
     # three 8-px tiles at x = 0, 6, 12 (2-px overlaps); skipping the last one must not shrink the output
     tiles = [_tile(10 * (i + 1), (0, 0, 6 * i)) for i in range(3)]
-    full = _read(fuse_tiles(tiles, tmp_path / "full.zarr", progress=False))
-    zm = fuse_tiles(tiles, tmp_path / "skip.zarr", skip=[tiles[2]], progress=False)
+    full = _read(fuse_tiles(tiles, tmp_path / "full.zarr", blend="max", progress=False))
+    zm = fuse_tiles(tiles, tmp_path / "skip.zarr", blend="max", skip=[tiles[2]], progress=False)
     img = _read(zm)
     assert img.shape == full.shape == (4, 8, 20)
     assert (img[..., 14:] == 0).all()             # only the skipped tile covered this

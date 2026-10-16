@@ -29,7 +29,7 @@ mosaic.groups            # ['L', 'R']  (illumination side)
 mosaic.bounding_box()    # ((zmin, ymin, xmin), (zmax, ymax, xmax)) in micrometer
 
 # Output shape and size, without reading any pixel data
-print(plan_fusion(mosaic.tiles, ds=(4, 8, 8), blend="midline").summary())
+print(plan_fusion(mosaic.tiles, ds=(4, 8, 8)).summary())
 
 # Check placement: one napari layer per tile, at its stage position
 mosaic.visualize(tiles=mosaic.select(channel="cFos-647"))
@@ -49,7 +49,7 @@ For Luxendo data, the two illumination sides of a dye (e.g. `autofluo-488-L` and
 zm = mosaic.fuse(
     "acq_3D.ome.zarr",
     ds=(4, 8, 8),          # downsampling (z, y, x) applied while reading the tiles
-    blend="midline",       # each illumination side on its own side of the overlap
+    blend="sigmoid",       # default: smooth transitions between tiles and illumination sides
     levels=3,              # pyramid levels
     workers=4,             # tiles read in parallel processes
 )
@@ -63,7 +63,6 @@ mip = mosaic.fuse(
     "acq_MIP.ome.zarr",
     projection="max",      # or "sum"
     ds=(1, 8, 8),          # only y/x matter for a projection
-    blend="midline",
     workers=4,
 )
 mip.metadata["axes"]       # 'cyx'
@@ -77,7 +76,8 @@ The projection is computed at full resolution along z and then downsampled in y/
 |---|---|---|
 | `ds` | `(z, y, x)` integers | downsampling applied while reading: each output voxel is the mean of its block (default `(1, 1, 1)`) |
 | `projection` | `None`, `"max"`, `"sum"` | 3D volume (default) or a 2D projection along z |
-| `blend` | `"max"`, `"sum"`, `"midline"` | how overlapping tiles are merged, see below |
+| `blend` | `"sigmoid"`, `"max"`, `"sum"`, `"midline"` | how overlapping tiles are merged (default `"sigmoid"`), see below |
+| `sigmoid_steepness` | number > 0 | steepness of the `sigmoid` transition, higher is sharper (default 4) |
 | `channels` | list of names | tile channels to fuse, in output order (default: all) |
 | `channel_names`, `channel_colors` | lists | names and colours (hex or matplotlib names) of the output channels |
 | `crop` | `{"z": slice, "y": slice, "x": slice}` | part of the output to write, in output voxels (after `ds`) |
@@ -85,7 +85,7 @@ The projection is computed at full resolution along z and then downsampled in y/
 | `levels`, `downscale_factor` | integer, integer or `(z, y, x)` | pyramid levels (default 1) and factor between them (default 2) |
 | `workers` | integer | tiles read in parallel (default 1) |
 | `out_dtype` | dtype | default: input dtype, `float32` for `sum` |
-| `midline_axis` | `"x"`, `"y"`, `"z"` | axis along which `midline` separates the groups (default `x`) |
+| `midline_axis` | `"x"`, `"y"`, `"z"` | axis along which `sigmoid` and `midline` separate the groups (default `x`) |
 | `overwrite` | bool | replace an existing output |
 | `temp_dir` | path | where the temporary fused level 0 goes (default: next to the output) |
 
@@ -111,11 +111,12 @@ mosaic.fuse("acq_MIP.ome.zarr", projection="max", ds=(1, 8, 8), skip=["1-x00-y00
 
 Blend modes:
 
+- **`sigmoid`** (default): a smooth transition across every overlap, so no seam is visible. Each voxel is a weighted mean of the tiles that cover it, with a weight that falls to 0 at the tile's border. Across an overlap of two tiles, the share of one tile follows a sigmoid: 0 at its border, 1/2 in the middle of the overlap, 1 at the other tile's border, whatever the overlap width. The tiles of each group are fused this way first; then, where two groups overlap (for example the left and right illumination sides), the image moves from one group to the other with the same sigmoid, centred where `midline` would cut. `sigmoid_steepness` sets how sharp the transition is: the share of a tile goes from 10% to 90% over the central 50% of the overlap for 2, 27% for the default 4 and 14% for 8.
 - **`max`**: keeps the brighter value.
 - **`sum`**: adds the values, so overlaps show up as brighter bands.
 - **`midline`**: uses `max` within each tile group. Where two groups overlap (for example the left and right illumination sides), the image switches sharply from one group to the other at the middle of their overlap, along `midline_axis`. Each side is then shown where its light sheet is sharpest.
 
-`plan_fusion(mosaic.tiles, ...)` takes the fusion arguments (`ds`, `projection`, `blend`, `channels`, `crop`, `out_dtype`, `midline_axis`) and returns the level-0 geometry without reading anything: `plan.summary()`, `plan.shape`, `plan.scale`, `plan.nbytes`.
+`plan_fusion(mosaic.tiles, ...)` takes the fusion arguments (`ds`, `projection`, `blend`, `channels`, `crop`, `skip`, `out_dtype`, `midline_axis`) and returns the level-0 geometry without reading anything: `plan.summary()`, `plan.shape`, `plan.scale`, `plan.nbytes`.
 
 The fused output stores a **display window** for every channel (OMERO `window` metadata): the 0.5th to 99.9th percentile of the fused values, ignoring blank areas. Viewers that read it (napari-ome-zarr, Fiji, the *Open result* option of the napari widget) show the result with a usable contrast instead of the whole 0 to 65535 range. Read it with `pymif.mosaic_manager.display_windows(path)`.
 
@@ -133,7 +134,7 @@ Raw tiles usually have no pyramid, so every fusion reads the full-resolution dat
 `pymif fuse` fuses one mosaic, or many from a CSV file with `--batch`. Every output option of `pymif convert` is available with the same flags. See [Command line](cli.md#fuse-a-mosaic).
 
 ```console
-pymif fuse -i /path/to/2026-10-14_103957 -z acq_3D.ome.zarr -rds 4 8 8 -b midline -nl 3
+pymif fuse -i /path/to/2026-10-14_103957 -z acq_3D.ome.zarr -rds 4 8 8 -nl 3
 pymif fuse -i /path/to/2026-10-14_103957 -z acq_MIP.ome.zarr -rds 1 8 8 -p max -b midline
 ```
 
@@ -165,7 +166,7 @@ class MyMosaicManager(MosaicManager):
                 origin=(z0, y0, x0),               # position of voxel [0, 0, 0]
                 voxel_size=(dz, dy, dx),
                 channel="GFP",
-                group=None,                        # e.g. illumination side, for blend="midline"
+                group=None,                        # e.g. illumination side, for blend="sigmoid"/"midline"
             )
             for path, (z0, y0, x0) in ...
         ]

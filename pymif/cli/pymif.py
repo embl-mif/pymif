@@ -605,7 +605,8 @@ def mosaic_convert(
     num_workers: Optional[int] = None,
     read_downsample: Optional[Any] = None,
     projection: Optional[str] = "none",
-    blend: str = "max",
+    blend: str = "sigmoid",
+    sigmoid_steepness: Optional[float] = None,
     channels: Optional[List[str]] = None,
     groups: Optional[List[str]] = None,
     tiles: Optional[List[str]] = None,
@@ -626,6 +627,7 @@ def mosaic_convert(
     ``read_workers`` its ``workers``.
     """
     from pymif.mosaic_manager import fuse_tiles, plan_fusion
+    from pymif.mosaic_manager.fusion import SIGMOID_STEEPNESS
 
     reader, resolved = _resolve_mosaic_manager(input_path, microscope)
     print(f"\n--->Using mosaic manager: {reader.__name__} ({resolved})")
@@ -704,6 +706,7 @@ def mosaic_convert(
         workers=int(read_workers),
         out_dtype=out_dtype,
         midline_axis=midline_axis,
+        sigmoid_steepness=SIGMOID_STEEPNESS if sigmoid_steepness is None else float(sigmoid_steepness),
         overwrite=bool(overwrite),
         temp_dir=temp_dir,
         **write_kwargs,
@@ -750,6 +753,8 @@ def convert_mosaic_batch(args):
                 kwargs[key] = str(v[key]).split()
         if "read_workers" in columns and _present(v.get("read_workers")):
             kwargs["read_workers"] = int(v["read_workers"])
+        if "sigmoid_steepness" in columns and _present(v.get("sigmoid_steepness")):
+            kwargs["sigmoid_steepness"] = float(v["sigmoid_steepness"])
         if "overwrite" in columns and _present(v.get("overwrite")):
             kwargs["overwrite"] = parse_bool(v["overwrite"])
         mosaic_convert(**kwargs)

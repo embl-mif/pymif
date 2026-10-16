@@ -27,7 +27,7 @@ class Tile:
         channel.
     group
         Optional label of tiles that should be merged among themselves first,
-        e.g. ``"L"``/``"R"`` illumination side. Used by ``blend="midline"``.
+        e.g. ``"L"``/``"R"`` illumination side. Used by ``blend="sigmoid"`` and ``"midline"``.
     timepoint
         Index of the timepoint the tile belongs to (``0`` for a single timepoint).
         Mosaics with more than one timepoint are not supported yet:

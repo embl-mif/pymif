@@ -503,7 +503,7 @@ def mosaic_widget():
             w.groups.value = groups
         show_widget.channels.value = channels[:1]  # one channel keeps napari responsive
         fuse_widget.channels.value = channels
-        fuse_widget.blend.value = "midline" if len(groups) > 1 and NO_GROUP not in groups else "max"
+        fuse_widget.blend.value = "sigmoid"  # smooth between tiles and between groups
         lo, hi = mosaic.bounding_box()
         print(f"{len(mosaic.tiles)} tiles, channels {channels}, groups {groups}")
         print("Extent (z, y, x): " + ", ".join(f"{a:.0f}..{b:.0f}" for a, b in zip(lo, hi))
@@ -566,7 +566,7 @@ def mosaic_widget():
         skip_all_channels={"label": "Blank in all channels", "widget_type": "CheckBox", "value": False,
                            "tooltip": "Leave a skipped tile's position blank in every channel."},
         projection={"choices": list(_PROJECTIONS), "value": "none (3D)"},
-        blend={"choices": list(mos.fusion.BLENDS), "value": "max"},
+        blend={"choices": list(mos.fusion.BLENDS), "value": "sigmoid"},
         ds_z={"label": "Downsample Z", "min": 1, "max": 256, "value": 4},
         ds_y={"label": "Downsample Y", "min": 1, "max": 256, "value": 8},
         ds_x={"label": "Downsample X", "min": 1, "max": 256, "value": 8},
@@ -582,7 +582,7 @@ def mosaic_widget():
         tiles_to_fuse="all tiles",
         skip_all_channels=False,
         projection="none (3D)",
-        blend="max",
+        blend="sigmoid",
         ds_z=4,
         ds_y=8,
         ds_x=8,

@@ -37,8 +37,11 @@ from .tile import Tile
 
 logger = logging.getLogger("pymif")
 
-BLENDS = ("max", "sum", "midline")
+BLENDS = ("sigmoid", "max", "sum", "midline")
 PROJECTIONS = (None, "max", "sum")
+
+#: Default steepness of the ``sigmoid`` transition (see :func:`fuse_tiles`).
+SIGMOID_STEEPNESS = 4.0
 
 #: Number of full-resolution z planes read at once (bounds memory per worker).
 _SLAB_PLANES = 64
@@ -141,21 +144,40 @@ def _combine(acc: np.ndarray, cov: np.ndarray, blk: np.ndarray, blend: str) -> N
     cov[...] = True
 
 
+def _group_extents(placed: Sequence[_Placed], axis: int) -> Dict[Optional[str], Tuple[int, int]]:
+    """``(start, stop)`` of every group along ``axis``, in output voxels."""
+    extents: Dict[Optional[str], List[int]] = {}
+    for p in placed:
+        lo, hi = p.offset[axis], p.offset[axis] + p.size[axis]
+        e = extents.setdefault(p.tile.group, [lo, hi])
+        e[0], e[1] = min(e[0], lo), max(e[1], hi)
+    return {g: (lo, hi) for g, (lo, hi) in extents.items()}
+
+
 def _midline_ranges(placed: Sequence[_Placed], axis: int) -> Dict[Optional[str], Tuple[float, float]]:
     """Owner interval (output voxels, along ``axis``) of every group.
 
     Groups are ordered by the centre of their extent; consecutive groups are
     separated at the middle of their overlap (or of the gap between them).
     """
-    extents: Dict[Optional[str], List[int]] = {}
-    for p in placed:
-        lo, hi = p.offset[axis], p.offset[axis] + p.size[axis]
-        e = extents.setdefault(p.tile.group, [lo, hi])
-        e[0], e[1] = min(e[0], lo), max(e[1], hi)
-    ordered = sorted(extents.items(), key=lambda kv: kv[1][0] + kv[1][1])
+    ordered = sorted(_group_extents(placed, axis).items(), key=lambda kv: kv[1][0] + kv[1][1])
     cuts = [(a[1][1] + b[1][0]) / 2 for a, b in zip(ordered[:-1], ordered[1:])]
     bounds = [-math.inf] + cuts + [math.inf]
     return {g: (bounds[i], bounds[i + 1]) for i, (g, _) in enumerate(ordered)}
+
+
+def _sigmoid_transitions(placed: Sequence[_Placed], axis: int) -> Dict[Optional[str], List[Tuple[int, int, int]]]:
+    """Overlaps of every group with its neighbours along ``axis`` (groups ordered as for
+    ``midline``), as ``(start, stop, direction)`` in output voxels: ``+1`` if the
+    group's weight rises across the overlap, ``-1`` if it falls."""
+    ordered = sorted(_group_extents(placed, axis).items(), key=lambda kv: kv[1][0] + kv[1][1])
+    out: Dict[Optional[str], List[Tuple[int, int, int]]] = {g: [] for g, _ in ordered}
+    for (ga, (alo, ahi)), (gb, (blo, bhi)) in zip(ordered[:-1], ordered[1:]):
+        start, stop = max(alo, blo), min(ahi, bhi)
+        if stop > start:  # groups separated by a gap never meet
+            out[ga].append((start, stop, -1))
+            out[gb].append((start, stop, +1))
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -170,6 +192,7 @@ class _Region:
     bounds: Tuple[int, int, int, int]  # y0, y1, x0, x1 in output voxels
     placed: List[_Placed]
     midline: Optional[tuple]
+    transitions: Optional[tuple] = None  # sigmoid: (axis, _sigmoid_transitions(...))
 
 
 def _overlap(p: _Placed, region, depth: int):
@@ -262,22 +285,117 @@ def _merge_groups(canvases, midline, region, flat: bool, shape) -> np.ndarray:
     return result
 
 
-def _finish_region(r: _Region, entries, arr, depth: int, blend, dtype, flat: bool) -> np.ndarray:
+# Sigmoid blending: every voxel is a weighted mean of the tiles that cover it. A
+# tile's weight is d**steepness, with d the distance from the voxel to the tile's
+# border (multiplied over the axes), so where two tiles overlap the share of one
+# is 1 / (1 + (d_other / d_self)**steepness) = sigmoid(steepness * ln(d_self / d_other)):
+# 0 at its border, 1/2 in the middle of the overlap and 1 at the other tile's
+# border, whatever the overlap width. Groups are then merged the same way across
+# each overlap with their neighbour along the midline axis, so the switch happens
+# where ``midline`` cuts, but smoothly. Weights are kept as logarithms and summed
+# with a running maximum (a streaming softmax), so tiny weights never underflow.
+
+def _log_border_distance(start: int, size: int, lo: int, hi: int) -> np.ndarray:
+    """ln of the distance from the centres of output voxels ``lo..hi`` to the nearer
+    border of the interval ``[start, start + size)`` (all inside it)."""
+    pos = np.arange(lo, hi, dtype=np.float64) + 0.5 - start
+    return np.log(np.minimum(pos, size - pos))
+
+
+def _tile_log_weight(p: _Placed, region, depth: int, flat: bool, steepness: float) -> np.ndarray:
+    """Log weight of tile ``p`` on its part of ``region`` (shape of :func:`_read_block`)."""
+    k0, k1, j0, j1, i0, i1 = _overlap(p, region, depth)
+    ly = _log_border_distance(p.offset[1], p.size[1], j0, j1)[:, None]
+    lx = _log_border_distance(p.offset[2], p.size[2], i0, i1)[None, :]
+    lw = ly + lx
+    if not flat:
+        lw = _log_border_distance(p.offset[0], p.size[0], k0, k1)[:, None, None] + lw
+    return (steepness * lw).astype(np.float32)
+
+
+def _softmax_add(state, sel, values: np.ndarray, log_weight: np.ndarray) -> None:
+    """Add ``values`` with weights ``exp(log_weight)`` to the running weighted sum
+    ``state = (acc, wsum, log_max)`` at ``sel`` (slices or a boolean mask), in place."""
+    acc, wsum, log_max = state
+    old = log_max[sel]
+    new = np.maximum(old, log_weight)
+    rescale = np.exp(old - new)  # 0 where nothing was added yet (old = -inf)
+    w = np.exp(log_weight - new)
+    acc[sel] = acc[sel] * rescale + w * values
+    wsum[sel] = wsum[sel] * rescale + w
+    log_max[sel] = new
+
+
+def _new_softmax_state(shape):
+    return np.zeros(shape, np.float32), np.zeros(shape, np.float32), np.full(shape, -np.inf, np.float32)
+
+
+def _group_log_weight(transitions, pos: np.ndarray, steepness: float) -> np.ndarray:
+    """Log weight of a group at voxel centres ``pos`` along the midline axis: across
+    each overlap with a neighbour, ``steepness * ln`` of the relative distance from the
+    side where the group comes in; 0 (full weight) outside its overlaps."""
+    lw = np.zeros(pos.shape, np.float64)
+    for start, stop, direction in transitions:
+        d = pos - start if direction > 0 else stop - pos
+        lw += np.log(np.clip(d, 0.5, stop - start - 0.5) / (stop - start - 0.5))
+    return steepness * lw
+
+
+def _merge_sigmoid(canvases, transitions, region, flat: bool, shape, steepness: float) -> np.ndarray:
+    """Weighted mean of every group, then of the groups across their overlaps."""
+    means = {}
+    for g, (acc, wsum, _) in canvases.items():
+        cov = wsum > 0
+        mean = np.zeros(shape, np.float32)
+        np.divide(acc, wsum, out=mean, where=cov)
+        means[g] = (mean, cov)
+    if len(means) == 1:
+        return next(iter(means.values()))[0]
+
+    y0, _, x0, _ = region
+    axis, per_group = transitions  # axis is an index into (z, y, x)
+    start = (y0, x0)[axis - 1] if axis > 0 else 0
+    arr_axis = (axis - 1) if flat else axis
+    length = shape[arr_axis]
+    pos = start + np.arange(length) + 0.5
+    bshape = [1] * len(shape)
+    bshape[arr_axis] = length
+    state = _new_softmax_state(shape)
+    for g, (mean, cov) in means.items():
+        lw = _group_log_weight(per_group[g], pos, steepness).astype(np.float32).reshape(bshape)
+        _softmax_add(state, cov, mean[cov], np.broadcast_to(lw, shape)[cov])
+    acc, wsum, _ = state
+    result = np.zeros(shape, np.float32)
+    np.divide(acc, wsum, out=result, where=wsum > 0)
+    return result
+
+
+def _finish_region(r: _Region, entries, arr, depth: int, blend, dtype, flat: bool,
+                   steepness: float = SIGMOID_STEEPNESS) -> np.ndarray:
     """Merge the tile blocks of region ``r`` (futures or pending jobs), write it and
     return a small sample of its non-zero values (for the display window)."""
     y0, y1, x0, x1 = r.bounds
     shape = (y1 - y0, x1 - x0) if flat else (depth, y1 - y0, x1 - x0)
-    canvases: Dict[Optional[str], Tuple[np.ndarray, np.ndarray]] = {}
+    sigmoid = blend == "sigmoid"
+    canvases: Dict[Optional[str], tuple] = {}
     for p, pending in entries:
-        key = p.tile.group if blend == "midline" else None
+        key = p.tile.group if blend in ("midline", "sigmoid") else None
         if key not in canvases:
-            canvases[key] = (np.zeros(shape, np.float32), np.zeros(shape, bool))
-        acc, cov = canvases[key]
+            canvases[key] = (_new_softmax_state(shape) if sigmoid
+                             else (np.zeros(shape, np.float32), np.zeros(shape, bool)))
         sl = _target(p, r.bounds, depth, flat)
         blk = pending.result() if isinstance(pending, Future) else _read_block(pending)
-        _combine(acc[sl], cov[sl], blk, blend)
+        if sigmoid:
+            _softmax_add(canvases[key], sl, blk, _tile_log_weight(p, r.bounds, depth, flat, steepness))
+        else:
+            acc, cov = canvases[key]
+            _combine(acc[sl], cov[sl], blk, blend)
 
-    block = _cast(_merge_groups(canvases, r.midline, r.bounds, flat, shape), dtype)
+    if sigmoid:
+        merged = _merge_sigmoid(canvases, r.transitions, r.bounds, flat, shape, steepness)
+    else:
+        merged = _merge_groups(canvases, r.midline, r.bounds, flat, shape)
+    block = _cast(merged, dtype)
     if flat:
         arr[r.channel_index, y0:y1, x0:x1] = block
     else:
@@ -286,7 +404,7 @@ def _finish_region(r: _Region, entries, arr, depth: int, blend, dtype, flat: boo
     return values[values != 0]
 
 
-def _fuse_level0(regions, arr, *, depth, ds, projection, blend, dtype,
+def _fuse_level0(regions, arr, *, depth, ds, projection, blend, dtype, steepness: float,
                  workers: int, executor: str, progress: bool) -> Dict[int, np.ndarray]:
     """Fuse and write every region of level 0; return a sample of values per channel index.
 
@@ -306,7 +424,7 @@ def _fuse_level0(regions, arr, *, depth, ds, projection, blend, dtype,
 
     def finish(r, entries):
         samples.setdefault(r.channel_index, []).append(
-            _finish_region(r, entries, arr, depth, blend, dtype, flat))
+            _finish_region(r, entries, arr, depth, blend, dtype, flat, steepness))
         bar.update(1)
 
     try:
@@ -404,7 +522,7 @@ def plan_fusion(
     *,
     ds: Sequence[int] = (1, 1, 1),
     projection: Optional[str] = None,
-    blend: str = "max",
+    blend: str = "sigmoid",
     channels: Optional[Sequence[str]] = None,
     crop: Optional[dict] = None,
     skip: Optional[Sequence[Tile]] = None,
@@ -516,7 +634,7 @@ def fuse_tiles(
     *,
     ds: Sequence[int] = (1, 1, 1),
     projection: Optional[str] = None,
-    blend: str = "max",
+    blend: str = "sigmoid",
     channels: Optional[Sequence[str]] = None,
     channel_names: Optional[Sequence[str]] = None,
     channel_colors: Optional[Sequence[str]] = None,
@@ -528,6 +646,7 @@ def fuse_tiles(
     executor: str = "auto",
     out_dtype=None,
     midline_axis: str = "x",
+    sigmoid_steepness: float = SIGMOID_STEEPNESS,
     overwrite: bool = False,
     name: Optional[str] = None,
     temp_dir: str | Path | None = None,
@@ -550,6 +669,13 @@ def fuse_tiles(
     blend
         How tiles that overlap are merged:
 
+        * ``"sigmoid"`` (default) -- smooth transition: across an overlap, the
+          share of each tile follows a sigmoid of the log ratio of the distances
+          to the two tile borders, from 0 at a tile's border through 1/2 in the
+          middle of the overlap to 1 at the other tile's border, so no seam is
+          visible. The tiles of each ``group`` are fused separately, then the
+          groups are merged the same way across their overlap along
+          ``midline_axis`` (the switch is centred where ``"midline"`` cuts);
         * ``"max"`` -- keep the brighter value;
         * ``"sum"`` -- add the values, so overlaps show up as brighter bands;
         * ``"midline"`` -- ``max`` within each tile ``group``; where groups
@@ -567,7 +693,8 @@ def fuse_tiles(
     skip
         Tiles to leave blank: they are not read, but the output keeps the size and
         position it has with them, so their area stays 0 (where no other tile
-        covers it). With ``blend="midline"`` they still count for the cut position.
+        covers it). With ``blend="midline"``/``"sigmoid"`` they still count for
+        the position of the switch between groups.
     levels
         Number of pyramid levels.
     downscale_factor
@@ -580,10 +707,15 @@ def fuse_tiles(
         threads otherwise). h5py serialises reads inside one process, so processes
         are what actually speeds up reading from HDF5 tiles.
     out_dtype
-        Output dtype. Default: input dtype for ``max``/``midline``, ``float32``
-        for ``sum``.
+        Output dtype. Default: input dtype for ``sigmoid``/``max``/``midline``,
+        ``float32`` for ``sum``.
     midline_axis
-        ``"x"``, ``"y"`` or ``"z"``: axis along which groups are separated.
+        ``"x"``, ``"y"`` or ``"z"``: axis along which groups are separated
+        (``midline`` and ``sigmoid``).
+    sigmoid_steepness
+        Steepness of the ``sigmoid`` transition (> 0). The share of a tile
+        goes from 10% to 90% over the central ``1 - 2 / (1 + 9 ** (1 / s))``
+        of the overlap: about 27% for the default 4, 14% for 8, 50% for 2.
     overwrite
         Replace ``out`` if it exists.
     name
@@ -613,6 +745,8 @@ def fuse_tiles(
 
     if executor not in ("auto", "process", "thread"):
         raise ValueError("executor must be 'auto', 'process' or 'thread'.")
+    if not sigmoid_steepness > 0:
+        raise ValueError(f"sigmoid_steepness must be positive, got {sigmoid_steepness!r}.")
     _check_write_options(write_options)
     plan = plan_fusion(tiles, ds=ds, projection=projection, blend=blend, channels=channels,
                        crop=crop, skip=skip, out_dtype=out_dtype, midline_axis=midline_axis)
@@ -653,19 +787,20 @@ def fuse_tiles(
         for ci, n in enumerate(names):
             placed = plan.placed[n]
             midline = (axis, _midline_ranges(plan.layout[n], axis)) if blend == "midline" else None
+            transitions = (axis, _sigmoid_transitions(plan.layout[n], axis)) if blend == "sigmoid" else None
             for y0 in range(0, plan.shape[-2], cy):
                 for x0 in range(0, plan.shape[-1], cx):
                     bounds = (y0, min(y0 + cy, plan.shape[-2]), x0, min(x0 + cx, plan.shape[-1]))
                     inside = [p for p in placed if _overlap(p, bounds, depth) is not None]
                     if inside:  # regions without tiles keep the fill value (0)
-                        regions.append(_Region(ci, bounds, inside, midline))
+                        regions.append(_Region(ci, bounds, inside, midline, transitions))
 
         auto = executor == "auto"
         if auto:
             picklable = all(getattr(t.data, "picklable", False) for t in plan.tiles)
             executor = "process" if workers > 1 and picklable else "thread"
-        options = dict(depth=depth, ds=ds, projection=projection, blend=blend,
-                       dtype=out_dtype, workers=workers, progress=progress)
+        options = dict(depth=depth, ds=ds, projection=projection, blend=blend, dtype=out_dtype,
+                       steepness=float(sigmoid_steepness), workers=workers, progress=progress)
         try:
             samples = _fuse_level0(regions, level0, executor=executor, **options)
         except (BrokenProcessPool, RuntimeError) as e:

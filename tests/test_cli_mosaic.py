@@ -90,6 +90,18 @@ def test_fuse_skip_tiles(acquisition, tmp_path, monkeypatch):
         _run(monkeypatch, "fuse", "-i", str(acquisition), "-z", str(tmp_path / "x.zarr"), "-st", "nope")
 
 
+def test_fuse_sigmoid_steepness(acquisition, tmp_path, monkeypatch):
+    soft, sharp = tmp_path / "soft.ome.zarr", tmp_path / "sharp.ome.zarr"
+    _run(monkeypatch, "fuse", "-i", str(acquisition), "-z", str(soft), "-p", "max", "-sh", "none")
+    _run(monkeypatch, "fuse", "-i", str(acquisition), "-z", str(sharp), "-p", "max", "-sh", "none",
+         "-b", "sigmoid", "-ss", "50")
+    a = mm.ZarrManager(str(soft)).data[0].compute()
+    b = mm.ZarrManager(str(sharp)).data[0].compute()
+    assert a.shape == b.shape and not np.array_equal(a, b)
+    with pytest.raises(ValueError):
+        _run(monkeypatch, "fuse", "-i", str(acquisition), "-z", str(tmp_path / "x.zarr"), "-ss", "-1")
+
+
 def test_mosaic_convert_matches_tile_layout(acquisition, tmp_path):
     out = tmp_path / "layout.ome.zarr"
     cli.mosaic_convert(acquisition, out, blend="max", projection="max", channels=["GFP"],
