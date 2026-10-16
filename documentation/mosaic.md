@@ -140,6 +140,8 @@ pymif fuse -i /path/to/2026-10-14_103957 -z acq_MIP.ome.zarr -rds 1 8 8 -p max -
 
 ## Napari
 
+![napari-demo](napari-demo.png)
+
 `Plugins > PyMIF > Mosaic Fusion` opens a widget with three boxes:
 
 1. **Mosaic loading**: choose the microscope and the acquisition folder (browse, or drag and drop it, or any file inside it, from the file explorer), then *Load tiles*. This reads metadata only and adds a **tile map**: a `tile map` shapes layer with one rectangle per stack position, labelled with its stack id, all picked (green). Click a rectangle in the 2D view to unpick it (grey) or pick it again; dragging still pans. *Shift* + drag picks, and *Ctrl* + drag unpicks, every tile that lies even partially in the box shown while you drag (a temporary `tile map box` layer, removed on release) (*Shift* or *Ctrl* + click: one tile). A rectangle stands for that position in every channel and illumination side. Only picked tiles are shown and fused, so a mosaic with two separate samples can be split by picking the tiles of one of them.
@@ -152,24 +154,4 @@ Loading and fusion run in the background, and their progress is shown in the log
 
 ## Adding a mosaic reader
 
-Subclass `MosaicManager` and implement `_scan()`, which returns one `Tile` per acquired tile:
-
-```python
-from pymif.mosaic_manager import H5Array, MosaicManager, Tile
-
-
-class MyMosaicManager(MosaicManager):
-    def _scan(self):
-        return [
-            Tile(
-                data=H5Array(path, "Data"),        # any lazy array with shape/dtype/slicing
-                origin=(z0, y0, x0),               # position of voxel [0, 0, 0]
-                voxel_size=(dz, dy, dx),
-                channel="GFP",
-                group=None,                        # e.g. illumination side, for blend="sigmoid"/"midline"
-            )
-            for path, (z0, y0, x0) in ...
-        ]
-```
-
-`visualize()`, `fuse()`, `pymif fuse` and the napari widget then work unchanged. Use picklable tile data (such as `H5Array`) so that fusion can read it in worker processes.
+A new tile format only needs a `MosaicManager` subclass that implements `_scan()`, returning one `Tile` per acquired tile; `visualize()`, `fuse()`, `pymif fuse` and the napari widget then work unchanged. See [Adding a mosaic manager](contributing.md#adding-a-mosaic-manager) for the `Tile` fields, how to keep loading fast and fusion parallel, and where to register the reader.

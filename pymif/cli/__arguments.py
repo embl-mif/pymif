@@ -486,6 +486,98 @@ FUSE_HELP = """\
     The napari "Mosaic Fusion" widget writes such files with "Append to batch CSV".
 """
 
+CHROMATIC_SHIFT_HELP = """\
+    Measure the axial (Z) chromatic shift between the channels of an OME-Zarr image on the sample
+    itself (its lower and upper surfaces) and write a corrected copy with the same chunks, shards,
+    compression and metadata as the input. Only a Z translation per channel is corrected.
+
+    Examples:
+      pymif chromatic-shift -i brain.ome.zarr -z brain_csc.ome.zarr -r shift.json
+      pymif chromatic-shift -i brain.ome.zarr -r shift.json                  (measure only)
+      pymif chromatic-shift -i brain.ome.zarr -z brain_csc.ome.zarr -sf 0 104.4
+      pymif chromatic-shift -i other.ome.zarr -z other_csc.ome.zarr -sf shift.json
+      pymif chromatic-shift -i brain.ome.zarr -z brain_csc.ome.zarr -r shift.json --fail_on_warning
+      pymif chromatic-shift --batch images.csv
+
+    Shifts are corrections in the Z unit (usually micrometer): positive values move a channel
+    towards higher Z. The reference channel gets 0.
+
+    The --batch CSV file has the columns input | output (empty: measure only), plus any of
+    report | shifts | reference_channel | timepoint | max_shift | coarse_level | refine_level | n_regions |
+    crop_yx | min_z_normal | min_correlation | threshold | extent | order | include_groups | include_labels |
+    overwrite | num_workers | fail_on_warning, with the same meaning as the options below, e.g.
+      input                | output                   | report               | reference_channel | max_shift
+      /path/to/a.ome.zarr  | /path/to/a_csc.ome.zarr  | /path/to/a_csc.json  | cFos-647          | 150
+      /path/to/b.ome.zarr  | /path/to/b_csc.ome.zarr  |                      | 0                 |
+    Leave a cell empty for the default; shifts are space separated.
+"""
+
+
+def parse_refine_level(value):
+    """``--refine_level`` value: a level index, or ``none`` to skip refinement."""
+    text = str(value).strip().lower()
+    if text in {"none", "null"}:
+        return "none"
+    try:
+        return int(text)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(f"Invalid refine level '{value}'. Use a level index or 'none'.") from exc
+
+
+def _add_chromatic_shift_arguments(parser):
+    # Options whose default lives in the library are left out of the namespace when not
+    # given (SUPPRESS), so the help shows the real default instead of "(default: None)".
+    io = parser.add_argument_group('Input and output (or --batch)')
+    io.add_argument('-i', '--input_path', type=valid_input_path, help='Path to the input OME-Zarr image.')
+    io.add_argument('-z', '--zarr_path', type=os.path.abspath,
+                    help='Path to the corrected .ome.zarr. Leave out to only measure the shift.')
+    io.add_argument('-r', '--report', type=os.path.abspath,
+                    help='Save the estimate report (JSON) to this file.')
+    io.add_argument('--batch', metavar='CSV', type=valid_input_path,
+                    help='Run every row of this CSV file instead (see the description above).')
+
+    est = parser.add_argument_group('Estimate')
+    est.add_argument('-sf', '--shifts', default=argparse.SUPPRESS, nargs='+',
+                     help='Skip the estimate and apply these shifts: one value per channel, or a JSON report '
+                          'from an earlier run.')
+    est.add_argument('-rc', '--reference_channel', default='0',
+                     help='Reference channel, as an index or a channel name.')
+    est.add_argument('-tp', '--timepoint', default=argparse.SUPPRESS, type=int, help='Timepoint used for the estimate. Default: 0.')
+    est.add_argument('-mxs', '--max_shift', default=argparse.SUPPRESS, type=float,
+                     help='Largest shift searched, in the Z unit. Default: 10%% of the stack depth.')
+    est.add_argument('-cl', '--coarse_level', default=argparse.SUPPRESS, type=int,
+                     help='Pyramid level of the coarse estimate. Default: the coarsest level with at least '
+                          '16 Z planes and 32 pixels in Y and X.')
+    est.add_argument('-rl', '--refine_level', default=argparse.SUPPRESS, type=parse_refine_level,
+                     help='Pyramid level of the refinement crops, or "none" to skip refinement. Default: 0.')
+    est.add_argument('-nr', '--n_regions', default=argparse.SUPPRESS, type=int, help='Number of refinement crops. Default: 32.')
+    est.add_argument('-cy', '--crop_yx', default=argparse.SUPPRESS, type=int, help='Crop width in Y and X, in pixels. Default: 64.')
+    est.add_argument('-mzn', '--min_z_normal', default=argparse.SUPPRESS, type=float,
+                     help='How flat a surface must be to count as Z-facing (1 = flat). Default: 0.7.')
+    est.add_argument('-mc', '--min_correlation', default=argparse.SUPPRESS, type=float,
+                     help='Crops with a lower correlation peak are left out. Default: 0.2.')
+    est.add_argument('-th', '--threshold', default=argparse.SUPPRESS, type=float,
+                     help='Sample mask threshold on the 0-1 rescaled coarse image. Default: Otsu.')
+    est.add_argument('-fw', '--fail_on_warning', action='store_true',
+                     help='Exit with an error, without writing the corrected image, when the estimate has '
+                          'warnings (e.g. the search limit was reached).')
+
+    out = parser.add_argument_group('Corrected image')
+    out.add_argument('-e', '--extent', choices=['union', 'same', 'intersection'], default='union',
+                     help='union grows Z so no channel loses data, same keeps the input size, intersection '
+                          'crops to the planes every channel covers.')
+    out.add_argument('-o', '--order', type=int, choices=[0, 1], default=1,
+                     help='1 interpolates linearly; 0 rounds the shifts to whole planes (voxel values untouched).')
+    out.add_argument('-ig', '--include_groups', type=parse_bool, default=True,
+                     help='Also shift image subgroups with the same channels ("true" or "false").')
+    out.add_argument('-il', '--include_labels', type=parse_bool, default=True,
+                     help='Also write labels, padded or cropped to the new Z extent ("true" or "false").')
+    out.add_argument('-ow', '--overwrite', action='store_true', help='Replace an existing output.')
+    out.add_argument('-nw', '--num_workers', default=argparse.SUPPRESS, type=int,
+                     help='Number of threads used to write the zarr. Default: half of the available cores, '
+                          'capped at 8.')
+
+
 #: Old command names, kept working: old name -> (mode, new spelling)
 RENAMED = {
     '2zarr': ('convert', 'pymif convert'),
@@ -550,7 +642,7 @@ def _parse_arguments(argv=None):
         title='Commands',
         description="Run `pymif <command> -h` for the options of a command.",
         dest='command',
-        metavar='{convert,fuse}',
+        metavar='{convert,fuse,chromatic-shift}',
         required=True,
     )
 
@@ -583,6 +675,18 @@ def _parse_arguments(argv=None):
     _adapt_zarr_help_for_mosaic(fuse)
     _add_input_output(fuse, required=False, input_help='Acquisition folder (for Luxendo: the folder containing raw/).',
                       output_type=os.path.abspath)
+
+    #####################################################################################
+    # chromatic-shift: one OME-Zarr image, or a CSV batch
+    chromatic = subparsers.add_parser(
+        'chromatic-shift',
+        help='Measure and correct the Z chromatic shift between channels of an OME-Zarr image '
+             '(or a CSV batch with --batch).',
+        description=textwrap.dedent(CHROMATIC_SHIFT_HELP),
+        formatter_class=MultilineDefaultsHelpFormatter,
+    )
+    chromatic.set_defaults(mode='chromatic_shift', renamed_to=None)
+    _add_chromatic_shift_arguments(chromatic)
 
     #####################################################################################
     # Old names (not listed in the help), with their original arguments
@@ -618,4 +722,15 @@ def _parse_arguments(argv=None):
             args.input_file = args.batch
         elif args.input_path is None or args.zarr_path is None:
             command.error('the following arguments are required: -i/--input_path and -z/--zarr_path (or --batch CSV)')
+
+    # chromatic-shift: -i (with an optional -z), or --batch
+    if args.mode == 'chromatic_shift':
+        command = subparsers.choices['chromatic-shift']
+        if args.batch is not None:
+            if args.input_path is not None or args.zarr_path is not None or args.report is not None:
+                command.error('--batch cannot be combined with -i/-z/-r: the CSV file lists them.')
+            args.mode = 'chromatic_shift_batch'
+            args.input_file = args.batch
+        elif args.input_path is None:
+            command.error('the following arguments are required: -i/--input_path (or --batch CSV)')
     return args

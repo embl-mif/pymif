@@ -28,7 +28,8 @@ It is developed for users of the [Mesoscopic Imaging Facility (MIF)](https://www
 - **OME-Zarr writing**: full export, empty datasets and groups, image and label region updates, any subset of the `tczyx` axes. → [Python API](documentation/python-api.md)
 - **Pyramids and subsetting**: multiscale generation, cropping, channel reordering, metadata updates. → [Python API](documentation/python-api.md)
 - **Mosaics**: raw tiles shown at their stage position and fused into one OME-Zarr image (3D or projection). → [Mosaics](documentation/mosaic.md)
-- **Command line**: one-off and CSV-batch conversion and mosaic fusion. → [Command line](documentation/cli.md)
+- **Chromatic shift correction**: the Z offset between channels measured on the sample itself, and a corrected copy with the same layout as the input. → [Chromatic shift correction](documentation/chromatic-shift.md)
+- **Command line**: one-off and CSV-batch conversion, mosaic fusion and chromatic shift correction. → [Command line](documentation/cli.md)
 - **Napari widgets**: conversion with ROI selection, mosaic fusion. → [Napari plugin](documentation/napari-plugin.md)
 - **Output tuning**: sharding, singleton axes, parallel writing, progress bars. → [Advanced writing options](documentation/advanced.md)
 
@@ -60,19 +61,37 @@ z.visualize()                                       # open in napari
 ```console
 pymif convert -i INPUT_PATH -m MICROSCOPE -z OUTPUT_ZARR
 pymif fuse -i ACQUISITION_FOLDER -z OUTPUT_ZARR -rds 4 8 8   # fuse raw tiles
+pymif chromatic-shift -i INPUT_ZARR -z OUTPUT_ZARR -r shift.json   # align channels in Z
 ```
 
 ## Documentation
+
+**Getting started**
 
 | Page | Contents |
 |---|---|
 | [Installation and versioning](documentation/installation.md) | environments, extras, release labels |
 | [Readers and conventions](documentation/readers.md) | supported microscopes, shared reader behaviour, logging |
+
+**Working with data**
+
+| Page | Contents |
+|---|---|
 | [Python API](documentation/python-api.md) | export, empty datasets, axis-aware metadata, labels, region writes |
 | [Mosaics](documentation/mosaic.md) | raw tiles, placement check, fusion options |
-| [Command line](documentation/cli.md) | `pymif convert`, `pymif fuse` (one dataset or a CSV batch) |
-| [Napari plugin](documentation/napari-plugin.md) | converter and mosaic fusion widgets |
+| [Chromatic shift correction](documentation/chromatic-shift.md) | measuring the Z offset between channels, the corrected dataset, checking the result, `pymif chromatic-shift` |
 | [Advanced writing options](documentation/advanced.md) | sharding, singleton axes, parallel writing, progress bar |
-| [Contributing](documentation/contributing.md) | documentation layout, adding a reader, `pymif.utils` |
 
-The [API reference](https://embl-mif.github.io/pymif/autoapi/pymif/index.html) is generated from the docstrings.
+**Interfaces**
+
+| Page | Contents |
+|---|---|
+| [Command line](documentation/cli.md) | `pymif convert`, `pymif fuse`, `pymif chromatic-shift` (one dataset or a CSV batch) |
+| [Napari plugin](documentation/napari-plugin.md) | converter and mosaic fusion widgets |
+
+**Reference**
+
+| Page | Contents |
+|---|---|
+| [API reference](https://embl-mif.github.io/pymif/autoapi/pymif/index.html) | generated from the docstrings |
+| [Contributing](documentation/contributing.md) | package layout, adding a microscope manager or a mosaic manager, `pymif.utils`, documentation |

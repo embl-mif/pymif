@@ -31,3 +31,5 @@ All file-based readers share the same conventions:
   logging.basicConfig(format="%(message)s")
   logging.getLogger("pymif").setLevel(logging.INFO)
   ```
+
+To support a new acquisition system, see [Adding a microscope manager](contributing.md#adding-a-microscope-manager); for acquisitions saved as separate tiles, see [Mosaics](mosaic.md).

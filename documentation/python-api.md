@@ -108,3 +108,14 @@ z.write_image_region(
     level=0,
 )
 ```
+
+## Correct the chromatic shift between channels
+
+`ZarrManager` can measure the axial (Z) offset between the channels of a light-sheet dataset on the sample itself and write a corrected copy with the same structure as the input:
+
+```python
+z = mm.ZarrManager("input.zarr")
+out = z.correct_chromatic_shift("corrected.zarr", reference_channel=0)
+```
+
+See [Chromatic shift correction](chromatic-shift.md) for how the shift is measured, the options and how to check the result.
