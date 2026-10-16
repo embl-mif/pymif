@@ -405,14 +405,20 @@ def test_tile_map_box_selection(app, monkeypatch):
     assert mw.tiles_in_box(layer, (0, 0, 0), (0, 9, 9)) == [0, 1, 3, 4]
     assert mw.tiles_in_box(layer, (0, 1, 1), (0, 7, 7)) == [0]
 
-    box = layer._overlays["selection_box"]
+    def box_layers():
+        return [lay for lay in viewer.layers if lay.metadata.get("mosaic_drag_box")]
+
+    viewer.layers.selection = {viewer.layers[0]}
     seen = {}
-    _press(viewer, _Click((0, 0, 0), modifiers=["Control"]), moves=[(60, 60)], to=(0, 9, 9),
-           before_release=lambda: seen.update(visible=box.visible, bounds=box.bounds,
+    _press(viewer, _Click((0, 0, 0), modifiers=["Control"]), moves=[(30, 30), (60, 60)], to=(0, 9, 9),
+           before_release=lambda: seen.update(boxes=[lay.data[0].copy() for lay in box_layers()],
+                                              selection=set(viewer.layers.selection),
                                               picked=mw.picked_stack_ids(layer)))
-    assert seen["visible"] and seen["bounds"] == ((0, 0), (9, 9))  # the box is drawn while dragging
+    assert len(seen["boxes"]) == 1                                 # one box, drawn while dragging
+    assert seen["boxes"][0].min(axis=0).tolist() == [0, 0] and seen["boxes"][0].max(axis=0).tolist() == [9, 9]
+    assert seen["selection"] == {viewer.layers[0]}                 # the layer selection is unchanged
     assert len(seen["picked"]) == 9                                # applied on release only
-    assert not box.visible                                         # and hidden on release
+    assert box_layers() == []                                      # and removed on release
     assert mw.picked_stack_ids(layer) == ["y0x2", "y1x2", "y2x0", "y2x1", "y2x2"]
     assert "x 2 x 26 x 26 px" in dock.plan_label.text()     # still the full extent (corner tiles)
     _press(viewer, _Click((0, 0, 0), modifiers=["Shift"]), moves=[(60, 60)], to=(0, 6, 22))

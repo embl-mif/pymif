@@ -240,20 +240,36 @@ def tiles_in_box(layer, corner, opposite) -> list[int]:
     return np.flatnonzero(np.all((rect_lo <= hi) & (rect_hi >= lo), axis=1)).tolist()
 
 
-def show_drag_box(layer, corner=None, opposite=None) -> None:
-    """Draw the box between two world positions on a tile map, or hide it (no positions).
+def show_drag_box(viewer, tile_map, corner=None, opposite=None) -> None:
+    """Draw the box between two world positions over ``tile_map``, or remove it (no positions).
 
-    Uses the layer's selection-box overlay (private napari API); without it, no box is drawn.
+    The box is a temporary shapes layer (``"tile map box"``) that only exists while
+    dragging. Adding it would select it, so the layer selection is restored at once
+    (it decides which tiles are fused in *selected layers only* mode).
     """
-    overlay = (getattr(layer, "_overlays", None) or {}).get("selection_box")
-    if overlay is None:
-        return
+    box_layer = next((layer for layer in viewer.layers if layer.metadata.get("mosaic_drag_box")), None)
     if corner is None:
-        overlay.visible = False
+        if box_layer is not None:
+            viewer.layers.remove(box_layer)
         return
-    lo, hi = _box(corner, opposite)
-    overlay.bounds = (tuple(float(v) for v in lo), tuple(float(v) for v in hi))
-    overlay.visible = True
+    rect = np.array(_box(corner, opposite))
+    if box_layer is not None:
+        box_layer.data = [rect]
+        return
+    selection, active = set(viewer.layers.selection), viewer.layers.selection.active
+    viewer.add_shapes(
+        [rect],
+        shape_type="rectangle",
+        name=f"{TILE_MAP} box",
+        edge_color="white",
+        face_color=[1.0, 1.0, 1.0, 0.1],
+        edge_width=2 * float(np.max(tile_map.edge_width)),
+        units=tile_map.units,
+        metadata={"mosaic_drag_box": True},
+    )
+    viewer.layers.selection.clear()
+    viewer.layers.selection.update(selection)
+    viewer.layers.selection.active = active
 
 
 def boxed_picks(layer, indices: Sequence[int], picked: bool) -> list[bool]:
@@ -430,14 +446,14 @@ def mosaic_widget():
         while event.type == "mouse_move":
             moved = moved or np.linalg.norm(np.asarray(event.pos) - press) > _CLICK_TOLERANCE
             if moved and target is not None:  # draw the box and preview the picks
-                show_drag_box(layer, start, event.position)
+                show_drag_box(viewer, layer, start, event.position)
                 refresh_tile_map(layer, boxed_picks(layer, tiles_in_box(layer, start, event.position), target))
             yield
         if target is None:  # plain click toggles; a plain drag was a pan
             if not moved and toggle_tile_at(layer, start) is not None:
                 _update_plan()
             return
-        show_drag_box(layer)
+        show_drag_box(viewer, layer)
         if moved:
             indices = tiles_in_box(layer, start, event.position)
         else:
