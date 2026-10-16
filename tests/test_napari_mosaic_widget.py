@@ -323,16 +323,19 @@ def test_tile_map_picks_stack_positions():
 class _Click:
     """Minimal napari mouse event for the viewer drag callbacks."""
 
-    def __init__(self, position, pos=(10, 10)):
+    def __init__(self, position, pos=(10, 10), modifiers=()):
         self.position, self.pos, self.button, self.type = position, np.array(pos), 1, "mouse_press"
-        self.modifiers = []
+        self.modifiers = list(modifiers)
 
 
-def _press(viewer, event, moves=()):
+def _press(viewer, event, moves=(), to=None):
+    """Press, move through canvas positions ``moves`` (ending at world position ``to``), release."""
     gens = [cb(viewer, event) for cb in viewer.mouse_drag_callbacks]
     gens = [g for g in gens if g is not None and next(g, StopIteration) is not StopIteration]
     for pos in moves:
         event.type, event.pos = "mouse_move", np.array(pos)
+        if to is not None:
+            event.position = to
         for g in gens:
             next(g, None)
     event.type = "mouse_release"
@@ -374,3 +377,64 @@ def test_widget_fuses_and_exports_picked_tiles_only(app, monkeypatch):
     row = mw.batch_row(input_path="acq", microscope="luxendo", output="out.zarr", values=values,
                        all_groups=["L", "R"], skip_ids=[], picked=["s0", "s1"], all_stacks={"s0", "s1"})
     assert row["tiles"] == ""                             # every tile: the default
+
+
+def test_tile_map_box_selection(app, monkeypatch):
+    from napari.components import ViewerModel
+
+    class Grid(MosaicManager):  # 3 x 3 tiles of 10 um, overlapping by 2 um
+        def _scan(self):
+            return [Tile(np.zeros((2, 10, 10), np.uint16), (0, 8 * iy, 8 * ix), (1.0, 1.0, 1.0), "A",
+                         attrs={"stack": f"y{iy}x{ix}"}) for iy in range(3) for ix in range(3)]
+
+    viewer = ViewerModel()
+    monkeypatch.setattr(mw, "current_viewer", lambda: viewer)
+    dock = mw.mosaic_widget()
+    m = Grid(".")
+    dock.state["mosaic"] = m
+    dock.populate(m, Path("."))
+    layer = mw.find_tile_map(viewer.layers, m.path)
+    fw = dock.fuse_widget
+    fw.ds_z.value, fw.ds_y.value, fw.ds_x.value = 1, 1, 1
+    # the box covers the edges of 6 tiles but the centres (5 or 13 um) of the left 2 x 2 only
+    assert mw.tiles_in_box(layer, (0, 0, 0), (0, 14, 14)) == [0, 1, 3, 4]
+
+    _press(viewer, _Click((0, 0, 0), modifiers=["Control"]), moves=[(60, 60)], to=(0, 14, 14))
+    assert mw.picked_stack_ids(layer) == ["y0x2", "y1x2", "y2x0", "y2x1", "y2x2"]
+    assert "x 2 x 26 x 26 px" in dock.plan_label.text()     # still the full extent (corner tiles)
+    _press(viewer, _Click((0, 0, 0), modifiers=["Shift"]), moves=[(60, 60)], to=(0, 6, 22))
+    assert mw.picked_stack_ids(layer) == ["y0x0", "y0x1", "y0x2", "y1x2", "y2x0", "y2x1", "y2x2"]
+    _press(viewer, _Click((0, 15, 15), modifiers=["Shift"]))  # Shift + click picks one tile
+    assert "y1x1" in mw.picked_stack_ids(layer) and len(mw.picked_stack_ids(layer)) == 8
+    _press(viewer, _Click((0, 15, 15), modifiers=["Shift"]))  # ... and does not toggle it
+    assert len(mw.picked_stack_ids(layer)) == 8
+    _press(viewer, _Click((0, 15, 15), modifiers=["Control"]))  # Ctrl + click unpicks it
+    assert "y1x1" not in mw.picked_stack_ids(layer)
+    _press(viewer, _Click((0, 0, 0), modifiers=["Alt"]), moves=[(60, 60)], to=(0, 26, 26))  # Alt: zoom
+    assert len(mw.picked_stack_ids(layer)) == 7
+
+
+def test_show_tiles_follows_picks_and_keeps_contrast(app, monkeypatch):
+    from napari.components import ViewerModel
+
+    viewer = ViewerModel()
+    monkeypatch.setattr(mw, "current_viewer", lambda: viewer)
+    dock = mw.mosaic_widget()
+    m = _stacked_mosaic()
+    monkeypatch.setattr(m, "contrast_limits", lambda *a, **k: pytest.fail("no contrast estimation"))
+    dock.state["mosaic"] = m
+    dock.populate(m, Path("."))
+    dock.show_widget.channels.value = ["A", "B"]
+    dock.show_widget()
+    shown = mw.tile_layers(viewer.layers, m.path)
+    assert len(shown) == 4 and viewer.layers[-1].name == mw.TILE_MAP  # the map stays on top
+    assert tuple(shown[0].contrast_limits) == (0, 65535)              # full range: nothing read
+    shown[0].contrast_limits = (0, 500)                               # linked: every A tile
+
+    layer = mw.find_tile_map(viewer.layers, m.path)
+    mw.toggle_tile_at(layer, (0, 4, 20))                              # unpick s1
+    dock.show_widget()
+    shown = mw.tile_layers(viewer.layers, m.path)
+    assert [lay.metadata["mosaic_tile_id"] for lay in shown] == ["A/s0", "B/s0"]
+    assert tuple(shown[0].contrast_limits) == (0, 500) and tuple(shown[1].contrast_limits) == (0, 65535)
+    assert mw.find_tile_map(viewer.layers, m.path) is layer

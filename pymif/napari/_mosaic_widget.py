@@ -211,11 +211,44 @@ def find_tile_map(layers, mosaic_path):
     return None
 
 
-def refresh_tile_map(layer) -> None:
-    """Colour the rectangles of a tile map by their ``picked`` feature."""
-    picked = list(layer.features["picked"])
+def refresh_tile_map(layer, picked: Optional[Sequence[bool]] = None) -> None:
+    """Colour the rectangles of a tile map by their ``picked`` feature, or by ``picked``
+    if given (a preview that leaves the feature unchanged)."""
+    picked = list(layer.features["picked"]) if picked is None else list(picked)
     layer.face_color = np.array([_MAP_COLORS[bool(p)][0] for p in picked])
     layer.edge_color = np.array([_MAP_COLORS[bool(p)][1] for p in picked])
+
+
+def tile_at(layer, position) -> Optional[int]:
+    """Index of the tile-map rectangle under ``position`` (world coordinates), or ``None``."""
+    index, _ = layer.get_value(position, world=True) or (None, None)
+    return index
+
+
+def tiles_in_box(layer, corner, opposite) -> list[int]:
+    """Indices of the tile-map rectangles whose centre lies in the y/x box between two
+    world positions (the centre, so a box over one sample leaves the overlapping
+    edges of its neighbours out)."""
+    lo = np.minimum(corner[-2:], opposite[-2:])
+    hi = np.maximum(corner[-2:], opposite[-2:])
+    centres = np.array([np.mean(r, axis=0) for r in layer.data])
+    return np.flatnonzero(np.all((centres >= lo) & (centres <= hi), axis=1)).tolist()
+
+
+def boxed_picks(layer, indices: Sequence[int], picked: bool) -> list[bool]:
+    """The ``picked`` feature of a tile map with ``indices`` set to ``picked``."""
+    out = [bool(p) for p in layer.features["picked"]]
+    for i in indices:
+        out[i] = picked
+    return out
+
+
+def set_picked(layer, indices: Sequence[int], picked: bool) -> None:
+    """Pick (or unpick) the tile-map rectangles ``indices``."""
+    features = layer.features.copy()
+    features["picked"] = boxed_picks(layer, indices, picked)
+    layer.features = features
+    refresh_tile_map(layer)
 
 
 def toggle_tile_at(layer, position) -> Optional[str]:
@@ -223,13 +256,10 @@ def toggle_tile_at(layer, position) -> Optional[str]:
 
     Returns the stack id of the toggled tile, or ``None`` if no tile is there.
     """
-    index, _ = layer.get_value(position, world=True) or (None, None)
+    index = tile_at(layer, position)
     if index is None:
         return None
-    features = layer.features.copy()
-    features.loc[index, "picked"] = not bool(features["picked"][index])
-    layer.features = features
-    refresh_tile_map(layer)
+    set_picked(layer, [index], not bool(layer.features["picked"][index]))
     return str(layer.features["stack"][index])
 
 
@@ -275,6 +305,13 @@ def batch_row(*, input_path, microscope: str, output, values: dict, all_groups: 
     }
 
 
+def shown_contrast_limits(layers, mosaic) -> dict:
+    """``{channel: (low, high)}`` of the tile layers of ``mosaic`` shown in napari
+    (their contrast is linked per channel), to keep it when tiles are shown again."""
+    return {mosaic.tiles[layer.metadata["mosaic_tile"]].channel: tuple(float(v) for v in layer.contrast_limits)
+            for layer in tile_layers(layers, mosaic.path)}
+
+
 def apply_display_windows(layers, windows, dtype) -> None:
     """Give the image layers of a fused result its stored display windows (one per
     channel, in layer order), with the slider over the whole dtype range."""
@@ -290,12 +327,6 @@ def apply_display_windows(layers, windows, dtype) -> None:
 def _scan_worker(reader, path):
     """Scan the acquisition folder in the background (opens every tile's metadata)."""
     return reader(path)
-
-
-@thread_worker
-def _contrast_worker(mosaic, tiles):
-    """Read the small contrast sample in the background (it is slow on network drives)."""
-    return mosaic.contrast_limits(tiles)
 
 
 @thread_worker
@@ -357,24 +388,42 @@ def mosaic_widget():
         for layer in [layer for layer in viewer.layers if layer is not keep]:
             viewer.layers.remove(layer)
 
-    def _on_map_click(_viewer, event):
+    def _on_map_mouse(_viewer, event):
+        """Click: toggle a tile. Shift (pick) or Ctrl (unpick) + drag: every tile in the box.
+
+        A plain drag pans and Alt + drag zooms, as usual in napari.
+        """
         layer = _tile_map()
         active = viewer.layers.selection.active
+        modifiers = list(event.modifiers)  # vispy keys, equal to their names
+        target = (None if not modifiers else True if modifiers == ["Shift"]
+                  else False if modifiers == ["Control"] else "other")  # e.g. Alt + drag zooms
         if (layer is None or not layer.visible or viewer.dims.ndisplay != 2 or event.button != 1
-                or event.modifiers  # e.g. Alt + drag zooms
+                or target == "other"
                 or str(getattr(active, "mode", "pan_zoom")) != "pan_zoom"):  # e.g. painting labels
             return
-        press, position = np.asarray(event.pos), event.position
+        press, start = np.asarray(event.pos), np.asarray(event.position)
         moved = False
         yield
         while event.type == "mouse_move":
             moved = moved or np.linalg.norm(np.asarray(event.pos) - press) > _CLICK_TOLERANCE
+            if moved and target is not None:  # preview the box
+                refresh_tile_map(layer, boxed_picks(layer, tiles_in_box(layer, start, event.position), target))
             yield
-        if not moved and toggle_tile_at(layer, position) is not None:  # a pan is not a click
-            _update_plan()
+        if target is None:  # plain click toggles; a plain drag was a pan
+            if not moved and toggle_tile_at(layer, start) is not None:
+                _update_plan()
+            return
+        if moved:
+            indices = tiles_in_box(layer, start, event.position)
+        else:
+            index = tile_at(layer, start)
+            indices = [] if index is None else [index]
+        set_picked(layer, indices, target)
+        _update_plan()
 
     if viewer is not None:
-        viewer.mouse_drag_callbacks.append(_on_map_click)
+        viewer.mouse_drag_callbacks.append(_on_map_mouse)
 
     # ----- 1. loading -----
     @magicgui(
@@ -424,8 +473,9 @@ def mosaic_widget():
         if viewer is not None:
             tile_map = add_tile_map(viewer, mosaic)
             viewer.reset_view()
-            print(f"Tile map: {len(tile_map.data)} stack positions, all picked. "
-                  "Click a tile (2D view) to pick or unpick it for showing and fusing.")
+            print(f"Tile map: {len(tile_map.data)} stack positions, all picked. In the 2D view, click a tile "
+                  "to pick or unpick it for showing and fusing; Shift + drag picks, Ctrl + drag unpicks "
+                  "every tile in a box.")
         batch_widget.batch_csv_path.value = input_path.parent / "mosaic_batch.csv"
         _update_output(force=True)
         _update_plan()
@@ -445,14 +495,8 @@ def mosaic_widget():
             print("No picked tile matches the selected channels and groups.")
             return
         _capture()
-        print(f"Estimating contrast from a few tiles of {', '.join(dict.fromkeys(t.channel for t in tiles))} ...")
-        worker = _contrast_worker(mosaic, tiles)
-        _busy(True)
-
-        @worker.returned.connect
-        def _done(limits):
-            for channel, (low, high) in limits.items():
-                print(f"{channel}: contrast {low:.0f} - {high:.0f} (linked across its tiles)")
+        try:
+            limits = shown_contrast_limits(viewer.layers, mosaic)  # keep the contrast set by hand
             if clear_layers:
                 _clear_layers()
             mosaic.visualize(tiles=tiles, viewer=viewer, contrast_limits=limits)
@@ -463,17 +507,13 @@ def mosaic_widget():
                 tile_map.visible = True
                 viewer.layers.move(viewer.layers.index(tile_map), len(viewer.layers))
             viewer.reset_view()
-            print(f"Showing {len(tiles)} tiles as separate layers.")
-            _busy(False)
+            new = [c for c in dict.fromkeys(t.channel for t in tiles) if c not in limits]
+            hint = f"; {', '.join(new)} start(s) at the full data range: set the contrast of one tile" if new else ""
+            print(f"Showing {len(tiles)} tiles as separate layers (contrast linked per channel{hint}).")
+        except Exception as e:
+            print(f"Showing tiles failed: {e}")
+        finally:
             _release()
-
-        @worker.errored.connect
-        def _failed(err):
-            print(f"Showing tiles failed: {err}")
-            _busy(False)
-            _release()
-
-        worker.start()
 
     # ----- 3. fusion -----
     @magicgui(
