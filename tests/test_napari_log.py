@@ -88,3 +88,19 @@ def test_real_tqdm_progress_is_one_line(log, monkeypatch):
     out = lines(widget)
     assert len(out) == 1, out
     assert "100%" in out[0] and "20/20" in out[0]
+
+
+def test_output_after_the_log_is_deleted_goes_to_the_console(app, monkeypatch):
+    import io
+
+    from qtpy.QtCore import QEvent
+
+    widget = QTextEdit()
+    stream = EmittingStream()
+    stream.text_written.connect(make_log_appender(widget))
+    widget.deleteLater()  # e.g. the dock holding the log was closed
+    QApplication.sendPostedEvents(None, QEvent.DeferredDelete)
+    console = io.StringIO()
+    monkeypatch.setattr(sys, "__stdout__", console)
+    stream.write("still here\n")  # used to raise: wrapped C/C++ object has been deleted
+    assert console.getvalue() == "still here\n"

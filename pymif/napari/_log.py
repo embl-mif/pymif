@@ -1,6 +1,7 @@
 """Console-to-log helpers shared by the PyMIF napari widgets."""
 from __future__ import annotations
 
+import sys
 from datetime import datetime
 
 from qtpy.QtCore import QObject, Signal
@@ -30,10 +31,22 @@ def make_log_appender(log_widget):
     Progress bars (tqdm) redraw themselves by writing ``"\\r"`` followed by the
     new bar. Those writes replace the previous progress line instead of adding
     a new line each time; any other output starts a new line.
+
+    The widget can be deleted while output still arrives, for example when its
+    dock was closed but ``sys.stdout`` still points at this stream. That output
+    then goes to the original console instead of raising.
     """
     state = {"progress_start": None}  # document position where the current bar starts
 
     def append_with_time(text):
+        try:
+            _append(text)
+        except RuntimeError:  # wrapped C/C++ object of type QTextEdit has been deleted
+            console = sys.__stdout__
+            if console is not None:
+                console.write(text)
+
+    def _append(text):
         if not text.strip():
             if "\n" in text:  # tqdm ends a finished bar with a bare newline
                 state["progress_start"] = None

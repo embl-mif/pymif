@@ -216,7 +216,7 @@ class MosaicManager(ABC):
         self,
         tiles: Optional[Sequence[Tile]] = None,
         viewer: "napari.Viewer | None" = None,
-        contrast_limits: "str | Dict[str, Tuple[float, float]] | None" = "auto",
+        contrast_limits: "str | Dict[str, Tuple[float, float]] | None" = "range",
     ):
         """Show tiles in napari, each as its own layer at its stage position.
 
@@ -234,17 +234,28 @@ class MosaicManager(ABC):
         viewer
             Viewer to add the layers to; a new one is created by default.
         contrast_limits
-            ``"auto"`` (default) estimates them per channel with
-            :meth:`contrast_limits`; a ``{channel: (low, high)}`` dict uses those;
-            ``None`` lets napari compute them per tile (slow on large tiles).
+            ``"range"`` (default) uses the whole range of the data type (0 to
+            65535 for uint16), which reads nothing: set the contrast of one tile
+            and the linked tiles follow. ``"auto"`` estimates it per channel with
+            :meth:`contrast_limits` (reads a small sample, slow on network drives);
+            a ``{channel: (low, high)}`` dict uses those, with the whole range for
+            the channels it leaves out; ``None`` lets napari compute them per
+            tile (slow on large tiles).
         """
         import napari
 
         from ..utils.visualize import units_for_axes
 
         tiles = list(self.tiles if tiles is None else tiles)
-        if isinstance(contrast_limits, str):
+        if contrast_limits == "auto":
             contrast_limits = self.contrast_limits(tiles)
+        elif contrast_limits is not None:
+            given = {} if contrast_limits == "range" else dict(contrast_limits)
+            contrast_limits = {
+                c: given.get(c, (float(np.iinfo(t.dtype).min), float(np.iinfo(t.dtype).max))
+                             if np.issubdtype(t.dtype, np.integer) else None)
+                for c, t in {t.channel: t for t in tiles}.items()
+            }
         viewer = viewer or napari.Viewer()
         units = units_for_axes({"axes": "zyx", "units": (self.tiles[0].units,) * 3}, "zyx")
         extra = {} if units is None else {"units": units}
