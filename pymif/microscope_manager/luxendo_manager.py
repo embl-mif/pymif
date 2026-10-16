@@ -49,11 +49,18 @@ class LuxendoManager(MicroscopeManager):
         return int(tp.group(1)), int(ch.group(1))
 
     def _plane_files(self) -> Dict[Tuple[int, int], Path]:
-        """Map ``(t, c)`` to the ``.lux.h5`` file holding it."""
-        files = {self._tp_ch(f.name): f for f in sorted(self.path.glob("*.lux.h5"))}
-        if not files:
+        """Map ``(t, c)`` to the ``.lux.h5`` file holding it.
+
+        The ``tp-``/``ch-`` numbers in file names are acquisition IDs, not
+        indices (a single fused channel can be ``ch-4``), so they are renumbered
+        to contiguous 0-based indices in sorted order.
+        """
+        raw = {self._tp_ch(f.name): f for f in sorted(self.path.glob("*.lux.h5"))}
+        if not raw:
             raise FileNotFoundError(f"No '*.lux.h5' files found in {self.path}.")
-        return files
+        tps = sorted({tp for tp, _ in raw})
+        chs = sorted({ch for _, ch in raw})
+        return {(tps.index(tp), chs.index(ch)): f for (tp, ch), f in raw.items()}
 
     @staticmethod
     def _sorted_dataset_names(f: h5py.File) -> List[str]:

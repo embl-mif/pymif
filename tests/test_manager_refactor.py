@@ -232,6 +232,17 @@ def test_luxendo_missing_file_is_reported(luxendo_dir):
         mm.LuxendoManager(luxendo_dir / "nowhere")
 
 
+def test_luxendo_non_contiguous_ids_are_renumbered(luxendo_dir):
+    """File names carry acquisition IDs (e.g. a fused 647 channel saved as ``ch-4``), not indices."""
+    for f in list(luxendo_dir.glob("*.lux.h5")):
+        t, c = mm.LuxendoManager._tp_ch(f.name)
+        f.rename(luxendo_dir / f"uni_tp-{t + 3}_ch-{[1, 4][c]}_st-0.lux.h5")
+    with mm.LuxendoManager(luxendo_dir) as lux:
+        assert lux.data[0].shape == (2, 2, 8, 32, 32)
+        with h5py.File(luxendo_dir / "uni_tp-4_ch-4_st-0.lux.h5") as f:
+            assert np.array_equal(lux.data[0][1, 1].compute(), f["Data"][()])
+
+
 @pytest.fixture
 def viventis_dir(tmp_path):
     tiffdata = "".join(
