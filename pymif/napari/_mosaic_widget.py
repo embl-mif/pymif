@@ -177,10 +177,14 @@ def add_tile_map(viewer, mosaic):
     be edited (napari would let you move or delete rectangles); :func:`toggle_tile_at`
     picks or unpicks a tile.
     """
+    from pymif.utils.visualize import units_for_axes
+
     for layer in [layer for layer in viewer.layers if layer.metadata.get("mosaic_tile_map")]:
         viewer.layers.remove(layer)
     footprints = tile_footprints(mosaic)
     size = np.median([np.min(r[1] - r[0]) for r in footprints.values()])
+    # the same units as the tile layers, or napari ignores units for every layer
+    units = units_for_axes({"axes": "zyx", "units": (mosaic.tiles[0].units,) * 3}, "yx")
     layer = viewer.add_shapes(
         list(footprints.values()),
         shape_type="rectangle",
@@ -189,6 +193,7 @@ def add_tile_map(viewer, mosaic):
         text={"string": "{stack}", "size": 8, "color": "white"},
         edge_width=max(size / 100, 1e-6),
         metadata={"mosaic_tile_map": True, "mosaic_path": str(mosaic.path)},
+        **({} if units is None else {"units": units}),
     )
     layer.editable = False
     # napari makes shapes editable again when the display switches between 2D and 3D

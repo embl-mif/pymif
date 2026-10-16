@@ -296,6 +296,7 @@ def test_tile_map_picks_stack_positions():
     v = ViewerModel()
     m.visualize(viewer=v, contrast_limits={"A": (0, 10), "B": (0, 10)})
     layer = mw.add_tile_map(v, m)
+    assert v.layers.extent.units is not None  # same units as the tile layers (no napari warning)
     assert mw.find_tile_map(v.layers, m.path) is layer and mw.find_tile_map(v.layers, "elsewhere") is None
     assert mw.picked_stack_ids(layer) == ["s0", "s1"]
     assert mw.picked_stack_ids(None) is None
