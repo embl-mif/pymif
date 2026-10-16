@@ -28,6 +28,18 @@ out = z.correct_chromatic_shift("brain_corrected.ome.zarr", reference_channel=0)
 
 A shift is the displacement applied to that channel: positive values move its content towards higher Z indices. The reference channel always gets `0`. Shifts can also be given by hand, `z.apply_chromatic_shift(out, [0.0, 104.4])`, for example when they were measured on another dataset of the same session.
 
+## Command line
+
+The same steps are available as `pymif chromatic-shift`, for scripts and pipelines:
+
+```console
+pymif chromatic-shift -i brain.ome.zarr -z brain_corrected.ome.zarr -r chromatic_shift.json
+pymif chromatic-shift -i brain.ome.zarr -r chromatic_shift.json                 # only measure
+pymif chromatic-shift -i other.ome.zarr -z other_corrected.ome.zarr -sf chromatic_shift.json
+```
+
+Add `--fail_on_warning` in a pipeline: when the report has warnings, the command exits with an error and writes only the report. Every option, and the `--batch` CSV columns, are in [Command line](cli.md#correct-the-chromatic-shift).
+
 ## How the shift is measured
 
 The sample's **lower and upper surfaces** (its boundary along Z) are the one structure every channel shows, through background and autofluorescence, even when the channels label completely different things. The estimate uses only those surfaces. Lateral edges are ignored: their profile is the same at every Z, so they carry no information about an axial offset.

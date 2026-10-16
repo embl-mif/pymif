@@ -760,8 +760,177 @@ def convert_mosaic_batch(args):
         mosaic_convert(**kwargs)
 
 
+# ---------------------------------------------------------------------------
+# Chromatic shift: chromatic-shift / chromatic-shift --batch
+# ---------------------------------------------------------------------------
+
+#: Options of ``estimate_chromatic_shift`` exposed on the command line.
+_ESTIMATE_OPTIONS = ("timepoint", "max_shift", "coarse_level", "refine_level", "n_regions", "crop_yx",
+                     "min_z_normal", "min_correlation", "threshold")
+
+
+def _channel_index(channel, channel_names: List[str]) -> int:
+    """Channel given as an index (``1``) or a name (``"cFos-647"``)."""
+    text = str(channel).strip()
+    if text.lstrip("-").isdigit():
+        return int(text)
+    if text in channel_names:
+        return channel_names.index(text)
+    raise ValueError(f"Reference channel {channel!r} not found; channels are {channel_names}.")
+
+
+def _parse_shifts(value) -> Any:
+    """``--shifts`` values or batch cell: one number per channel, or the path to a JSON report."""
+    tokens = [str(v) for v in value] if isinstance(value, (list, tuple)) else str(value).split()
+    if len(tokens) == 1 and Path(tokens[0]).is_file():
+        import json
+
+        return json.loads(Path(tokens[0]).read_text())
+    try:
+        return [float(t) for t in tokens]
+    except ValueError as exc:
+        raise ValueError(
+            f"Invalid shifts {value!r}: give one number per channel or the path to a JSON report."
+        ) from exc
+
+
+def _print_shift_report(report: Dict[str, Any]) -> None:
+    names = report.get("channel_names") or []
+    unit = report.get("unit") or ""
+    ref = report.get("reference_channel", 0)
+    for c, shift in enumerate(report["shifts"]):
+        name = names[c] if c < len(names) else f"channel {c}"
+        if c == ref:
+            print(f"  {name}: reference")
+            continue
+        surfaces = (report.get("surface_shifts") or [None] * (c + 1))[c] or {}
+        print(
+            f"  {name}: {shift:+.2f} {unit} (coarse {report['coarse_shifts'][c]:+.2f}, "
+            f"{report['n_regions_used'][c]} regions, spread {report['spread'][c]}, "
+            f"lower {surfaces.get('lower')}, upper {surfaces.get('upper')})"
+        )
+    for warning in report.get("warnings") or []:
+        print(f"  WARNING: {warning}")
+
+
+def chromatic_shift_correct(
+    input_path: str,
+    zarr_path: Optional[str] = None,
+    *,
+    report_path: Optional[str] = None,
+    shifts: Any = None,
+    reference_channel: Any = 0,
+    extent: str = "union",
+    order: int = 1,
+    include_groups: bool = True,
+    include_labels: bool = True,
+    overwrite: bool = False,
+    num_workers: Optional[int] = None,
+    fail_on_warning: bool = False,
+    **estimate_kwargs,
+) -> Dict[str, Any]:
+    """Measure the Z chromatic shift of an OME-Zarr image and write a corrected copy.
+
+    Without ``zarr_path`` only the estimate runs (and is saved to
+    ``report_path`` when given). ``shifts`` (one value per channel, a report
+    dict or the path to a JSON report) skips the estimate. With
+    ``fail_on_warning`` a report with warnings stops before anything is
+    written except the report. Returns the report, or the given shifts.
+    """
+    if zarr_path is not None and Path(zarr_path).exists() and not overwrite:
+        raise FileExistsError(f"{zarr_path} already exists; pass --overwrite to replace it.")
+
+    z = mm.ZarrManager(path=str(input_path))
+    names = list(z.metadata.get("channel_names") or [])
+
+    if shifts is not None:
+        report = shifts if isinstance(shifts, dict) else _parse_shifts(shifts)
+        print(f"Using the given shifts: {report['shifts'] if isinstance(report, dict) else report}")
+    else:
+        ref = _channel_index(reference_channel, names)
+        options = {k: v for k, v in estimate_kwargs.items() if k in _ESTIMATE_OPTIONS and v is not None}
+        if options.get("refine_level") == "none":
+            options["refine_level"] = None
+        print(f"\n--->Estimating the chromatic shift of {input_path} (reference: {names[ref] if ref < len(names) else ref})")
+        report = z.estimate_chromatic_shift(reference_channel=ref, **options)
+        _print_shift_report(report)
+
+    if report_path is not None:
+        import json
+
+        Path(report_path).parent.mkdir(parents=True, exist_ok=True)
+        Path(report_path).write_text(json.dumps(report, indent=2))
+        print(f"Report saved to {report_path}")
+
+    if fail_on_warning and isinstance(report, dict) and report.get("warnings"):
+        raise SystemExit(f"Chromatic shift estimate of {input_path} has warnings; nothing written (--fail_on_warning).")
+
+    if zarr_path is None:
+        return report
+
+    print(f"\n--->Writing the corrected dataset to {zarr_path}")
+    z.apply_chromatic_shift(
+        zarr_path,
+        report,
+        extent=extent,
+        order=int(order),
+        include_groups=bool(include_groups),
+        include_labels=bool(include_labels),
+        overwrite=True,  # an existing output was refused above unless overwrite was asked for
+        num_workers=num_workers,
+    )
+    print(f"Saved {zarr_path}")
+    return report
+
+
+def _chromatic_shift_kwargs(args) -> Dict[str, Any]:
+    kwargs = {
+        k: v
+        for k, v in vars(args).items()
+        if k not in _NOT_CONVERSION_OPTIONS and v is not None and not (isinstance(v, str) and v.strip() == "")
+    }
+    if "report" in kwargs:
+        kwargs["report_path"] = kwargs.pop("report")
+    return kwargs
+
+
+def chromatic_shift_single(args):
+    """Runmode to correct the chromatic shift of one OME-Zarr image."""
+    chromatic_shift_correct(**_chromatic_shift_kwargs(args))
+
+
+def chromatic_shift_batch(args):
+    """Runmode to correct the chromatic shift of every OME-Zarr image listed in a CSV file."""
+    csv_path = getattr(args, "input_file", args)  # parsed arguments or a path
+    print(f"Correcting the chromatic shift of a batch from {csv_path}")
+    database = pd.read_csv(csv_path)
+    print(database)
+    columns = database.columns
+
+    def cell(v, key):
+        return v.get(key) if key in columns and _present(v.get(key)) else None
+
+    for _, v in database.iterrows():
+        print("-" * 20)
+        kwargs: Dict[str, Any] = {"input_path": v["input"], "zarr_path": cell(v, "output")}
+        for key, cast in (("report", str), ("shifts", str), ("reference_channel", str), ("extent", str),
+                          ("refine_level", str), ("timepoint", int), ("coarse_level", int), ("n_regions", int),
+                          ("crop_yx", int), ("order", int), ("num_workers", int), ("max_shift", float),
+                          ("min_z_normal", float), ("min_correlation", float), ("threshold", float)):
+            value = cell(v, key)
+            if value is not None:
+                kwargs["report_path" if key == "report" else key] = cast(value).strip() if cast is str else cast(value)
+        if kwargs.get("refine_level") not in (None, "none"):
+            kwargs["refine_level"] = int(kwargs["refine_level"])
+        for key in ("include_groups", "include_labels", "overwrite", "fail_on_warning"):
+            value = cell(v, key)
+            if value is not None:
+                kwargs[key] = parse_bool(value)
+        chromatic_shift_correct(**kwargs)
+
+
 def main(argv=None):
-    """Entry point of the ``pymif`` command: ``pymif convert`` or ``pymif fuse``."""
+    """Entry point of the ``pymif`` command: ``convert``, ``fuse`` or ``chromatic-shift``."""
     args = _parse_arguments(argv)
     if args.renamed_to:
         print(f"Note: `pymif {args.command}` is now `{args.renamed_to}`; the old name still works for now.",
@@ -771,6 +940,8 @@ def main(argv=None):
         "convert_batch": convert_batch,
         "fuse": convert_mosaic_single,
         "fuse_batch": convert_mosaic_batch,
+        "chromatic_shift": chromatic_shift_single,
+        "chromatic_shift_batch": chromatic_shift_batch,
     }
     runners[args.mode](args)
 

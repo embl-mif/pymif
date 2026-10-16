@@ -1,15 +1,16 @@
 # Command line
 
-The `pymif` command has two subcommands:
+The `pymif` command has three subcommands:
 
 | Command | Does |
 |---|---|
 | `pymif convert` | convert a dataset to OME-Zarr, or every dataset listed in a CSV file with `--batch` |
 | `pymif fuse` | fuse the raw tiles of a mosaic into one OME-Zarr image, or every mosaic listed in a CSV file with `--batch` |
+| `pymif chromatic-shift` | measure and correct the Z chromatic shift between the channels of an OME-Zarr image, or of every image listed in a CSV file with `--batch` |
 
-`pymif -h` lists them, and `pymif convert -h` / `pymif fuse -h` show every option, examples and the batch CSV columns. `pymif --version` prints the installed version.
+`pymif -h` lists them, and `pymif convert -h`, `pymif fuse -h` and `pymif chromatic-shift -h` show every option, examples and the batch CSV columns. `pymif --version` prints the installed version.
 
-Each command runs either one dataset (`-i INPUT -z OUTPUT`) or a CSV file (`--batch FILE.csv`), never both. In a batch file, one row is one run and the columns take the place of the options.
+Each command runs either one dataset (`-i INPUT -z OUTPUT`) or a CSV file (`--batch FILE.csv`), never both (`chromatic-shift` can also run with `-i` alone, to only measure). In a batch file, one row is one run and the columns take the place of the options.
 
 ## Convert a dataset
 
@@ -79,6 +80,51 @@ The batch CSV has the columns `input`, `microscope`, `output`, plus any of the o
 input,microscope,output,downsample,projection,blend,num_levels,shards
 /path/to/acquisition_1,luxendo,/path/to/acq1_3D.ome.zarr,4 8 8,none,sigmoid,3,auto
 /path/to/acquisition_1,luxendo,/path/to/acq1_MIP.ome.zarr,1 8 8,max,midline,,none
+```
+
+## Correct the chromatic shift
+
+`chromatic-shift` measures the Z offset between the channels of an OME-Zarr image on the sample itself and writes a corrected copy with the same chunks, shards, compression and metadata as the input (see [Chromatic shift correction](chromatic-shift.md)):
+
+```console
+# measure, save the report and write the corrected image
+pymif chromatic-shift -i brain.ome.zarr -z brain_csc.ome.zarr -r shift.json
+
+# only measure
+pymif chromatic-shift -i brain.ome.zarr -r shift.json
+
+# apply known shifts (one per channel), or the shifts of an earlier report
+pymif chromatic-shift -i brain.ome.zarr -z brain_csc.ome.zarr -sf 0 104.4
+pymif chromatic-shift -i other.ome.zarr -z other_csc.ome.zarr -sf shift.json
+
+# many images from a CSV file
+pymif chromatic-shift --batch images.csv
+```
+
+| Flag | Meaning |
+|---|---|
+| `-i`, `--input_path` | input OME-Zarr image |
+| `-z`, `--zarr_path` | corrected OME-Zarr image; leave out to only measure |
+| `-r`, `--report` | save the estimate report (JSON) |
+| `-sf`, `--shifts` | skip the estimate: one shift per channel in the Z unit, or a JSON report |
+| `-rc`, `--reference_channel` | reference channel, as an index or a name (default 0) |
+| `-mxs`, `--max_shift` | largest shift searched, in the Z unit (default: 10% of the stack depth) |
+| `-tp`, `-cl`, `-rl`, `-nr`, `-cy`, `-mzn`, `-mc`, `-th` | timepoint, coarse level, refine level (`none` skips refinement), number of crops, crop width, `min_z_normal`, `min_correlation`, mask threshold |
+| `-fw`, `--fail_on_warning` | exit with an error, writing only the report, when the estimate has warnings |
+| `-e`, `--extent` | `union` (default), `same` or `intersection` |
+| `-o`, `--order` | `1` (linear, default) or `0` (whole planes, values untouched) |
+| `-ig`, `-il` | also write image subgroups / labels (`true` or `false`, default true) |
+| `-ow`, `--overwrite` | replace an existing output |
+| `-nw`, `--num_workers` | write threads |
+
+In a pipeline (e.g. a Nextflow process), use `-r` to keep the report next to the output and `--fail_on_warning` so that a doubtful estimate (search limit reached, no usable crop) fails the step instead of producing a wrongly corrected image.
+
+The batch CSV has the columns `input`, `output` (empty: only measure), plus any of `report`, `shifts`, `reference_channel`, `timepoint`, `max_shift`, `coarse_level`, `refine_level`, `n_regions`, `crop_yx`, `min_z_normal`, `min_correlation`, `threshold`, `extent`, `order`, `include_groups`, `include_labels`, `overwrite`, `num_workers`, `fail_on_warning`. Leave a cell empty for the default; shifts are space separated.
+
+```text
+input,output,report,reference_channel,max_shift
+/path/to/a.ome.zarr,/path/to/a_csc.ome.zarr,/path/to/a_csc.json,cFos-647,150
+/path/to/b.ome.zarr,,/path/to/b_shift.json,0,
 ```
 
 ## Old command names

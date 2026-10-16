@@ -7,7 +7,7 @@
 | `pymif.microscope_manager` | **microscope managers**: one reader class per acquisition system, each exposing *one image* (`MicroscopeManager` subclasses), plus `ZarrManager` for reading, editing and correcting OME-Zarr stores |
 | `pymif.mosaic_manager` | **mosaic managers**: readers for acquisitions saved as separate positioned *tiles* (`MosaicManager` subclasses), the `Tile` model and the fusion engine (`fuse_tiles`, `plan_fusion`) |
 | `pymif.utils` | helpers shared by both: metadata, axes, units, colours, pyramids, OME-Zarr writing, chromatic shift correction (see [Layout of `pymif.utils`](#layout-of-pymifutils)) |
-| `pymif.cli` | the `pymif convert` and `pymif fuse` commands |
+| `pymif.cli` | the `pymif convert`, `pymif fuse` and `pymif chromatic-shift` commands |
 | `pymif.napari` | the Converter and Mosaic Fusion widgets |
 
 ## Two kinds of readers
