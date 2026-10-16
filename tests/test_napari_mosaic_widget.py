@@ -328,8 +328,11 @@ class _Click:
         self.modifiers = list(modifiers)
 
 
-def _press(viewer, event, moves=(), to=None):
-    """Press, move through canvas positions ``moves`` (ending at world position ``to``), release."""
+def _press(viewer, event, moves=(), to=None, before_release=None):
+    """Press, move through canvas positions ``moves`` (ending at world position ``to``), release.
+
+    ``before_release()`` runs after the moves, while the button is still down.
+    """
     gens = [cb(viewer, event) for cb in viewer.mouse_drag_callbacks]
     gens = [g for g in gens if g is not None and next(g, StopIteration) is not StopIteration]
     for pos in moves:
@@ -338,6 +341,8 @@ def _press(viewer, event, moves=(), to=None):
             event.position = to
         for g in gens:
             next(g, None)
+    if before_release is not None:
+        before_release()
     event.type = "mouse_release"
     for g in gens:
         next(g, None)
@@ -396,10 +401,18 @@ def test_tile_map_box_selection(app, monkeypatch):
     layer = mw.find_tile_map(viewer.layers, m.path)
     fw = dock.fuse_widget
     fw.ds_z.value, fw.ds_y.value, fw.ds_x.value = 1, 1, 1
-    # the box covers the edges of 6 tiles but the centres (5 or 13 um) of the left 2 x 2 only
-    assert mw.tiles_in_box(layer, (0, 0, 0), (0, 14, 14)) == [0, 1, 3, 4]
+    # a box inside the first tile also touches the 2 um overlaps of its neighbours (from 8 um)
+    assert mw.tiles_in_box(layer, (0, 0, 0), (0, 9, 9)) == [0, 1, 3, 4]
+    assert mw.tiles_in_box(layer, (0, 1, 1), (0, 7, 7)) == [0]
 
-    _press(viewer, _Click((0, 0, 0), modifiers=["Control"]), moves=[(60, 60)], to=(0, 14, 14))
+    box = layer._overlays["selection_box"]
+    seen = {}
+    _press(viewer, _Click((0, 0, 0), modifiers=["Control"]), moves=[(60, 60)], to=(0, 9, 9),
+           before_release=lambda: seen.update(visible=box.visible, bounds=box.bounds,
+                                              picked=mw.picked_stack_ids(layer)))
+    assert seen["visible"] and seen["bounds"] == ((0, 0), (9, 9))  # the box is drawn while dragging
+    assert len(seen["picked"]) == 9                                # applied on release only
+    assert not box.visible                                         # and hidden on release
     assert mw.picked_stack_ids(layer) == ["y0x2", "y1x2", "y2x0", "y2x1", "y2x2"]
     assert "x 2 x 26 x 26 px" in dock.plan_label.text()     # still the full extent (corner tiles)
     _press(viewer, _Click((0, 0, 0), modifiers=["Shift"]), moves=[(60, 60)], to=(0, 6, 22))

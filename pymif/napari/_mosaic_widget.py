@@ -225,14 +225,35 @@ def tile_at(layer, position) -> Optional[int]:
     return index
 
 
+def _box(corner, opposite):
+    """``(lo, hi)`` y/x corners of the box between two world positions."""
+    corner, opposite = np.asarray(corner)[-2:], np.asarray(opposite)[-2:]
+    return np.minimum(corner, opposite), np.maximum(corner, opposite)
+
+
 def tiles_in_box(layer, corner, opposite) -> list[int]:
-    """Indices of the tile-map rectangles whose centre lies in the y/x box between two
-    world positions (the centre, so a box over one sample leaves the overlapping
-    edges of its neighbours out)."""
-    lo = np.minimum(corner[-2:], opposite[-2:])
-    hi = np.maximum(corner[-2:], opposite[-2:])
-    centres = np.array([np.mean(r, axis=0) for r in layer.data])
-    return np.flatnonzero(np.all((centres >= lo) & (centres <= hi), axis=1)).tolist()
+    """Indices of the tile-map rectangles that lie, even partially, in the y/x box
+    between two world positions."""
+    lo, hi = _box(corner, opposite)
+    rect_lo = np.array([np.min(r, axis=0) for r in layer.data])
+    rect_hi = np.array([np.max(r, axis=0) for r in layer.data])
+    return np.flatnonzero(np.all((rect_lo <= hi) & (rect_hi >= lo), axis=1)).tolist()
+
+
+def show_drag_box(layer, corner=None, opposite=None) -> None:
+    """Draw the box between two world positions on a tile map, or hide it (no positions).
+
+    Uses the layer's selection-box overlay (private napari API); without it, no box is drawn.
+    """
+    overlay = (getattr(layer, "_overlays", None) or {}).get("selection_box")
+    if overlay is None:
+        return
+    if corner is None:
+        overlay.visible = False
+        return
+    lo, hi = _box(corner, opposite)
+    overlay.bounds = (tuple(float(v) for v in lo), tuple(float(v) for v in hi))
+    overlay.visible = True
 
 
 def boxed_picks(layer, indices: Sequence[int], picked: bool) -> list[bool]:
@@ -389,7 +410,8 @@ def mosaic_widget():
             viewer.layers.remove(layer)
 
     def _on_map_mouse(_viewer, event):
-        """Click: toggle a tile. Shift (pick) or Ctrl (unpick) + drag: every tile in the box.
+        """Click: toggle a tile. Shift (pick) or Ctrl (unpick) + drag: every tile touched by
+        the box, drawn while dragging.
 
         A plain drag pans and Alt + drag zooms, as usual in napari.
         """
@@ -407,13 +429,15 @@ def mosaic_widget():
         yield
         while event.type == "mouse_move":
             moved = moved or np.linalg.norm(np.asarray(event.pos) - press) > _CLICK_TOLERANCE
-            if moved and target is not None:  # preview the box
+            if moved and target is not None:  # draw the box and preview the picks
+                show_drag_box(layer, start, event.position)
                 refresh_tile_map(layer, boxed_picks(layer, tiles_in_box(layer, start, event.position), target))
             yield
         if target is None:  # plain click toggles; a plain drag was a pan
             if not moved and toggle_tile_at(layer, start) is not None:
                 _update_plan()
             return
+        show_drag_box(layer)
         if moved:
             indices = tiles_in_box(layer, start, event.position)
         else:
@@ -475,7 +499,7 @@ def mosaic_widget():
             viewer.reset_view()
             print(f"Tile map: {len(tile_map.data)} stack positions, all picked. In the 2D view, click a tile "
                   "to pick or unpick it for showing and fusing; Shift + drag picks, Ctrl + drag unpicks "
-                  "every tile in a box.")
+                  "every tile touched by a box.")
         batch_widget.batch_csv_path.value = input_path.parent / "mosaic_batch.csv"
         _update_output(force=True)
         _update_plan()
