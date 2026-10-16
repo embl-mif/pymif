@@ -49,6 +49,21 @@ def test_fuse_kwargs():
                   "levels": 2, "workers": 3, "overwrite": True}
 
 
+def test_dtype_contrast_limits_read_no_data():
+    import numpy as np
+
+    from pymif.mosaic_manager import Tile
+
+    class NoRead:  # fails if the pixel data is read
+        shape, dtype = (2, 4, 4), np.dtype("uint16")
+
+        def __getitem__(self, key):
+            raise AssertionError("pixel data read")
+
+    tiles = [Tile(NoRead(), (0, 0, 0), (1, 1, 1), "A"), Tile(np.zeros((2, 4, 4), np.float32), (0, 0, 0), (1, 1, 1), "B")]
+    assert mw.dtype_contrast_limits(tiles) == {"A": (0.0, 65535.0)}  # floats: left to napari
+
+
 def test_widget_populates_and_plans(app, tmp_path):
     dock = mw.mosaic_widget()
     assert not dock.fuse_widget.enabled  # nothing loaded yet

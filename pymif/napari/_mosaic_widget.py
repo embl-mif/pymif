@@ -181,10 +181,17 @@ def _scan_worker(reader, path):
     return reader(path)
 
 
-@thread_worker
-def _contrast_worker(mosaic, tiles):
-    """Read the small contrast sample in the background (it is slow on network drives)."""
-    return mosaic.contrast_limits(tiles)
+def dtype_contrast_limits(tiles) -> dict:
+    """``{channel: (min, max)}`` of the dtype of integer tiles: a starting contrast
+    that needs no pixel data (napari would read every tile to compute one)."""
+    import numpy as np
+
+    limits = {}
+    for t in tiles:
+        if np.issubdtype(t.dtype, np.integer):
+            info = np.iinfo(t.dtype)
+            limits.setdefault(t.channel, (float(info.min), float(info.max)))
+    return limits
 
 
 @thread_worker
@@ -294,31 +301,19 @@ def mosaic_widget():
             print("No tile matches the selected channels and groups.")
             return
         _capture()
-        print(f"Estimating contrast from a few tiles of {', '.join(dict.fromkeys(t.channel for t in tiles))} ...")
-        worker = _contrast_worker(mosaic, tiles)
-        _busy(True)
-
-        @worker.returned.connect
-        def _done(limits):
-            for channel, (low, high) in limits.items():
-                print(f"{channel}: contrast {low:.0f} - {high:.0f} (linked across its tiles)")
+        try:
             if clear_layers:
                 viewer.layers.clear()
-            mosaic.visualize(tiles=tiles, viewer=viewer, contrast_limits=limits)
+            mosaic.visualize(tiles=tiles, viewer=viewer, contrast_limits=dtype_contrast_limits(tiles))
             for layer in tile_layers(viewer.layers, mosaic.path):  # hiding a tile updates the size estimate
                 layer.events.visible.connect(_update_plan)
             viewer.reset_view()
-            print(f"Showing {len(tiles)} tiles as separate layers.")
-            _busy(False)
-            _release()
-
-        @worker.errored.connect
-        def _failed(err):
+            print(f"Showing {len(tiles)} tiles as separate layers. Contrast is linked across the tiles "
+                  "of a channel: adjust it on one tile.")
+        except Exception as err:
             print(f"Showing tiles failed: {err}")
-            _busy(False)
+        finally:
             _release()
-
-        worker.start()
 
     # ----- 3. fusion -----
     @magicgui(
