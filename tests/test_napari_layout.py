@@ -15,7 +15,6 @@ from qtpy.QtWidgets import QApplication, QPushButton, QScrollArea, QSplitter, QT
 
 import pymif.napari._convert_widget as convert_module
 import pymif.napari._export_widget as export_module
-import pymif.napari._overview_widget as overview_module
 from pymif.napari._layout import MIN_LOG_HEIGHT, compose_dock
 
 
@@ -184,16 +183,68 @@ def test_button_still_runs_the_conversion_and_locks_while_running(converter, app
 
 
 # ---------------------------------------------------------------------------
+# Output recap
+# ---------------------------------------------------------------------------
+
+def _dataset(shape=(3, 2, 10, 20, 30), axes="tczyx"):
+    import numpy as np
+    from pymif.microscope_manager import ArrayManager
+
+    return ArrayManager(
+        np.zeros(shape, dtype="uint16"),
+        {"axes": axes, "channel_names": ["a", "b"], "scales": [(2.0, 0.5, 0.5)]},
+    )
+
+
+def test_output_summary_follows_ranges_and_channels():
+    ds = _dataset()
+    full = dict(t_range=(0, 2), z_range=(0, 9), y_range=(0, 19), x_range=(0, 29), channels=("a", "b"))
+    assert convert_module.output_summary(ds, **full) == (
+        "3 t x 2 ch x 10 x 20 x 30 px (tczyx), 0.1 MB, voxel 2 x 0.5 x 0.5 micrometer"
+    )
+    cropped = dict(full, z_range=(2, 5), y_range=(0, 9), channels=("b",))
+    assert convert_module.output_summary(ds, **cropped).startswith("3 t x 4 x 10 x 30 px (tzyx)")
+
+
+def test_output_summary_keeps_singletons_when_asked():
+    ds = _dataset()
+    single = dict(t_range=(1, 1), z_range=(4, 4), y_range=(0, 19), x_range=(0, 29), channels=("a",))
+    assert convert_module.output_summary(ds, **single).startswith("20 x 30 px (yx),")
+    assert convert_module.output_summary(ds, **single, drop_singleton=False).startswith(
+        "1 t x 1 ch x 1 x 20 x 30 px (tczyx),"
+    )
+
+
+def test_output_recap_sits_above_the_convert_button(converter, app):
+    conversion_toggle(converter).setChecked(False)
+    show(converter, app)
+    label, button = converter.output_label, convert_button(converter)
+    assert label.text().startswith("Load a dataset")
+    assert section_of(label) is section_of(button)
+    assert label.isVisible()  # also while the parameters are collapsed
+    assert label.mapTo(converter, label.rect().topLeft()).y() < button.mapTo(converter, button.rect().topLeft()).y()
+
+
+def test_output_recap_updates_on_load_and_crop(converter, tmp_path):
+    path = tmp_path / "small.zarr"
+    _dataset().to_zarr(path)
+    converter.visualize_widget.file_format.value = "zarr"
+    converter.visualize_widget.input_path.value = path
+    assert converter.output_label.text().startswith("Output: 3 t x 2 ch x 10 x 20 x 30 px (tczyx)")
+    converter.convert_widget.z_range.value = (0, 4)
+    assert converter.output_label.text().startswith("Output: 3 t x 2 ch x 5 x 20 x 30 px")
+
+
+# ---------------------------------------------------------------------------
 # Other widgets
 # ---------------------------------------------------------------------------
 
-def test_other_widgets_are_scrollable_docks(app, monkeypatch):
+def test_export_widget_is_scrollable_dock(app, monkeypatch):
     monkeypatch.setattr(sys, "stdout", sys.stdout)
     monkeypatch.setattr(sys, "stderr", sys.stderr)
-    for module, factory in ((overview_module, "overview_widget"), (export_module, "export_widget")):
-        monkeypatch.setattr(module, "current_viewer", lambda: ViewerModel(), raising=False)
-        widget = getattr(module, factory)()
-        assert widget.findChild(QScrollArea) is not None, factory
+    monkeypatch.setattr(export_module, "current_viewer", lambda: ViewerModel(), raising=False)
+    widget = export_module.export_widget()
+    assert widget.findChild(QScrollArea) is not None
 
 
 def test_compose_dock_without_bottom_pane(app):

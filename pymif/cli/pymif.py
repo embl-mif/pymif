@@ -609,6 +609,7 @@ def mosaic_convert(
     sigmoid_steepness: Optional[float] = None,
     channels: Optional[List[str]] = None,
     groups: Optional[List[str]] = None,
+    tiles: Optional[List[str]] = None,
     skip_tiles: Optional[List[str]] = None,
     midline_axis: str = "x",
     out_dtype: Optional[str] = None,
@@ -620,7 +621,8 @@ def mosaic_convert(
 
     The ``convert`` options (``max_size`` ... ``num_workers``) have the same meaning as in
     :func:`zarr_convert`, applied to the fused output; ``subset`` crops it (z/y/x in
-    output voxels) and selects channels (c). The other options are those of
+    output voxels) and selects channels (c). ``tiles`` lists the only tiles to fuse
+    (ids as for ``skip_tiles``); the output then fits them. The other options are those of
     :func:`pymif.mosaic_manager.fuse_tiles`: ``read_downsample`` is its ``ds`` and
     ``read_workers`` its ``workers``.
     """
@@ -634,11 +636,15 @@ def mosaic_convert(
     mosaic = reader(input_path)
     print(f"{len(mosaic.tiles)} tiles, channels {mosaic.channels}, groups {mosaic.groups}")
 
-    tiles = mosaic.tiles
+    use = mosaic.tiles
+    if tiles:
+        wanted = {id(t) for t in mosaic.tiles_by_ids(list(tiles))}
+        use = [t for t in use if id(t) in wanted]
+        print(f"Fusing only {len(use)} tile(s) of {list(tiles)}")
     if groups:
         wanted = {str(g) for g in groups}
-        tiles = [t for t in tiles if str(t.group) in wanted]
-        if not tiles:
+        use = [t for t in use if str(t.group) in wanted]
+        if not use:
             raise ValueError(f"No tile in groups {sorted(wanted)}; available: {mosaic.groups}.")
 
     skip = mosaic.tiles_by_ids(list(skip_tiles)) if skip_tiles else None
@@ -647,8 +653,8 @@ def mosaic_convert(
 
     ds = _int_triplet(read_downsample)
     projection = None if projection in (None, "none", "None", "") else projection
-    crop, selected = _subset_to_crop(subset, channels or list(dict.fromkeys(t.channel for t in tiles)))
-    plan = plan_fusion(tiles, ds=ds, projection=projection, blend=blend, channels=selected,
+    crop, selected = _subset_to_crop(subset, channels or list(dict.fromkeys(t.channel for t in use)))
+    plan = plan_fusion(use, ds=ds, projection=projection, blend=blend, channels=selected,
                        crop=crop, skip=skip, out_dtype=out_dtype, midline_axis=midline_axis)
     print(f"\n--->Output: {plan.summary()}")
 
@@ -685,7 +691,7 @@ def mosaic_convert(
     print(f"WRITE OPTIONS: {write_kwargs}")
     print("\n--->Fusing to zarr")
     fuse_tiles(
-        tiles,
+        use,
         zarr_path,
         ds=ds,
         projection=projection,
@@ -742,7 +748,7 @@ def convert_mosaic_batch(args):
         for key in ("projection", "blend", "midline_axis", "out_dtype", "temp_dir"):
             if key in columns and _present(v.get(key)):
                 kwargs[key] = str(v[key]).strip()
-        for key in ("channels", "groups", "skip_tiles"):
+        for key in ("channels", "groups", "tiles", "skip_tiles"):
             if key in columns and _present(v.get(key)):
                 kwargs[key] = str(v[key]).split()
         if "read_workers" in columns and _present(v.get("read_workers")):

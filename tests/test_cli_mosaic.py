@@ -169,3 +169,18 @@ def test_subset_to_crop():
         cli._subset_to_crop("t=0", ["a"])
     with pytest.raises(ValueError):
         cli._subset_to_crop("y=1,2,3", ["a"])
+
+
+def test_fuse_only_some_tiles(acquisition, tmp_path, monkeypatch):
+    out = tmp_path / "right.ome.zarr"
+    _run(monkeypatch, "fuse", "-i", str(acquisition), "-z", str(out), "-p", "max", "-sh", "none",
+         "-t", "2-x00-y00", "2-x01-y00")
+    img = mm.ZarrManager(str(out)).data[0].compute()
+    # only the R tiles (x from 35 to 95 um, 2 um voxels): the output fits them
+    assert img.shape[-1] == (95 - 35) // 2 and img.min() > 0
+
+    csv = tmp_path / "batch.csv"
+    pd.DataFrame([{"input": str(acquisition), "output": str(tmp_path / "b.ome.zarr"), "projection": "max",
+                   "shards": "none", "channels": "GFP", "tiles": "1-x00-y00"}]).to_csv(csv, index=False)
+    _run(monkeypatch, "fuse", "--batch", str(csv))
+    assert mm.ZarrManager(str(tmp_path / "b.ome.zarr")).data[0].shape[-1] == 32 // 2

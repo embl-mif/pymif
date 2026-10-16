@@ -399,6 +399,11 @@ def _add_mosaic_arguments(parser, legacy: bool = False):
     parser.add_argument('-ch', '--channels', nargs='+', help='Tile channels to fuse, in output order. Default: all.')
     parser.add_argument('-g', '--groups', nargs='+', help='Tile groups to fuse (e.g. L R). Default: all.')
     parser.add_argument(
+        '-t', '--tiles', nargs='+',
+        help='Only fuse these tiles (the output fits them): stacks such as 1-x00-y00 (every channel), or '
+             '"channel/stack" ids such as cFos-647/1-x00-y00. Default: all.',
+    )
+    parser.add_argument(
         '-st', '--skip_tiles', nargs='+',
         help='Tiles to leave blank (not read; the output keeps its full size): "channel/stack" ids such as '
              'cFos-647/1-x00-y00, or a stack such as 1-x00-y00 for every channel.',
@@ -471,12 +476,13 @@ FUSE_HELP = """\
     `pymif convert --batch` (chunk_size | max_size(MB) | zarr_format | downscale_factor | subset | channel_colors |
     channel_names | num_levels | shards | shard_target_mb | shard_exclude_axes | drop_singleton | num_workers)
     and of the fusion columns
-    downsample | projection | blend | sigmoid_steepness | channels | groups | skip_tiles | midline_axis | out_dtype |
-    read_workers | temp_dir | overwrite, e.g.
+    downsample | projection | blend | sigmoid_steepness | channels | groups | tiles | skip_tiles | midline_axis |
+    out_dtype | read_workers | temp_dir | overwrite, e.g.
       input                  | microscope | output                 | downsample | projection | blend   | num_levels
       /path/to/acquisition_1 | luxendo    | /path/to/acq1_3D.zarr  | 4 8 8      | none       | sigmoid | 3
       /path/to/acquisition_1 | luxendo    | /path/to/acq1_MIP.zarr | 1 8 8      | max        | midline |
-    Leave a cell empty for the default. Lists (channels, groups, skip_tiles, channel_names...) are space separated.
+    Leave a cell empty for the default. Lists (channels, groups, tiles, skip_tiles, channel_names...) are space
+    separated.
     The napari "Mosaic Fusion" widget writes such files with "Append to batch CSV".
 """
 

@@ -239,6 +239,41 @@ def _channel_colors_from_metadata(dataset, selected_channel_names):
     return [str(lookup[name]) for name in selected_channel_names if name in lookup]
 
 
+def output_summary(dataset, *, t_range, z_range, y_range, x_range, channels, drop_singleton=True):
+    """Level-0 recap of the converted dataset, in the format of the mosaic fusion plan.
+
+    One line such as ``3 t x 2 ch x 120 x 1024 x 1024 px (tczyx), 1.51 GB,
+    voxel 2 x 0.65 x 0.65 micrometer``, following the selected ranges and
+    channels and, with ``drop_singleton``, the t/c/z axes dropped on write.
+    """
+    axes = _dataset_axes(dataset)
+    ranges = {"t": t_range, "z": z_range, "y": y_range, "x": x_range}
+    sizes = {}
+    for ax in axes:
+        if ax == "c":
+            names = dataset.metadata.get("channel_names", [])
+            selected = [ch for ch in channels if ch in names]
+            sizes[ax] = len(selected) if selected else _axis_size(dataset, "c")
+        else:
+            start, end = _present_range(dataset, ax, ranges[ax])
+            sizes[ax] = abs(end - start) + 1
+    out_axes = "".join(ax for ax in axes if not (drop_singleton and ax in "tcz" and sizes[ax] == 1))
+
+    labels = {"t": "t", "c": "ch"}
+    parts = [f"{sizes[ax]} {labels[ax]}" for ax in out_axes if ax in labels]
+    spatial = [ax for ax in out_axes if ax in "zyx"]
+    parts.append(" x ".join(str(sizes[ax]) for ax in spatial) + " px")
+    dims = " x ".join(parts)
+
+    nbytes = int(np.prod([sizes[ax] for ax in out_axes])) * np.dtype(dataset.data[0].dtype).itemsize
+    size = f"{nbytes / 1e9:.2f} GB" if nbytes >= 1e8 else f"{nbytes / 1e6:.1f} MB"
+
+    vox = " x ".join(f"{v:.3g}" for v in _scale_for_axes(dataset, spatial))
+    units = dict(zip([ax for ax in axes if ax in "zyx"], dataset.metadata.get("units") or ()))
+    unit = " ".join(dict.fromkeys(str(units[ax]) for ax in spatial if units.get(ax)))
+    return f"{dims} ({out_axes}), {size}, voxel {vox} {unit}".rstrip()
+
+
 def _append_batch_csv(csv_path, row):
     return append_batch_csv(csv_path, row, BATCH_CSV_COLUMNS)
 
@@ -817,6 +852,32 @@ def convert_widget():
 
     ui = {}  # widgets created later, when the dock is composed
 
+    output_label = QLabel("Load a dataset to see the output size.")
+    output_label.setWordWrap(True)
+    output_label.setStyleSheet("QLabel { color: #aaaaaa; }")
+
+    def _update_output_summary(*_):
+        dataset = _state["dataset"]
+        if dataset is None:
+            return
+        w = make_convert_widget
+        try:
+            text = output_summary(
+                dataset,
+                t_range=w.t_range.value,
+                z_range=w.z_range.value,
+                y_range=w.y_range.value,
+                x_range=w.x_range.value,
+                channels=w.channels.value,
+                drop_singleton=w.drop_singleton.value,
+            )
+        except Exception as e:  # the recap must never break the widget
+            text = f"cannot estimate ({e})"
+        output_label.setText(f"Output: {text}")
+
+    for name in ("t_range", "z_range", "y_range", "x_range", "channels", "drop_singleton"):
+        getattr(make_convert_widget, name).changed.connect(_update_output_summary)
+
     def _set_convert_enabled(enabled):
         """Enable or disable the conversion panel *and* its Convert button.
 
@@ -986,6 +1047,7 @@ def convert_widget():
         make_convert_widget.channels.enabled = n_channels > 0
 
         make_convert_widget.output_path.value = default_output
+        _update_output_summary()
 
         viewer.layers.clear()
 
@@ -1142,8 +1204,18 @@ def convert_widget():
     stdout_stream = EmittingStream()
     stderr_stream = EmittingStream()
 
+    previous_streams = (sys.stdout, sys.stderr)
     sys.stdout = stdout_stream
     sys.stderr = stderr_stream
+
+    def _restore_console(*_):
+        # Closing the widget deletes its log: output must not keep going to it.
+        if sys.stdout is stdout_stream:
+            sys.stdout = previous_streams[0]
+        if sys.stderr is stderr_stream:
+            sys.stderr = previous_streams[1]
+
+    log_widget.destroyed.connect(_restore_console)
 
     append_with_time = make_log_appender(log_widget)
 
@@ -1180,9 +1252,14 @@ def convert_widget():
     button_holder = make_button_holder(convert_button)
     ui["button_holder"] = button_holder  # locked as a whole while converting (see _set_convert_enabled)
     button_holder.setEnabled(make_convert_widget.native.isEnabled())
+    section_conversion.layout().addWidget(output_label)  # visible with the parameters collapsed
     section_conversion.layout().addWidget(button_holder)
 
     # All three boxes (input, conversion, batch) scroll together; the log is a
     # resizable pane below.
     layout.addStretch(1)
-    return compose_dock(container, bottom=log_section)
+    dock = compose_dock(container, bottom=log_section)
+    # exposed for tests
+    dock.visualize_widget, dock.convert_widget = make_visualize_widget, make_convert_widget
+    dock.output_label = output_label
+    return dock

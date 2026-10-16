@@ -49,21 +49,6 @@ def test_fuse_kwargs():
                   "levels": 2, "workers": 3, "overwrite": True}
 
 
-def test_dtype_contrast_limits_read_no_data():
-    import numpy as np
-
-    from pymif.mosaic_manager import Tile
-
-    class NoRead:  # fails if the pixel data is read
-        shape, dtype = (2, 4, 4), np.dtype("uint16")
-
-        def __getitem__(self, key):
-            raise AssertionError("pixel data read")
-
-    tiles = [Tile(NoRead(), (0, 0, 0), (1, 1, 1), "A"), Tile(np.zeros((2, 4, 4), np.float32), (0, 0, 0), (1, 1, 1), "B")]
-    assert mw.dtype_contrast_limits(tiles) == {"A": (0.0, 65535.0)}  # floats: left to napari
-
-
 def test_widget_populates_and_plans(app, tmp_path):
     dock = mw.mosaic_widget()
     assert not dock.fuse_widget.enabled  # nothing loaded yet
@@ -290,3 +275,185 @@ def test_apply_display_windows():
     assert tuple(v.layers[0].contrast_limits) == (100.0, 1200.0)
     assert tuple(v.layers[1].contrast_limits) == (5.0, 50.0)
     assert tuple(v.layers[0].contrast_limits_range) == (0, 65535)
+
+
+def _stacked_mosaic():
+    """FakeMosaic with stack names: s0 at x 0..16, s1 at x 8..24, in channels A and B."""
+    m = FakeMosaic(".")
+    for i, t in enumerate(m.tiles):
+        t.attrs["stack"] = f"s{i % 2}"
+    return m
+
+
+def test_tile_map_picks_stack_positions():
+    from napari.components import ViewerModel
+
+    m = _stacked_mosaic()
+    fp = mw.tile_footprints(m)
+    assert list(fp) == ["s0", "s1"]  # one rectangle per position, shared by both channels
+    assert fp["s1"].tolist() == [[0, 8], [16, 24]]
+
+    v = ViewerModel()
+    m.visualize(viewer=v, contrast_limits={"A": (0, 10), "B": (0, 10)})
+    layer = mw.add_tile_map(v, m)
+    assert v.layers.extent.units is not None  # same units as the tile layers (no napari warning)
+    assert mw.find_tile_map(v.layers, m.path) is layer and mw.find_tile_map(v.layers, "elsewhere") is None
+    assert mw.picked_stack_ids(layer) == ["s0", "s1"]
+    assert mw.picked_stack_ids(None) is None
+
+    assert mw.toggle_tile_at(layer, (0, 4, 20)) == "s1"      # 3D cursor position, 2D map
+    assert mw.picked_stack_ids(layer) == ["s0"]
+    assert mw.picked_tiles(m, m.tiles, ["s0"]) == [m.tiles[0], m.tiles[2]]
+    assert mw.picked_tiles(m, m.tiles, None) == m.tiles
+    assert not np.allclose(layer.face_color[0], layer.face_color[1])  # unpicked looks different
+    assert mw.toggle_tile_at(layer, (0, 100, 100)) is None   # no tile there
+    assert mw.toggle_tile_at(layer, (0, 4, 20)) == "s1"
+    assert mw.picked_stack_ids(layer) == ["s0", "s1"]
+
+    # the map cannot be edited, also after switching to 3D and back
+    assert not layer.editable
+    v.dims.ndisplay = 3
+    v.dims.ndisplay = 2
+    assert not layer.editable
+
+    # loading again replaces the map
+    assert mw.add_tile_map(v, m) is not layer and sum(lay.name.startswith(mw.TILE_MAP) for lay in v.layers) == 1
+
+
+class _Click:
+    """Minimal napari mouse event for the viewer drag callbacks."""
+
+    def __init__(self, position, pos=(10, 10), modifiers=()):
+        self.position, self.pos, self.button, self.type = position, np.array(pos), 1, "mouse_press"
+        self.modifiers = list(modifiers)
+
+
+def _press(viewer, event, moves=(), to=None, before_release=None):
+    """Press, move through canvas positions ``moves`` (ending at world position ``to``), release.
+
+    ``before_release()`` runs after the moves, while the button is still down.
+    """
+    gens = [cb(viewer, event) for cb in viewer.mouse_drag_callbacks]
+    gens = [g for g in gens if g is not None and next(g, StopIteration) is not StopIteration]
+    for pos in moves:
+        event.type, event.pos = "mouse_move", np.array(pos)
+        if to is not None:
+            event.position = to
+        for g in gens:
+            next(g, None)
+    if before_release is not None:
+        before_release()
+    event.type = "mouse_release"
+    for g in gens:
+        next(g, None)
+
+
+def test_widget_fuses_and_exports_picked_tiles_only(app, monkeypatch):
+    from napari.components import ViewerModel
+
+    viewer = ViewerModel()
+    monkeypatch.setattr(mw, "current_viewer", lambda: viewer)
+    dock = mw.mosaic_widget()
+    m = _stacked_mosaic()
+    dock.state["mosaic"] = m
+    dock.populate(m, Path("."))
+    layer = mw.find_tile_map(viewer.layers, m.path)
+    assert layer is not None
+    fw = dock.fuse_widget
+    fw.ds_z.value, fw.ds_y.value, fw.ds_x.value = 1, 1, 1
+    assert "x 8 x 16 x 24 px" in dock.plan_label.text()
+
+    _press(viewer, _Click((0, 4, 20)), moves=[(30, 30)])  # a drag pans: nothing picked
+    assert mw.picked_stack_ids(layer) == ["s0", "s1"]
+    _press(viewer, _Click((0, 4, 20)), moves=[(11, 11)])  # a click with a little jitter
+    assert mw.picked_stack_ids(layer) == ["s0"]
+    assert "x 8 x 16 x 16 px" in dock.plan_label.text()   # the output fits the picked tiles
+
+    viewer.dims.ndisplay = 3                               # no picking in 3D
+    _press(viewer, _Click((0, 4, 20)))
+    assert mw.picked_stack_ids(layer) == ["s0"]
+    viewer.dims.ndisplay = 2
+
+    values = {name: getattr(fw, name).value for name in
+              ("channels", "groups", "projection", "blend", "ds_z", "ds_y", "ds_x", "levels", "workers", "overwrite")}
+    row = mw.batch_row(input_path="acq", microscope="luxendo", output="out.zarr", values=values,
+                       all_groups=["L", "R"], skip_ids=[], picked=["s0"], all_stacks={"s0", "s1"})
+    assert row["tiles"] == "s0"
+    row = mw.batch_row(input_path="acq", microscope="luxendo", output="out.zarr", values=values,
+                       all_groups=["L", "R"], skip_ids=[], picked=["s0", "s1"], all_stacks={"s0", "s1"})
+    assert row["tiles"] == ""                             # every tile: the default
+
+
+def test_tile_map_box_selection(app, monkeypatch):
+    from napari.components import ViewerModel
+
+    class Grid(MosaicManager):  # 3 x 3 tiles of 10 um, overlapping by 2 um
+        def _scan(self):
+            return [Tile(np.zeros((2, 10, 10), np.uint16), (0, 8 * iy, 8 * ix), (1.0, 1.0, 1.0), "A",
+                         attrs={"stack": f"y{iy}x{ix}"}) for iy in range(3) for ix in range(3)]
+
+    viewer = ViewerModel()
+    monkeypatch.setattr(mw, "current_viewer", lambda: viewer)
+    dock = mw.mosaic_widget()
+    m = Grid(".")
+    dock.state["mosaic"] = m
+    dock.populate(m, Path("."))
+    layer = mw.find_tile_map(viewer.layers, m.path)
+    fw = dock.fuse_widget
+    fw.ds_z.value, fw.ds_y.value, fw.ds_x.value = 1, 1, 1
+    # a box inside the first tile also touches the 2 um overlaps of its neighbours (from 8 um)
+    assert mw.tiles_in_box(layer, (0, 0, 0), (0, 9, 9)) == [0, 1, 3, 4]
+    assert mw.tiles_in_box(layer, (0, 1, 1), (0, 7, 7)) == [0]
+
+    def box_layers():
+        return [lay for lay in viewer.layers if lay.metadata.get("mosaic_drag_box")]
+
+    viewer.layers.selection = {viewer.layers[0]}
+    seen = {}
+    _press(viewer, _Click((0, 0, 0), modifiers=["Control"]), moves=[(30, 30), (60, 60)], to=(0, 9, 9),
+           before_release=lambda: seen.update(boxes=[lay.data[0].copy() for lay in box_layers()],
+                                              selection=set(viewer.layers.selection),
+                                              picked=mw.picked_stack_ids(layer)))
+    assert len(seen["boxes"]) == 1                                 # one box, drawn while dragging
+    assert seen["boxes"][0].min(axis=0).tolist() == [0, 0] and seen["boxes"][0].max(axis=0).tolist() == [9, 9]
+    assert seen["selection"] == {viewer.layers[0]}                 # the layer selection is unchanged
+    assert len(seen["picked"]) == 9                                # applied on release only
+    assert box_layers() == []                                      # and removed on release
+    assert mw.picked_stack_ids(layer) == ["y0x2", "y1x2", "y2x0", "y2x1", "y2x2"]
+    assert "x 2 x 26 x 26 px" in dock.plan_label.text()     # still the full extent (corner tiles)
+    _press(viewer, _Click((0, 0, 0), modifiers=["Shift"]), moves=[(60, 60)], to=(0, 6, 22))
+    assert mw.picked_stack_ids(layer) == ["y0x0", "y0x1", "y0x2", "y1x2", "y2x0", "y2x1", "y2x2"]
+    _press(viewer, _Click((0, 15, 15), modifiers=["Shift"]))  # Shift + click picks one tile
+    assert "y1x1" in mw.picked_stack_ids(layer) and len(mw.picked_stack_ids(layer)) == 8
+    _press(viewer, _Click((0, 15, 15), modifiers=["Shift"]))  # ... and does not toggle it
+    assert len(mw.picked_stack_ids(layer)) == 8
+    _press(viewer, _Click((0, 15, 15), modifiers=["Control"]))  # Ctrl + click unpicks it
+    assert "y1x1" not in mw.picked_stack_ids(layer)
+    _press(viewer, _Click((0, 0, 0), modifiers=["Alt"]), moves=[(60, 60)], to=(0, 26, 26))  # Alt: zoom
+    assert len(mw.picked_stack_ids(layer)) == 7
+
+
+def test_show_tiles_follows_picks_and_keeps_contrast(app, monkeypatch):
+    from napari.components import ViewerModel
+
+    viewer = ViewerModel()
+    monkeypatch.setattr(mw, "current_viewer", lambda: viewer)
+    dock = mw.mosaic_widget()
+    m = _stacked_mosaic()
+    monkeypatch.setattr(m, "contrast_limits", lambda *a, **k: pytest.fail("no contrast estimation"))
+    dock.state["mosaic"] = m
+    dock.populate(m, Path("."))
+    dock.show_widget.channels.value = ["A", "B"]
+    dock.show_widget()
+    shown = mw.tile_layers(viewer.layers, m.path)
+    assert len(shown) == 4 and viewer.layers[-1].name == mw.TILE_MAP  # the map stays on top
+    assert tuple(shown[0].contrast_limits) == (0, 65535)              # full range: nothing read
+    shown[0].contrast_limits = (0, 500)                               # linked: every A tile
+
+    layer = mw.find_tile_map(viewer.layers, m.path)
+    mw.toggle_tile_at(layer, (0, 4, 20))                              # unpick s1
+    dock.show_widget()
+    shown = mw.tile_layers(viewer.layers, m.path)
+    assert [lay.metadata["mosaic_tile_id"] for lay in shown] == ["A/s0", "B/s0"]
+    assert tuple(shown[0].contrast_limits) == (0, 500) and tuple(shown[1].contrast_limits) == (0, 65535)
+    assert mw.find_tile_map(viewer.layers, m.path) is layer
