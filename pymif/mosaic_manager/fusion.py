@@ -2,13 +2,15 @@
 
 Fusion runs in two steps:
 
-1. **Level 0** is computed region by region (one chunk footprint in ``y``/``x`` at
-   a time, full ``z``) into a temporary zarr store: for each region only the tile
-   voxels that fall in it are read, downsampled and merged. Memory stays bounded
-   by the region size, no dask graph over all tiles is ever built, and every
-   full-resolution voxel is read once. Reading and downsampling one tile inside
-   one region is the unit of parallel work; merging and writing happen in the
-   calling process.
+1. **Level 0** is computed region by region into a temporary zarr store whose
+   chunks are the regions: for each region only the tile voxels that fall in it
+   are read, downsampled and merged. Regions are sized to cover whole source
+   chunks in ``y``/``x`` (so compressed tile chunks are decoded about once) and cut
+   into ``z`` slabs of bounded size, so memory stays bounded whatever the depth and
+   no dask graph over all tiles is ever built. One whole region (read, merge,
+   write) is the unit of parallel work; regions never share a chunk, so workers
+   write without locks. Sigmoid weights are only evaluated where tiles or groups
+   overlap.
 2. The fused level 0 (already downsampled, so small compared with the raw tiles)
    is written to the final OME-Zarr with :meth:`MicroscopeManager.to_zarr`, so
    pyramid levels, chunks, sharding, compression, zarr format and singleton axes
@@ -21,7 +23,7 @@ import logging
 import math
 import shutil
 from collections import deque
-from concurrent.futures import Future, ProcessPoolExecutor, ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from concurrent.futures.process import BrokenProcessPool
 from dataclasses import dataclass
 from pathlib import Path
@@ -46,9 +48,17 @@ SIGMOID_STEEPNESS = 4.0
 #: Number of full-resolution z planes read at once (bounds memory per worker).
 _SLAB_PLANES = 64
 
-#: Size (y, x) of the regions fused at once, in output voxels; a region spans the whole z range.
+#: Minimum size (y, x) of the regions fused at once, in output voxels. Regions grow to
+#: cover whole source chunks (see :func:`_region_shape`) and are split along z so that
+#: each holds at most ``_REGION_VOXELS`` voxels.
 _REGION_3D = (256, 256)
 _REGION_2D = (1024, 1024)
+#: Largest region side (y or x) chosen to match the source chunks, in output voxels.
+_REGION_MAX = 2048
+#: Voxels per 3D region (32 MB per float32 canvas): bounds the memory of each worker.
+_REGION_VOXELS = 2**23
+#: Codec of the temporary level 0 with ``temp_compression=True`` (zarr's default, zstd).
+_TEMP_COMPRESSORS = "auto"
 
 #: Percentiles of the fused values used as the display window written to the output.
 DISPLAY_PERCENTILES = (0.5, 99.9)
@@ -193,14 +203,60 @@ class _Region:
     placed: List[_Placed]
     midline: Optional[tuple]
     transitions: Optional[tuple] = None  # sigmoid: (axis, _sigmoid_transitions(...))
+    zrange: Tuple[int, int] = (0, 0)  # z0, z1 in output voxels (whole depth for projections)
 
 
-def _overlap(p: _Placed, region, depth: int):
-    """Output-grid ranges ``(k0, k1, j0, j1, i0, i1)`` where tile ``p`` meets ``region``, or ``None``."""
+def _source_chunks(data) -> Optional[Tuple[int, int, int]]:
+    """``(z, y, x)`` chunk shape of a tile's data (zarr, h5py, dask, ...), or ``None``."""
+    chunks = getattr(data, "chunksize", None)  # dask: ``chunks`` holds per-block sizes
+    if chunks is None:
+        chunks = getattr(data, "chunks", None)
+    try:
+        chunks = tuple(int(c) for c in chunks)
+    except (TypeError, ValueError):
+        return None
+    return chunks if len(chunks) == 3 and all(c > 0 for c in chunks) else None
+
+
+def _region_shape(tiles: Sequence[Tile], grid: Tuple[int, int, int], ds: Tuple[int, int, int],
+                  flat: bool) -> Tuple[int, int, int]:
+    """``(z, y, x)`` size of the output regions fused at once, in output voxels.
+
+    A region is read in one go from every tile it overlaps, and a compressed source
+    chunk is decoded in full by every region that touches it. So regions are made at
+    least as large as the (downsampled) source chunks in y and x, preferably twice as
+    large, which keeps the number of times each chunk is decoded close to one. Along
+    z, 3D regions are cut into slabs of whole source chunks so that a region holds
+    about ``_REGION_VOXELS`` voxels whatever the depth. Projections keep the whole z
+    range (it is reduced while reading).
+    """
+    base = _REGION_2D if flat else _REGION_3D
+    src = _source_chunks(tiles[0].data) if tiles else None
+    cz = 1
+    ry, rx = base
+    if src is not None:
+        cz, cy, cx = (max(1, -(-c // d)) for c, d in zip(src, ds))
+        for mult in (2, 1):
+            ry = max(base[0], min(mult * cy, _REGION_MAX))
+            rx = max(base[1], min(mult * cx, _REGION_MAX))
+            if flat or cz * ry * rx <= _REGION_VOXELS:
+                break
+    ry, rx = min(ry, grid[1]), min(rx, grid[2])
+    if flat:
+        return grid[0], ry, rx
+    rz = max(1, _REGION_VOXELS // (ry * rx))
+    if cz > 1:  # whole source chunks along z
+        rz = max(cz, rz - rz % cz)
+    return min(rz, grid[0]), ry, rx
+
+
+def _overlap(p: _Placed, region, zrange: Tuple[int, int]):
+    """Output-grid ranges ``(k0, k1, j0, j1, i0, i1)`` where tile ``p`` meets ``region``
+    (``y0, y1, x0, x1``) within ``zrange`` (``z0, z1``), or ``None``."""
     y0, y1, x0, x1 = region
     oz, oy, ox = p.offset
     sz, sy, sx = p.size
-    k0, k1 = max(0, oz), min(depth, oz + sz)
+    k0, k1 = max(zrange[0], oz), min(zrange[1], oz + sz)
     j0, j1 = max(y0, oy), min(y1, oy + sy)
     i0, i1 = max(x0, ox), min(x1, ox + sx)
     if k1 <= k0 or j1 <= j0 or i1 <= i0:
@@ -208,14 +264,14 @@ def _overlap(p: _Placed, region, depth: int):
     return k0, k1, j0, j1, i0, i1
 
 
-def _target(p: _Placed, region, depth: int, flat: bool):
+def _target(p: _Placed, region, zrange: Tuple[int, int], flat: bool):
     """Canvas slices of ``region`` covered by tile ``p`` (``None`` if they do not overlap)."""
-    ov = _overlap(p, region, depth)
+    ov = _overlap(p, region, zrange)
     if ov is None:
         return None
     k0, k1, j0, j1, i0, i1 = ov
     yx = (slice(j0 - region[0], j1 - region[0]), slice(i0 - region[2], i1 - region[2]))
-    return yx if flat else (slice(k0, k1),) + yx
+    return yx if flat else (slice(k0 - zrange[0], k1 - zrange[0]),) + yx
 
 
 def _read_block(job) -> np.ndarray:
@@ -223,8 +279,8 @@ def _read_block(job) -> np.ndarray:
 
     Returns float32 ``(h, w)`` for projections, ``(d, h, w)`` otherwise.
     """
-    p, region, depth, ds, projection = job
-    k0, k1, j0, j1, i0, i1 = _overlap(p, region, depth)
+    p, region, zrange, ds, projection = job
+    k0, k1, j0, j1, i0, i1 = _overlap(p, region, zrange)
     oz, oy, ox = p.offset
     dz, dy, dx = ds
     src_y = slice((j0 - oy) * dy, (j1 - oy) * dy)
@@ -256,13 +312,13 @@ def _read_block(job) -> np.ndarray:
     return out
 
 
-def _merge_groups(canvases, midline, region, flat: bool, shape) -> np.ndarray:
+def _merge_groups(canvases, midline, region, flat: bool, shape, z0: int = 0) -> np.ndarray:
     """Merge per-group canvases: each group wins on its own side of the cut, others fill gaps."""
     if len(canvases) == 1:
         return next(iter(canvases.values()))[0]
     y0, _, x0, _ = region
     axis, ranges = midline  # axis is an index into (z, y, x)
-    start = (y0, x0)[axis - 1] if axis > 0 else 0
+    start = (y0, x0)[axis - 1] if axis > 0 else z0
     arr_axis = (axis - 1) if flat else axis  # canvas axis of the midline axis
     length = shape[arr_axis]
     pos = start + np.arange(length) + 0.5
@@ -302,9 +358,9 @@ def _log_border_distance(start: int, size: int, lo: int, hi: int) -> np.ndarray:
     return np.log(np.minimum(pos, size - pos))
 
 
-def _tile_log_weight(p: _Placed, region, depth: int, flat: bool, steepness: float) -> np.ndarray:
+def _tile_log_weight(p: _Placed, region, zrange: Tuple[int, int], flat: bool, steepness: float) -> np.ndarray:
     """Log weight of tile ``p`` on its part of ``region`` (shape of :func:`_read_block`)."""
-    k0, k1, j0, j1, i0, i1 = _overlap(p, region, depth)
+    k0, k1, j0, j1, i0, i1 = _overlap(p, region, zrange)
     ly = _log_border_distance(p.offset[1], p.size[1], j0, j1)[:, None]
     lx = _log_border_distance(p.offset[2], p.size[2], i0, i1)[None, :]
     lw = ly + lx
@@ -313,17 +369,77 @@ def _tile_log_weight(p: _Placed, region, depth: int, flat: bool, steepness: floa
     return (steepness * lw).astype(np.float32)
 
 
-def _softmax_add(state, sel, values: np.ndarray, log_weight: np.ndarray) -> None:
+def _softmax_add(state, sel, values: np.ndarray, log_weight: np.ndarray, mask=None) -> None:
     """Add ``values`` with weights ``exp(log_weight)`` to the running weighted sum
-    ``state = (acc, wsum, log_max)`` at ``sel`` (slices or a boolean mask), in place."""
-    acc, wsum, log_max = state
-    old = log_max[sel]
-    new = np.maximum(old, log_weight)
-    rescale = np.exp(old - new)  # 0 where nothing was added yet (old = -inf)
-    w = np.exp(log_weight - new)
-    acc[sel] = acc[sel] * rescale + w * values
-    wsum[sel] = wsum[sel] * rescale + w
-    log_max[sel] = new
+    ``state = (acc, wsum, log_max)`` at ``sel`` (a tuple of slices), in place.
+
+    Only voxels where ``mask`` is true are updated (all of them when ``None``).
+    ``log_weight`` may be any array broadcastable to the selection.
+
+    Equivalent to ``new = max(old, lw); acc = acc * exp(old - new) + exp(lw - new) * v``
+    (and likewise for ``wsum``), but one of the two exponentials is always
+    ``exp(0) = 1``, so a single ``exp(-|lw - old|)`` is computed and the updates are
+    done in place on the voxels where each case applies. The result is identical.
+    """
+    acc, wsum, log_max = (a[sel] for a in state)
+    d = log_weight - log_max  # +inf where nothing was added yet (log_max = -inf)
+    up = d > 0  # the new value carries the largest weight: rescale what is there
+    e = np.negative(np.abs(d, out=d), out=d)
+    np.exp(e, out=e)
+    keep = ~up
+    if mask is not None:
+        up &= mask
+        keep &= mask
+    ev = np.multiply(e, values)
+    np.multiply(acc, e, out=acc, where=up)
+    np.add(acc, values, out=acc, where=up)
+    np.add(acc, ev, out=acc, where=keep)
+    np.multiply(wsum, e, out=wsum, where=up)
+    np.add(wsum, np.float32(1), out=wsum, where=up)
+    np.add(wsum, e, out=wsum, where=keep)
+    np.copyto(log_max, np.broadcast_to(log_weight, log_max.shape), where=up)
+
+
+def _runs(flags: np.ndarray) -> List[slice]:
+    """Slices of the runs of ``True`` in a 1D boolean array."""
+    edges = np.flatnonzero(np.diff(np.concatenate(([False], flags, [False])).astype(np.int8)))
+    return [slice(int(a), int(b)) for a, b in zip(edges[::2], edges[1::2])]
+
+
+def _sigmoid_add(state, sl, blk: np.ndarray, log_weight: np.ndarray, previous: List[tuple]) -> None:
+    """Add tile block ``blk`` at canvas slices ``sl`` to a group's softmax ``state``.
+
+    Where no tile was added before (most of a tile, away from the overlaps), the
+    weighted sum is simply initialised with the tile; the weighted update of
+    :func:`_softmax_add` only runs on the boxes where the tile meets the tiles in
+    ``previous`` (their canvas slices, to which ``sl`` is then appended). The
+    result is identical to running :func:`_softmax_add` on the whole block.
+    """
+    overlaps = []
+    for q in previous:
+        inter = [slice(max(a.start, b.start), min(a.stop, b.stop)) for a, b in zip(sl, q)]
+        if all(i.stop > i.start for i in inter):
+            overlaps.append(tuple(slice(i.start - a.start, i.stop - a.start) for i, a in zip(inter, sl)))
+    previous.append(sl)
+    acc, wsum, log_max = (a[sl] for a in state)
+    if not overlaps:
+        acc[...] = blk
+        wsum[...] = 1
+        log_max[...] = log_weight
+        return
+    todo = np.zeros(blk.shape, bool)
+    for o in overlaps:
+        todo[o] = True
+    fresh = ~todo
+    np.copyto(acc, blk, where=fresh)
+    np.copyto(wsum, np.float32(1), where=fresh)
+    np.copyto(log_max, log_weight, where=fresh)
+    for o in overlaps:  # boxes may overlap each other: every voxel is updated once
+        mask = todo[o]
+        if mask.any():
+            _softmax_add(state, tuple(slice(a.start + b.start, a.start + b.stop) for a, b in zip(sl, o)),
+                         blk[o], log_weight[o], mask=mask)
+            todo[o] = False
 
 
 def _new_softmax_state(shape):
@@ -341,7 +457,8 @@ def _group_log_weight(transitions, pos: np.ndarray, steepness: float) -> np.ndar
     return steepness * lw
 
 
-def _merge_sigmoid(canvases, transitions, region, flat: bool, shape, steepness: float) -> np.ndarray:
+def _merge_sigmoid(canvases, transitions, region, flat: bool, shape, steepness: float,
+                   z0: int = 0) -> np.ndarray:
     """Weighted mean of every group, then of the groups across their overlaps."""
     means = {}
     for g, (acc, wsum, _) in canvases.items():
@@ -354,92 +471,119 @@ def _merge_sigmoid(canvases, transitions, region, flat: bool, shape, steepness: 
 
     y0, _, x0, _ = region
     axis, per_group = transitions  # axis is an index into (z, y, x)
-    start = (y0, x0)[axis - 1] if axis > 0 else 0
+    start = (y0, x0)[axis - 1] if axis > 0 else z0
     arr_axis = (axis - 1) if flat else axis
     length = shape[arr_axis]
     pos = start + np.arange(length) + 0.5
     bshape = [1] * len(shape)
     bshape[arr_axis] = length
-    state = _new_softmax_state(shape)
-    for g, (mean, cov) in means.items():
-        lw = _group_log_weight(per_group[g], pos, steepness).astype(np.float32).reshape(bshape)
-        _softmax_add(state, cov, mean[cov], np.broadcast_to(lw, shape)[cov])
-    acc, wsum, _ = state
+    # Where a single group covers a voxel its weighted mean is its own value; the
+    # weighted merge only runs on the slabs (along the midline axis) where groups meet.
+    count = np.zeros(shape, np.uint8)
     result = np.zeros(shape, np.float32)
-    np.divide(acc, wsum, out=result, where=wsum > 0)
+    for mean, cov in means.values():
+        count += cov
+        np.copyto(result, mean, where=cov)
+    shared = count > 1
+    other = tuple(i for i in range(len(shape)) if i != arr_axis)
+    for run in _runs(shared.any(axis=other)):
+        sel = [slice(None)] * len(shape)
+        sel[arr_axis] = run
+        sel = tuple(sel)
+        state = _new_softmax_state(result[sel].shape)
+        everything = (slice(None),) * len(shape)
+        for g, (mean, cov) in means.items():
+            lw = _group_log_weight(per_group[g], pos[run], steepness).astype(np.float32)
+            bshape[arr_axis] = run.stop - run.start
+            _softmax_add(state, everything, mean[sel], lw.reshape(bshape), mask=cov[sel])
+        acc, wsum, _ = state
+        merged = np.zeros(acc.shape, np.float32)
+        np.divide(acc, wsum, out=merged, where=wsum > 0)
+        np.copyto(result[sel], merged, where=shared[sel])
     return result
 
 
-def _finish_region(r: _Region, entries, arr, depth: int, blend, dtype, flat: bool,
-                   steepness: float = SIGMOID_STEEPNESS) -> np.ndarray:
-    """Merge the tile blocks of region ``r`` (futures or pending jobs), write it and
-    return a small sample of its non-zero values (for the display window)."""
+def _fuse_region(r: _Region, arr, ds, projection, blend, dtype,
+                 steepness: float = SIGMOID_STEEPNESS) -> np.ndarray:
+    """Read the tiles of region ``r``, merge them, write the region into ``arr`` and
+    return a small sample of its non-zero values (for the display window).
+
+    Runs in the workers: regions are aligned with the chunks of ``arr``, so two
+    regions never write the same chunk and need no lock.
+    """
+    flat = projection is not None
     y0, y1, x0, x1 = r.bounds
-    shape = (y1 - y0, x1 - x0) if flat else (depth, y1 - y0, x1 - x0)
+    z0, z1 = r.zrange
+    shape = (y1 - y0, x1 - x0) if flat else (z1 - z0, y1 - y0, x1 - x0)
     sigmoid = blend == "sigmoid"
     canvases: Dict[Optional[str], tuple] = {}
-    for p, pending in entries:
+    filled: Dict[Optional[str], List[tuple]] = {}  # sigmoid: canvas slices of the tiles added so far
+    for p in r.placed:
         key = p.tile.group if blend in ("midline", "sigmoid") else None
         if key not in canvases:
             canvases[key] = (_new_softmax_state(shape) if sigmoid
                              else (np.zeros(shape, np.float32), np.zeros(shape, bool)))
-        sl = _target(p, r.bounds, depth, flat)
-        blk = pending.result() if isinstance(pending, Future) else _read_block(pending)
+        sl = _target(p, r.bounds, r.zrange, flat)
+        blk = _read_block((p, r.bounds, r.zrange, ds, projection))
         if sigmoid:
-            _softmax_add(canvases[key], sl, blk, _tile_log_weight(p, r.bounds, depth, flat, steepness))
+            _sigmoid_add(canvases[key], sl, blk, _tile_log_weight(p, r.bounds, r.zrange, flat, steepness),
+                         filled.setdefault(key, []))
         else:
             acc, cov = canvases[key]
             _combine(acc[sl], cov[sl], blk, blend)
+        del blk
 
     if sigmoid:
-        merged = _merge_sigmoid(canvases, r.transitions, r.bounds, flat, shape, steepness)
+        merged = _merge_sigmoid(canvases, r.transitions, r.bounds, flat, shape, steepness, z0=z0)
     else:
-        merged = _merge_groups(canvases, r.midline, r.bounds, flat, shape)
+        merged = _merge_groups(canvases, r.midline, r.bounds, flat, shape, z0=z0)
+    del canvases
     block = _cast(merged, dtype)
     if flat:
         arr[r.channel_index, y0:y1, x0:x1] = block
     else:
-        arr[r.channel_index, :, y0:y1, x0:x1] = block
+        arr[r.channel_index, z0:z1, y0:y1, x0:x1] = block
     values = block.ravel()[:: max(1, block.size // _WINDOW_SAMPLES)]
     return values[values != 0]
 
 
-def _fuse_level0(regions, arr, *, depth, ds, projection, blend, dtype, steepness: float,
+def _fuse_level0(regions, arr, *, ds, projection, blend, dtype, steepness: float,
                  workers: int, executor: str, progress: bool) -> Dict[int, np.ndarray]:
     """Fuse and write every region of level 0; return a sample of values per channel index.
 
-    The unit of parallel work is one tile inside one region: workers only read and
-    downsample, the calling process merges and writes, so the store is never
-    written concurrently. At most ``2 * workers`` regions are open at a time,
-    which bounds memory.
+    The unit of parallel work is one whole region: a worker reads the tiles that
+    overlap it, merges them and writes the result. Regions match the chunks of
+    ``arr`` exactly, so concurrent writes never touch the same chunk. At most
+    ``2 * workers`` regions are in flight at a time, which bounds memory.
     """
     from tqdm.auto import tqdm
 
-    flat = projection is not None
     pool = None
     if workers > 1:
         pool = (ProcessPoolExecutor if executor == "process" else ThreadPoolExecutor)(max_workers=workers)
-    window = 2 * workers if pool is not None else 0
+    window = 2 * workers
     samples: Dict[int, List[np.ndarray]] = {}
+    args = (arr, ds, projection, blend, dtype, steepness)
 
-    def finish(r, entries):
-        samples.setdefault(r.channel_index, []).append(
-            _finish_region(r, entries, arr, depth, blend, dtype, flat, steepness))
+    def collect(r, values):
+        samples.setdefault(r.channel_index, []).append(values)
         bar.update(1)
 
     try:
         with tqdm(total=len(regions), desc="fusing regions", unit="region", disable=not progress) as bar:
-            open_regions = deque()
-            for r in regions:
-                entries = []
-                for p in r.placed:
-                    job = (p, r.bounds, depth, ds, projection)
-                    entries.append((p, pool.submit(_read_block, job) if pool is not None else job))
-                open_regions.append((r, entries))
-                while len(open_regions) > window:
-                    finish(*open_regions.popleft())
-            while open_regions:
-                finish(*open_regions.popleft())
+            if pool is None:
+                for r in regions:
+                    collect(r, _fuse_region(r, *args))
+            else:
+                in_flight = deque()
+                for r in regions:
+                    in_flight.append((r, pool.submit(_fuse_region, r, *args)))
+                    while len(in_flight) >= window:
+                        done_r, fut = in_flight.popleft()
+                        collect(done_r, fut.result())
+                while in_flight:
+                    done_r, fut = in_flight.popleft()
+                    collect(done_r, fut.result())
     finally:
         if pool is not None:
             pool.shutdown(cancel_futures=True)
@@ -563,7 +707,7 @@ def plan_fusion(
         grid = tuple(b[1] - b[0] for b in bounds)
         origin = tuple(o + s * v for o, s, v in zip(origin, start, out_vox))
         placed = [_Placed(p.tile, tuple(o - s for o, s in zip(p.offset, start)), p.size) for p in placed]
-        placed = [p for p in placed if _overlap(p, (0, grid[1], 0, grid[2]), grid[0]) is not None]
+        placed = [p for p in placed if _overlap(p, (0, grid[1], 0, grid[2]), (0, grid[0])) is not None]
         if not placed:
             raise ValueError("No tile intersects the crop.")
     layout = {n: [p for p in placed if p.tile.channel == n] for n in names}
@@ -650,6 +794,7 @@ def fuse_tiles(
     overwrite: bool = False,
     name: Optional[str] = None,
     temp_dir: str | Path | None = None,
+    temp_compression: bool = False,
     progress: bool = True,
     **write_options,
 ):
@@ -700,7 +845,7 @@ def fuse_tiles(
     downscale_factor
         Factor between pyramid levels: one integer or ``(z, y, x)``.
     workers
-        Number of tiles read in parallel.
+        Number of regions fused in parallel (threads or processes, see ``executor``).
     executor
         ``"process"``, ``"thread"`` or ``"auto"`` (processes when ``workers > 1`` and
         every tile's data is picklable, e.g. :class:`~pymif.mosaic_manager.H5Array`;
@@ -723,6 +868,11 @@ def fuse_tiles(
     temp_dir
         Folder for the temporary fused level 0 (deleted at the end). Default:
         next to ``out``. A local disk is faster when ``out`` is on a network share.
+    temp_compression
+        Compress the temporary level 0. Off by default: skipping compression (and
+        decoding it again for the pyramid) is noticeably faster, but the temporary
+        store then takes the full uncompressed size of level 0 (``plan_fusion(...).nbytes``),
+        so ``temp_dir`` needs room for it. Turn it on when disk space is short.
     progress
         Show progress bars.
     **write_options
@@ -777,12 +927,14 @@ def fuse_tiles(
 
     try:
         # ----- 1. level 0, region by region, into a plain temporary store -----
-        cy, cx = (min(r, n) for r, n in zip(_REGION_2D if flat else _REGION_3D, plan.shape[-2:]))
-        level0 = zarr.open_array(str(tmp), mode="w", shape=plan.shape, dtype=out_dtype,
-                                 chunks=(1,) + (plan.shape[1:2] if not flat else ()) + (cy, cx),
-                                 fill_value=0)
         depth = plan.grid_shape[0]
+        cz, cy, cx = _region_shape(plan.tiles, plan.grid_shape, ds, flat)
+        level0 = zarr.create_array(str(tmp), shape=plan.shape, dtype=out_dtype,
+                                   chunks=(1,) + (() if flat else (cz,)) + (cy, cx),
+                                   fill_value=0, overwrite=True,
+                                   compressors=_TEMP_COMPRESSORS if temp_compression else None)
         axis = "zyx".index(midline_axis)
+        zranges = [(0, depth)] if flat else [(z0, min(z0 + cz, depth)) for z0 in range(0, depth, cz)]
         regions = []
         for ci, n in enumerate(names):
             placed = plan.placed[n]
@@ -791,15 +943,18 @@ def fuse_tiles(
             for y0 in range(0, plan.shape[-2], cy):
                 for x0 in range(0, plan.shape[-1], cx):
                     bounds = (y0, min(y0 + cy, plan.shape[-2]), x0, min(x0 + cx, plan.shape[-1]))
-                    inside = [p for p in placed if _overlap(p, bounds, depth) is not None]
-                    if inside:  # regions without tiles keep the fill value (0)
-                        regions.append(_Region(ci, bounds, inside, midline, transitions))
+                    for zr in zranges:
+                        inside = [p for p in placed if _overlap(p, bounds, zr) is not None]
+                        if inside:  # regions without tiles keep the fill value (0)
+                            regions.append(_Region(ci, bounds, inside, midline, transitions, zr))
+        logger.info("Fusing %d regions of up to %s voxels (z, y, x)", len(regions),
+                    ("-", cy, cx) if flat else (cz, cy, cx))
 
         auto = executor == "auto"
         if auto:
             picklable = all(getattr(t.data, "picklable", False) for t in plan.tiles)
             executor = "process" if workers > 1 and picklable else "thread"
-        options = dict(depth=depth, ds=ds, projection=projection, blend=blend, dtype=out_dtype,
+        options = dict(ds=ds, projection=projection, blend=blend, dtype=out_dtype,
                        steepness=float(sigmoid_steepness), workers=workers, progress=progress)
         try:
             samples = _fuse_level0(regions, level0, executor=executor, **options)
