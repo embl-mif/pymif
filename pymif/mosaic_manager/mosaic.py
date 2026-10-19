@@ -117,7 +117,10 @@ class MosaicManager(ABC):
     """
 
     def __init__(self, path: str | Path):
+        from .readers import check_reader
+
         self.path = Path(path)
+        check_reader(type(self), self.path)  # before a scan of the wrong layout (slow, or misleading)
         self._open_files: list = []
         self.tiles: List[Tile] = self._scan()
         if not self.tiles:

@@ -100,3 +100,17 @@ def test_timelapse_is_refused(tmp_path):
 
     with pytest.raises(NotImplementedError, match="single timepoint"):
         M(".")
+
+
+def test_opera_reader_refuses_luxendo_data(tmp_path):
+    import pytest
+
+    from pymif.mosaic_manager import OperaMosaicManager, WrongReaderError, detect_microscope
+
+    _write_tile(tmp_path / "raw" / "stack_1-x00-y00_ch_GFP-L", "Cam_bottom_00000", "GFP-L", "1-x00-y00", 0.0, 0.0, 30.0)
+    assert detect_microscope(tmp_path) == "luxendo"
+    assert detect_microscope(tmp_path / "raw" / "stack_1-x00-y00_ch_GFP-L") == "luxendo"
+    with pytest.raises(WrongReaderError, match="LuxendoMosaicManager") as e:
+        OperaMosaicManager(tmp_path)
+    assert e.value.detected == "luxendo"
+    assert LuxendoMosaicManager(tmp_path).tiles

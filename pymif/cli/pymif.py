@@ -515,18 +515,17 @@ def convert_single(args):
 # ---------------------------------------------------------------------------
 
 def _mosaic_manager_name_map() -> Dict[str, Any]:
-    from pymif import mosaic_manager as mos
+    from pymif.mosaic_manager import MOSAIC_READERS
 
-    return {
-        'luxendo': mos.LuxendoMosaicManager,
-        'opera': mos.OperaMosaicManager,
-        'zeiss': mos.ZeissMosaicManager,
-    }
+    return dict(MOSAIC_READERS)
 
 
 def _resolve_mosaic_manager(input_path: str, microscope: Optional[str] = None):
-    """Mosaic reader class from an explicit microscope name or by inspecting the folder."""
-    from pymif.mosaic_manager.opera_mosaic_manager import INDEX_NAMES
+    """Mosaic reader class from an explicit microscope name or by inspecting the folder.
+
+    An explicit microscope that does not match a recognised folder is refused when
+    the reader is created (:class:`~pymif.mosaic_manager.WrongReaderError`)."""
+    from pymif.mosaic_manager import detect_microscope
 
     readers = _mosaic_manager_name_map()
     if _present(microscope):
@@ -534,14 +533,9 @@ def _resolve_mosaic_manager(input_path: str, microscope: Optional[str] = None):
         if key not in readers:
             raise TypeError(f'Mosaic microscope {microscope} not recognized. Should be one of {sorted(readers)}.')
         return readers[key], key
-    path = Path(input_path)
-    if path.is_dir():
-        raw = path / "raw" if (path / "raw").is_dir() else path
-        if any(raw.glob("*/*.lux.h5")) or any(raw.glob("*.lux.h5")):
-            return readers["luxendo"], "luxendo"
-    index = readers["opera"].find_index(path)  # Harmony export: Images/Index.xml
-    if index is not None and index.name.lower() in {n.lower() for n in INDEX_NAMES}:
-        return readers["opera"], "opera"
+    key = detect_microscope(input_path)
+    if key is not None:
+        return readers[key], key
     raise TypeError(
         'Could not auto-detect the mosaic type from the input path. '
         f'Pass --microscope explicitly with one of {sorted(readers)}.'

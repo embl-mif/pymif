@@ -12,6 +12,8 @@ A mosaic manager is different from a [microscope manager](readers.md): a `Micros
 
 `LuxendoMosaicManager` and `OperaMosaicManager` are for the **raw** tiles. Data already fused by the vendor software is read with `LuxendoManager` and `OperaManager` (Harmony's `stitchresult/*.ome.tiff`).
 
+Every reader first checks that the folder is not another microscope's: a Harmony export (`Images/Index.xml`) opened with `LuxendoMosaicManager`, or a Luxendo acquisition (`*.lux.h5`) opened with `OperaMosaicManager`, stops at once with a `WrongReaderError` naming the right reader. `detect_microscope(path)` returns `"opera"`, `"luxendo"` or `None`; `pymif fuse` uses it when `--microscope` is not given, and the napari widget switches its *Microscope* choice to the detected one.
+
 ```{note}
 Mosaics are supported for a **single timepoint** so far. Loading a timelapse stops with an error that says so: several acquisitions of the same stack in one folder, or tiles whose metadata report different timepoints.
 ```

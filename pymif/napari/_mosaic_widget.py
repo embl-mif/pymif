@@ -16,11 +16,7 @@ from ._layout import compose_dock, enable_drag_and_drop, make_button_holder, mak
 from ._log import EmittingStream, make_log_appender
 
 #: Mosaic readers offered in the widget (Zeiss is a placeholder for now).
-MOSAIC_READERS = {
-    "luxendo": mos.LuxendoMosaicManager,
-    "opera": mos.OperaMosaicManager,
-    "zeiss": mos.ZeissMosaicManager,
-}
+MOSAIC_READERS = mos.MOSAIC_READERS
 
 #: Label used in the widgets for tiles without a group.
 NO_GROUP = "(none)"
@@ -528,6 +524,9 @@ def mosaic_widget():
         @worker.errored.connect
         def _failed(err):
             print(f"Loading failed: {err}")
+            if isinstance(err, mos.WrongReaderError):
+                load_widget.microscope.value = err.detected
+                print(f"Microscope set to {err.detected}: click Load tiles again.")
             _busy(False)
             _release()
 

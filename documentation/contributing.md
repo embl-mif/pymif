@@ -134,11 +134,11 @@ Things to get right:
 ### Register it
 
 1. Export the class from `pymif/mosaic_manager/__init__.py`.
-2. Command line: add a key to `_mosaic_manager_name_map()` in `pymif/cli/pymif.py` and to the `--microscope` choices in `_add_fuse_microscope()` (`pymif/cli/__arguments.py`). Add an auto-detection rule to `_resolve_mosaic_manager()` if the folder layout is recognisable.
-3. Napari: add it to `MOSAIC_READERS` in `pymif/napari/_mosaic_widget.py`.
+2. Add it to `MOSAIC_READERS` in `pymif/mosaic_manager/readers.py`: the command line and the napari widget take their readers from there. If the folder layout is recognisable, add a rule to `detect_microscope()` there too: `pymif fuse` then picks the reader without `--microscope`, and every reader refuses a folder recognised as another microscope's (`WrongReaderError`, raised by `MosaicManager.__init__` before `_scan()`).
+3. Command line: add the key to the `--microscope` choices in `_add_fuse_microscope()` (`pymif/cli/__arguments.py`).
+4. Documentation: add it to the reader table in [Mosaics](mosaic.md).
 
 Reader options other than the path (such as `flatfield`) are passed by the command line and the napari widget only to readers whose constructor accepts them (`reader_options()`).
-4. Documentation: add it to the reader table in [Mosaics](mosaic.md).
 
 `ZeissMosaicManager` is a registered placeholder whose `_scan()` raises `NotImplementedError`; implementing `_scan()` is all that is left for it. For data stored as one file per plane, `TiffStackArray` (used by `OperaMosaicManager`) is the counterpart of `H5Array`; its optional `transform` corrects every plane when it is read (e.g. a flat-field).
 

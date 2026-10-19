@@ -7,3 +7,4 @@ from .fusion import FusionPlan, display_windows, fuse_tiles, plan_fusion
 from .luxendo_mosaic_manager import LuxendoMosaicManager
 from .opera_mosaic_manager import OperaFlatfield, OperaMosaicManager
 from .zeiss_mosaic_manager import ZeissMosaicManager
+from .readers import MOSAIC_READERS, WrongReaderError, check_reader, detect_microscope

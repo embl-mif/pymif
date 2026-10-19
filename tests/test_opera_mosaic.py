@@ -238,9 +238,9 @@ def test_tiff_stack_array(tmp_path):
     read = a._read
     a._read = lambda z: reads.append(z) or read(z)
     a.prefetch(2)
-    assert a[2, 0, 0] == 3 and a[2, 0, 0] == 3 and reads == [2, 2]
+    assert a[2, 0, 0] == 4 and a[2, 0, 0] == 4 and reads == [2, 2]
     a.prefetch(0)
-    assert a[2, 0, 0] == 3 and a[0, 0, 0] == 2 and reads == [2, 2, 0, 2, 0]  # another plane drops it
+    assert a[2, 0, 0] == 4 and a[0, 0, 0] == 2 and reads == [2, 2, 0, 2, 0]  # another plane drops it
 
 
 def test_opera_visualize_reads_one_plane_per_tile(export, monkeypatch):
@@ -294,6 +294,21 @@ def test_cli_fuse_opera(export, tmp_path, monkeypatch):
     assert corrected.shape == plain.shape and not np.array_equal(corrected, plain)
     # field 3 has a failed plane: the projection of the two other planes
     assert np.array_equal(plain[0], np.maximum(raw_plane(3, 1, 1), raw_plane(3, 3, 1)))
+
+
+def test_wrong_reader_is_refused(export, monkeypatch):
+    """An Opera export opened with the Luxendo reader fails at once, naming the right reader."""
+    from pymif.mosaic_manager import LuxendoMosaicManager, WrongReaderError, detect_microscope
+
+    for path in (export, export / "Images", export / "Images" / "Index.xml"):
+        assert detect_microscope(path) == "opera"
+    assert detect_microscope(export.parent) is None
+    monkeypatch.setattr(LuxendoMosaicManager, "_scan", lambda self: pytest.fail("scanned with the wrong reader"))
+    with pytest.raises(WrongReaderError, match="OperaMosaicManager") as e:
+        LuxendoMosaicManager(export)
+    assert e.value.detected == "opera"
+    with pytest.raises(WrongReaderError):
+        _run(monkeypatch, "fuse", "-i", str(export), "-z", str(export.parent / "x.ome.zarr"), "-m", "luxendo")
 
 
 def test_cli_fuse_batch_flatfield_column(export, tmp_path, monkeypatch):
