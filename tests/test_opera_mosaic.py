@@ -46,7 +46,7 @@ def _channel_entries(flatfield: bool) -> str:
     return "\n".join(out)
 
 
-def write_export(root, flatfield_in_index: bool = True):
+def write_export(root, flatfield_in_index: bool = True, plate=(8, 12)):
     """A tiny Harmony export: ``root/Images/Index.xml`` and one TIFF per plane."""
     images = root / "Images"
     images.mkdir(parents=True)
@@ -67,10 +67,12 @@ def write_export(root, flatfield_in_index: bool = True):
                     f'<PositionX Unit="m">{x}</PositionX><PositionY Unit="m">{y}</PositionY>'
                     f'<PositionZ Unit="m">{z}</PositionZ><AbsPositionZ Unit="m">{0.1 + z + field * 1e-5}</AbsPositionZ>'
                     "</Image>")
+    plates = (f"<Plates><Plate><PlateID>plate</PlateID><PlateRows>{plate[0]}</PlateRows>"
+              f"<PlateColumns>{plate[1]}</PlateColumns></Plate></Plates>\n") if plate else ""
     (images / "Index.xml").write_text(
         '<?xml version="1.0" encoding="utf-8"?>\n'
         '<EvaluationInputData Version="2" xmlns="http://www.perkinelmer.com/PEHH/HarmonyV6">\n'
-        f"<Wells><Well><id>0101</id>{''.join(ids)}</Well></Wells>\n"
+        f"{plates}<Wells><Well><id>0101</id>{''.join(ids)}</Well></Wells>\n"
         f"<Maps>{_channel_entries(flatfield_in_index)}</Maps>\n"
         f"<Images>{''.join(entries)}</Images>\n</EvaluationInputData>\n",
         encoding="utf-8")
@@ -168,8 +170,10 @@ def test_opera_scan(export):
     assert right.origin[2] - t.origin[2] == pytest.approx(4.0)
     up = m.select(channel="EGFP", well="A1", opera_field=4)[0]  # stage +y is up in the image
     assert up.origin[1] - t.origin[1] == pytest.approx(-3.0)
+    # same stage position in well B1: one 96-well pitch (9 mm) further along y
     other_well = m.select(channel="EGFP", well="B1")[0]
-    assert other_well.origin == t.origin and other_well.field == "B1_field0"
+    assert other_well.field == "B1_field0"
+    assert np.subtract(other_well.origin, t.origin) == pytest.approx((0.0, 9000.0, 0.0))
 
     # flat-field: EGFP corrected as Harmony does, Brightfield (Identity) unchanged
     assert t.attrs["flatfield"] and isinstance(m.flatfields["EGFP"], OperaFlatfield)
@@ -187,6 +191,18 @@ def test_opera_without_flatfield(export):
     t = m.select(channel="EGFP", well="A1", opera_field=1)[0]
     assert not t.attrs["flatfield"] and m.flatfields["EGFP"] is None
     assert np.array_equal(t.data[0], raw_plane(1, 1, 1))
+
+
+@pytest.mark.parametrize("plate", [None, (7, 7), (16, 24)])
+def test_well_pitch(tmp_path, plate):
+    """Missing or unknown plate format: wells side by side, 10% apart; else the format's pitch."""
+    assert opera.read_plate(write_export(tmp_path / "plate", plate=plate) / "Images" / "Index.xml") == plate
+    m = OperaMosaicManager(tmp_path / "plate", progress=False)
+    a1, b1 = (m.select(channel="EGFP", well=w, opera_field=1)[0] for w in ("A1", "B1"))
+    pitch = 1.1 * (1000.0 + NX * 0.5)  # A1 fields span 1 mm along x, plus one tile
+    if plate == (16, 24):  # 4.5 mm: wide enough
+        pitch = 4500.0
+    assert np.subtract(b1.origin, a1.origin) == pytest.approx((0.0, pitch, 0.0))
 
 
 def test_flatfield_profiles_from_ffc_folder(tmp_path):

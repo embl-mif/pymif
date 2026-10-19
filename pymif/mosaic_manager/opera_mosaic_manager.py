@@ -34,7 +34,13 @@ _BLOCKS = re.compile(
 _OPENING = re.compile(rb"<(?:Entry|Image)(?=[\s>/])")
 _TAG = re.compile(rb"<(\w+)([^>]*)>([^<]*)</\1>")
 _UNIT = re.compile(rb'Unit="([^"]*)"')
+_PLATE = re.compile(rb"<PlateRows>(\d+)</PlateRows>.*?<PlateColumns>(\d+)</PlateColumns>", re.S)
 _READ_BLOCK = 1 << 24
+
+#: Well pitch (micrometres) of the standard (ANSI/SLAS) plate formats, by ``(rows, columns)``.
+#: Harmony gives positions relative to each well centre, not the plate geometry.
+WELL_PITCH = {(2, 3): 39120.0, (3, 4): 26010.0, (4, 6): 19300.0, (6, 8): 13080.0,
+              (8, 12): 9000.0, (16, 24): 4500.0, (32, 48): 2250.0}
 
 
 # ---------------------------------------------------------------------------
@@ -277,6 +283,13 @@ def read_index(path: str | Path, progress: bool = True):
     return channels, stacks
 
 
+def read_plate(path: str | Path) -> Optional[Tuple[int, int]]:
+    """``(PlateRows, PlateColumns)`` of a Harmony index (in its first block), or ``None``."""
+    with open(path, "rb") as f:
+        m = _PLATE.search(f.read(_READ_BLOCK))
+    return (int(m.group(1)), int(m.group(2))) if m else None
+
+
 def _orientation(settings) -> Optional[List[List[float]]]:
     text = settings.get("OrientationMatrix", (None, None))[0]
     return json.loads(text) if text else None
@@ -297,8 +310,7 @@ class OperaMosaicManager(MosaicManager):
 
     * ``channel``: the ``ChannelName`` of the index;
     * ``field``: tiles are grouped per well into fields of touching tiles, named
-      ``<well>_field<k>`` (``A3_field0``, ``A3_field1``, ...), since stage positions
-      are relative to each well and wells would otherwise overlap;
+      ``<well>_field<k>`` (``A3_field0``, ``A3_field1``, ...);
     * ``timepoint``: ``TimepointID - 1`` (mosaics with several timepoints are refused for now);
     * ``attrs``: ``stack`` (``r01c03f01``, the tile id without the channel), ``well``,
       ``row``, ``col``, ``opera_field``, ``channel_id``, ``flatfield`` and ``folder``.
@@ -309,6 +321,11 @@ class OperaMosaicManager(MosaicManager):
     tiles are centred on the field position, and stage ``y`` runs against image rows
     when the matrix says so (negative ``y`` scale). Planes are placed at their
     ``PositionZ``, without the matrix's ``z`` scale and offset.
+
+    Stage positions are relative to the centre of each well, so every well is shifted
+    to its place on the plate (A1 at the top left, ``y`` along rows, ``x`` along columns),
+    by the well pitch of the plate format (``PlateRows`` x ``PlateColumns``, see
+    :data:`WELL_PITCH`). The fused images do not depend on it.
 
     With ``flatfield=True`` (default), every plane is corrected with the background
     flat-field profile stored by Harmony (see :class:`OperaFlatfield`), as in the
@@ -398,6 +415,9 @@ class OperaMosaicManager(MosaicManager):
         if sample is None:
             raise FileNotFoundError(f"Every plane of {index} is marked as failed.")
         dtype, first_shape = self._header(folder, sample)
+        py, px = voxel_yx
+        sizes = [shape_yx[c] or first_shape for c in names]
+        pitch = self._well_pitch(read_plate(index), stacks, max(max(ny * py, nx * px) for ny, nx in sizes))
 
         tiles = []
         missing = 0
@@ -405,15 +425,17 @@ class OperaMosaicManager(MosaicManager):
             members = s["planes"]
             missing += sum(p[2] is None for p in members)
             ny, nx = shape_yx[c] or first_shape
-            py, px = voxel_yx
             sy, sx = flips[c]
+            # stage positions are relative to the well centre: place the well on the plate,
+            # A1 at the top left, as in Harmony's plate view
+            wy, wx = (row - 1) * pitch, (col - 1) * pitch
             well = _well_name(row, col)
             stack = f"r{row:02d}c{col:02d}f{field:02d}"
             data = TiffStackArray([p[2] for p in members], (len(members), ny, nx),
                                   dtype, folder=folder, transform=corrections[c])
             tiles.append(Tile(
                 data=data,
-                origin=(members[0][1], sy * s["y"] - (ny - 1) / 2 * py, sx * s["x"] - (nx - 1) / 2 * px),
+                origin=(members[0][1], wy + sy * s["y"] - (ny - 1) / 2 * py, wx + sx * s["x"] - (nx - 1) / 2 * px),
                 voxel_size=(dz, py, px),
                 channel=names[c],
                 timepoint=timepoint - 1,
@@ -434,6 +456,30 @@ class OperaMosaicManager(MosaicManager):
         for well, members in wells.items():
             for t, k in zip(members, connected_components(members)):
                 t.field = f"{well}_{FIELD_PREFIX}{k}"
+
+    @staticmethod
+    def _well_pitch(plate: Optional[Tuple[int, int]], stacks, tile_um: float) -> float:
+        """Distance (um) between the centres of neighbouring wells.
+
+        The pitch of the plate format (:data:`WELL_PITCH`), widened when the fields of a
+        well (``tile_um`` wide tiles) would reach the next well; without a known format,
+        the widest well plus 10%.
+        """
+        bounds: Dict[Tuple[int, int], List[float]] = {}
+        for (row, col, *_), s in stacks.items():
+            b = bounds.setdefault((row, col), [np.inf, -np.inf, np.inf, -np.inf])
+            b[:] = min(b[0], s["y"]), max(b[1], s["y"]), min(b[2], s["x"]), max(b[3], s["x"])
+        footprint = max(max(b[1] - b[0], b[3] - b[2]) for b in bounds.values()) + tile_um
+        pitch = WELL_PITCH.get(plate)
+        if pitch is None:
+            if len(bounds) > 1:
+                logger.info("Unknown plate format %s: wells are placed %.0f um apart.", plate, 1.1 * footprint)
+            return 1.1 * footprint
+        if pitch < footprint:
+            logger.warning("The fields of a well span %.0f um, more than the %.0f um well pitch of a "
+                           "%dx%d plate: wells are placed %.0f um apart.", footprint, pitch, *plate, 1.1 * footprint)
+            return 1.1 * footprint
+        return pitch
 
     @staticmethod
     def _channel_names(channels, used) -> Dict[int, str]:
