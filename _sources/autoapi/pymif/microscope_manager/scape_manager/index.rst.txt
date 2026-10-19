@@ -1,0 +1,80 @@
+pymif.microscope_manager.scape_manager
+======================================
+
+.. py:module:: pymif.microscope_manager.scape_manager
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   pymif.microscope_manager.scape_manager.ScapeManager
+
+
+Module Contents
+---------------
+
+.. py:class:: ScapeManager(path: Optional[str] = None, chunks: Optional[Tuple[int, Ellipsis]] = None, *, ome_tiff_path: Optional[str] = None)
+
+   Bases: :py:obj:`pymif.microscope_manager.microscope_manager.MicroscopeManager`
+
+
+   MicroscopeManager for SCAPE microscope datasets where metadata is stored in an external
+   .xlif file located in a 'Metadata' folder next to the OME-TIFF.
+
+
+   .. py:attribute:: DEFAULT_CHUNKS
+      :value: (1, 1, 8, 1024, 1024)
+
+
+
+   .. py:attribute:: _LUT_COLORS
+
+
+   .. py:attribute:: _DIM_IDS
+
+
+   .. py:attribute:: ome_tiff_path
+
+
+   .. py:method:: _strip_ome_tiff_suffix(filename: str) -> str
+      :staticmethod:
+
+
+      Convert typical Leica names like:
+        'p1 (2).ome.tif'  -> 'p1 (2)'
+        'p1 (2).ome.tiff' -> 'p1 (2)'
+        'p1 (2).tif'      -> 'p1 (2)'
+
+
+
+   .. py:method:: _find_xlif_for_ome_tiff() -> pathlib.Path
+
+      Given an OME-TIFF path, look for ``<ome_dir>/Metadata/<base_name>.xlif``.
+
+      If not found, fall back to a ``.xlif`` inside ``<ome_dir>/Metadata`` whose
+      name contains the base name, and finally to the first ``.xlif`` there.
+
+
+
+   .. py:method:: _parse_metadata() -> Dict[str, Any]
+
+      Parse dimensional, physical, and channel metadata from the matched .xlif file.
+
+
+
+   .. py:method:: _guess_axes(shape: Tuple[int, Ellipsis], n_channels: int) -> str
+      :staticmethod:
+
+
+      Best-effort axes for TIFF series that do not declare them.
+
+
+
+   .. py:method:: _build_dask_array() -> List[dask.array.Array]
+
+      Build a TCZYX dask array from the provided OME-TIFF file.
+
+
+

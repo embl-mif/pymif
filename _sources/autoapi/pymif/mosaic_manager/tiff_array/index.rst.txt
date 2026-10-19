@@ -1,0 +1,109 @@
+pymif.mosaic_manager.tiff_array
+===============================
+
+.. py:module:: pymif.mosaic_manager.tiff_array
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   pymif.mosaic_manager.tiff_array.TiffStackArray
+
+
+Module Contents
+---------------
+
+.. py:class:: TiffStackArray(paths: Sequence[Optional[str | pathlib.Path]], shape, dtype, folder: Optional[str | pathlib.Path] = None, transform: Optional[Callable[[numpy.ndarray], numpy.ndarray]] = None)
+
+   Lazy, picklable ``(z, y, x)`` stack of single-plane TIFF files (one file per plane).
+
+   Like :class:`~pymif.mosaic_manager.H5Array`, it holds no open file, so it can be
+   sent to worker processes and needs no ``close()``. Slicing reads only the planes it
+   needs; every plane is decoded in full (``chunks`` is ``(1, y, x)``, which the fusion
+   uses to size its regions).
+
+   Parameters
+   ----------
+   paths
+       One file per plane, in z order. ``None`` marks a missing plane, read as zeros.
+   shape, dtype
+       ``(z, y, x)`` shape and data type, from the metadata (no file is opened).
+   folder
+       Folder of relative ``paths`` (keeps memory low for plates with many planes).
+   transform
+       Optional picklable callable applied to every whole plane after reading (e.g. a
+       flat-field correction). It returns floats, which are rounded and clipped to ``dtype``.
+
+
+   .. py:attribute:: picklable
+      :value: True
+
+
+
+   .. py:attribute:: paths
+
+
+   .. py:attribute:: folder
+      :value: None
+
+
+
+   .. py:attribute:: shape
+      :type:  Tuple[int, Ellipsis]
+
+
+   .. py:attribute:: dtype
+
+
+   .. py:attribute:: ndim
+      :value: 3
+
+
+
+   .. py:attribute:: chunks
+
+
+   .. py:attribute:: transform
+      :value: None
+
+
+
+   .. py:attribute:: _ready
+      :type:  Optional[Tuple[int, numpy.ndarray]]
+      :value: None
+
+
+
+   .. py:method:: path(z: int) -> Optional[str]
+
+      Full path of plane ``z`` (``None`` for a missing plane).
+
+
+
+   .. py:method:: prefetch(z: int) -> None
+
+      Read plane ``z`` ahead (e.g. in a thread, for many tiles at once). The next
+      read of this stack uses it, or drops it if it asks for another plane.
+
+
+
+   .. py:method:: _plane(z: int) -> numpy.ndarray
+
+
+   .. py:method:: _read(z: int) -> numpy.ndarray
+
+
+   .. py:method:: __getitem__(key) -> numpy.ndarray
+
+
+   .. py:method:: __getstate__()
+
+
+   .. py:method:: __len__() -> int
+
+
+   .. py:method:: __repr__() -> str
+
+

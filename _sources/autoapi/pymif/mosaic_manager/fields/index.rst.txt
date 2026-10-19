@@ -1,0 +1,102 @@
+pymif.mosaic_manager.fields
+===========================
+
+.. py:module:: pymif.mosaic_manager.fields
+
+.. autoapi-nested-parse::
+
+   Fields of a mosaic: groups of tiles that touch or overlap (connected components).
+
+   A mosaic can hold several separate fields, e.g. two samples or two regions of one
+   sample imaged in the same acquisition. Fusing tiles of different fields into one
+   image puts them on a single canvas that spans all of them, with blank space in
+   between. Every tile therefore gets a ``field`` label when a
+   :class:`~pymif.mosaic_manager.MosaicManager` is loaded, fusion uses the first
+   field by default, and fusing tiles of more than one field is refused
+   (:class:`MultipleFieldsError`).
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   pymif.mosaic_manager.fields.logger
+   pymif.mosaic_manager.fields.FIELD_PREFIX
+
+
+Exceptions
+----------
+
+.. autoapisummary::
+
+   pymif.mosaic_manager.fields.MultipleFieldsError
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.mosaic_manager.fields.natural_key
+   pymif.mosaic_manager.fields.connected_components
+   pymif.mosaic_manager.fields.label_fields
+   pymif.mosaic_manager.fields.fields_of
+   pymif.mosaic_manager.fields.multiple_fields_message
+   pymif.mosaic_manager.fields.check_single_field
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+
+.. py:data:: FIELD_PREFIX
+   :value: 'field'
+
+
+.. py:exception:: MultipleFieldsError
+
+   Bases: :py:obj:`ValueError`
+
+
+   Tiles of more than one field were given to one fusion, which is not allowed.
+
+
+.. py:function:: natural_key(name: str)
+
+   Sort key putting ``field2`` before ``field10``.
+
+
+.. py:function:: connected_components(tiles: Sequence[pymif.mosaic_manager.tile.Tile], tolerance: Optional[Sequence[float]] = None) -> List[int]
+
+   Component index of every tile: tiles whose boxes overlap or touch are connected.
+
+   Two tiles touch when their ``(z, y, x)`` boxes (:attr:`Tile.extent`) overlap or
+   are less than ``tolerance`` apart on every axis (default: one voxel). Components
+   are numbered by their position: by the ``y`` then ``x`` then ``z`` start of their
+   bounding box, so the numbering does not depend on the tile order.
+
+
+.. py:function:: label_fields(tiles: Sequence[pymif.mosaic_manager.tile.Tile], tolerance: Optional[Sequence[float]] = None) -> List[str]
+
+   Set ``tile.field`` on every tile to the name of its connected component.
+
+   Tiles that already have a field (given by the reader) keep it. Returns the
+   field names in order. See :func:`connected_components`.
+
+
+.. py:function:: fields_of(tiles: Sequence[pymif.mosaic_manager.tile.Tile]) -> List[str]
+
+   Names of the fields of ``tiles``, in natural order (tiles without one ignored).
+
+
+.. py:function:: multiple_fields_message(fields: Sequence[str]) -> str
+
+.. py:function:: check_single_field(tiles: Sequence[pymif.mosaic_manager.tile.Tile]) -> List[str]
+
+   Raise :class:`MultipleFieldsError` (and log the error) if ``tiles`` come from
+   more than one field. Returns the fields of ``tiles``.
+
+

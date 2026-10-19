@@ -1,0 +1,584 @@
+pymif.mosaic_manager.fusion
+===========================
+
+.. py:module:: pymif.mosaic_manager.fusion
+
+.. autoapi-nested-parse::
+
+   Fuse the tiles of a :class:`~pymif.mosaic_manager.MosaicManager` into one OME-Zarr image.
+
+   Fusion runs in two steps:
+
+   1. **Level 0** is computed region by region into a temporary zarr store whose
+      chunks are the regions: for each region only the tile voxels that fall in it
+      are read, downsampled and merged. Regions are sized to cover whole source
+      chunks in ``y``/``x`` (so compressed tile chunks are decoded about once) and cut
+      into ``z`` slabs of bounded size, so memory stays bounded whatever the depth and
+      no dask graph over all tiles is ever built. One whole region (read, merge,
+      write) is the unit of parallel work; regions never share a chunk, so workers
+      write without locks. Sigmoid weights are only evaluated where tiles or groups
+      overlap.
+   2. The fused level 0 (already downsampled, so small compared with the raw tiles)
+      is written to the final OME-Zarr with :meth:`MicroscopeManager.to_zarr`, so
+      pyramid levels, chunks, sharding, compression, zarr format and singleton axes
+      behave exactly as for any other PyMIF conversion (``pymif convert``).
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   pymif.mosaic_manager.fusion.logger
+   pymif.mosaic_manager.fusion.BLENDS
+   pymif.mosaic_manager.fusion.PROJECTIONS
+   pymif.mosaic_manager.fusion.SIGMOID_STEEPNESS
+   pymif.mosaic_manager.fusion._SLAB_PLANES
+   pymif.mosaic_manager.fusion._REGION_3D
+   pymif.mosaic_manager.fusion._REGION_2D
+   pymif.mosaic_manager.fusion._REGION_MAX
+   pymif.mosaic_manager.fusion._REGION_VOXELS
+   pymif.mosaic_manager.fusion._TEMP_COMPRESSORS
+   pymif.mosaic_manager.fusion.DISPLAY_PERCENTILES
+   pymif.mosaic_manager.fusion._WINDOW_SAMPLES
+   pymif.mosaic_manager.fusion._RESERVED_WRITE_OPTIONS
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   pymif.mosaic_manager.fusion._Placed
+   pymif.mosaic_manager.fusion._Region
+   pymif.mosaic_manager.fusion.FusionPlan
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.mosaic_manager.fusion._place_tiles
+   pymif.mosaic_manager.fusion._crop_bounds
+   pymif.mosaic_manager.fusion._downsample
+   pymif.mosaic_manager.fusion._cast
+   pymif.mosaic_manager.fusion._combine
+   pymif.mosaic_manager.fusion._group_extents
+   pymif.mosaic_manager.fusion._midline_ranges
+   pymif.mosaic_manager.fusion._sigmoid_transitions
+   pymif.mosaic_manager.fusion._source_chunks
+   pymif.mosaic_manager.fusion._region_shape
+   pymif.mosaic_manager.fusion._overlap
+   pymif.mosaic_manager.fusion._target
+   pymif.mosaic_manager.fusion._read_block
+   pymif.mosaic_manager.fusion._merge_groups
+   pymif.mosaic_manager.fusion._log_border_distance
+   pymif.mosaic_manager.fusion._tile_log_weight
+   pymif.mosaic_manager.fusion._softmax_add
+   pymif.mosaic_manager.fusion._runs
+   pymif.mosaic_manager.fusion._sigmoid_add
+   pymif.mosaic_manager.fusion._new_softmax_state
+   pymif.mosaic_manager.fusion._group_log_weight
+   pymif.mosaic_manager.fusion._merge_sigmoid
+   pymif.mosaic_manager.fusion._fuse_region
+   pymif.mosaic_manager.fusion._fuse_level0
+   pymif.mosaic_manager.fusion._display_windows
+   pymif.mosaic_manager.fusion._write_display_windows
+   pymif.mosaic_manager.fusion.display_windows
+   pymif.mosaic_manager.fusion.plan_fusion
+   pymif.mosaic_manager.fusion._spatial_factor
+   pymif.mosaic_manager.fusion._check_write_options
+   pymif.mosaic_manager.fusion.fuse_tiles
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+
+.. py:data:: BLENDS
+   :value: ('sigmoid', 'max', 'sum', 'midline')
+
+
+.. py:data:: PROJECTIONS
+   :value: (None, 'max', 'sum')
+
+
+.. py:data:: SIGMOID_STEEPNESS
+   :value: 4.0
+
+
+.. py:data:: _SLAB_PLANES
+   :value: 64
+
+
+.. py:data:: _REGION_3D
+   :value: (256, 256)
+
+
+.. py:data:: _REGION_2D
+   :value: (1024, 1024)
+
+
+.. py:data:: _REGION_MAX
+   :value: 2048
+
+
+.. py:data:: _REGION_VOXELS
+   :value: 8388608
+
+
+.. py:data:: _TEMP_COMPRESSORS
+   :value: 'auto'
+
+
+.. py:data:: DISPLAY_PERCENTILES
+   :value: (0.5, 99.9)
+
+
+.. py:data:: _WINDOW_SAMPLES
+   :value: 65536
+
+
+.. py:data:: _RESERVED_WRITE_OPTIONS
+
+.. py:class:: _Placed
+
+   A tile positioned on the output grid (integer offsets/sizes, ``z, y, x``).
+
+
+   .. py:attribute:: tile
+      :type:  pymif.mosaic_manager.tile.Tile
+
+
+   .. py:attribute:: offset
+      :type:  Tuple[int, int, int]
+
+
+   .. py:attribute:: size
+      :type:  Tuple[int, int, int]
+
+
+.. py:function:: _place_tiles(tiles: Sequence[pymif.mosaic_manager.tile.Tile], ds: Tuple[int, int, int])
+
+   Place ``tiles`` on a common output grid.
+
+   Returns ``(placed, grid_shape, out_voxel, origin)``. All tiles must share the
+   voxel size and unit. A tile covers ``shape // ds`` output voxels starting at
+   ``round((tile origin - global origin) / output voxel size)``.
+
+
+.. py:function:: _crop_bounds(crop, grid: Tuple[int, int, int]) -> List[Tuple[int, int]]
+
+   ``(start, stop)`` per ``z, y, x`` axis from a ``{"z": slice, ...}`` crop on the output grid.
+
+
+.. py:function:: _downsample(block: numpy.ndarray, ds: Tuple[int, int, int]) -> numpy.ndarray
+
+   Block-mean downsample a block whose shape is a multiple of ``ds``, to float32.
+
+
+.. py:function:: _cast(arr: numpy.ndarray, dtype: numpy.dtype) -> numpy.ndarray
+
+   Cast a float array to ``dtype``, rounding and clipping for integers.
+
+
+.. py:function:: _combine(acc: numpy.ndarray, cov: numpy.ndarray, blk: numpy.ndarray, blend: str) -> None
+
+   Merge ``blk`` into the ``acc`` view in place (``cov`` marks voxels already written).
+
+
+.. py:function:: _group_extents(placed: Sequence[_Placed], axis: int) -> Dict[Optional[str], Tuple[int, int]]
+
+   ``(start, stop)`` of every group along ``axis``, in output voxels.
+
+
+.. py:function:: _midline_ranges(placed: Sequence[_Placed], axis: int) -> Dict[Optional[str], Tuple[float, float]]
+
+   Owner interval (output voxels, along ``axis``) of every group.
+
+   Groups are ordered by the centre of their extent; consecutive groups are
+   separated at the middle of their overlap (or of the gap between them).
+
+
+.. py:function:: _sigmoid_transitions(placed: Sequence[_Placed], axis: int) -> Dict[Optional[str], List[Tuple[int, int, int]]]
+
+   Overlaps of every group with its neighbours along ``axis`` (groups ordered as for
+   ``midline``), as ``(start, stop, direction)`` in output voxels: ``+1`` if the
+   group's weight rises across the overlap, ``-1`` if it falls.
+
+
+.. py:class:: _Region
+
+   One output region of one channel and the tiles that overlap it.
+
+
+   .. py:attribute:: channel_index
+      :type:  int
+
+
+   .. py:attribute:: bounds
+      :type:  Tuple[int, int, int, int]
+
+
+   .. py:attribute:: placed
+      :type:  List[_Placed]
+
+
+   .. py:attribute:: midline
+      :type:  Optional[tuple]
+
+
+   .. py:attribute:: transitions
+      :type:  Optional[tuple]
+      :value: None
+
+
+
+   .. py:attribute:: zrange
+      :type:  Tuple[int, int]
+      :value: (0, 0)
+
+
+
+.. py:function:: _source_chunks(data) -> Optional[Tuple[int, int, int]]
+
+   ``(z, y, x)`` chunk shape of a tile's data (zarr, h5py, dask, ...), or ``None``.
+
+
+.. py:function:: _region_shape(tiles: Sequence[pymif.mosaic_manager.tile.Tile], grid: Tuple[int, int, int], ds: Tuple[int, int, int], flat: bool) -> Tuple[int, int, int]
+
+   ``(z, y, x)`` size of the output regions fused at once, in output voxels.
+
+   A region is read in one go from every tile it overlaps, and a compressed source
+   chunk is decoded in full by every region that touches it. So regions are made at
+   least as large as the (downsampled) source chunks in y and x, preferably twice as
+   large, which keeps the number of times each chunk is decoded close to one. Along
+   z, 3D regions are cut into slabs of whole source chunks so that a region holds
+   about ``_REGION_VOXELS`` voxels whatever the depth. Projections keep the whole z
+   range (it is reduced while reading).
+
+
+.. py:function:: _overlap(p: _Placed, region, zrange: Tuple[int, int])
+
+   Output-grid ranges ``(k0, k1, j0, j1, i0, i1)`` where tile ``p`` meets ``region``
+   (``y0, y1, x0, x1``) within ``zrange`` (``z0, z1``), or ``None``.
+
+
+.. py:function:: _target(p: _Placed, region, zrange: Tuple[int, int], flat: bool)
+
+   Canvas slices of ``region`` covered by tile ``p`` (``None`` if they do not overlap).
+
+
+.. py:function:: _read_block(job) -> numpy.ndarray
+
+   Read and downsample the part of one tile inside one region (runs in workers).
+
+   Returns float32 ``(h, w)`` for projections, ``(d, h, w)`` otherwise.
+
+
+.. py:function:: _merge_groups(canvases, midline, region, flat: bool, shape, z0: int = 0) -> numpy.ndarray
+
+   Merge per-group canvases: each group wins on its own side of the cut, others fill gaps.
+
+
+.. py:function:: _log_border_distance(start: int, size: int, lo: int, hi: int) -> numpy.ndarray
+
+   ln of the distance from the centres of output voxels ``lo..hi`` to the nearer
+   border of the interval ``[start, start + size)`` (all inside it).
+
+
+.. py:function:: _tile_log_weight(p: _Placed, region, zrange: Tuple[int, int], flat: bool, steepness: float) -> numpy.ndarray
+
+   Log weight of tile ``p`` on its part of ``region`` (shape of :func:`_read_block`).
+
+
+.. py:function:: _softmax_add(state, sel, values: numpy.ndarray, log_weight: numpy.ndarray, mask=None) -> None
+
+   Add ``values`` with weights ``exp(log_weight)`` to the running weighted sum
+   ``state = (acc, wsum, log_max)`` at ``sel`` (a tuple of slices), in place.
+
+   Only voxels where ``mask`` is true are updated (all of them when ``None``).
+   ``log_weight`` may be any array broadcastable to the selection.
+
+   Equivalent to ``new = max(old, lw); acc = acc * exp(old - new) + exp(lw - new) * v``
+   (and likewise for ``wsum``), but one of the two exponentials is always
+   ``exp(0) = 1``, so a single ``exp(-|lw - old|)`` is computed and the updates are
+   done in place on the voxels where each case applies. The result is identical.
+
+
+.. py:function:: _runs(flags: numpy.ndarray) -> List[slice]
+
+   Slices of the runs of ``True`` in a 1D boolean array.
+
+
+.. py:function:: _sigmoid_add(state, sl, blk: numpy.ndarray, log_weight: numpy.ndarray, previous: List[tuple]) -> None
+
+   Add tile block ``blk`` at canvas slices ``sl`` to a group's softmax ``state``.
+
+   Where no tile was added before (most of a tile, away from the overlaps), the
+   weighted sum is simply initialised with the tile; the weighted update of
+   :func:`_softmax_add` only runs on the boxes where the tile meets the tiles in
+   ``previous`` (their canvas slices, to which ``sl`` is then appended). The
+   result is identical to running :func:`_softmax_add` on the whole block.
+
+
+.. py:function:: _new_softmax_state(shape)
+
+.. py:function:: _group_log_weight(transitions, pos: numpy.ndarray, steepness: float) -> numpy.ndarray
+
+   Log weight of a group at voxel centres ``pos`` along the midline axis: across
+   each overlap with a neighbour, ``steepness * ln`` of the relative distance from the
+   side where the group comes in; 0 (full weight) outside its overlaps.
+
+
+.. py:function:: _merge_sigmoid(canvases, transitions, region, flat: bool, shape, steepness: float, z0: int = 0) -> numpy.ndarray
+
+   Weighted mean of every group, then of the groups across their overlaps.
+
+
+.. py:function:: _fuse_region(r: _Region, arr, ds, projection, blend, dtype, steepness: float = SIGMOID_STEEPNESS) -> numpy.ndarray
+
+   Read the tiles of region ``r``, merge them, write the region into ``arr`` and
+   return a small sample of its non-zero values (for the display window).
+
+   Runs in the workers: regions are aligned with the chunks of ``arr``, so two
+   regions never write the same chunk and need no lock.
+
+
+.. py:function:: _fuse_level0(regions, arr, *, ds, projection, blend, dtype, steepness: float, workers: int, executor: str, progress: bool) -> Dict[int, numpy.ndarray]
+
+   Fuse and write every region of level 0; return a sample of values per channel index.
+
+   The unit of parallel work is one whole region: a worker reads the tiles that
+   overlap it, merges them and writes the result. Regions match the chunks of
+   ``arr`` exactly, so concurrent writes never touch the same chunk. At most
+   ``2 * workers`` regions are in flight at a time, which bounds memory.
+
+
+.. py:function:: _display_windows(samples: Dict[int, numpy.ndarray], n_channels: int, dtype) -> List[Tuple[float, float]]
+
+   ``(start, end)`` display window per channel from the fused-value samples.
+
+
+.. py:function:: _write_display_windows(path, windows: Sequence[Tuple[float, float]]) -> None
+
+   Store the display windows in the OMERO channel metadata (NGFF 0.4 and 0.5).
+
+
+.. py:function:: display_windows(path) -> List[Tuple[float, float]]
+
+   Display window ``(start, end)`` of every channel of an OME-Zarr image, from its
+   OMERO metadata (written by :func:`fuse_tiles` from the fused values).
+
+
+.. py:class:: FusionPlan
+
+   Level-0 geometry of a fusion, computed without reading any pixel data.
+
+
+   .. py:attribute:: tiles
+      :type:  List[pymif.mosaic_manager.tile.Tile]
+
+
+   .. py:attribute:: placed
+      :type:  Dict[str, List[_Placed]]
+
+
+   .. py:attribute:: layout
+      :type:  Dict[str, List[_Placed]]
+
+
+   .. py:attribute:: channels
+      :type:  List[str]
+
+
+   .. py:attribute:: ds
+      :type:  Tuple[int, int, int]
+
+
+   .. py:attribute:: blend
+      :type:  str
+
+
+   .. py:attribute:: dtype
+      :type:  numpy.dtype
+
+
+   .. py:attribute:: axes
+      :type:  str
+
+
+   .. py:attribute:: grid_shape
+      :type:  Tuple[int, int, int]
+
+
+   .. py:attribute:: shape
+      :type:  Tuple[int, Ellipsis]
+
+
+   .. py:attribute:: scale
+      :type:  Tuple[float, Ellipsis]
+
+
+   .. py:attribute:: origin
+      :type:  Tuple[float, float, float]
+
+
+   .. py:attribute:: n_skipped
+      :type:  int
+      :value: 0
+
+
+
+   .. py:attribute:: fields
+      :type:  List[str]
+      :value: []
+
+
+
+   .. py:property:: nbytes
+      :type: int
+
+
+      Size of level 0 in bytes.
+
+
+
+   .. py:method:: summary() -> str
+
+      One line such as ``2 ch x 260 x 1100 x 1500 px (czyx), 1.71 GB, voxel 12 x 11.7 x 11.7 micrometer`` (MB below 0.1 GB).
+
+
+
+   .. py:property:: multiple_fields
+      :type: bool
+
+
+      Whether the fused tiles come from more than one field (such a plan is not fused).
+
+
+
+   .. py:property:: error
+      :type: Optional[str]
+
+
+      Why the plan cannot be fused (tiles from separate fields), or ``None``.
+
+
+
+.. py:function:: plan_fusion(tiles: Sequence[pymif.mosaic_manager.tile.Tile], *, ds: Sequence[int] = (1, 1, 1), projection: Optional[str] = None, blend: str = 'sigmoid', channels: Optional[Sequence[str]] = None, crop: Optional[dict] = None, skip: Optional[Sequence[pymif.mosaic_manager.tile.Tile]] = None, out_dtype=None, midline_axis: str = 'x') -> FusionPlan
+
+   Validate fusion arguments and compute the level-0 geometry (see :func:`fuse_tiles`).
+
+
+.. py:function:: _spatial_factor(value, flat: bool)
+
+   Pyramid downscale factor for the output axes (``(z, y, x)`` given; z dropped for projections).
+
+
+.. py:function:: _check_write_options(options: dict) -> None
+
+.. py:function:: fuse_tiles(tiles: Sequence[pymif.mosaic_manager.tile.Tile], out: str | pathlib.Path, *, ds: Sequence[int] = (1, 1, 1), projection: Optional[str] = None, blend: str = 'sigmoid', channels: Optional[Sequence[str]] = None, channel_names: Optional[Sequence[str]] = None, channel_colors: Optional[Sequence[str]] = None, crop: Optional[dict] = None, skip: Optional[Sequence[pymif.mosaic_manager.tile.Tile]] = None, levels: int = 1, downscale_factor=2, workers: int = 1, executor: str = 'auto', out_dtype=None, midline_axis: str = 'x', sigmoid_steepness: float = SIGMOID_STEEPNESS, overwrite: bool = False, name: Optional[str] = None, temp_dir: str | pathlib.Path | None = None, temp_compression: bool = False, progress: bool = True, **write_options)
+
+   Fuse ``tiles`` into an OME-Zarr image and return it as a ``ZarrManager``.
+
+   Parameters
+   ----------
+   tiles
+       Tiles to fuse (all must share voxel size and unit).
+   out
+       Output ``.ome.zarr`` path.
+   ds
+       ``(z, y, x)`` integer downsampling factors applied while reading the tiles
+       (each output voxel is the mean of its block).
+   projection
+       ``None`` for a 3D volume, ``"max"``/``"sum"`` for a 2D projection along z.
+   blend
+       How tiles that overlap are merged:
+
+       * ``"sigmoid"`` (default) -- smooth transition: across an overlap, the
+         share of each tile follows a sigmoid of the log ratio of the distances
+         to the two tile borders, from 0 at a tile's border through 1/2 in the
+         middle of the overlap to 1 at the other tile's border, so no seam is
+         visible. The tiles of each ``group`` are fused separately, then the
+         groups are merged the same way across their overlap along
+         ``midline_axis`` (the switch is centred where ``"midline"`` cuts);
+       * ``"max"`` -- keep the brighter value;
+       * ``"sum"`` -- add the values, so overlaps show up as brighter bands;
+       * ``"midline"`` -- ``max`` within each tile ``group``; where groups
+         overlap, the image switches sharply from one group to the next at the
+         middle of their overlap, along ``midline_axis``.
+   channels
+       Tile channels to fuse, in output order. Default: all, in tile order.
+   channel_names, channel_colors
+       Names and colours (hex or matplotlib names) written for the output
+       channels. Default: the tile channel names and the PyMIF palette.
+   crop
+       Part of the output to write, in output voxels (after ``ds``), e.g.
+       ``{"y": slice(100, 900), "z": slice(0, 50)}``. For projections, a ``z``
+       crop limits the planes that are projected.
+   skip
+       Tiles to leave blank: they are not read, but the output keeps the size and
+       position it has with them, so their area stays 0 (where no other tile
+       covers it). With ``blend="midline"``/``"sigmoid"`` they still count for
+       the position of the switch between groups.
+   levels
+       Number of pyramid levels.
+   downscale_factor
+       Factor between pyramid levels: one integer or ``(z, y, x)``.
+   workers
+       Number of regions fused in parallel (threads or processes, see ``executor``).
+   executor
+       ``"process"``, ``"thread"`` or ``"auto"`` (processes when ``workers > 1`` and
+       every tile's data is picklable, e.g. :class:`~pymif.mosaic_manager.H5Array`;
+       threads otherwise). h5py serialises reads inside one process, so processes
+       are what actually speeds up reading from HDF5 tiles.
+   out_dtype
+       Output dtype. Default: input dtype for ``sigmoid``/``max``/``midline``,
+       ``float32`` for ``sum``.
+   midline_axis
+       ``"x"``, ``"y"`` or ``"z"``: axis along which groups are separated
+       (``midline`` and ``sigmoid``).
+   sigmoid_steepness
+       Steepness of the ``sigmoid`` transition (> 0). The share of a tile
+       goes from 10% to 90% over the central ``1 - 2 / (1 + 9 ** (1 / s))``
+       of the overlap: about 27% for the default 4, 14% for 8, 50% for 2.
+   overwrite
+       Replace ``out`` if it exists.
+   name
+       Image name stored in the metadata.
+   temp_dir
+       Folder for the temporary fused level 0 (deleted at the end). Default:
+       next to ``out``. A local disk is faster when ``out`` is on a network share.
+   temp_compression
+       Compress the temporary level 0. Off by default: skipping compression (and
+       decoding it again for the pyramid) is noticeably faster, but the temporary
+       store then takes the full uncompressed size of level 0 (``plan_fusion(...).nbytes``),
+       so ``temp_dir`` needs room for it. Turn it on when disk space is short.
+   progress
+       Show progress bars.
+   **write_options
+       Any other :meth:`~pymif.microscope_manager.MicroscopeManager.to_zarr`
+       option, as for ``pymif convert``: ``chunks``, ``shards``, ``shard_target_mb``,
+       ``shard_exclude_axes``, ``zarr_format``, ``ngff_version``, ``compressor``,
+       ``compressor_level``, ``drop_singleton``, ``num_workers``, ``storage_options``.
+       ``chunks`` is given in the output axis order (``c, z, y, x``, or ``c, y, x``
+       for projections).
+
+   The display window of every channel (OMERO ``window`` metadata) is set to the
+   0.5th-99.9th percentile of the fused values, ignoring blank areas, so viewers
+   open the result with a usable contrast; see :func:`display_windows`.
+
+   Use :func:`plan_fusion` with the same arguments to get the output shape and
+   size without reading or writing anything.
+
+   ``tiles`` must come from one field (``Tile.field``, set by
+   :class:`~pymif.mosaic_manager.MosaicManager`; skipped tiles count): tiles of
+   separate fields are not fused, a
+   :class:`~pymif.mosaic_manager.fields.MultipleFieldsError` is raised before
+   anything is read or written.
+
+

@@ -1,0 +1,47 @@
+pymif.utils.write_label_region
+==============================
+
+.. py:module:: pymif.utils.write_label_region
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.utils.write_label_region.write_label_region
+   pymif.utils.write_label_region._scale_index
+
+
+Module Contents
+---------------
+
+.. py:function:: write_label_region(root: zarr.Group, mode: str, data: Union[numpy.ndarray, dask.array.Array, list[Union[numpy.ndarray, dask.array.Array]]], t: int | slice = slice(None), z: int | slice = slice(None), y: int | slice = slice(None), x: int | slice = slice(None), level: int = 0, group_name: str = 'labels/nuclei', downscale_factor: pymif.utils.downsampling.SpatialFactor | None = None)
+
+   Internal function that writes label data (pyramid or single array) to a zarr group.
+
+   If a single array is provided, the function automatically generates
+   the complete pyramid by upsampling and downsampling from the given level.
+
+   Parameters
+   ----------
+   root : zarr.Group
+       The root Zarr group.
+   mode : str
+       Zarr open mode ("r+", "a", or "w"). Must allow writing.
+   data : np.ndarray, da.Array, or list thereof
+       Array(s) to write. If a list, each entry corresponds to one resolution level.
+       If a single array, pyramid levels will be generated automatically.
+   t, z, y, x : int or slice
+       Indices/slices for each dimension.
+   level : int
+       Pyramid level of the provided `data` if `data` is a single array.
+   group_name : str, optional
+       Name of the label group inside the root (e.g. "labels/nuclei").
+
+
+.. py:function:: _scale_index(index_tuple, shape, scale_factor: pymif.utils.downsampling.SpatialFactor, axes='tzyx')
+
+   Compatibility wrapper for tests and legacy callers.
+
+

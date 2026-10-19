@@ -1,0 +1,125 @@
+pymif.microscope_manager.luxendo_manager
+========================================
+
+.. py:module:: pymif.microscope_manager.luxendo_manager
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   pymif.microscope_manager.luxendo_manager.LuxendoManager
+
+
+Module Contents
+---------------
+
+.. py:class:: LuxendoManager(path: str, chunks: Optional[Tuple[int, Ellipsis]] = None)
+
+   Bases: :py:obj:`pymif.microscope_manager.microscope_manager.MicroscopeManager`
+
+
+   Reader for Luxendo microscope data saved as multi-resolution HDF5 (.lux.h5) and XML metadata.
+
+   This class parses Luxendo's XML configuration and builds a lazy Dask array pyramid for downstream processing.
+   One ``*.lux.h5`` file holds one timepoint and channel (``tp-<t>`` / ``ch-<c>`` in the file name);
+   HDF5 handles stay open until :meth:`close` (or leaving a ``with`` block).
+
+
+   .. py:attribute:: _h5_handles
+      :type:  Dict[pathlib.Path, h5py.File]
+
+
+   .. py:method:: _tp_ch(filename: str) -> Tuple[int, int]
+      :classmethod:
+
+
+      Extract ``(timepoint, channel)`` from a ``...tp-<t>...ch-<c>....lux.h5`` file name.
+
+
+
+   .. py:method:: _plane_files() -> Dict[Tuple[int, int], pathlib.Path]
+
+      Map ``(t, c)`` to the ``.lux.h5`` file holding it.
+
+      The ``tp-``/``ch-`` numbers in file names are acquisition IDs, not
+      indices (a single fused channel can be ``ch-4``), so they are renumbered
+      to contiguous 0-based indices in sorted order.
+
+
+
+   .. py:method:: _sorted_dataset_names(f: h5py.File) -> List[str]
+      :staticmethod:
+
+
+      Return the "Data*" dataset names of an open file in natural scale order.
+
+
+
+   .. py:method:: get_available_datasets(h5_file) -> List[str]
+      :classmethod:
+
+
+      Extract all dataset names from a .lux.h5 file.
+
+      Parameters
+      ----------
+      h5_file : Path
+          Path to a Luxendo HDF5 file.
+
+      Returns
+      -------
+      List[str]
+          Sorted list of dataset names (one per resolution level).
+
+
+
+   .. py:method:: _xyz_to_zyx(text: str, cast) -> Tuple
+      :staticmethod:
+
+
+      Parse a space-separated ``x y z`` triplet and return it as ``(z, y, x)``.
+
+
+
+   .. py:method:: _parse_metadata() -> Dict[str, Any]
+
+      Parse XML metadata from the Luxendo dataset.
+
+      Returns
+      -------
+      Dict[str, Any]
+          A dictionary containing dataset shape, voxel sizes, channel info, and other metadata.
+
+
+
+   .. py:method:: _read_h5_stack(h5_path: pathlib.Path, dataset_name: str) -> dask.array.Array
+
+      Load a single resolution dataset lazily as a Dask array.
+
+      Parameters
+      ----------
+      h5_path : Path
+          Path to the .lux.h5 file.
+      dataset_name : str
+          Internal dataset name (e.g., "Data", "Data444", etc.)
+
+      Returns
+      -------
+      dask.array.Array
+          A lazy ``(z, y, x)`` Dask array backed by the HDF5 dataset.
+
+
+
+   .. py:method:: _build_dask_array() -> List[dask.array.Array]
+
+      Construct a multiscale image pyramid as Dask arrays.
+
+      Returns
+      -------
+      List[da.Array]
+          A list of Dask arrays representing each resolution level (from highest to lowest).
+
+
+

@@ -1,0 +1,247 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Python API &mdash; PyMIF 0.5.2.dev13+gb29271f69 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=7f4175d5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Mosaics: raw tiles and fusion" href="mosaic.html" />
+    <link rel="prev" title="Readers and conventions" href="readers.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PyMIF
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Python API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#read-build-a-pyramid-and-export">Read, build a pyramid and export</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-an-empty-zarr-dataset-from-metadata">Create an empty zarr dataset from metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#axis-aware-zarrmanager-metadata">Axis-aware ZarrManager metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#update-a-region-in-an-existing-zarr-image">Update a region in an existing zarr image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#correct-the-chromatic-shift-between-channels">Correct the chromatic shift between channels</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing and extending PyMIF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PyMIF</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Python API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/python-api.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="python-api">
+<h1>Python API<a class="headerlink" href="#python-api" title="Link to this heading"></a></h1>
+<p>Typical Python usage of the managers and of the zarr writing helpers.</p>
+<section id="read-build-a-pyramid-and-export">
+<h2>Read, build a pyramid and export<a class="headerlink" href="#read-build-a-pyramid-and-export" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pymif.microscope_manager</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mm</span>
+
+<span class="c1"># Read a source dataset</span>
+<span class="n">source</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">ViventisManager</span><span class="p">(</span><span class="s2">"path/to/Position_1"</span><span class="p">)</span>
+
+<span class="c1"># Build a pyramid in memory</span>
+<span class="n">source</span><span class="o">.</span><span class="n">build_pyramid</span><span class="p">(</span><span class="n">num_levels</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1"># Export to OME-Zarr (default: NGFF v0.5 / zarr v3)</span>
+<span class="n">source</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="s2">"output.zarr"</span><span class="p">)</span>
+
+<span class="c1"># Re-open the written zarr dataset</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">ZarrManager</span><span class="p">(</span><span class="s2">"output.zarr"</span><span class="p">)</span>
+<span class="n">viewer</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">visualize</span><span class="p">(</span><span class="n">start_level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">in_memory</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="create-an-empty-zarr-dataset-from-metadata">
+<h2>Create an empty zarr dataset from metadata<a class="headerlink" href="#create-an-empty-zarr-dataset-from-metadata" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pymif.microscope_manager</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mm</span>
+
+<span class="n">z</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">ZarrManager</span><span class="p">(</span>
+    <span class="s2">"empty.zarr"</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">"a"</span><span class="p">,</span>
+    <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">"size"</span><span class="p">:</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">)],</span>
+        <span class="s2">"chunksize"</span><span class="p">:</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">)],</span>
+        <span class="s2">"scales"</span><span class="p">:</span> <span class="p">[(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)],</span>
+        <span class="s2">"units"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"micrometer"</span><span class="p">,</span> <span class="s2">"micrometer"</span><span class="p">,</span> <span class="s2">"micrometer"</span><span class="p">),</span>
+        <span class="s2">"axes"</span><span class="p">:</span> <span class="s2">"tczyx"</span><span class="p">,</span>
+        <span class="s2">"channel_names"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"GFP"</span><span class="p">,</span> <span class="s2">"RFP"</span><span class="p">],</span>
+        <span class="s2">"channel_colors"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"00FF00"</span><span class="p">,</span> <span class="s2">"FF0000"</span><span class="p">],</span>
+        <span class="s2">"time_increment"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s2">"time_increment_unit"</span><span class="p">:</span> <span class="s2">"second"</span><span class="p">,</span>
+        <span class="s2">"dtype"</span><span class="p">:</span> <span class="s2">"uint16"</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="axis-aware-zarrmanager-metadata">
+<h2>Axis-aware ZarrManager metadata<a class="headerlink" href="#axis-aware-zarrmanager-metadata" title="Link to this heading"></a></h2>
+<p>Most microscope-specific managers still normalize data to legacy <code class="docutils literal notranslate"><span class="pre">tczyx</span></code>, but <code class="docutils literal notranslate"><span class="pre">ZarrManager</span></code> and <code class="docutils literal notranslate"><span class="pre">ArrayManager</span></code> can now write and read any unique subset of the image axes <code class="docutils literal notranslate"><span class="pre">t</span></code>, <code class="docutils literal notranslate"><span class="pre">c</span></code>, <code class="docutils literal notranslate"><span class="pre">z</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, and <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+<blockquote>
+<div><p>[!NOTE]
+The axes string must have one label per array dimension and may not contain non-image axes such as tiles, ROIs, scenes, or wells.</p>
+</div></blockquote>
+<p>For example, a two-dimensional YX intensity image can be written as:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dask.array</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">da</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymif.microscope_manager</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mm</span>
+
+<span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span>
+<span class="n">levels</span> <span class="o">=</span> <span class="p">[</span><span class="n">da</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">))]</span>
+<span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"axes"</span><span class="p">:</span> <span class="s2">"yx"</span><span class="p">,</span>
+    <span class="s2">"size"</span><span class="p">:</span> <span class="p">[(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">)],</span>
+    <span class="s2">"chunksize"</span><span class="p">:</span> <span class="p">[(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">)],</span>
+    <span class="s2">"scales"</span><span class="p">:</span> <span class="p">[(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)],</span>       <span class="c1"># follows the spatial axes in axes order</span>
+    <span class="s2">"units"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"micrometer"</span><span class="p">,</span> <span class="s2">"micrometer"</span><span class="p">),</span>
+    <span class="s2">"dtype"</span><span class="p">:</span> <span class="s2">"uint16"</span><span class="p">,</span>
+    <span class="s2">"data_type"</span><span class="p">:</span> <span class="s2">"intensity"</span><span class="p">,</span>    <span class="c1"># or "label"</span>
+<span class="p">}</span>
+
+<span class="n">mm</span><span class="o">.</span><span class="n">ArrayManager</span><span class="p">(</span><span class="n">levels</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="s2">"yx_image.zarr"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">data_type=&quot;label&quot;</span></code> for segmentation, mask, or annotation data. Label arrays must use an integer dtype. For NGFF v0.5/Zarr v3, PyMIF stores the semantic type under <code class="docutils literal notranslate"><span class="pre">attrs[&quot;ome&quot;][&quot;data_type&quot;]</span></code>, writes array-level <code class="docutils literal notranslate"><span class="pre">dimension_names</span></code>, writes <code class="docutils literal notranslate"><span class="pre">multiscales[0][&quot;type&quot;]</span> <span class="pre">=</span> <span class="pre">&quot;label&quot;</span></code>, and adds <code class="docutils literal notranslate"><span class="pre">image-label</span></code> metadata. For NGFF v0.4/Zarr v2, the equivalent metadata is stored directly on the group attributes.</p>
+<p>Legacy calls that create labels from an intensity image metadata dictionary still work:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">ZarrManager</span><span class="p">(</span><span class="s2">"image.zarr"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"a"</span><span class="p">)</span>
+<span class="n">z</span><span class="o">.</span><span class="n">create_empty_group</span><span class="p">(</span><span class="s2">"nuclei"</span><span class="p">,</span> <span class="n">image_metadata</span><span class="p">,</span> <span class="n">is_label</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When <code class="docutils literal notranslate"><span class="pre">image_metadata[&quot;axes&quot;]</span> <span class="pre">==</span> <span class="pre">&quot;tczyx&quot;</span></code>, this legacy <code class="docutils literal notranslate"><span class="pre">is_label=True</span></code> form creates a <code class="docutils literal notranslate"><span class="pre">tzyx</span></code> label group by dropping the intensity channel axis. New callers that really want channelled label data can pass explicit label metadata instead:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">label_metadata</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">image_metadata</span><span class="p">,</span> <span class="s2">"data_type"</span><span class="p">:</span> <span class="s2">"label"</span><span class="p">}</span>
+<span class="n">z</span><span class="o">.</span><span class="n">create_empty_group</span><span class="p">(</span><span class="s2">"classes"</span><span class="p">,</span> <span class="n">label_metadata</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="s2">"label"</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="update-a-region-in-an-existing-zarr-image">
+<h2>Update a region in an existing zarr image<a class="headerlink" href="#update-a-region-in-an-existing-zarr-image" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymif.microscope_manager</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mm</span>
+
+<span class="n">z</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">ZarrManager</span><span class="p">(</span><span class="s2">"output.zarr"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"a"</span><span class="p">)</span>
+<span class="n">patch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span> <span class="mi">999</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span>
+
+<span class="n">z</span><span class="o">.</span><span class="n">write_image_region</span><span class="p">(</span>
+    <span class="n">patch</span><span class="p">,</span>
+    <span class="n">t</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">c</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">z</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span>
+    <span class="n">y</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">164</span><span class="p">),</span>
+    <span class="n">x</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">164</span><span class="p">),</span>
+    <span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="correct-the-chromatic-shift-between-channels">
+<h2>Correct the chromatic shift between channels<a class="headerlink" href="#correct-the-chromatic-shift-between-channels" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ZarrManager</span></code> can measure the axial (Z) offset between the channels of a light-sheet dataset on the sample itself and write a corrected copy with the same structure as the input:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">ZarrManager</span><span class="p">(</span><span class="s2">"input.zarr"</span><span class="p">)</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">correct_chromatic_shift</span><span class="p">(</span><span class="s2">"corrected.zarr"</span><span class="p">,</span> <span class="n">reference_channel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="chromatic-shift.html"><span class="std std-doc">Chromatic shift correction</span></a> for how the shift is measured, the options and how to check the result.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="readers.html" class="btn btn-neutral float-left" title="Readers and conventions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mosaic.html" class="btn btn-neutral float-right" title="Mosaics: raw tiles and fusion" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Nicola Gritti.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

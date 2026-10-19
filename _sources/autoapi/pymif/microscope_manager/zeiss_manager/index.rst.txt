@@ -1,0 +1,86 @@
+pymif.microscope_manager.zeiss_manager
+======================================
+
+.. py:module:: pymif.microscope_manager.zeiss_manager
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   pymif.microscope_manager.zeiss_manager.logger
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   pymif.microscope_manager.zeiss_manager.ZeissManager
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+
+.. py:class:: ZeissManager(path, scene_index: int = 0, scene_name: Optional[str] = None, chunks: Optional[Tuple[int, Ellipsis]] = None)
+
+   Bases: :py:obj:`pymif.microscope_manager.microscope_manager.MicroscopeManager`
+
+
+   A manager class for reading and handling .czi datasets.
+
+   This class lazily loads data into a dask array and parses associated .czi metadata.
+   A CZI file can hold several scenes; one scene is loaded at a time and
+   :meth:`read` can be called again with another ``scene_index``.
+
+
+   .. py:attribute:: DEFAULT_CHUNKS
+      :value: None
+
+
+
+   .. py:attribute:: _image
+
+
+   .. py:attribute:: scenes
+
+
+   .. py:method:: read(scene_index: Optional[int] = None) -> None
+
+      Read one scene of the Zeiss dataset and populate ``self.data`` and ``self.metadata``.
+
+      Parameters
+      ----------
+      scene_index : int, optional
+          Scene to load. Defaults to the scene currently selected.
+
+
+
+   .. py:method:: _build_dask_array() -> List[Any]
+
+      Return the selected scene as a single-level TCZYX dask array.
+
+
+
+   .. py:method:: _distance(czi_metadata, axis: str, default: Optional[float] = None) -> float
+      :staticmethod:
+
+
+      Voxel size along ``axis`` in micrometers (CZI stores meters).
+
+
+
+   .. py:method:: _parse_metadata() -> Dict[str, Any]
+
+      Parse metadata of the currently selected scene.
+
+      Returns
+      -------
+      Dict[str, Any]
+          A dictionary containing dataset shape, voxel sizes, channel info, and other metadata.
+
+
+

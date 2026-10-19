@@ -1,0 +1,42 @@
+pymif.napari._export_widget
+===========================
+
+.. py:module:: pymif.napari._export_widget
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.napari._export_widget.hide_layers
+   pymif.napari._export_widget.show_layers
+   pymif.napari._export_widget.get_channel_adjustment
+   pymif.napari._export_widget.set_settings
+   pymif.napari._export_widget.export_contrast_settings
+   pymif.napari._export_widget.export_widget
+
+
+Module Contents
+---------------
+
+.. py:function:: hide_layers(viewer)
+
+.. py:function:: show_layers(viewer)
+
+.. py:function:: get_channel_adjustment(viewer)
+
+.. py:function:: set_settings(viewer, settings: dict)
+
+.. py:function:: export_contrast_settings(viewer, output_path='contrast_settings.txt')
+
+   Export contrast limits for all layers in a napari viewer to a text file.
+
+
+.. py:function:: export_widget()
+
+   Simple Napari widget to export the current view.
+
+   Returns a QWidget containing an input text box and a button. When you click "Export Current View" it will save the current view.
+
+

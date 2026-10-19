@@ -1,0 +1,110 @@
+pymif.mosaic_manager.luxendo_mosaic_manager
+===========================================
+
+.. py:module:: pymif.mosaic_manager.luxendo_mosaic_manager
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   pymif.mosaic_manager.luxendo_mosaic_manager.logger
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   pymif.mosaic_manager.luxendo_mosaic_manager.LuxendoMosaicManager
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+
+.. py:class:: LuxendoMosaicManager(path, scan_workers: int = 16, progress: bool = True)
+
+   Bases: :py:obj:`pymif.mosaic_manager.mosaic.MosaicManager`
+
+
+   Raw Luxendo tiles (``*.lux.h5`` + ``*.json``) of one acquisition, before any fusion.
+
+   Not to be confused with :class:`~pymif.microscope_manager.LuxendoManager`, which
+   reads images already fused by the Luxendo software. This manager scans a raw
+   acquisition folder such as ``2026-10-14_103957`` (tiles live in
+   ``raw/<stack folder>/Cam_*.lux.h5``) and exposes every tile lazily:
+
+   * ``channel``: the dye, with the illumination side removed
+     (``autofluo-488-L`` and ``autofluo-488-R`` both give ``autofluo-488``), so
+     both halves of a sample end up in the same fused channel;
+   * ``group``: the illumination side, ``"L"`` or ``"R"`` (used by ``blend="sigmoid"`` and ``"midline"``);
+   * ``timepoint``: the JSON ``time_point`` (mosaics with several timepoints are
+     refused for now, see :class:`~pymif.mosaic_manager.MosaicManager`);
+   * ``attrs``: ``stack``, ``stack_description``, ``grid`` (``(ix, iy)``),
+     ``channel_description`` and ``path``.
+
+   Tile positions come from ``affine_to_sample`` in the JSON (the tile is centred
+   on the stage translation in x/y; z is the plane position along the stacking
+   direction). If a stack was re-acquired (``*_R_<n>.lux.h5``) only the latest
+   retake is used. Tiles are :class:`~pymif.mosaic_manager.H5Array` objects, so no
+   file stays open. Scanning reads only the JSON files (in parallel) and opens a
+   single ``.h5`` file, which keeps loading fast on network drives.
+
+
+   .. py:method:: _retake(h5: pathlib.Path) -> int
+      :staticmethod:
+
+
+      ``Cam_bottom_00000.lux.h5`` -> 0, ``Cam_bottom_00000_R_1.lux.h5`` -> 1.
+
+
+
+   .. py:method:: _scan() -> List[pymif.mosaic_manager.tile.Tile]
+
+      Discover the tiles under :attr:`path` (lazy data, positions in the sample frame).
+
+
+
+   .. py:attribute:: scan_workers
+
+
+   .. py:attribute:: progress
+      :value: True
+
+
+
+   .. py:method:: _acquisitions(folder) -> List[pathlib.Path]
+      :classmethod:
+
+
+      The ``*.lux.h5`` acquisitions of a stack folder (those with a ``.json`` sibling).
+
+      Files sharing a base name are retakes (``*_R_<n>``) of one acquisition and
+      only the latest is kept. Different base names are separate acquisitions of
+      the same stack (e.g. timepoints); they are returned in name order.
+
+
+
+   .. py:method:: _read_info(h5: pathlib.Path) -> dict
+      :staticmethod:
+
+
+
+   .. py:method:: _shape(info: dict) -> tuple
+      :staticmethod:
+
+
+
+   .. py:method:: _tile_from(h5: pathlib.Path, info: Optional[dict] = None, dtype=None, default_timepoint: int = 0) -> pymif.mosaic_manager.tile.Tile
+      :classmethod:
+
+
+      Tile of one ``.lux.h5`` file; the file is only opened when ``dtype`` is not given.
+
+      The timepoint is the JSON ``time_point``, or ``default_timepoint`` without one.
+
+
+

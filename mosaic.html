@@ -1,0 +1,389 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mosaics: raw tiles and fusion &mdash; PyMIF 0.5.2.dev13+gb29271f69 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=7f4175d5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Chromatic shift correction" href="chromatic-shift.html" />
+    <link rel="prev" title="Python API" href="python-api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PyMIF
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="python-api.html">Python API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Mosaics: raw tiles and fusion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#load-and-inspect">Load and inspect</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#opera-harmony-exports">Opera (Harmony exports)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fields">Fields</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#d-fusion">3D fusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#d-maximum-projection-mip">2D maximum projection (MIP)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fusion-options">Fusion options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-fusion-works">How fusion works</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#command-line">Command line</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#napari">Napari</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-a-mosaic-reader">Adding a mosaic reader</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing and extending PyMIF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PyMIF</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Mosaics: raw tiles and fusion</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/mosaic.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mosaics-raw-tiles-and-fusion">
+<h1>Mosaics: raw tiles and fusion<a class="headerlink" href="#mosaics-raw-tiles-and-fusion" title="Link to this heading"></a></h1>
+<p>Some acquisitions are saved as many separate <strong>tiles</strong> (stacks acquired at different stage positions) instead of one image. <code class="docutils literal notranslate"><span class="pre">pymif.mosaic_manager</span></code> reads such tiles lazily, shows them in napari at their position and <strong>fuses</strong> them into one OME-Zarr image.</p>
+<p>A mosaic manager is different from a <a class="reference internal" href="readers.html"><span class="std std-doc">microscope manager</span></a>: a <code class="docutils literal notranslate"><span class="pre">MicroscopeManager</span></code> is <em>one</em> image, while a <code class="docutils literal notranslate"><span class="pre">MosaicManager</span></code> is a set of positioned tiles that only becomes an image once it is fused. The fused result is an ordinary OME-Zarr dataset, so everything else in PyMIF works on it.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Class</p></th>
+<th class="head"><p>Reads</p></th>
+<th class="head"><p>Status</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">LuxendoMosaicManager</span></code></p></td>
+<td><p>raw Luxendo acquisitions (<code class="docutils literal notranslate"><span class="pre">raw/&lt;stack&gt;/Cam_*.lux.h5</span></code> + <code class="docutils literal notranslate"><span class="pre">.json</span></code>)</p></td>
+<td><p>available</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">OperaMosaicManager</span></code></p></td>
+<td><p>Opera Phenix / Operetta Harmony exports (<code class="docutils literal notranslate"><span class="pre">Images/Index.xml</span></code> + one TIFF per plane)</p></td>
+<td><p>available</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ZeissMosaicManager</span></code></p></td>
+<td><p>Zeiss CZI tiles</p></td>
+<td><p>placeholder</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">LuxendoMosaicManager</span></code> and <code class="docutils literal notranslate"><span class="pre">OperaMosaicManager</span></code> are for the <strong>raw</strong> tiles. Data already fused by the vendor software is read with <code class="docutils literal notranslate"><span class="pre">LuxendoManager</span></code> and <code class="docutils literal notranslate"><span class="pre">OperaManager</span></code> (Harmony’s <code class="docutils literal notranslate"><span class="pre">stitchresult/*.ome.tiff</span></code>).</p>
+<p>Every reader first checks that the folder is not another microscope’s: a Harmony export (<code class="docutils literal notranslate"><span class="pre">Images/Index.xml</span></code>) opened with <code class="docutils literal notranslate"><span class="pre">LuxendoMosaicManager</span></code>, or a Luxendo acquisition (<code class="docutils literal notranslate"><span class="pre">*.lux.h5</span></code>) opened with <code class="docutils literal notranslate"><span class="pre">OperaMosaicManager</span></code>, stops at once with a <code class="docutils literal notranslate"><span class="pre">WrongReaderError</span></code> naming the right reader. <code class="docutils literal notranslate"><span class="pre">detect_microscope(path)</span></code> returns <code class="docutils literal notranslate"><span class="pre">&quot;opera&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;luxendo&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>; <code class="docutils literal notranslate"><span class="pre">pymif</span> <span class="pre">fuse</span></code> uses it when <code class="docutils literal notranslate"><span class="pre">--microscope</span></code> is not given, and the napari widget switches its <em>Microscope</em> choice to the detected one.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Mosaics are supported for a <strong>single timepoint</strong> so far. Loading a timelapse stops with an error that says so: several acquisitions of the same stack in one folder, or tiles whose metadata report different timepoints.</p>
+</div>
+<p>A runnable walk-through with synthetic data is in <a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/examples/10_mosaic_fusion.ipynb">examples/10_mosaic_fusion.ipynb</a>.</p>
+<section id="load-and-inspect">
+<h2>Load and inspect<a class="headerlink" href="#load-and-inspect" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pymif.mosaic_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">LuxendoMosaicManager</span><span class="p">,</span> <span class="n">plan_fusion</span>
+
+<span class="n">mosaic</span> <span class="o">=</span> <span class="n">LuxendoMosaicManager</span><span class="p">(</span><span class="s2">"path/to/2026-10-14_103957"</span><span class="p">)</span>   <span class="c1"># acquisition folder (contains raw/)</span>
+<span class="n">mosaic</span><span class="o">.</span><span class="n">channels</span>          <span class="c1"># ['autofluo-488', 'cFos-647']</span>
+<span class="n">mosaic</span><span class="o">.</span><span class="n">groups</span>            <span class="c1"># ['L', 'R']  (illumination side)</span>
+<span class="n">mosaic</span><span class="o">.</span><span class="n">bounding_box</span><span class="p">()</span>    <span class="c1"># ((zmin, ymin, xmin), (zmax, ymax, xmax)) in micrometer</span>
+
+<span class="c1"># Output shape and size, without reading any pixel data</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">plan_fusion</span><span class="p">(</span><span class="n">mosaic</span><span class="o">.</span><span class="n">tiles</span><span class="p">,</span> <span class="n">ds</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
+
+<span class="c1"># Check placement: one napari layer per tile, at its stage position</span>
+<span class="n">mosaic</span><span class="o">.</span><span class="n">visualize</span><span class="p">(</span><span class="n">tiles</span><span class="o">=</span><span class="n">mosaic</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="s2">"cFos-647"</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Loading reads only the JSON files (in parallel) and a single <code class="docutils literal notranslate"><span class="pre">.h5</span></code> header, so it stays fast on network drives.</p>
+<p><code class="docutils literal notranslate"><span class="pre">mosaic.tiles</span></code> is a list of <code class="docutils literal notranslate"><span class="pre">Tile</span></code> objects: a lazy <code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">y,</span> <span class="pre">x)</span></code> array (<code class="docutils literal notranslate"><span class="pre">data</span></code>), the position of its first voxel (<code class="docutils literal notranslate"><span class="pre">origin</span></code>), <code class="docutils literal notranslate"><span class="pre">voxel_size</span></code>, <code class="docutils literal notranslate"><span class="pre">channel</span></code>, an optional <code class="docutils literal notranslate"><span class="pre">group</span></code> and reader-specific <code class="docutils literal notranslate"><span class="pre">attrs</span></code>. <code class="docutils literal notranslate"><span class="pre">mosaic.tile(i)</span></code> returns one tile as an <code class="docutils literal notranslate"><span class="pre">ArrayManager</span></code>.</p>
+<p>For Luxendo data, the two illumination sides of a dye (e.g. <code class="docutils literal notranslate"><span class="pre">autofluo-488-L</span></code> and <code class="docutils literal notranslate"><span class="pre">autofluo-488-R</span></code>) become <strong>one channel</strong> (<code class="docutils literal notranslate"><span class="pre">autofluo-488</span></code>). The side is kept as the tile <code class="docutils literal notranslate"><span class="pre">group</span></code>. If a stack was re-acquired (<code class="docutils literal notranslate"><span class="pre">*_R_&lt;n&gt;.lux.h5</span></code>), only the latest retake is used.</p>
+<section id="opera-harmony-exports">
+<h3>Opera (Harmony exports)<a class="headerlink" href="#opera-harmony-exports" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pymif.mosaic_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">OperaMosaicManager</span>
+
+<span class="n">mosaic</span> <span class="o">=</span> <span class="n">OperaMosaicManager</span><span class="p">(</span><span class="s2">"path/to/plate__2026-06-18T20_23_37-Measurement 1"</span><span class="p">)</span>  <span class="c1"># contains Images/</span>
+<span class="n">mosaic</span><span class="o">.</span><span class="n">channels</span>          <span class="c1"># ['DAPI', 'Alexa 647_extended', ...]  (ChannelName of the index)</span>
+<span class="n">mosaic</span><span class="o">.</span><span class="n">fields</span>            <span class="c1"># ['A3_field0', 'A3_field1', 'B2_field0', ...]</span>
+<span class="n">mosaic</span><span class="o">.</span><span class="n">fuse</span><span class="p">(</span><span class="s2">"A3_MIP.ome.zarr"</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s2">"A3_field1"</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s2">"max"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The path is the Harmony export folder, its <code class="docutils literal notranslate"><span class="pre">Images</span></code> folder or the <code class="docutils literal notranslate"><span class="pre">Index.xml</span></code> itself. Loading reads only the index (one pass, also for indexes of several hundred MB) and one TIFF header. Every Opera field of every channel is one tile, made of its planes (<code class="docutils literal notranslate"><span class="pre">r01c03f01p01-ch1sk1fk1fl1.tiff</span></code>, …); tile ids are <code class="docutils literal notranslate"><span class="pre">channel/r01c03f01</span></code> (<code class="docutils literal notranslate"><span class="pre">&quot;r01c03f01&quot;</span></code> names that position in every channel).</p>
+<ul class="simple">
+<li><p><strong>Fields per well.</strong> Tiles are grouped into fields within each well and the fields are named after it: <code class="docutils literal notranslate"><span class="pre">A3_field0</span></code>, <code class="docutils literal notranslate"><span class="pre">A3_field1</span></code>, … These are the clusters that Harmony stitches into <code class="docutils literal notranslate"><span class="pre">A3_F1.ome.tiff</span></code>, <code class="docutils literal notranslate"><span class="pre">A3_F2.ome.tiff</span></code>, …</p></li>
+<li><p><strong>Wells on the plate.</strong> Harmony gives stage positions relative to the centre of each well, so each well is shifted to its place on the plate (A1 at the top left), using the well pitch of the plate format (<code class="docutils literal notranslate"><span class="pre">PlateRows</span></code> × <code class="docutils literal notranslate"><span class="pre">PlateColumns</span></code> in the index: 9 mm for 96 wells, 4.5 mm for 384, …). Without a known format, wells are placed side by side. This only affects where the wells are shown, not the fused images.</p></li>
+<li><p><strong>Geometry</strong>, as in the images stitched by Harmony (and read by <code class="docutils literal notranslate"><span class="pre">OperaManager</span></code>). The x/y pixel size is the <code class="docutils literal notranslate"><span class="pre">ImageResolution</span></code> of the index times the scale of the channel’s <code class="docutils literal notranslate"><span class="pre">OrientationMatrix</span></code>, a calibration of a few percent (e.g. 0.5934 µm × 0.968 = 0.5744 µm). Tiles are centred on their field position, with the stage <code class="docutils literal notranslate"><span class="pre">y</span></code> axis running against the image rows. Planes are placed at their <code class="docutils literal notranslate"><span class="pre">PositionZ</span></code>, so the z step is the stage step.</p></li>
+<li><p><strong>Flat-field correction</strong> (<code class="docutils literal notranslate"><span class="pre">flatfield=True</span></code>, the default). Harmony stores, for every channel, a background profile <code class="docutils literal notranslate"><span class="pre">P</span></code> (a 2D polynomial with a mean of 1) and the mean background level <code class="docutils literal notranslate"><span class="pre">Mean</span></code> (<code class="docutils literal notranslate"><span class="pre">FlatfieldProfile</span></code> in the index, or <code class="docutils literal notranslate"><span class="pre">FFC_Profile/*.xml</span></code>). Every plane is corrected as Harmony does: pixels above the background level, <code class="docutils literal notranslate"><span class="pre">raw</span> <span class="pre">&gt;=</span> <span class="pre">Mean·P</span></code>, become <code class="docutils literal notranslate"><span class="pre">raw</span> <span class="pre">-</span> <span class="pre">Mean·(P</span> <span class="pre">-</span> <span class="pre">1)</span></code> (the uneven background is removed), darker pixels become <code class="docutils literal notranslate"><span class="pre">raw</span> <span class="pre">/</span> <span class="pre">P</span></code>, both rounded to the data type. The result matches Harmony’s stitched images to within rounding. Channels with an <code class="docutils literal notranslate"><span class="pre">Identity</span></code> profile (e.g. brightfield) are not changed; <code class="docutils literal notranslate"><span class="pre">mosaic.flatfields</span></code> lists the correction of every channel. Pass <code class="docutils literal notranslate"><span class="pre">flatfield=False</span></code> for the raw data.</p></li>
+</ul>
+<p>Planes that Harmony marks as failed are read as zeros.</p>
+</section>
+<section id="fields">
+<h3>Fields<a class="headerlink" href="#fields" title="Link to this heading"></a></h3>
+<p>A mosaic can hold several separate <strong>fields</strong>, for example two samples or two regions imaged in one acquisition. Tiles whose boxes overlap or touch (within one voxel) form one field: a connected component. When a mosaic is loaded, every tile gets a <code class="docutils literal notranslate"><span class="pre">field</span></code> label, <code class="docutils literal notranslate"><span class="pre">field0</span></code>, <code class="docutils literal notranslate"><span class="pre">field1</span></code>, … numbered by position (by the <code class="docutils literal notranslate"><span class="pre">y</span></code>, then <code class="docutils literal notranslate"><span class="pre">x</span></code>, then <code class="docutils literal notranslate"><span class="pre">z</span></code> start of the field). A reader can set <code class="docutils literal notranslate"><span class="pre">Tile.field</span></code> itself; those labels are kept.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mosaic</span><span class="o">.</span><span class="n">fields</span>                      <span class="c1"># ['field0', 'field1']</span>
+<span class="n">mosaic</span><span class="o">.</span><span class="n">field_tiles</span><span class="p">(</span><span class="s2">"field1"</span><span class="p">)</span>       <span class="c1"># the tiles of one field</span>
+<span class="n">mosaic</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s2">"field1"</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">"cFos-647"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Fields are fused <strong>one at a time</strong>. <code class="docutils literal notranslate"><span class="pre">mosaic.fuse(out)</span></code> fuses the first field (<code class="docutils literal notranslate"><span class="pre">field0</span></code>) by default; pass <code class="docutils literal notranslate"><span class="pre">field=&quot;field1&quot;</span></code> for another, and the output fits that field. Tiles from several fields are never fused together: <code class="docutils literal notranslate"><span class="pre">fuse</span></code>, <code class="docutils literal notranslate"><span class="pre">fuse_tiles</span></code> and the command line refuse with an error (<code class="docutils literal notranslate"><span class="pre">MultipleFieldsError</span></code>) before anything is read or written. Skipped tiles count, since they still set the output geometry. <code class="docutils literal notranslate"><span class="pre">plan_fusion</span></code> still returns a plan for such tiles, with <code class="docutils literal notranslate"><span class="pre">plan.error</span></code> set and the error in <code class="docutils literal notranslate"><span class="pre">plan.summary()</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">visualize()</span></code> gives all tiles of a channel the same contrast, starting at the whole range of the data type (0 to 65535 for uint16), so nothing is read before the tiles appear. The layers of a channel are linked, so changing the contrast or gamma of one tile changes all of them. Pass <code class="docutils literal notranslate"><span class="pre">contrast_limits={&quot;cFos-647&quot;:</span> <span class="pre">(100,</span> <span class="pre">2000)}</span></code> to set them yourself, or <code class="docutils literal notranslate"><span class="pre">contrast_limits=&quot;auto&quot;</span></code> to estimate them from a small sample: a 64³-voxel block from the centre of up to 6 tiles near the middle of each group, about 3 MB of reads per channel (<code class="docutils literal notranslate"><span class="pre">mosaic.contrast_limits()</span></code>), which can be slow on a network drive.</p>
+</section>
+</section>
+<section id="d-fusion">
+<h2>3D fusion<a class="headerlink" href="#d-fusion" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">zm</span> <span class="o">=</span> <span class="n">mosaic</span><span class="o">.</span><span class="n">fuse</span><span class="p">(</span>
+    <span class="s2">"acq_3D.ome.zarr"</span><span class="p">,</span>
+    <span class="n">ds</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>          <span class="c1"># downsampling (z, y, x) applied while reading the tiles</span>
+    <span class="n">blend</span><span class="o">=</span><span class="s2">"sigmoid"</span><span class="p">,</span>       <span class="c1"># default: smooth transitions between tiles and illumination sides</span>
+    <span class="n">levels</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>              <span class="c1"># pyramid levels</span>
+    <span class="n">workers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>             <span class="c1"># tiles read in parallel processes</span>
+<span class="p">)</span>
+<span class="n">zm</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">"axes"</span><span class="p">]</span>        <span class="c1"># 'czyx'</span>
+</pre></div>
+</div>
+</section>
+<section id="d-maximum-projection-mip">
+<h2>2D maximum projection (MIP)<a class="headerlink" href="#d-maximum-projection-mip" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mip</span> <span class="o">=</span> <span class="n">mosaic</span><span class="o">.</span><span class="n">fuse</span><span class="p">(</span>
+    <span class="s2">"acq_MIP.ome.zarr"</span><span class="p">,</span>
+    <span class="n">projection</span><span class="o">=</span><span class="s2">"max"</span><span class="p">,</span>      <span class="c1"># or "sum"</span>
+    <span class="n">ds</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>          <span class="c1"># only y/x matter for a projection</span>
+    <span class="n">workers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">mip</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">"axes"</span><span class="p">]</span>       <span class="c1"># 'cyx'</span>
+</pre></div>
+</div>
+<p>The projection is computed at full resolution along z and then downsampled in y/x, so the output is small even for a large acquisition. A <code class="docutils literal notranslate"><span class="pre">crop</span></code> in <code class="docutils literal notranslate"><span class="pre">z</span></code> limits the planes that are projected.</p>
+</section>
+<section id="fusion-options">
+<h2>Fusion options<a class="headerlink" href="#fusion-options" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Values</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ds</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">y,</span> <span class="pre">x)</span></code> integers</p></td>
+<td><p>downsampling applied while reading: each output voxel is the mean of its block (default <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">1)</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">projection</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;max&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;sum&quot;</span></code></p></td>
+<td><p>3D volume (default) or a 2D projection along z</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">blend</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;sigmoid&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;max&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;sum&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;midline&quot;</span></code></p></td>
+<td><p>how overlapping tiles are merged (default <code class="docutils literal notranslate"><span class="pre">&quot;sigmoid&quot;</span></code>), see below</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sigmoid_steepness</span></code></p></td>
+<td><p>number &gt; 0</p></td>
+<td><p>steepness of the <code class="docutils literal notranslate"><span class="pre">sigmoid</span></code> transition, higher is sharper (default 4)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">channels</span></code></p></td>
+<td><p>list of names</p></td>
+<td><p>tile channels to fuse, in output order (default: all)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">channel_names</span></code>, <code class="docutils literal notranslate"><span class="pre">channel_colors</span></code></p></td>
+<td><p>lists</p></td>
+<td><p>names and colours (hex or matplotlib names) of the output channels</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">crop</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;z&quot;:</span> <span class="pre">slice,</span> <span class="pre">&quot;y&quot;:</span> <span class="pre">slice,</span> <span class="pre">&quot;x&quot;:</span> <span class="pre">slice}</span></code></p></td>
+<td><p>part of the output to write, in output voxels (after <code class="docutils literal notranslate"><span class="pre">ds</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">field</span></code></p></td>
+<td><p>field name</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MosaicManager.fuse</span></code> only: the field to fuse (default: the first one), see <a class="reference internal" href="#fields">Fields</a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tiles</span></code></p></td>
+<td><p>tiles or tile ids</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MosaicManager.fuse</span></code> only: the only tiles to fuse, the output fits them</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">skip</span></code></p></td>
+<td><p>tiles or tile ids</p></td>
+<td><p>tiles to leave blank, see below</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">levels</span></code>, <code class="docutils literal notranslate"><span class="pre">downscale_factor</span></code></p></td>
+<td><p>integer, integer or <code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">y,</span> <span class="pre">x)</span></code></p></td>
+<td><p>pyramid levels (default 1) and factor between them (default 2)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">workers</span></code></p></td>
+<td><p>integer</p></td>
+<td><p>tiles read in parallel (default 1)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">out_dtype</span></code></p></td>
+<td><p>dtype</p></td>
+<td><p>default: input dtype, <code class="docutils literal notranslate"><span class="pre">float32</span></code> for <code class="docutils literal notranslate"><span class="pre">sum</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">midline_axis</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;x&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;y&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;z&quot;</span></code></p></td>
+<td><p>axis along which <code class="docutils literal notranslate"><span class="pre">sigmoid</span></code> and <code class="docutils literal notranslate"><span class="pre">midline</span></code> separate the groups (default <code class="docutils literal notranslate"><span class="pre">x</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">overwrite</span></code></p></td>
+<td><p>bool</p></td>
+<td><p>replace an existing output</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">temp_dir</span></code></p></td>
+<td><p>path</p></td>
+<td><p>where the temporary fused level 0 goes (default: next to the output)</p></td>
+</tr>
+</tbody>
+</table>
+<p>Every other option of <code class="docutils literal notranslate"><span class="pre">to_zarr</span></code> is passed through unchanged, exactly as for <code class="docutils literal notranslate"><span class="pre">pymif</span> <span class="pre">convert</span></code>: <code class="docutils literal notranslate"><span class="pre">chunks</span></code> (in output axis order, <code class="docutils literal notranslate"><span class="pre">c,</span> <span class="pre">z,</span> <span class="pre">y,</span> <span class="pre">x</span></code> or <code class="docutils literal notranslate"><span class="pre">c,</span> <span class="pre">y,</span> <span class="pre">x</span></code>), <code class="docutils literal notranslate"><span class="pre">shards</span></code>, <code class="docutils literal notranslate"><span class="pre">shard_target_mb</span></code>, <code class="docutils literal notranslate"><span class="pre">shard_exclude_axes</span></code>, <code class="docutils literal notranslate"><span class="pre">zarr_format</span></code>, <code class="docutils literal notranslate"><span class="pre">ngff_version</span></code>, <code class="docutils literal notranslate"><span class="pre">compressor</span></code>, <code class="docutils literal notranslate"><span class="pre">compressor_level</span></code>, <code class="docutils literal notranslate"><span class="pre">drop_singleton</span></code>, <code class="docutils literal notranslate"><span class="pre">num_workers</span></code> (write threads) and <code class="docutils literal notranslate"><span class="pre">storage_options</span></code>. See <a class="reference internal" href="advanced.html"><span class="std std-doc">Advanced writing options</span></a>. As with <code class="docutils literal notranslate"><span class="pre">pymif</span> <span class="pre">convert</span></code>, a single fused channel is written without its channel axis unless <code class="docutils literal notranslate"><span class="pre">drop_singleton=False</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mosaic</span><span class="o">.</span><span class="n">fuse</span><span class="p">(</span>
+    <span class="s2">"acq_cfos.ome.zarr"</span><span class="p">,</span>
+    <span class="n">ds</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+    <span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="s2">"cFos-647"</span><span class="p">],</span> <span class="n">channel_names</span><span class="o">=</span><span class="p">[</span><span class="s2">"cfos"</span><span class="p">],</span> <span class="n">channel_colors</span><span class="o">=</span><span class="p">[</span><span class="s2">"magenta"</span><span class="p">],</span>
+    <span class="n">crop</span><span class="o">=</span><span class="p">{</span><span class="s2">"z"</span><span class="p">:</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span> <span class="s2">"y"</span><span class="p">:</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1500</span><span class="p">)},</span>
+    <span class="n">levels</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">downscale_factor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="n">chunks</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span> <span class="n">shards</span><span class="o">=</span><span class="s2">"auto"</span><span class="p">,</span> <span class="n">shard_target_mb</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">zarr_format</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">workers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">temp_dir</span><span class="o">=</span><span class="s2">"D:/scratch"</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Skipping tiles: <code class="docutils literal notranslate"><span class="pre">skip</span></code> lists tiles that are not read, for example tiles outside the sample or a failed stack. The output keeps the size and position it has with them, and their area stays 0 where no other tile covers it. Tiles are given as <code class="docutils literal notranslate"><span class="pre">Tile</span></code> objects or as ids: <code class="docutils literal notranslate"><span class="pre">&quot;cFos-647/1-x00-y00&quot;</span></code> (<code class="docutils literal notranslate"><span class="pre">channel/stack</span></code>, see <code class="docutils literal notranslate"><span class="pre">mosaic.tile_id(tile)</span></code>) for one tile, or <code class="docutils literal notranslate"><span class="pre">&quot;1-x00-y00&quot;</span></code> for that position in every channel.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mosaic</span><span class="o">.</span><span class="n">fuse</span><span class="p">(</span><span class="s2">"acq_MIP.ome.zarr"</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s2">"max"</span><span class="p">,</span> <span class="n">ds</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">skip</span><span class="o">=</span><span class="p">[</span><span class="s2">"1-x00-y00"</span><span class="p">,</span> <span class="s2">"cFos-647/2-x05-y03"</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Blend modes:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">sigmoid</span></code></strong> (default): a smooth transition across every overlap, so no seam is visible. Each voxel is a weighted mean of the tiles that cover it, with a weight that falls to 0 at the tile’s border. Across an overlap of two tiles, the share of one tile follows a sigmoid: 0 at its border, 1/2 in the middle of the overlap, 1 at the other tile’s border, whatever the overlap width. The tiles of each group are fused this way first; then, where two groups overlap (for example the left and right illumination sides), the image moves from one group to the other with the same sigmoid, centred where <code class="docutils literal notranslate"><span class="pre">midline</span></code> would cut. <code class="docutils literal notranslate"><span class="pre">sigmoid_steepness</span></code> sets how sharp the transition is: the share of a tile goes from 10% to 90% over the central 50% of the overlap for 2, 27% for the default 4 and 14% for 8.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">max</span></code></strong>: keeps the brighter value.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">sum</span></code></strong>: adds the values, so overlaps show up as brighter bands.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">midline</span></code></strong>: uses <code class="docutils literal notranslate"><span class="pre">max</span></code> within each tile group. Where two groups overlap (for example the left and right illumination sides), the image switches sharply from one group to the other at the middle of their overlap, along <code class="docutils literal notranslate"><span class="pre">midline_axis</span></code>. Each side is then shown where its light sheet is sharpest.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">plan_fusion(mosaic.tiles,</span> <span class="pre">...)</span></code> takes the fusion arguments (<code class="docutils literal notranslate"><span class="pre">ds</span></code>, <code class="docutils literal notranslate"><span class="pre">projection</span></code>, <code class="docutils literal notranslate"><span class="pre">blend</span></code>, <code class="docutils literal notranslate"><span class="pre">channels</span></code>, <code class="docutils literal notranslate"><span class="pre">crop</span></code>, <code class="docutils literal notranslate"><span class="pre">skip</span></code>, <code class="docutils literal notranslate"><span class="pre">out_dtype</span></code>, <code class="docutils literal notranslate"><span class="pre">midline_axis</span></code>) and returns the level-0 geometry without reading anything: <code class="docutils literal notranslate"><span class="pre">plan.summary()</span></code>, <code class="docutils literal notranslate"><span class="pre">plan.shape</span></code>, <code class="docutils literal notranslate"><span class="pre">plan.scale</span></code>, <code class="docutils literal notranslate"><span class="pre">plan.nbytes</span></code>.</p>
+<p>The fused output stores a <strong>display window</strong> for every channel (OMERO <code class="docutils literal notranslate"><span class="pre">window</span></code> metadata): the 0.5th to 99.9th percentile of the fused values, ignoring blank areas. Viewers that read it (napari-ome-zarr, Fiji, the <em>Open result</em> option of the napari widget) show the result with a usable contrast instead of the whole 0 to 65535 range. Read it with <code class="docutils literal notranslate"><span class="pre">pymif.mosaic_manager.display_windows(path)</span></code>.</p>
+</section>
+<section id="how-fusion-works">
+<h2>How fusion works<a class="headerlink" href="#how-fusion-works" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Level 0</strong> is fused one region at a time (256 × 256 output voxels in y/x for 3D, 1024 × 1024 for projections, over the full z range) into a temporary zarr. For each region, only the tile voxels that fall inside it are read, downsampled and merged. Memory stays bounded and every full-resolution voxel is read once.</p></li>
+<li><p>The fused level 0, which is already downsampled and therefore small compared with the raw tiles, is written to the output with PyMIF’s standard <code class="docutils literal notranslate"><span class="pre">to_zarr</span></code>. Pyramid levels, chunks, shards, compression and singleton axes therefore behave exactly as for any other conversion. The temporary store is then deleted.</p></li>
+</ol>
+<p>With <code class="docutils literal notranslate"><span class="pre">workers</span> <span class="pre">&gt;</span> <span class="pre">1</span></code>, the tiles of a region are read in <strong>worker processes</strong> when the tiles allow it (as Luxendo and Opera tiles do). h5py serialises reads within one process, so threads would not speed up reading HDF5 files. Merging and writing stay in the calling process. If worker processes cannot be started, fusion falls back to threads with a warning.</p>
+<p>Raw tiles usually have no pyramid, so every fusion reads the full-resolution data, whatever <code class="docutils literal notranslate"><span class="pre">ds</span></code> is. On a network drive the read speed sets the run time. Put <code class="docutils literal notranslate"><span class="pre">temp_dir</span></code> on a local disk when the output is on a network share.</p>
+</section>
+<section id="command-line">
+<h2>Command line<a class="headerlink" href="#command-line" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">pymif</span> <span class="pre">fuse</span></code> fuses one mosaic, or many from a CSV file with <code class="docutils literal notranslate"><span class="pre">--batch</span></code>. Every output option of <code class="docutils literal notranslate"><span class="pre">pymif</span> <span class="pre">convert</span></code> is available with the same flags. See <a class="reference internal" href="cli.html#fuse-a-mosaic"><span class="std std-ref">Command line</span></a>.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pymif fuse -i /path/to/2026-10-14_103957 -z acq_3D.ome.zarr -rds 4 8 8 -nl 3</span>
+<span class="go">pymif fuse -i /path/to/2026-10-14_103957 -z acq_MIP.ome.zarr -rds 1 8 8 -p max -b midline</span>
+<span class="go">pymif fuse -i /path/to/2026-10-14_103957 -z acq_field1_MIP.ome.zarr -rds 1 8 8 -p max -f field1</span>
+<span class="go">pymif fuse -i "/path/to/plate-Measurement 1" -z A3_MIP.ome.zarr -p max -f A3_field1        # Opera</span>
+<span class="go">pymif fuse -i "/path/to/plate-Measurement 1" -z A3_raw.ome.zarr -p max -f A3_field1 -nff   # without flat-field</span>
+</pre></div>
+</div>
+<p>The fields are listed when the mosaic is loaded. Without <code class="docutils literal notranslate"><span class="pre">-f/--fields</span></code> (or <code class="docutils literal notranslate"><span class="pre">-t/--tiles</span></code>) the first field is fused. Asking for tiles from several fields prints an error and nothing is fused; in a <code class="docutils literal notranslate"><span class="pre">--batch</span></code> run that row is not done, the other rows still run, and the rows that were not fused are listed at the end.</p>
+</section>
+<section id="napari">
+<h2>Napari<a class="headerlink" href="#napari" title="Link to this heading"></a></h2>
+<p><img alt="mosaic-demo" src="_images/mosaic-demo.png" /></p>
+<p><code class="docutils literal notranslate"><span class="pre">Plugins</span> <span class="pre">&gt;</span> <span class="pre">PyMIF</span> <span class="pre">&gt;</span> <span class="pre">Mosaic</span> <span class="pre">Fusion</span></code> opens a widget with three boxes:</p>
+<ol class="arabic simple">
+<li><p><strong>Mosaic loading</strong>: choose the microscope and the acquisition folder (browse, or drag and drop it, or any file inside it, from the file explorer), then <em>Load tiles</em>. <em>Flat-field correction (Opera)</em> (on by default) corrects Opera tiles as Harmony does; other microscopes ignore it. This reads metadata only and adds a <strong>tile map</strong>: a <code class="docutils literal notranslate"><span class="pre">tile</span> <span class="pre">map</span></code> shapes layer with one rectangle per stack position, labelled with its stack id, all picked (green). Click a rectangle in the 2D view to unpick it (grey) or pick it again; dragging still pans. <em>Shift</em> + drag picks, and <em>Ctrl</em> + drag unpicks, every tile that lies even partially in the box shown while you drag (a temporary <code class="docutils literal notranslate"><span class="pre">tile</span> <span class="pre">map</span> <span class="pre">box</span></code> layer, removed on release) (<em>Shift</em> or <em>Ctrl</em> + click: one tile). A rectangle stands for that position in every channel and illumination side. Only picked tiles are shown and fused. When the mosaic has several <a class="reference internal" href="#fields">fields</a>, each rectangle also shows its field, the log lists the stack positions of every field, and the <em>fields</em> selectors of <em>Show tiles</em> and <em>Fuse to OME-Zarr</em> start on the first field.</p></li>
+<li><p><strong>Show tiles</strong>: show the picked tiles of the selected channels, groups and fields as one layer per tile at its stage position, with one linked contrast per channel. A channel starts at the whole range of its data type, so nothing is read before the tiles appear: set the contrast of one tile and the others follow. Every displayed plane reads data from all shown tiles, so show only a few channels or groups at a time. Change the picks on the tile map and click <em>Show tiles in napari</em> again to update the view; the contrast you set is kept, and <em>Remove existing layers</em> keeps the tile map.</p></li>
+<li><p><strong>Fuse to OME-Zarr</strong>: the main fusion options, with a live estimate of the output size. Only the picked tiles of the selected field are fused, and the output fits them. Selecting several fields shows an error in the size estimate, and <em>Fuse to OME-Zarr</em> and <em>Append to batch CSV</em> then print an error and do nothing. With several fields, the default output name ends with the field, e.g. <code class="docutils literal notranslate"><span class="pre">&lt;acquisition&gt;_3D_ds4-8-8_field1.ome.zarr</span></code>. <em>Tiles to fuse</em> can be set to <em>visible layers only</em> or <em>selected layers only</em>: tiles whose layer is hidden (eye icon off) or not selected in the layer list are then left blank (the output keeps its size), and <em>Blank in all channels</em> also blanks that position in the other channels. Picked tiles that are not shown in napari are fused normally. The output path follows the parameters (for example <code class="docutils literal notranslate"><span class="pre">&lt;acquisition&gt;_3D_ds4-8-8.ome.zarr</span></code>) until you type your own; dropping a folder on the output field writes the result inside that folder. When fusion finishes, the result can be opened directly (the tile map is then hidden, since the result is not placed at the stage position).</p></li>
+<li><p><strong>Batch CSV export</strong>: <em>Append to batch CSV</em> adds the current settings, including the picked tiles (<code class="docutils literal notranslate"><span class="pre">tiles</span></code> column) and the tiles left blank, as a row of a CSV file. Run the file later, for example on a workstation close to the data, with <code class="docutils literal notranslate"><span class="pre">pymif</span> <span class="pre">fuse</span> <span class="pre">--batch</span> <span class="pre">mosaic_batch.csv</span></code>.</p></li>
+</ol>
+<p>Loading and fusion run in the background, and their progress is shown in the log at the bottom.</p>
+</section>
+<section id="adding-a-mosaic-reader">
+<h2>Adding a mosaic reader<a class="headerlink" href="#adding-a-mosaic-reader" title="Link to this heading"></a></h2>
+<p>A new tile format only needs a <code class="docutils literal notranslate"><span class="pre">MosaicManager</span></code> subclass that implements <code class="docutils literal notranslate"><span class="pre">_scan()</span></code>, returning one <code class="docutils literal notranslate"><span class="pre">Tile</span></code> per acquired tile; <code class="docutils literal notranslate"><span class="pre">visualize()</span></code>, <code class="docutils literal notranslate"><span class="pre">fuse()</span></code>, <code class="docutils literal notranslate"><span class="pre">pymif</span> <span class="pre">fuse</span></code> and the napari widget then work unchanged. See <a class="reference internal" href="contributing.html#adding-a-mosaic-manager"><span class="std std-ref">Adding a mosaic manager</span></a> for the <code class="docutils literal notranslate"><span class="pre">Tile</span></code> fields, how to keep loading fast and fusion parallel, and where to register the reader.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="python-api.html" class="btn btn-neutral float-left" title="Python API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="chromatic-shift.html" class="btn btn-neutral float-right" title="Chromatic shift correction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Nicola Gritti.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

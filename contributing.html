@@ -1,0 +1,385 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contributing and extending PyMIF &mdash; PyMIF 0.5.2.dev13+gb29271f69 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=7f4175d5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Reference" href="autoapi/index.html" />
+    <link rel="prev" title="pymif.utils.zoom" href="autoapi/pymif/utils/zoom/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PyMIF
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing and extending PyMIF</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#package-layout">Package layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#two-kinds-of-readers">Two kinds of readers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-a-microscope-manager">Adding a microscope manager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#implement-the-reader">Implement the reader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#register-it">Register it</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#test-it">Test it</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-a-mosaic-manager">Adding a mosaic manager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Implement the reader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Register it</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Test it</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#layout-of-pymif-utils">Layout of <code class="docutils literal notranslate"><span class="pre">pymif.utils</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PyMIF</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Contributing and extending PyMIF</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/contributing.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="contributing-and-extending-pymif">
+<h1>Contributing and extending PyMIF<a class="headerlink" href="#contributing-and-extending-pymif" title="Link to this heading"></a></h1>
+<section id="package-layout">
+<h2>Package layout<a class="headerlink" href="#package-layout" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Package</p></th>
+<th class="head"><p>What it contains</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pymif.microscope_manager</span></code></p></td>
+<td><p><strong>microscope managers</strong>: one reader class per acquisition system, each exposing <em>one image</em> (<code class="docutils literal notranslate"><span class="pre">MicroscopeManager</span></code> subclasses), plus <code class="docutils literal notranslate"><span class="pre">ZarrManager</span></code> for reading, editing and correcting OME-Zarr stores</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pymif.mosaic_manager</span></code></p></td>
+<td><p><strong>mosaic managers</strong>: readers for acquisitions saved as separate positioned <em>tiles</em> (<code class="docutils literal notranslate"><span class="pre">MosaicManager</span></code> subclasses), the <code class="docutils literal notranslate"><span class="pre">Tile</span></code> model and the fusion engine (<code class="docutils literal notranslate"><span class="pre">fuse_tiles</span></code>, <code class="docutils literal notranslate"><span class="pre">plan_fusion</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pymif.utils</span></code></p></td>
+<td><p>helpers shared by both: metadata, axes, units, colours, pyramids, OME-Zarr writing, chromatic shift correction (see <a class="reference internal" href="#layout-of-pymif-utils">Layout of <code class="docutils literal notranslate"><span class="pre">pymif.utils</span></code></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pymif.cli</span></code></p></td>
+<td><p>the <code class="docutils literal notranslate"><span class="pre">pymif</span> <span class="pre">convert</span></code>, <code class="docutils literal notranslate"><span class="pre">pymif</span> <span class="pre">fuse</span></code> and <code class="docutils literal notranslate"><span class="pre">pymif</span> <span class="pre">chromatic-shift</span></code> commands</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pymif.napari</span></code></p></td>
+<td><p>the Converter and Mosaic Fusion widgets</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="two-kinds-of-readers">
+<h2>Two kinds of readers<a class="headerlink" href="#two-kinds-of-readers" title="Link to this heading"></a></h2>
+<p>PyMIF has two extension points, and a new acquisition system needs one or both:</p>
+<ul class="simple">
+<li><p>A <strong>microscope manager</strong> reads a dataset that already is <strong>one image</strong> (one array per pyramid level, possibly with several timepoints and channels). It is what <code class="docutils literal notranslate"><span class="pre">pymif</span> <span class="pre">convert</span></code> and the Converter widget use.</p></li>
+<li><p>A <strong>mosaic manager</strong> reads an acquisition saved as <strong>many tiles</strong> at different stage positions. It only becomes an image once the tiles are fused, which <code class="docutils literal notranslate"><span class="pre">pymif</span> <span class="pre">fuse</span></code> and the Mosaic Fusion widget do. The fused result is an ordinary OME-Zarr image, read back with <code class="docutils literal notranslate"><span class="pre">ZarrManager</span></code>.</p></li>
+</ul>
+<p>Some systems need both: Luxendo data fused by the vendor software is read by <code class="docutils literal notranslate"><span class="pre">LuxendoManager</span></code>, the raw tiles by <code class="docutils literal notranslate"><span class="pre">LuxendoMosaicManager</span></code> (likewise <code class="docutils literal notranslate"><span class="pre">OperaManager</span></code> and <code class="docutils literal notranslate"><span class="pre">OperaMosaicManager</span></code>).</p>
+</section>
+<section id="adding-a-microscope-manager">
+<h2>Adding a microscope manager<a class="headerlink" href="#adding-a-microscope-manager" title="Link to this heading"></a></h2>
+<section id="implement-the-reader">
+<h3>Implement the reader<a class="headerlink" href="#implement-the-reader" title="Link to this heading"></a></h3>
+<p>Subclass <code class="docutils literal notranslate"><span class="pre">MicroscopeManager</span></code> (exported from <code class="docutils literal notranslate"><span class="pre">pymif.microscope_manager</span></code>) and implement two hooks. The base class provides <code class="docutils literal notranslate"><span class="pre">read()</span></code>, which calls them and stores the results in <code class="docutils literal notranslate"><span class="pre">self.metadata</span></code> and <code class="docutils literal notranslate"><span class="pre">self.data</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pymif.microscope_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">MicroscopeManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymif.utils.metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChannelInfo</span><span class="p">,</span> <span class="n">build_metadata</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyManager</span><span class="p">(</span><span class="n">MicroscopeManager</span><span class="p">):</span>
+    <span class="n">DEFAULT_CHUNKS</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">2048</span><span class="p">,</span> <span class="mi">2048</span><span class="p">)</span>  <span class="c1"># used when chunks=None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">chunks</span><span class="p">)</span>  <span class="c1"># sets self.path (Path) and self.chunks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="c1"># Parse the vendor metadata and return the normalized schema.</span>
+        <span class="k">return</span> <span class="n">build_metadata</span><span class="p">(</span>
+            <span class="n">size</span><span class="o">=</span><span class="p">[(</span><span class="n">t</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)],</span>           <span class="c1"># one shape per pyramid level</span>
+            <span class="n">scales</span><span class="o">=</span><span class="p">[(</span><span class="n">sz</span><span class="p">,</span> <span class="n">sy</span><span class="p">,</span> <span class="n">sx</span><span class="p">)],</span>            <span class="c1"># one voxel size per pyramid level (z, y, x)</span>
+            <span class="n">units</span><span class="o">=</span><span class="p">(</span><span class="s2">"micrometer"</span><span class="p">,)</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="n">ChannelInfo</span><span class="p">(</span><span class="s2">"DAPI"</span><span class="p">,</span> <span class="s2">"0000FF"</span><span class="p">),</span> <span class="n">ChannelInfo</span><span class="p">(</span><span class="s2">"GFP"</span><span class="p">,</span> <span class="s2">"#00ff00"</span><span class="p">)],</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="s2">"uint16"</span><span class="p">,</span>
+            <span class="n">time_increment</span><span class="o">=</span><span class="mf">60.0</span><span class="p">,</span>
+            <span class="n">time_increment_unit</span><span class="o">=</span><span class="s2">"s"</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_dask_array</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="c1"># Return one lazy dask array per pyramid level, in TCZYX order.</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">build_metadata()</span></code> normalizes the units and colours for you, and <code class="docutils literal notranslate"><span class="pre">pymif.utils</span></code> has helpers that the built-in readers share: <code class="docutils literal notranslate"><span class="pre">parse_channel_color</span></code> (vendor colour formats to <code class="docutils literal notranslate"><span class="pre">RRGGBB</span></code>), <code class="docutils literal notranslate"><span class="pre">normalize_unit</span></code> / <code class="docutils literal notranslate"><span class="pre">to_micrometers</span></code>, <code class="docutils literal notranslate"><span class="pre">to_tczyx</span></code> (reorder or add axes), <code class="docutils literal notranslate"><span class="pre">parse_ome_xml</span></code> (OME-XML <code class="docutils literal notranslate"><span class="pre">&lt;Pixels&gt;</span></code> and channels) and <code class="docutils literal notranslate"><span class="pre">scale_for_level</span></code>.</p>
+<p>The metadata must follow the PyMIF schema used across the repository:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">"size"</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span> <span class="n">per</span> <span class="n">pyramid</span> <span class="n">level</span> <span class="o">...</span><span class="p">],</span>
+  <span class="s2">"chunksize"</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span> <span class="n">per</span> <span class="n">pyramid</span> <span class="n">level</span> <span class="o">...</span><span class="p">],</span>
+  <span class="s2">"scales"</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span> <span class="n">per</span> <span class="n">pyramid</span> <span class="n">level</span> <span class="o">...</span><span class="p">],</span>
+  <span class="s2">"units"</span><span class="p">:</span> <span class="p">(</span><span class="o">...</span><span class="p">),</span>
+  <span class="s2">"axes"</span><span class="p">:</span> <span class="s2">"tczyx"</span><span class="p">,</span>
+  <span class="s2">"channel_names"</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">],</span>
+  <span class="s2">"channel_colors"</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">],</span>
+  <span class="s2">"time_increment"</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span>
+  <span class="s2">"time_increment_unit"</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span>
+  <span class="s2">"dtype"</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If a manager needs the data before it can describe it (like <code class="docutils literal notranslate"><span class="pre">ArrayManager</span></code>) or reads several datasets at once (like <code class="docutils literal notranslate"><span class="pre">ZarrManager</span></code>), it can override <code class="docutils literal notranslate"><span class="pre">read()</span></code> instead; it should still return <code class="docutils literal notranslate"><span class="pre">None</span></code> and fill <code class="docutils literal notranslate"><span class="pre">self.data</span></code> and <code class="docutils literal notranslate"><span class="pre">self.metadata</span></code>. File handles appended to <code class="docutils literal notranslate"><span class="pre">self._open_files</span></code> are closed by <code class="docutils literal notranslate"><span class="pre">close()</span></code> and when the manager is used as a context manager.</p>
+<p>Once that contract is respected, the new manager gets the common PyMIF tooling: <code class="docutils literal notranslate"><span class="pre">build_pyramid()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_zarr()</span></code>, <code class="docutils literal notranslate"><span class="pre">visualize()</span></code>, <code class="docutils literal notranslate"><span class="pre">reorder_channels()</span></code>, <code class="docutils literal notranslate"><span class="pre">update_metadata()</span></code> and <code class="docutils literal notranslate"><span class="pre">subset_dataset()</span></code>.</p>
+</section>
+<section id="register-it">
+<h3>Register it<a class="headerlink" href="#register-it" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Export the class from <code class="docutils literal notranslate"><span class="pre">pymif/microscope_manager/__init__.py</span></code>.</p></li>
+<li><p>Command line: add a key to <code class="docutils literal notranslate"><span class="pre">_manager_name_map()</span></code> in <code class="docutils literal notranslate"><span class="pre">pymif/cli/pymif.py</span></code> and to the <code class="docutils literal notranslate"><span class="pre">--microscope</span></code> choices in <code class="docutils literal notranslate"><span class="pre">_add_convert_microscope()</span></code> (<code class="docutils literal notranslate"><span class="pre">pymif/cli/__arguments.py</span></code>). If the format can be recognised from the path, add a rule to <code class="docutils literal notranslate"><span class="pre">_resolve_zarr_manager()</span></code> so <code class="docutils literal notranslate"><span class="pre">-m</span></code> can be left out.</p></li>
+<li><p>Napari: add the key to <code class="docutils literal notranslate"><span class="pre">dataset_reader()</span></code> and to the <code class="docutils literal notranslate"><span class="pre">file_format</span></code> choices of the Converter widget, both in <code class="docutils literal notranslate"><span class="pre">pymif/napari/_convert_widget.py</span></code>.</p></li>
+<li><p>Documentation: list it in <a class="reference internal" href="readers.html"><span class="std std-doc">Readers and conventions</span></a>.</p></li>
+</ol>
+</section>
+<section id="test-it">
+<h3>Test it<a class="headerlink" href="#test-it" title="Link to this heading"></a></h3>
+<p>A reader can be tested without real data by writing a small synthetic dataset in the vendor format to <code class="docutils literal notranslate"><span class="pre">tmp_path</span></code>, or by subclassing with hooks that return in-memory arrays (see <code class="docutils literal notranslate"><span class="pre">tests/test_manager_refactor.py</span></code>). Check at least the shape, axes, scales, channel names and a round trip through <code class="docutils literal notranslate"><span class="pre">to_zarr()</span></code> and <code class="docutils literal notranslate"><span class="pre">ZarrManager</span></code>.</p>
+</section>
+</section>
+<section id="adding-a-mosaic-manager">
+<h2>Adding a mosaic manager<a class="headerlink" href="#adding-a-mosaic-manager" title="Link to this heading"></a></h2>
+<section id="id1">
+<h3>Implement the reader<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>Subclass <code class="docutils literal notranslate"><span class="pre">MosaicManager</span></code> (exported from <code class="docutils literal notranslate"><span class="pre">pymif.mosaic_manager</span></code>) and implement a single hook, <code class="docutils literal notranslate"><span class="pre">_scan()</span></code>, which returns one <code class="docutils literal notranslate"><span class="pre">Tile</span></code> per acquired tile. The base constructor calls it, stops with an error when it returns no tile, and refuses mosaics with more than one timepoint (not supported yet).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pymif.mosaic_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">H5Array</span><span class="p">,</span> <span class="n">MosaicManager</span><span class="p">,</span> <span class="n">Tile</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyMosaicManager</span><span class="p">(</span><span class="n">MosaicManager</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scan</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">Tile</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">H5Array</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">"Data"</span><span class="p">),</span>        <span class="c1"># any lazy array with shape/dtype/slicing</span>
+                <span class="n">origin</span><span class="o">=</span><span class="p">(</span><span class="n">z0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">x0</span><span class="p">),</span>               <span class="c1"># position of voxel [0, 0, 0]</span>
+                <span class="n">voxel_size</span><span class="o">=</span><span class="p">(</span><span class="n">dz</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dx</span><span class="p">),</span>
+                <span class="n">channel</span><span class="o">=</span><span class="s2">"GFP"</span><span class="p">,</span>
+                <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>                        <span class="c1"># e.g. illumination side, for blend="sigmoid"/"midline"</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="p">(</span><span class="n">z0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">x0</span><span class="p">)</span> <span class="ow">in</span> <span class="o">...</span>
+        <span class="p">]</span>
+</pre></div>
+</div>
+<p>A <code class="docutils literal notranslate"><span class="pre">Tile</span></code> describes one stack and where it sits in the sample:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">data</span></code></p></td>
+<td><p>lazy <code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">y,</span> <span class="pre">x)</span></code> array: anything with <code class="docutils literal notranslate"><span class="pre">shape</span></code>, <code class="docutils literal notranslate"><span class="pre">dtype</span></code> and numpy-style slicing (<code class="docutils literal notranslate"><span class="pre">h5py.Dataset</span></code>, dask, numpy, <code class="docutils literal notranslate"><span class="pre">H5Array</span></code>). Only read when a fusion needs it</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">origin</span></code>, <code class="docutils literal notranslate"><span class="pre">voxel_size</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">y,</span> <span class="pre">x)</span></code> position of the first voxel and voxel spacing, in <code class="docutils literal notranslate"><span class="pre">units</span></code>. Placement is translation only, and all tiles of a mosaic share units and voxel size</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">channel</span></code></p></td>
+<td><p>dye name; tiles with the same name are fused into one output channel</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">group</span></code></p></td>
+<td><p>optional label of tiles that are fused among themselves first, such as the <code class="docutils literal notranslate"><span class="pre">L</span></code>/<code class="docutils literal notranslate"><span class="pre">R</span></code> illumination side; <code class="docutils literal notranslate"><span class="pre">blend=&quot;sigmoid&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">blend=&quot;midline&quot;</span></code> then join the groups across their overlap</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">timepoint</span></code></p></td>
+<td><p>timepoint index (<code class="docutils literal notranslate"><span class="pre">0</span></code> for a single timepoint)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">attrs</span></code></p></td>
+<td><p>free-form reader metadata (stack name, grid position, …)</p></td>
+</tr>
+</tbody>
+</table>
+<p>Things to get right:</p>
+<ul class="simple">
+<li><p><strong>Keep loading light.</strong> <code class="docutils literal notranslate"><span class="pre">_scan()</span></code> should read metadata only, never pixel data. Pass <code class="docutils literal notranslate"><span class="pre">shape</span></code> and <code class="docutils literal notranslate"><span class="pre">dtype</span></code> to <code class="docutils literal notranslate"><span class="pre">H5Array</span></code> when the metadata knows them, so no file has to be opened: this matters on network drives (<code class="docutils literal notranslate"><span class="pre">LuxendoMosaicManager</span></code> reads its JSON files in parallel and a single <code class="docutils literal notranslate"><span class="pre">.h5</span></code> header; <code class="docutils literal notranslate"><span class="pre">OperaMosaicManager</span></code> reads its index in one pass and a single TIFF header).</p></li>
+<li><p><strong>Make tile data picklable for parallel fusion.</strong> <code class="docutils literal notranslate"><span class="pre">fuse_tiles(workers</span> <span class="pre">&gt;</span> <span class="pre">1)</span></code> reads tiles in worker processes when the data allows it. <code class="docutils literal notranslate"><span class="pre">H5Array</span></code> opens the file on every read, holds no handle and sets <code class="docutils literal notranslate"><span class="pre">picklable</span> <span class="pre">=</span> <span class="pre">True</span></code>; use it, or the same pattern, for file-backed tiles. Other data falls back to threads.</p></li>
+<li><p><strong>Close what you open.</strong> Append open file handles to <code class="docutils literal notranslate"><span class="pre">self._open_files</span></code>; <code class="docutils literal notranslate"><span class="pre">close()</span></code> and the context manager close them.</p></li>
+<li><p><strong>Name tiles stably.</strong> <code class="docutils literal notranslate"><span class="pre">tile_id()</span></code> (<code class="docutils literal notranslate"><span class="pre">&lt;channel&gt;/&lt;stack&gt;</span></code>) is used by <code class="docutils literal notranslate"><span class="pre">skip</span></code>, the CSV batch <code class="docutils literal notranslate"><span class="pre">tiles</span></code> column and the napari tile map. Set <code class="docutils literal notranslate"><span class="pre">attrs[&quot;stack&quot;]</span></code> to the vendor’s stack name; without it the id falls back to the tile’s index, which changes with the scan order.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">visualize()</span></code>, <code class="docutils literal notranslate"><span class="pre">fuse()</span></code>, <code class="docutils literal notranslate"><span class="pre">plan_fusion()</span></code>, <code class="docutils literal notranslate"><span class="pre">pymif</span> <span class="pre">fuse</span></code> and the napari widget then work unchanged.</p>
+</section>
+<section id="id2">
+<h3>Register it<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Export the class from <code class="docutils literal notranslate"><span class="pre">pymif/mosaic_manager/__init__.py</span></code>.</p></li>
+<li><p>Add it to <code class="docutils literal notranslate"><span class="pre">MOSAIC_READERS</span></code> in <code class="docutils literal notranslate"><span class="pre">pymif/mosaic_manager/readers.py</span></code>: the command line and the napari widget take their readers from there. If the folder layout is recognisable, add a rule to <code class="docutils literal notranslate"><span class="pre">detect_microscope()</span></code> there too: <code class="docutils literal notranslate"><span class="pre">pymif</span> <span class="pre">fuse</span></code> then picks the reader without <code class="docutils literal notranslate"><span class="pre">--microscope</span></code>, and every reader refuses a folder recognised as another microscope’s (<code class="docutils literal notranslate"><span class="pre">WrongReaderError</span></code>, raised by <code class="docutils literal notranslate"><span class="pre">MosaicManager.__init__</span></code> before <code class="docutils literal notranslate"><span class="pre">_scan()</span></code>).</p></li>
+<li><p>Command line: add the key to the <code class="docutils literal notranslate"><span class="pre">--microscope</span></code> choices in <code class="docutils literal notranslate"><span class="pre">_add_fuse_microscope()</span></code> (<code class="docutils literal notranslate"><span class="pre">pymif/cli/__arguments.py</span></code>).</p></li>
+<li><p>Documentation: add it to the reader table in <a class="reference internal" href="mosaic.html"><span class="std std-doc">Mosaics</span></a>.</p></li>
+</ol>
+<p>Reader options other than the path (such as <code class="docutils literal notranslate"><span class="pre">flatfield</span></code>) are passed by the command line and the napari widget only to readers whose constructor accepts them (<code class="docutils literal notranslate"><span class="pre">reader_options()</span></code>).</p>
+<p><code class="docutils literal notranslate"><span class="pre">ZeissMosaicManager</span></code> is a registered placeholder whose <code class="docutils literal notranslate"><span class="pre">_scan()</span></code> raises <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code>; implementing <code class="docutils literal notranslate"><span class="pre">_scan()</span></code> is all that is left for it. For data stored as one file per plane, <code class="docutils literal notranslate"><span class="pre">TiffStackArray</span></code> (used by <code class="docutils literal notranslate"><span class="pre">OperaMosaicManager</span></code>) is the counterpart of <code class="docutils literal notranslate"><span class="pre">H5Array</span></code>; its optional <code class="docutils literal notranslate"><span class="pre">transform</span></code> corrects every plane when it is read (e.g. a flat-field).</p>
+</section>
+<section id="id3">
+<h3>Test it<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>Fusion can be tested with in-memory tiles: a <code class="docutils literal notranslate"><span class="pre">MosaicManager</span></code> subclass whose <code class="docutils literal notranslate"><span class="pre">_scan()</span></code> returns <code class="docutils literal notranslate"><span class="pre">Tile</span></code>s holding small numpy arrays at known origins (see <code class="docutils literal notranslate"><span class="pre">tests/test_mosaic_fusion.py</span></code>). For the reader itself, write a few tiny tiles in the vendor format to <code class="docutils literal notranslate"><span class="pre">tmp_path</span></code> and check positions, channels, groups and <code class="docutils literal notranslate"><span class="pre">tile_id()</span></code>s (see <code class="docutils literal notranslate"><span class="pre">tests/test_luxendo_mosaic.py</span></code>).</p>
+</section>
+</section>
+<section id="layout-of-pymif-utils">
+<h2>Layout of <code class="docutils literal notranslate"><span class="pre">pymif.utils</span></code><a class="headerlink" href="#layout-of-pymif-utils" title="Link to this heading"></a></h2>
+<p>Shared helpers live in one place each, so readers, writers and the napari viewer behave the same way:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Module</p></th>
+<th class="head"><p>What it owns</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">colors</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">parse_channel_color</span></code> / <code class="docutils literal notranslate"><span class="pre">parse_color</span></code> / <code class="docutils literal notranslate"><span class="pre">ome_color_to_hex</span></code> / <code class="docutils literal notranslate"><span class="pre">hex_to_rgb</span></code> and the default channel palette</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">units</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">normalize_unit</span></code>, <code class="docutils literal notranslate"><span class="pre">to_micrometers</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">axes</span></code></p></td>
+<td><p>axis validation, <code class="docutils literal notranslate"><span class="pre">to_tczyx</span></code>, index selections</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">chunks</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">shape_tuple</span></code>, <code class="docutils literal notranslate"><span class="pre">get_chunks</span></code>, <code class="docutils literal notranslate"><span class="pre">rechunk_to_shape</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">downsampling</span></code></p></td>
+<td><p>factor math and <code class="docutils literal notranslate"><span class="pre">downsample_nearest</span></code> (NumPy or Dask)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">metadata</span></code>, <code class="docutils literal notranslate"><span class="pre">ome</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">build_metadata</span></code>, <code class="docutils literal notranslate"><span class="pre">ChannelInfo</span></code>, <code class="docutils literal notranslate"><span class="pre">scale_for_level</span></code>, <code class="docutils literal notranslate"><span class="pre">parse_ome_xml</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dataset_ops</span></code></p></td>
+<td><p>validation and in-place edits shared by <code class="docutils literal notranslate"><span class="pre">MicroscopeManager</span></code> and <code class="docutils literal notranslate"><span class="pre">ZarrManager</span></code> (<code class="docutils literal notranslate"><span class="pre">subset_levels</span></code>, <code class="docutils literal notranslate"><span class="pre">reorder_channels</span></code>, <code class="docutils literal notranslate"><span class="pre">apply_metadata_updates</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ngff</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ZarrWriteConfig</span></code>, array creation (<code class="docutils literal notranslate"><span class="pre">_array_create_kwargs</span></code>), sharding, multiscales metadata (<code class="docutils literal notranslate"><span class="pre">_build_multiscales</span></code>) and the pyramid writers</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">chromatic_shift</span></code></p></td>
+<td><p>Z chromatic shift estimation (<code class="docutils literal notranslate"><span class="pre">estimate_chromatic_shift</span></code>) and the writer of corrected stores that copies the input’s array layout (<code class="docutils literal notranslate"><span class="pre">write_chromatic_shift_corrected</span></code>); see <a class="reference internal" href="chromatic-shift.html"><span class="std std-doc">Chromatic shift correction</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading"></a></h2>
+<p>PyMIF uses <strong>Sphinx + MyST + AutoAPI</strong>, and the <code class="docutils literal notranslate"><span class="pre">documentation/</span></code> folder is the Sphinx source:</p>
+<ul class="simple">
+<li><p>the root <code class="docutils literal notranslate"><span class="pre">README.md</span></code> is the landing page. <code class="docutils literal notranslate"><span class="pre">documentation/index.md</span></code> pulls it in with a MyST <code class="docutils literal notranslate"><span class="pre">include</span></code>, so it is never copied;</p></li>
+<li><p>every other page is a Markdown file in <code class="docutils literal notranslate"><span class="pre">documentation/</span></code>, readable on GitHub and rendered on the documentation site;</p></li>
+<li><p>API pages are generated from the Python docstrings, so documenting classes, methods and helpers in the source code is the best way to improve the API reference.</p></li>
+</ul>
+<p>To add a page, create <code class="docutils literal notranslate"><span class="pre">documentation/&lt;page&gt;.md</span></code>, add it to the <code class="docutils literal notranslate"><span class="pre">toctree</span></code> in <code class="docutils literal notranslate"><span class="pre">documentation/index.md</span></code> and link it from the README table. Build the site locally with:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install -e .[docs]</span>
+<span class="go">sphinx-build documentation _build</span>
+</pre></div>
+</div>
+<p>The API entry points to document and keep stable are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MicroscopeManager</span></code>, the vendor reader classes and <code class="docutils literal notranslate"><span class="pre">ZarrManager</span></code> in <code class="docutils literal notranslate"><span class="pre">pymif.microscope_manager</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MosaicManager</span></code>, <code class="docutils literal notranslate"><span class="pre">Tile</span></code>, <code class="docutils literal notranslate"><span class="pre">H5Array</span></code>, <code class="docutils literal notranslate"><span class="pre">fuse_tiles</span></code> and <code class="docutils literal notranslate"><span class="pre">plan_fusion</span></code> in <code class="docutils literal notranslate"><span class="pre">pymif.mosaic_manager</span></code></p></li>
+<li><p>the zarr-writing helpers in <code class="docutils literal notranslate"><span class="pre">pymif.utils</span></code></p></li>
+<li><p>the CLI entry points in <code class="docutils literal notranslate"><span class="pre">pymif.cli</span></code></p></li>
+<li><p>the napari widgets in <code class="docutils literal notranslate"><span class="pre">pymif.napari</span></code></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="autoapi/pymif/utils/zoom/index.html" class="btn btn-neutral float-left" title="pymif.utils.zoom" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="autoapi/index.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Nicola Gritti.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

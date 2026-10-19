@@ -1,0 +1,525 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pymif.mosaic_manager.opera_mosaic_manager &mdash; PyMIF 0.5.2.dev13+gb29271f69 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=7f4175d5"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="pymif.mosaic_manager.readers" href="../readers/index.html" />
+    <link rel="prev" title="pymif.mosaic_manager.mosaic" href="../mosaic/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            PyMIF
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing and extending PyMIF</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">pymif</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../_version/index.html">pymif._version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html">pymif.cli</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../microscope_manager/index.html">pymif.microscope_manager</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">pymif.mosaic_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../napari/index.html">pymif.napari</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../utils/index.html">pymif.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PyMIF</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../api_reference.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">pymif</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">pymif.mosaic_manager</a></li>
+      <li class="breadcrumb-item active">pymif.mosaic_manager.opera_mosaic_manager</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/pymif/mosaic_manager/opera_mosaic_manager/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pymif.mosaic_manager.opera_mosaic_manager">
+<span id="pymif-mosaic-manager-opera-mosaic-manager"></span><h1>pymif.mosaic_manager.opera_mosaic_manager<a class="headerlink" href="#module-pymif.mosaic_manager.opera_mosaic_manager" title="Link to this heading"></a></h1>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager.logger" title="pymif.mosaic_manager.opera_mosaic_manager.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logger</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager.INDEX_NAMES" title="pymif.mosaic_manager.opera_mosaic_manager.INDEX_NAMES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">INDEX_NAMES</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager._UNITS" title="pymif.mosaic_manager.opera_mosaic_manager._UNITS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_UNITS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager._BLOCKS" title="pymif.mosaic_manager.opera_mosaic_manager._BLOCKS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BLOCKS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager._OPENING" title="pymif.mosaic_manager.opera_mosaic_manager._OPENING"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_OPENING</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager._TAG" title="pymif.mosaic_manager.opera_mosaic_manager._TAG"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_TAG</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager._UNIT" title="pymif.mosaic_manager.opera_mosaic_manager._UNIT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_UNIT</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager._PLATE" title="pymif.mosaic_manager.opera_mosaic_manager._PLATE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_PLATE</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager._READ_BLOCK" title="pymif.mosaic_manager.opera_mosaic_manager._READ_BLOCK"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_READ_BLOCK</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager.WELL_PITCH" title="pymif.mosaic_manager.opera_mosaic_manager.WELL_PITCH"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WELL_PITCH</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield" title="pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OperaFlatfield</span></code></a></p></td>
+<td><p>Harmony's background flat-field correction of one channel (picklable).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager" title="pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OperaMosaicManager</span></code></a></p></td>
+<td><p>Raw Opera Phenix / Operetta (Revvity Harmony) tiles, before any stitching.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager.parse_acapella" title="pymif.mosaic_manager.opera_mosaic_manager.parse_acapella"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_acapella</span></code></a>(→ Any)</p></td>
+<td><p>Parse the <code class="docutils literal notranslate"><span class="pre">{Key:</span> <span class="pre">value,</span> <span class="pre">...}</span></code> notation of Harmony / Acapella metadata (<code class="docutils literal notranslate"><span class="pre">FlatfieldProfile</span></code>).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager._well_name" title="pymif.mosaic_manager.opera_mosaic_manager._well_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_well_name</span></code></a>(→ str)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">3)</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">&quot;A3&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">(27,</span> <span class="pre">1)</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">&quot;AA1&quot;</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager._tags" title="pymif.mosaic_manager.opera_mosaic_manager._tags"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_tags</span></code></a>(→ Dict[str, Tuple[str, Optional[str]]])</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{tag:</span> <span class="pre">(text,</span> <span class="pre">unit)}</span></code> of the simple child elements of an index block.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager._micrometres" title="pymif.mosaic_manager.opera_mosaic_manager._micrometres"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_micrometres</span></code></a>(→ float)</p></td>
+<td><p>Value of a position or resolution in micrometres (<code class="docutils literal notranslate"><span class="pre">Unit</span></code> attribute, metres by default).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager._position" title="pymif.mosaic_manager.opera_mosaic_manager._position"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_position</span></code></a>(→ float)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager.read_index" title="pymif.mosaic_manager.opera_mosaic_manager.read_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_index</span></code></a>(path[, progress])</p></td>
+<td><p>Channels and planes of a Harmony <code class="docutils literal notranslate"><span class="pre">Index.xml</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager.read_plate" title="pymif.mosaic_manager.opera_mosaic_manager.read_plate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_plate</span></code></a>(→ Optional[Tuple[int, int]])</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(PlateRows,</span> <span class="pre">PlateColumns)</span></code> of a Harmony index (in its first block), or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager._orientation" title="pymif.mosaic_manager.opera_mosaic_manager._orientation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_orientation</span></code></a>(→ Optional[List[List[float]]])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.logger">
+<span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.opera_mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">logger</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.INDEX_NAMES">
+<span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.opera_mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">INDEX_NAMES</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('Index.xml',</span> <span class="pre">'Index.idx.xml')</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.INDEX_NAMES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager._UNITS">
+<span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.opera_mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">_UNITS</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager._UNITS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager._BLOCKS">
+<span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.opera_mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">_BLOCKS</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager._BLOCKS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager._OPENING">
+<span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.opera_mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">_OPENING</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager._OPENING" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager._TAG">
+<span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.opera_mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">_TAG</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager._TAG" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager._UNIT">
+<span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.opera_mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">_UNIT</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager._UNIT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager._PLATE">
+<span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.opera_mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">_PLATE</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager._PLATE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager._READ_BLOCK">
+<span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.opera_mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">_READ_BLOCK</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16777216</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager._READ_BLOCK" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.WELL_PITCH">
+<span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.opera_mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">WELL_PITCH</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.WELL_PITCH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.parse_acapella">
+<span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.opera_mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">parse_acapella</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.parse_acapella" title="Link to this definition"></a></dt>
+<dd><p>Parse the <code class="docutils literal notranslate"><span class="pre">{Key:</span> <span class="pre">value,</span> <span class="pre">...}</span></code> notation of Harmony / Acapella metadata (<code class="docutils literal notranslate"><span class="pre">FlatfieldProfile</span></code>).</p>
+<p>Mappings <code class="docutils literal notranslate"><span class="pre">{...}</span></code>, lists <code class="docutils literal notranslate"><span class="pre">[...]</span></code> and scalars (numbers, or text up to the next
+<code class="docutils literal notranslate"><span class="pre">,</span></code>, <code class="docutils literal notranslate"><span class="pre">}</span></code> or <code class="docutils literal notranslate"><span class="pre">]</span></code>, such as <code class="docutils literal notranslate"><span class="pre">Acapella:2013</span></code>) are supported.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.opera_mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">OperaFlatfield</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefficients</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield" title="Link to this definition"></a></dt>
+<dd><p>Harmony’s background flat-field correction of one channel (picklable).</p>
+<p>Harmony describes the uneven background of a channel as a 2D polynomial <code class="docutils literal notranslate"><span class="pre">P</span></code>,
+normalised to a mean of 1, and its mean level <code class="docutils literal notranslate"><span class="pre">Mean</span></code> (<code class="docutils literal notranslate"><span class="pre">FlatfieldProfile</span></code> of
+the index, <code class="docutils literal notranslate"><span class="pre">Background</span></code> entry). It corrects every plane with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">raw</span> <span class="o">&gt;=</span> <span class="n">Mean</span> <span class="o">*</span> <span class="n">P</span> <span class="p">:</span>  <span class="n">raw</span> <span class="o">-</span> <span class="n">Mean</span> <span class="o">*</span> <span class="p">(</span><span class="n">P</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>    <span class="p">(</span><span class="n">above</span> <span class="n">the</span> <span class="n">background</span><span class="p">:</span> <span class="n">remove</span> <span class="n">its</span> <span class="n">unevenness</span><span class="p">)</span>
+<span class="n">raw</span> <span class="o">&lt;</span>  <span class="n">Mean</span> <span class="o">*</span> <span class="n">P</span> <span class="p">:</span>  <span class="n">raw</span> <span class="o">/</span> <span class="n">P</span>                 <span class="p">(</span><span class="n">below</span> <span class="n">it</span><span class="p">:</span> <span class="n">rescale</span> <span class="n">it</span> <span class="n">to</span> <span class="n">the</span> <span class="n">flat</span> <span class="n">level</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Both branches give <code class="docutils literal notranslate"><span class="pre">Mean</span></code> at <code class="docutils literal notranslate"><span class="pre">raw</span> <span class="pre">=</span> <span class="pre">Mean</span> <span class="pre">*</span> <span class="pre">P</span></code>. This reproduces the images
+stitched by Harmony to within rounding.</p>
+<p><code class="docutils literal notranslate"><span class="pre">P(u,</span> <span class="pre">v)</span> <span class="pre">=</span> <span class="pre">sum_k</span> <span class="pre">sum_i</span> <span class="pre">c[k][i]</span> <span class="pre">*</span> <span class="pre">u**(k</span> <span class="pre">-</span> <span class="pre">i)</span> <span class="pre">*</span> <span class="pre">v**i</span></code>, with <code class="docutils literal notranslate"><span class="pre">u</span> <span class="pre">=</span> <span class="pre">(x</span> <span class="pre">-</span> <span class="pre">Origin[0])</span> <span class="pre">*</span> <span class="pre">Scale[0]</span></code>
+along image columns and <code class="docutils literal notranslate"><span class="pre">v</span> <span class="pre">=</span> <span class="pre">(y</span> <span class="pre">-</span> <span class="pre">Origin[1])</span> <span class="pre">*</span> <span class="pre">Scale[1]</span></code> along rows, in the
+pixels of a <code class="docutils literal notranslate"><span class="pre">Dims</span></code> image (rescaled to the image size, e.g. for another binning).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield.mean">
+<span class="sig-name descname"><span class="pre">mean</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield.mean" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield.coefficients">
+<span class="sig-name descname"><span class="pre">coefficients</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield.coefficients" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield.dims">
+<span class="sig-name descname"><span class="pre">dims</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield.dims" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield.origin">
+<span class="sig-name descname"><span class="pre">origin</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield.origin" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield.scale">
+<span class="sig-name descname"><span class="pre">scale</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield.scale" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield._cache">
+<span class="sig-name descname"><span class="pre">_cache</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield._cache" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield.from_profile">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield" title="pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield"><span class="pre">OperaFlatfield</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield.from_profile" title="Link to this definition"></a></dt>
+<dd><p>Correction described by a <code class="docutils literal notranslate"><span class="pre">FlatfieldProfile</span></code> (text or parsed), or <code class="docutils literal notranslate"><span class="pre">None</span></code>
+when it leaves the images as they are (<code class="docutils literal notranslate"><span class="pre">Identity</span></code> profile, <code class="docutils literal notranslate"><span class="pre">Null</span></code> character).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield.profile">
+<span class="sig-name descname"><span class="pre">profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield.profile" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">P</span></code> for an image of <code class="docutils literal notranslate"><span class="pre">shape</span></code> (rows, columns), as float32.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield.__call__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield.__getstate__">
+<span class="sig-name descname"><span class="pre">__getstate__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield.__getstate__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager._well_name">
+<span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.opera_mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">_well_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager._well_name" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">3)</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">&quot;A3&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">(27,</span> <span class="pre">1)</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">&quot;AA1&quot;</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager._tags">
+<span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.opera_mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">_tags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager._tags" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">{tag:</span> <span class="pre">(text,</span> <span class="pre">unit)}</span></code> of the simple child elements of an index block.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager._micrometres">
+<span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.opera_mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">_micrometres</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'m'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager._micrometres" title="Link to this definition"></a></dt>
+<dd><p>Value of a position or resolution in micrometres (<code class="docutils literal notranslate"><span class="pre">Unit</span></code> attribute, metres by default).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager._position">
+<span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.opera_mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager._position" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.read_index">
+<span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.opera_mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">read_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.read_index" title="Link to this definition"></a></dt>
+<dd><p>Channels and planes of a Harmony <code class="docutils literal notranslate"><span class="pre">Index.xml</span></code>.</p>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">(channels,</span> <span class="pre">stacks)</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">channels</span></code> maps a channel id to its settings (<code class="docutils literal notranslate"><span class="pre">ChannelName</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ImageResolutionX</span></code>, <code class="docutils literal notranslate"><span class="pre">OrientationMatrix</span></code>, <code class="docutils literal notranslate"><span class="pre">FlatfieldProfile</span></code>, …), as
+<code class="docutils literal notranslate"><span class="pre">{tag:</span> <span class="pre">(text,</span> <span class="pre">unit)}</span></code>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stacks</span></code> maps <code class="docutils literal notranslate"><span class="pre">(row,</span> <span class="pre">col,</span> <span class="pre">field,</span> <span class="pre">timepoint,</span> <span class="pre">channel)</span></code> to
+<code class="docutils literal notranslate"><span class="pre">{&quot;x&quot;:</span> <span class="pre">um,</span> <span class="pre">&quot;y&quot;:</span> <span class="pre">um,</span> <span class="pre">&quot;planes&quot;:</span> <span class="pre">[(plane</span> <span class="pre">id,</span> <span class="pre">z</span> <span class="pre">um,</span> <span class="pre">file</span> <span class="pre">name</span> <span class="pre">or</span> <span class="pre">None),</span> <span class="pre">...]}</span></code>,
+with <code class="docutils literal notranslate"><span class="pre">None</span></code> for planes whose <code class="docutils literal notranslate"><span class="pre">State</span></code> is not <code class="docutils literal notranslate"><span class="pre">Ok</span></code>.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.read_plate">
+<span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.opera_mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">read_plate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.read_plate" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">(PlateRows,</span> <span class="pre">PlateColumns)</span></code> of a Harmony index (in its first block), or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager._orientation">
+<span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.opera_mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">_orientation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager._orientation" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pymif.mosaic_manager.opera_mosaic_manager.</span></span><span class="sig-name descname"><span class="pre">OperaMosaicManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatfield</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../mosaic/index.html#pymif.mosaic_manager.mosaic.MosaicManager" title="pymif.mosaic_manager.mosaic.MosaicManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymif.mosaic_manager.mosaic.MosaicManager</span></code></a></p>
+<p>Raw Opera Phenix / Operetta (Revvity Harmony) tiles, before any stitching.</p>
+<p>Not to be confused with <a class="reference internal" href="../../microscope_manager/index.html#pymif.microscope_manager.OperaManager" title="pymif.microscope_manager.OperaManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">OperaManager</span></code></a>, which
+reads images stitched by Harmony (<code class="docutils literal notranslate"><span class="pre">stitchresult/*.ome.tiff</span></code>). This manager reads
+a Harmony export: <code class="docutils literal notranslate"><span class="pre">Images/Index.xml</span></code> and one TIFF file per plane
+(<code class="docutils literal notranslate"><span class="pre">r01c03f01p01-ch1sk1fk1fl1.tiff</span></code>: row 1, column 3, Opera field 1, plane 1, channel 1).
+Every Opera field of every channel is one tile; its planes stay on disk until read.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">channel</span></code>: the <code class="docutils literal notranslate"><span class="pre">ChannelName</span></code> of the index;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">field</span></code>: tiles are grouped per well into fields of touching tiles, named
+<code class="docutils literal notranslate"><span class="pre">&lt;well&gt;_field&lt;k&gt;</span></code> (<code class="docutils literal notranslate"><span class="pre">A3_field0</span></code>, <code class="docutils literal notranslate"><span class="pre">A3_field1</span></code>, …);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">timepoint</span></code>: <code class="docutils literal notranslate"><span class="pre">TimepointID</span> <span class="pre">-</span> <span class="pre">1</span></code> (mosaics with several timepoints are refused for now);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">attrs</span></code>: <code class="docutils literal notranslate"><span class="pre">stack</span></code> (<code class="docutils literal notranslate"><span class="pre">r01c03f01</span></code>, the tile id without the channel), <code class="docutils literal notranslate"><span class="pre">well</span></code>,
+<code class="docutils literal notranslate"><span class="pre">row</span></code>, <code class="docutils literal notranslate"><span class="pre">col</span></code>, <code class="docutils literal notranslate"><span class="pre">opera_field</span></code>, <code class="docutils literal notranslate"><span class="pre">channel_id</span></code>, <code class="docutils literal notranslate"><span class="pre">flatfield</span></code> and <code class="docutils literal notranslate"><span class="pre">folder</span></code>.</p></li>
+</ul>
+<p>Geometry, consistent with the images stitched by Harmony: the x/y pixel size is the
+<code class="docutils literal notranslate"><span class="pre">ImageResolution</span></code> of the index scaled by the channel’s <code class="docutils literal notranslate"><span class="pre">OrientationMatrix</span></code>
+(a calibration of a few percent, which Harmony applies to its stitched images),
+tiles are centred on the field position, and stage <code class="docutils literal notranslate"><span class="pre">y</span></code> runs against image rows
+when the matrix says so (negative <code class="docutils literal notranslate"><span class="pre">y</span></code> scale). Planes are placed at their
+<code class="docutils literal notranslate"><span class="pre">PositionZ</span></code>, without the matrix’s <code class="docutils literal notranslate"><span class="pre">z</span></code> scale and offset.</p>
+<p>Stage positions are relative to the centre of each well, so every well is shifted
+to its place on the plate (A1 at the top left, <code class="docutils literal notranslate"><span class="pre">y</span></code> along rows, <code class="docutils literal notranslate"><span class="pre">x</span></code> along columns),
+by the well pitch of the plate format (<code class="docutils literal notranslate"><span class="pre">PlateRows</span></code> x <code class="docutils literal notranslate"><span class="pre">PlateColumns</span></code>, see
+<a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager.WELL_PITCH" title="pymif.mosaic_manager.opera_mosaic_manager.WELL_PITCH"><code class="xref py py-data docutils literal notranslate"><span class="pre">WELL_PITCH</span></code></a>). The fused images do not depend on it.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">flatfield=True</span></code> (default), every plane is corrected with the background
+flat-field profile stored by Harmony (see <a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield" title="pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield"><code class="xref py py-class docutils literal notranslate"><span class="pre">OperaFlatfield</span></code></a>), as in the
+Harmony stitched images. The profiles are read from the index, or from
+<code class="docutils literal notranslate"><span class="pre">FFC_Profile/*.xml</span></code> next to <code class="docutils literal notranslate"><span class="pre">Images/</span></code> when the index has none.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager.flatfield">
+<span class="sig-name descname"><span class="pre">flatfield</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager.flatfield" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager.progress">
+<span class="sig-name descname"><span class="pre">progress</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager.progress" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager.flatfields">
+<span class="sig-name descname"><span class="pre">flatfields</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield" title="pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield"><span class="pre">OperaFlatfield</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager.flatfields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager.find_index">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">find_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager.find_index" title="Link to this definition"></a></dt>
+<dd><p>The Harmony index of an export folder, its <code class="docutils literal notranslate"><span class="pre">Images</span></code> folder or the index itself.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager._profiles">
+<span class="sig-name descname"><span class="pre">_profiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager._profiles" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">FlatfieldProfile</span></code> text of every channel: from the index, else from <code class="docutils literal notranslate"><span class="pre">FFC_Profile/</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager._scan">
+<span class="sig-name descname"><span class="pre">_scan</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../tile/index.html#pymif.mosaic_manager.tile.Tile" title="pymif.mosaic_manager.tile.Tile"><span class="pre">pymif.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager._scan" title="Link to this definition"></a></dt>
+<dd><p>Discover the tiles under <code class="xref py py-attr docutils literal notranslate"><span class="pre">path</span></code> (lazy data, positions in the sample frame).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager._label_wells">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_label_wells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../tile/index.html#pymif.mosaic_manager.tile.Tile" title="pymif.mosaic_manager.tile.Tile"><span class="pre">pymif.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager._label_wells" title="Link to this definition"></a></dt>
+<dd><p>Fields of touching tiles within each well: <code class="docutils literal notranslate"><span class="pre">A3_field0</span></code>, <code class="docutils literal notranslate"><span class="pre">A3_field1</span></code>, …</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager._well_pitch">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_well_pitch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stacks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tile_um</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager._well_pitch" title="Link to this definition"></a></dt>
+<dd><p>Distance (um) between the centres of neighbouring wells.</p>
+<p>The pitch of the plate format (<a class="reference internal" href="#pymif.mosaic_manager.opera_mosaic_manager.WELL_PITCH" title="pymif.mosaic_manager.opera_mosaic_manager.WELL_PITCH"><code class="xref py py-data docutils literal notranslate"><span class="pre">WELL_PITCH</span></code></a>), widened when the fields of a
+well (<code class="docutils literal notranslate"><span class="pre">tile_um</span></code> wide tiles) would reach the next well; without a known format,
+the widest well plus 10%.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager._channel_names">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_channel_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">used</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager._channel_names" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager._flips">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_flips</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager._flips" title="Link to this definition"></a></dt>
+<dd><p>Signs of the <code class="docutils literal notranslate"><span class="pre">y</span></code> and <code class="docutils literal notranslate"><span class="pre">x</span></code> stage axes along image rows and columns.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager._pixel_sizes">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_pixel_sizes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager._pixel_sizes" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">(y,</span> <span class="pre">x)</span></code> pixel size in micrometres, calibrated by the <code class="docutils literal notranslate"><span class="pre">OrientationMatrix</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager._image_size">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_image_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager._image_size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager._header">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.dtype</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/mosaic_manager/opera_mosaic_manager.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager._header" title="Link to this definition"></a></dt>
+<dd><p>Data type and <code class="docutils literal notranslate"><span class="pre">(y,</span> <span class="pre">x)</span></code> shape of the planes, from the header of one file.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../mosaic/index.html" class="btn btn-neutral float-left" title="pymif.mosaic_manager.mosaic" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../readers/index.html" class="btn btn-neutral float-right" title="pymif.mosaic_manager.readers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Nicola Gritti.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

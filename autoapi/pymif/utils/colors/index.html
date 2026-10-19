@@ -1,0 +1,247 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pymif.utils.colors &mdash; PyMIF 0.5.2.dev13+gb29271f69 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=7f4175d5"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="pymif.utils.create_empty_dataset" href="../create_empty_dataset/index.html" />
+    <link rel="prev" title="pymif.utils.chunks" href="../chunks/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            PyMIF
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing and extending PyMIF</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">pymif</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../_version/index.html">pymif._version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html">pymif.cli</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../microscope_manager/index.html">pymif.microscope_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../mosaic_manager/index.html">pymif.mosaic_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../napari/index.html">pymif.napari</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">pymif.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PyMIF</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../api_reference.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">pymif</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">pymif.utils</a></li>
+      <li class="breadcrumb-item active">pymif.utils.colors</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/pymif/utils/colors/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pymif.utils.colors">
+<span id="pymif-utils-colors"></span><h1>pymif.utils.colors<a class="headerlink" href="#module-pymif.utils.colors" title="Link to this heading"></a></h1>
+<p>Channel color parsing shared by the readers, the Zarr writer and napari.</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.utils.colors._HEX_COLOR_PATTERN" title="pymif.utils.colors._HEX_COLOR_PATTERN"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_HEX_COLOR_PATTERN</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.utils.colors._ARGB_PATTERN" title="pymif.utils.colors._ARGB_PATTERN"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_ARGB_PATTERN</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.utils.colors.DEFAULT_CHANNEL_PALETTE" title="pymif.utils.colors.DEFAULT_CHANNEL_PALETTE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DEFAULT_CHANNEL_PALETTE</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.utils.colors.default_channel_color" title="pymif.utils.colors.default_channel_color"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_channel_color</span></code></a>(→ str)</p></td>
+<td><p>Return the default <code class="docutils literal notranslate"><span class="pre">RRGGBB</span></code> color for channel <code class="docutils literal notranslate"><span class="pre">index</span></code> (cycles the palette).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.utils.colors.parse_color" title="pymif.utils.colors.parse_color"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_color</span></code></a>(→ str)</p></td>
+<td><p>Parse a color to a six-digit uppercase hex string (without <code class="docutils literal notranslate"><span class="pre">#</span></code>).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.utils.colors.ome_color_to_hex" title="pymif.utils.colors.ome_color_to_hex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ome_color_to_hex</span></code></a>(→ str)</p></td>
+<td><p>Convert an OME-XML <code class="docutils literal notranslate"><span class="pre">Color</span></code> (signed 32-bit RGBA integer) to <code class="docutils literal notranslate"><span class="pre">RRGGBB</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.utils.colors.parse_channel_color" title="pymif.utils.colors.parse_channel_color"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_channel_color</span></code></a>(→ str)</p></td>
+<td><p>Convert a vendor-specific channel color to <code class="docutils literal notranslate"><span class="pre">RRGGBB</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.utils.colors.hex_to_rgb" title="pymif.utils.colors.hex_to_rgb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hex_to_rgb</span></code></a>(→ tuple[float, float, float])</p></td>
+<td><p>Convert <code class="docutils literal notranslate"><span class="pre">RRGGBB</span></code> to an <code class="docutils literal notranslate"><span class="pre">(r,</span> <span class="pre">g,</span> <span class="pre">b)</span></code> tuple of floats in <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="pymif.utils.colors._HEX_COLOR_PATTERN">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.colors.</span></span><span class="sig-name descname"><span class="pre">_HEX_COLOR_PATTERN</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/colors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.colors._HEX_COLOR_PATTERN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pymif.utils.colors._ARGB_PATTERN">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.colors.</span></span><span class="sig-name descname"><span class="pre">_ARGB_PATTERN</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/colors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.colors._ARGB_PATTERN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pymif.utils.colors.DEFAULT_CHANNEL_PALETTE">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.colors.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_CHANNEL_PALETTE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('FFFFFF',</span> <span class="pre">'FF0000',</span> <span class="pre">'00FF00',</span> <span class="pre">'0000FF',</span> <span class="pre">'FFFF00',</span> <span class="pre">'FF00FF',</span> <span class="pre">'00FFFF')</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/colors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.colors.DEFAULT_CHANNEL_PALETTE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.utils.colors.default_channel_color">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.colors.</span></span><span class="sig-name descname"><span class="pre">default_channel_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/colors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.colors.default_channel_color" title="Link to this definition"></a></dt>
+<dd><p>Return the default <code class="docutils literal notranslate"><span class="pre">RRGGBB</span></code> color for channel <code class="docutils literal notranslate"><span class="pre">index</span></code> (cycles the palette).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.utils.colors.parse_color">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.colors.</span></span><span class="sig-name descname"><span class="pre">parse_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/colors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.colors.parse_color" title="Link to this definition"></a></dt>
+<dd><p>Parse a color to a six-digit uppercase hex string (without <code class="docutils literal notranslate"><span class="pre">#</span></code>).</p>
+<p>Accepts 6-digit hex codes (<code class="docutils literal notranslate"><span class="pre">#</span></code> optional) and matplotlib color names
+(e.g. <code class="docutils literal notranslate"><span class="pre">&quot;magenta&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;cyan&quot;</span></code>).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.utils.colors.ome_color_to_hex">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.colors.</span></span><span class="sig-name descname"><span class="pre">ome_color_to_hex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/colors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.colors.ome_color_to_hex" title="Link to this definition"></a></dt>
+<dd><p>Convert an OME-XML <code class="docutils literal notranslate"><span class="pre">Color</span></code> (signed 32-bit RGBA integer) to <code class="docutils literal notranslate"><span class="pre">RRGGBB</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.utils.colors.parse_channel_color">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.colors.</span></span><span class="sig-name descname"><span class="pre">parse_channel_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/colors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.colors.parse_channel_color" title="Link to this definition"></a></dt>
+<dd><p>Convert a vendor-specific channel color to <code class="docutils literal notranslate"><span class="pre">RRGGBB</span></code>.</p>
+<p>This is the single entry point used by the microscope managers, the Zarr
+writer and the napari viewer. It accepts:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> / empty values -&gt; the default palette color for <code class="docutils literal notranslate"><span class="pre">index</span></code>;</p></li>
+<li><p>integers or integer strings: 24-bit RGB (<code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">v</span> <span class="pre">&lt;=</span> <span class="pre">0xFFFFFF</span></code>, as written
+by Opera) or signed 32-bit OME <code class="docutils literal notranslate"><span class="pre">RGBA</span></code> (see <a class="reference internal" href="#pymif.utils.colors.ome_color_to_hex" title="pymif.utils.colors.ome_color_to_hex"><code class="xref py py-func docutils literal notranslate"><span class="pre">ome_color_to_hex()</span></code></a>);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">0x</span></code>-prefixed hex strings;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">#AARRGGBB</span></code> / <code class="docutils literal notranslate"><span class="pre">AARRGGBB</span></code> (Zeiss) -&gt; alpha dropped;</p></li>
+<li><p>6-digit hex codes and matplotlib color names (see <a class="reference internal" href="#pymif.utils.colors.parse_color" title="pymif.utils.colors.parse_color"><code class="xref py py-func docutils literal notranslate"><span class="pre">parse_color()</span></code></a>).</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.utils.colors.hex_to_rgb">
+<span class="sig-prename descclassname"><span class="pre">pymif.utils.colors.</span></span><span class="sig-name descname"><span class="pre">hex_to_rgb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hex_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/utils/colors.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.utils.colors.hex_to_rgb" title="Link to this definition"></a></dt>
+<dd><p>Convert <code class="docutils literal notranslate"><span class="pre">RRGGBB</span></code> to an <code class="docutils literal notranslate"><span class="pre">(r,</span> <span class="pre">g,</span> <span class="pre">b)</span></code> tuple of floats in <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code>.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../chunks/index.html" class="btn btn-neutral float-left" title="pymif.utils.chunks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../create_empty_dataset/index.html" class="btn btn-neutral float-right" title="pymif.utils.create_empty_dataset" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Nicola Gritti.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

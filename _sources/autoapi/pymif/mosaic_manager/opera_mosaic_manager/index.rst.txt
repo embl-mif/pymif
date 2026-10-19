@@ -1,0 +1,314 @@
+pymif.mosaic_manager.opera_mosaic_manager
+=========================================
+
+.. py:module:: pymif.mosaic_manager.opera_mosaic_manager
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   pymif.mosaic_manager.opera_mosaic_manager.logger
+   pymif.mosaic_manager.opera_mosaic_manager.INDEX_NAMES
+   pymif.mosaic_manager.opera_mosaic_manager._UNITS
+   pymif.mosaic_manager.opera_mosaic_manager._BLOCKS
+   pymif.mosaic_manager.opera_mosaic_manager._OPENING
+   pymif.mosaic_manager.opera_mosaic_manager._TAG
+   pymif.mosaic_manager.opera_mosaic_manager._UNIT
+   pymif.mosaic_manager.opera_mosaic_manager._PLATE
+   pymif.mosaic_manager.opera_mosaic_manager._READ_BLOCK
+   pymif.mosaic_manager.opera_mosaic_manager.WELL_PITCH
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   pymif.mosaic_manager.opera_mosaic_manager.OperaFlatfield
+   pymif.mosaic_manager.opera_mosaic_manager.OperaMosaicManager
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.mosaic_manager.opera_mosaic_manager.parse_acapella
+   pymif.mosaic_manager.opera_mosaic_manager._well_name
+   pymif.mosaic_manager.opera_mosaic_manager._tags
+   pymif.mosaic_manager.opera_mosaic_manager._micrometres
+   pymif.mosaic_manager.opera_mosaic_manager._position
+   pymif.mosaic_manager.opera_mosaic_manager.read_index
+   pymif.mosaic_manager.opera_mosaic_manager.read_plate
+   pymif.mosaic_manager.opera_mosaic_manager._orientation
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+
+.. py:data:: INDEX_NAMES
+   :value: ('Index.xml', 'Index.idx.xml')
+
+
+.. py:data:: _UNITS
+
+.. py:data:: _BLOCKS
+
+.. py:data:: _OPENING
+
+.. py:data:: _TAG
+
+.. py:data:: _UNIT
+
+.. py:data:: _PLATE
+
+.. py:data:: _READ_BLOCK
+   :value: 16777216
+
+
+.. py:data:: WELL_PITCH
+
+.. py:function:: parse_acapella(text: str) -> Any
+
+   Parse the ``{Key: value, ...}`` notation of Harmony / Acapella metadata (``FlatfieldProfile``).
+
+   Mappings ``{...}``, lists ``[...]`` and scalars (numbers, or text up to the next
+   ``,``, ``}`` or ``]``, such as ``Acapella:2013``) are supported.
+
+
+.. py:class:: OperaFlatfield(mean: float, coefficients, dims=None, origin=None, scale=None)
+
+   Harmony's background flat-field correction of one channel (picklable).
+
+   Harmony describes the uneven background of a channel as a 2D polynomial ``P``,
+   normalised to a mean of 1, and its mean level ``Mean`` (``FlatfieldProfile`` of
+   the index, ``Background`` entry). It corrects every plane with::
+
+       raw >= Mean * P :  raw - Mean * (P - 1)    (above the background: remove its unevenness)
+       raw <  Mean * P :  raw / P                 (below it: rescale it to the flat level)
+
+   Both branches give ``Mean`` at ``raw = Mean * P``. This reproduces the images
+   stitched by Harmony to within rounding.
+
+   ``P(u, v) = sum_k sum_i c[k][i] * u**(k - i) * v**i``, with ``u = (x - Origin[0]) * Scale[0]``
+   along image columns and ``v = (y - Origin[1]) * Scale[1]`` along rows, in the
+   pixels of a ``Dims`` image (rescaled to the image size, e.g. for another binning).
+
+
+   .. py:attribute:: mean
+
+
+   .. py:attribute:: coefficients
+
+
+   .. py:attribute:: dims
+      :value: None
+
+
+
+   .. py:attribute:: origin
+      :value: None
+
+
+
+   .. py:attribute:: scale
+      :value: None
+
+
+
+   .. py:attribute:: _cache
+      :type:  Dict[Tuple[int, int], numpy.ndarray]
+
+
+   .. py:method:: from_profile(profile, channel: str = '') -> Optional[OperaFlatfield]
+      :classmethod:
+
+
+      Correction described by a ``FlatfieldProfile`` (text or parsed), or ``None``
+      when it leaves the images as they are (``Identity`` profile, ``Null`` character).
+
+
+
+   .. py:method:: profile(shape: Tuple[int, int]) -> numpy.ndarray
+
+      ``P`` for an image of ``shape`` (rows, columns), as float32.
+
+
+
+   .. py:method:: __call__(plane: numpy.ndarray) -> numpy.ndarray
+
+
+   .. py:method:: __getstate__()
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:function:: _well_name(row: int, col: int) -> str
+
+   ``(1, 3)`` -> ``"A3"``, ``(27, 1)`` -> ``"AA1"``.
+
+
+.. py:function:: _tags(block: bytes) -> Dict[str, Tuple[str, Optional[str]]]
+
+   ``{tag: (text, unit)}`` of the simple child elements of an index block.
+
+
+.. py:function:: _micrometres(text, unit=None, default_unit: str = 'm') -> float
+
+   Value of a position or resolution in micrometres (``Unit`` attribute, metres by default).
+
+
+.. py:function:: _position(tags, name: bytes) -> float
+
+.. py:function:: read_index(path: str | pathlib.Path, progress: bool = True)
+
+   Channels and planes of a Harmony ``Index.xml``.
+
+   Returns ``(channels, stacks)``:
+
+   * ``channels`` maps a channel id to its settings (``ChannelName``,
+     ``ImageResolutionX``, ``OrientationMatrix``, ``FlatfieldProfile``, ...), as
+     ``{tag: (text, unit)}``;
+   * ``stacks`` maps ``(row, col, field, timepoint, channel)`` to
+     ``{"x": um, "y": um, "planes": [(plane id, z um, file name or None), ...]}``,
+     with ``None`` for planes whose ``State`` is not ``Ok``.
+
+
+.. py:function:: read_plate(path: str | pathlib.Path) -> Optional[Tuple[int, int]]
+
+   ``(PlateRows, PlateColumns)`` of a Harmony index (in its first block), or ``None``.
+
+
+.. py:function:: _orientation(settings) -> Optional[List[List[float]]]
+
+.. py:class:: OperaMosaicManager(path, flatfield: bool = True, progress: bool = True)
+
+   Bases: :py:obj:`pymif.mosaic_manager.mosaic.MosaicManager`
+
+
+   Raw Opera Phenix / Operetta (Revvity Harmony) tiles, before any stitching.
+
+   Not to be confused with :class:`~pymif.microscope_manager.OperaManager`, which
+   reads images stitched by Harmony (``stitchresult/*.ome.tiff``). This manager reads
+   a Harmony export: ``Images/Index.xml`` and one TIFF file per plane
+   (``r01c03f01p01-ch1sk1fk1fl1.tiff``: row 1, column 3, Opera field 1, plane 1, channel 1).
+   Every Opera field of every channel is one tile; its planes stay on disk until read.
+
+   * ``channel``: the ``ChannelName`` of the index;
+   * ``field``: tiles are grouped per well into fields of touching tiles, named
+     ``<well>_field<k>`` (``A3_field0``, ``A3_field1``, ...);
+   * ``timepoint``: ``TimepointID - 1`` (mosaics with several timepoints are refused for now);
+   * ``attrs``: ``stack`` (``r01c03f01``, the tile id without the channel), ``well``,
+     ``row``, ``col``, ``opera_field``, ``channel_id``, ``flatfield`` and ``folder``.
+
+   Geometry, consistent with the images stitched by Harmony: the x/y pixel size is the
+   ``ImageResolution`` of the index scaled by the channel's ``OrientationMatrix``
+   (a calibration of a few percent, which Harmony applies to its stitched images),
+   tiles are centred on the field position, and stage ``y`` runs against image rows
+   when the matrix says so (negative ``y`` scale). Planes are placed at their
+   ``PositionZ``, without the matrix's ``z`` scale and offset.
+
+   Stage positions are relative to the centre of each well, so every well is shifted
+   to its place on the plate (A1 at the top left, ``y`` along rows, ``x`` along columns),
+   by the well pitch of the plate format (``PlateRows`` x ``PlateColumns``, see
+   :data:`WELL_PITCH`). The fused images do not depend on it.
+
+   With ``flatfield=True`` (default), every plane is corrected with the background
+   flat-field profile stored by Harmony (see :class:`OperaFlatfield`), as in the
+   Harmony stitched images. The profiles are read from the index, or from
+   ``FFC_Profile/*.xml`` next to ``Images/`` when the index has none.
+
+
+   .. py:attribute:: flatfield
+      :value: True
+
+
+
+   .. py:attribute:: progress
+      :value: True
+
+
+
+   .. py:attribute:: flatfields
+      :type:  Dict[str, Optional[OperaFlatfield]]
+
+
+   .. py:method:: find_index(path: str | pathlib.Path) -> Optional[pathlib.Path]
+      :staticmethod:
+
+
+      The Harmony index of an export folder, its ``Images`` folder or the index itself.
+
+
+
+   .. py:method:: _profiles(index: pathlib.Path, channels) -> Dict[int, str]
+
+      ``FlatfieldProfile`` text of every channel: from the index, else from ``FFC_Profile/``.
+
+
+
+   .. py:method:: _scan() -> List[pymif.mosaic_manager.tile.Tile]
+
+      Discover the tiles under :attr:`path` (lazy data, positions in the sample frame).
+
+
+
+   .. py:method:: _label_wells(tiles: List[pymif.mosaic_manager.tile.Tile]) -> None
+      :staticmethod:
+
+
+      Fields of touching tiles within each well: ``A3_field0``, ``A3_field1``, ...
+
+
+
+   .. py:method:: _well_pitch(plate: Optional[Tuple[int, int]], stacks, tile_um: float) -> float
+      :staticmethod:
+
+
+      Distance (um) between the centres of neighbouring wells.
+
+      The pitch of the plate format (:data:`WELL_PITCH`), widened when the fields of a
+      well (``tile_um`` wide tiles) would reach the next well; without a known format,
+      the widest well plus 10%.
+
+
+
+   .. py:method:: _channel_names(channels, used) -> Dict[int, str]
+      :staticmethod:
+
+
+
+   .. py:method:: _flips(settings) -> Tuple[float, float]
+      :staticmethod:
+
+
+      Signs of the ``y`` and ``x`` stage axes along image rows and columns.
+
+
+
+   .. py:method:: _pixel_sizes(channels, names) -> Tuple[float, float]
+      :staticmethod:
+
+
+      ``(y, x)`` pixel size in micrometres, calibrated by the ``OrientationMatrix``.
+
+
+
+   .. py:method:: _image_size(settings) -> Optional[Tuple[int, int]]
+      :staticmethod:
+
+
+
+   .. py:method:: _header(folder: pathlib.Path, name: str) -> Tuple[numpy.dtype, Tuple[int, int]]
+      :staticmethod:
+
+
+      Data type and ``(y, x)`` shape of the planes, from the header of one file.
+
+
+

@@ -1,0 +1,63 @@
+pymif.microscope_manager.array_manager
+======================================
+
+.. py:module:: pymif.microscope_manager.array_manager
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   pymif.microscope_manager.array_manager.ArrayManager
+
+
+Module Contents
+---------------
+
+.. py:class:: ArrayManager(array: Union[numpy.ndarray, dask.array.Array, List[Union[numpy.ndarray, dask.array.Array]]], metadata: Dict[str, Any], chunks: Optional[Tuple[int, Ellipsis]] = (1, 1, 8, 4096, 4096))
+
+   Bases: :py:obj:`pymif.microscope_manager.microscope_manager.MicroscopeManager`
+
+
+   Create a MicroscopeManager instance from in-memory NumPy or Dask array(s)
+   with user-defined metadata. Supports single resolution or multiscale pyramid.
+
+   The default remains legacy TCZYX for 5D arrays, but ``metadata['axes']`` may
+   be any unique combination of ``t``, ``c``, ``z``, ``y`` and ``x`` whose length
+   matches the input arrays.
+
+
+   .. py:attribute:: DEFAULT_CHUNKS
+      :value: None
+
+
+
+   .. py:attribute:: _source
+
+
+   .. py:attribute:: _user_metadata
+
+
+   .. py:method:: read() -> None
+
+      Convert the inputs given to the constructor into dask levels and normalized metadata.
+
+      Unlike the file-based managers there is nothing to load from disk; the
+      arrays and metadata come from the constructor. The data is built first
+      because the metadata defaults (size, dtype, channel count) depend on it.
+
+
+
+   .. py:method:: _build_dask_array() -> List[dask.array.Array]
+
+      Validate the input levels and return them as dask arrays.
+
+
+
+   .. py:method:: _parse_metadata() -> Dict[str, Any]
+
+      Fill in defaults of the user metadata from the already built ``self.data``.
+
+
+

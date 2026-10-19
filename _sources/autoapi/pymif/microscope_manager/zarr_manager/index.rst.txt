@@ -1,0 +1,362 @@
+pymif.microscope_manager.zarr_manager
+=====================================
+
+.. py:module:: pymif.microscope_manager.zarr_manager
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   pymif.microscope_manager.zarr_manager.logger
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   pymif.microscope_manager.zarr_manager.ZarrDataset
+   pymif.microscope_manager.zarr_manager.AttrDict
+   pymif.microscope_manager.zarr_manager.ZarrManager
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+
+.. py:class:: ZarrDataset
+
+   Bases: :py:obj:`collections.abc.Sequence`
+
+
+   All the operations on a read-only sequence.
+
+   Concrete subclasses must override __new__ or __init__,
+   __getitem__, and __len__.
+
+
+   .. py:attribute:: data
+      :type:  List[dask.array.Array]
+
+
+   .. py:attribute:: zarr_data
+      :type:  List[Any] | None
+
+
+   .. py:attribute:: metadata
+      :type:  Dict[str, Any]
+
+
+   .. py:attribute:: name
+      :type:  str | None
+      :value: None
+
+
+
+   .. py:attribute:: path
+      :type:  str | None
+      :value: None
+
+
+
+   .. py:method:: __len__()
+
+
+   .. py:method:: __getitem__(item)
+
+
+   .. py:method:: __iter__() -> collections.abc.Iterator[dask.array.Array]
+
+
+   .. py:method:: __repr__()
+
+
+.. py:class:: AttrDict
+
+   Bases: :py:obj:`dict`
+
+
+   Dictionary with optional attribute access for valid Python names.
+
+
+   .. py:method:: __getattr__(name)
+
+
+.. py:class:: ZarrManager(path, chunks: Tuple[int, Ellipsis] = None, mode: str = 'r', metadata: dict[str, Any] = None, ngff_version: str | None = None, zarr_format: int | None = None)
+
+   Bases: :py:obj:`pymif.microscope_manager.microscope_manager.MicroscopeManager`
+
+
+   A manager class for reading and handling OME-Zarr datasets.
+
+   Supports both:
+   - NGFF / OME-Zarr v0.4  -> metadata in root/group attrs directly
+   - NGFF / OME-Zarr v0.5  -> metadata in attrs["ome"]
+
+
+   .. py:attribute:: path
+
+
+   .. py:attribute:: chunks
+      :value: None
+
+
+
+   .. py:attribute:: mode
+      :value: 'r'
+
+
+
+   .. py:attribute:: metadata
+      :value: None
+
+
+
+   .. py:attribute:: ngff_version
+      :type:  str | None
+      :value: None
+
+
+
+   .. py:attribute:: ngff_version_override
+      :value: None
+
+
+
+   .. py:attribute:: zarr_format_override
+      :value: None
+
+
+
+   .. py:method:: _get_image_meta(group: zarr.Group) -> dict[str, Any]
+
+      Return the image metadata dictionary for either NGFF v0.4 or v0.5.
+
+      v0.5 -> group.attrs["ome"]
+      v0.4 -> group.attrs
+
+
+
+   .. py:method:: _get_multiscales(group: zarr.Group) -> list[dict[str, Any]]
+
+      Return the NGFF ``multiscales`` block for ``group`` regardless of version.
+
+
+
+   .. py:method:: _get_omero(group: zarr.Group) -> dict[str, Any]
+
+      Return the OMERO-style channel metadata stored on ``group``.
+
+
+
+   .. py:method:: _extract_metadata(data_levels: List[dask.array.Array], datasets: list[dict[str, Any]], multiscales: dict[str, Any], omero: dict[str, Any], data_type: str = 'intensity', zarr_levels: List[Any] | None = None) -> Dict[str, Any]
+
+      Translate NGFF metadata blocks into the normalized PyMIF schema.
+
+      The normalized schema is axis-aware: ``axes`` may be any unique
+      combination of ``t``, ``c``, ``z``, ``y`` and ``x``. Spatial ``scales``
+      and ``units`` are stored in the same order as the spatial axes appear in
+      ``axes``.
+
+
+
+   .. py:method:: _read_multiscale_group(group: zarr.Group) -> tuple[List[dask.array.Array], List[Any], Dict[str, Any]]
+
+      Load one multiscale image group as dask arrays plus normalized metadata.
+
+
+
+   .. py:method:: read() -> None
+
+      Read the root image plus discover additional image groups and labels.
+
+      The root image is exposed through ``self.data`` and ``self.metadata``.
+      Additional multiscale subgroups are indexed in ``self.groups`` and label
+      pyramids in ``self.labels``.
+
+
+
+   .. py:method:: _parse_metadata() -> Dict[str, Any]
+
+      Return the metadata dictionary describing the dataset.
+
+
+
+   .. py:method:: _build_dask_array() -> List[dask.array.Array]
+
+      Return one dask array per pyramid level, in the order given by ``metadata["axes"]``.
+
+
+
+   .. py:method:: _sync_raw_aliases() -> None
+
+      Keep the old single-dataset API synchronized with the raw dataset.
+
+      This preserves:
+          d.data
+          d.metadata
+          d.zarr_data
+
+      as aliases to:
+          d.raw.data
+          d.raw.metadata
+          d.raw.zarr_data
+
+
+
+   .. py:method:: _iter_datasets(include_raw: bool = True, include_groups: bool = True, include_labels: bool = True)
+
+      Iterate over all datasets managed by ZarrManager.
+
+      This is ZarrManager-specific because only ZarrManager knows about
+      raw/groups/labels.
+
+
+
+   .. py:method:: _invalidate_zarr_data(dataset: ZarrDataset) -> None
+
+      After lazy in-memory transformations, dataset.data no longer necessarily
+      corresponds one-to-one to the original on-disk Zarr arrays.
+
+
+
+   .. py:method:: _load_group(name)
+
+
+   .. py:method:: _load_labels()
+
+
+   .. py:method:: visualize_zarr(viewer: napari.Viewer | None  = None) -> napari.Viewer | None
+
+      Open the root image and all multiscale subgroups in napari.
+
+
+
+   .. py:method:: create_empty_group(group_name: str, metadata: Dict[str, Any], is_label: bool = False, data_type: str | None = None)
+
+      Create an empty image subgroup or label subgroup and update this manager.
+
+      ``metadata['axes']`` may be any unique subset of ``tczyx``. Use
+      ``data_type='label'`` or ``is_label=True`` for label data.
+
+
+
+   .. py:method:: write_image_region(data, t: int | slice = slice(None), c: int | slice = slice(None), z: int | slice = slice(None), y: int | slice = slice(None), x: int | slice = slice(None), level: int = 0, group: Optional[str] = None, downscale_factor: int | collections.abc.Sequence[int] | None = None)
+
+      Write an image patch into a root or subgroup pyramid and refresh lower levels.
+
+
+
+   .. py:method:: write_label_region(data, t: int | slice = slice(None), z: int | slice = slice(None), y: int | slice = slice(None), x: int | slice = slice(None), level: int = 0, group: str = None, downscale_factor: int | collections.abc.Sequence[int] | None = None)
+
+      Write a label patch into a label pyramid and regenerate coarser levels.
+
+
+
+   .. py:method:: subset_dataset(T=None, C=None, Z=None, Y=None, X=None, include_groups: bool = True, include_labels: bool = True, rebuild_pyramid=False)
+
+      Subset raw, groups, and labels.
+
+      Channel subsetting is skipped automatically for datasets without a
+      channel axis, such as most label datasets.
+
+
+
+   .. py:method:: build_pyramid(num_levels: Optional[int] = 3, downscale_factor: int | collections.abc.Sequence[int] | None = 2, start_level: int = 0, include_groups: bool = True, include_labels: bool = True)
+
+      Build/rebuild pyramids for raw, groups, and labels.
+
+
+
+   .. py:method:: reorder_channels(new_order: List[int], include_groups: bool = True)
+
+      Reorder channels in raw and non-label image groups.
+
+      Labels are skipped because they usually do not have a channel axis.
+
+
+
+   .. py:method:: estimate_chromatic_shift(reference_channel: int = 0, **kwargs) -> Dict[str, Any]
+
+      Estimate the axial (Z) chromatic shift of each channel of the raw image.
+
+      The shift is measured on the sample's Z-facing surfaces (top and
+      bottom), first on a coarse level and then on crops of a finer level.
+      Keyword arguments are forwarded to
+      :func:`~pymif.utils.chromatic_shift.estimate_chromatic_shift`
+      (``timepoint``, ``coarse_level``, ``refine_level``, ``max_shift``,
+      ``n_regions``, ``crop_yx``, ``min_z_normal``, ``min_correlation``,
+      ``threshold``).
+
+      Returns a JSON-serializable report whose ``shifts`` entry holds the
+      correction per channel in the physical unit of the Z axis; it can be
+      passed directly to :meth:`apply_chromatic_shift`.
+
+
+
+   .. py:method:: apply_chromatic_shift(path: str | pathlib.Path, shifts, *, extent: str = 'union', order: int = 1, include_groups: bool = True, include_labels: bool = True, overwrite: bool = True, num_workers: int | None = None, progress: bool = True) -> ZarrManager
+
+      Write a copy of this store with each channel shifted along Z.
+
+      Parameters
+      ----------
+      path
+          Output OME-Zarr store; must differ from the input.
+      shifts
+          One Z shift per channel in physical units (positive moves content
+          towards higher Z), or the report of :meth:`estimate_chromatic_shift`.
+      extent
+          ``"union"`` (default) grows Z so no channel loses data,
+          ``"same"`` keeps the input size and ``"intersection"`` crops to
+          the planes covered by every channel. Padding is rounded to whole
+          planes of the coarsest level so all pyramid levels stay aligned.
+      order
+          ``1`` interpolates linearly; ``0`` rounds each shift to whole
+          planes, which leaves voxel values untouched.
+      include_groups, include_labels
+          Also write image subgroups (shifted like the raw image) and labels
+          (padded or cropped to the new Z extent, following the reference
+          channel).
+      overwrite, num_workers, progress
+          Same meaning as in :class:`~pymif.utils.ngff.ZarrWriteConfig`.
+
+      Every array keeps its source's chunks, shards, codecs and dimension
+      names, every group its attributes (pixel sizes, channel metadata...).
+      Datasets must still match their on-disk arrays, so call this before
+      in-memory edits such as :meth:`subset_dataset`.
+
+      Returns the output store opened as a new :class:`ZarrManager`.
+
+
+
+   .. py:method:: correct_chromatic_shift(path: str | pathlib.Path, reference_channel: int = 0, *, extent: str = 'union', order: int = 1, include_groups: bool = True, include_labels: bool = True, overwrite: bool = True, num_workers: int | None = None, progress: bool = True, **estimate_kwargs) -> ZarrManager
+
+      Estimate the Z chromatic shift and write the corrected store in one go.
+
+      Combines :meth:`estimate_chromatic_shift` (``estimate_kwargs``) and
+      :meth:`apply_chromatic_shift`. The estimate report is stored in the
+      output root attribute ``pymif_chromatic_shift``.
+
+
+
+   .. py:method:: update_metadata(updates: Dict[str, Any], include_groups: bool = True, include_labels: bool = True)
+
+      Update metadata for raw, groups, and labels.
+
+      Channel-specific metadata is skipped for datasets without a channel axis.
+
+
+
+   .. py:method:: to_zarr(path: str | pathlib.Path, include_groups: bool = True, include_labels: bool = True, reread: bool = True, **kwargs)
+
+      Write raw data, groups, and labels to a complete OME-Zarr store.
+
+      Raw data is written directly to the root group.
+      Image groups are written as root-level subgroups.
+      Labels are written under /labels.
+
+
+

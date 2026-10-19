@@ -1,0 +1,354 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pymif.napari._convert_widget &mdash; PyMIF 0.5.2.dev13+gb29271f69 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=7f4175d5"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="pymif.napari._dataset_helpers" href="../_dataset_helpers/index.html" />
+    <link rel="prev" title="pymif.napari._batch_csv" href="../_batch_csv/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            PyMIF
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing and extending PyMIF</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">pymif</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../_version/index.html">pymif._version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html">pymif.cli</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../microscope_manager/index.html">pymif.microscope_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../mosaic_manager/index.html">pymif.mosaic_manager</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">pymif.napari</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../utils/index.html">pymif.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PyMIF</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../api_reference.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">pymif</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">pymif.napari</a></li>
+      <li class="breadcrumb-item active">pymif.napari._convert_widget</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/pymif/napari/_convert_widget/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pymif.napari._convert_widget">
+<span id="pymif-napari-convert-widget"></span><h1>pymif.napari._convert_widget<a class="headerlink" href="#module-pymif.napari._convert_widget" title="Link to this heading"></a></h1>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.napari._convert_widget.BATCH_CSV_COLUMNS" title="pymif.napari._convert_widget.BATCH_CSV_COLUMNS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BATCH_CSV_COLUMNS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.napari._convert_widget.conservative_compute_multiscale_level" title="pymif.napari._convert_widget.conservative_compute_multiscale_level"><code class="xref py py-obj docutils literal notranslate"><span class="pre">conservative_compute_multiscale_level</span></code></a>(requested_shape, ...)</p></td>
+<td><p>Computed desired level of the multiscale given requested field of view.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.napari._convert_widget.dataset_reader" title="pymif.napari._convert_widget.dataset_reader"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dataset_reader</span></code></a>(microscope)</p></td>
+<td><p>Return the PyMIF manager class matching the selected microscope key.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.napari._convert_widget._chunk_shape_for_dataset" title="pymif.napari._convert_widget._chunk_shape_for_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_chunk_shape_for_dataset</span></code></a>(dataset[, chunk_z, chunk_y, ...])</p></td>
+<td><p>Map widget Z/Y/X chunk values onto whatever axes the dataset has.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.napari._convert_widget._present_range" title="pymif.napari._convert_widget._present_range"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_present_range</span></code></a>(dataset, axis, requested_range)</p></td>
+<td><p>Return a clipped inclusive range tuple for a present axis, else None.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.napari._convert_widget._set_range_widget" title="pymif.napari._convert_widget._set_range_widget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_set_range_widget</span></code></a>(widget, size[, enabled])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.napari._convert_widget.get_chunk_size" title="pymif.napari._convert_widget.get_chunk_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_chunk_size</span></code></a>(dataset_size[, max_size_mb, axes])</p></td>
+<td><p>Estimate a chunk shape for any dataset axis subset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.napari._convert_widget.get_n_levels" title="pymif.napari._convert_widget.get_n_levels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_n_levels</span></code></a>(dataset_size[, axes])</p></td>
+<td><p>Estimate a default number of pyramid levels from present spatial axes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.napari._convert_widget._indices_to_expr" title="pymif.napari._convert_widget._indices_to_expr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_indices_to_expr</span></code></a>(indices)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.napari._convert_widget._range_to_indices" title="pymif.napari._convert_widget._range_to_indices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_range_to_indices</span></code></a>(range_value)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.napari._convert_widget._subset_string_from_widget" title="pymif.napari._convert_widget._subset_string_from_widget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_subset_string_from_widget</span></code></a>(dataset, t_range, z_range, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.napari._convert_widget._channel_colors_from_metadata" title="pymif.napari._convert_widget._channel_colors_from_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_channel_colors_from_metadata</span></code></a>(dataset, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.napari._convert_widget.output_summary" title="pymif.napari._convert_widget.output_summary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">output_summary</span></code></a>(dataset, *, t_range, z_range, y_range, ...)</p></td>
+<td><p>Level-0 recap of the converted dataset, in the format of the mosaic fusion plan.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.napari._convert_widget._append_batch_csv" title="pymif.napari._convert_widget._append_batch_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_append_batch_csv</span></code></a>(csv_path, row)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.napari._convert_widget._compact_advanced_rows" title="pymif.napari._convert_widget._compact_advanced_rows"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_compact_advanced_rows</span></code></a>(widget, insert_after)</p></td>
+<td><p>Regroup the &quot;Additional parameters&quot; of the converter into compact rows.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.napari._convert_widget._run_conversion" title="pymif.napari._convert_widget._run_conversion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_run_conversion</span></code></a>(reader, path, scene_index, chunks, ...)</p></td>
+<td><p>Run the conversion pipeline used by the napari worker thread.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pymif.napari._convert_widget.convert_worker" title="pymif.napari._convert_widget.convert_worker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_worker</span></code></a>(**kwargs)</p></td>
+<td><p>Background worker wrapper used by the napari conversion widget.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pymif.napari._convert_widget.convert_widget" title="pymif.napari._convert_widget.convert_widget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_widget</span></code></a>()</p></td>
+<td><p>Create the main PyMIF napari conversion widget.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.napari._convert_widget.conservative_compute_multiscale_level">
+<span class="sig-prename descclassname"><span class="pre">pymif.napari._convert_widget.</span></span><span class="sig-name descname"><span class="pre">conservative_compute_multiscale_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requested_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape_threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downsample_factors</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/napari/_convert_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.napari._convert_widget.conservative_compute_multiscale_level" title="Link to this definition"></a></dt>
+<dd><p>Computed desired level of the multiscale given requested field of view.</p>
+<p>The level of the multiscale should be the lowest resolution such that
+the requested shape is above the shape threshold. By passing a shape
+threshold corresponding to the shape of the canvas on the screen this
+ensures that we have at least one data pixel per screen pixel, but no
+more than we need.</p>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>requested_shape<span class="classifier">tuple</span></dt><dd><p>Requested shape of field of view in data coordinates</p>
+</dd>
+<dt>shape_threshold<span class="classifier">tuple</span></dt><dd><p>Maximum size of a displayed tile in pixels.</p>
+</dd>
+<dt>downsample_factors<span class="classifier">list of tuple</span></dt><dd><p>Downsampling factors for each level of the multiscale. Must be increasing
+for each level of the multiscale.</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h3>Returns<a class="headerlink" href="#returns" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>level<span class="classifier">int</span></dt><dd><p>Level of the multiscale to be viewing.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.napari._convert_widget.dataset_reader">
+<span class="sig-prename descclassname"><span class="pre">pymif.napari._convert_widget.</span></span><span class="sig-name descname"><span class="pre">dataset_reader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">microscope</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/napari/_convert_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.napari._convert_widget.dataset_reader" title="Link to this definition"></a></dt>
+<dd><p>Return the PyMIF manager class matching the selected microscope key.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.napari._convert_widget._chunk_shape_for_dataset">
+<span class="sig-prename descclassname"><span class="pre">pymif.napari._convert_widget.</span></span><span class="sig-name descname"><span class="pre">_chunk_shape_for_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">512</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/napari/_convert_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.napari._convert_widget._chunk_shape_for_dataset" title="Link to this definition"></a></dt>
+<dd><p>Map widget Z/Y/X chunk values onto whatever axes the dataset has.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.napari._convert_widget._present_range">
+<span class="sig-prename descclassname"><span class="pre">pymif.napari._convert_widget.</span></span><span class="sig-name descname"><span class="pre">_present_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requested_range</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/napari/_convert_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.napari._convert_widget._present_range" title="Link to this definition"></a></dt>
+<dd><p>Return a clipped inclusive range tuple for a present axis, else None.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.napari._convert_widget._set_range_widget">
+<span class="sig-prename descclassname"><span class="pre">pymif.napari._convert_widget.</span></span><span class="sig-name descname"><span class="pre">_set_range_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/napari/_convert_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.napari._convert_widget._set_range_widget" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.napari._convert_widget.get_chunk_size">
+<span class="sig-prename descclassname"><span class="pre">pymif.napari._convert_widget.</span></span><span class="sig-name descname"><span class="pre">get_chunk_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_size_mb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tczyx'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/napari/_convert_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.napari._convert_widget.get_chunk_size" title="Link to this definition"></a></dt>
+<dd><p>Estimate a chunk shape for any dataset axis subset.</p>
+<p>The returned tuple follows <code class="docutils literal notranslate"><span class="pre">axes</span></code>.  Legacy callers that pass a five-value
+TCZYX size still receive a five-value chunk tuple.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.napari._convert_widget.get_n_levels">
+<span class="sig-prename descclassname"><span class="pre">pymif.napari._convert_widget.</span></span><span class="sig-name descname"><span class="pre">get_n_levels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tczyx'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/napari/_convert_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.napari._convert_widget.get_n_levels" title="Link to this definition"></a></dt>
+<dd><p>Estimate a default number of pyramid levels from present spatial axes.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pymif.napari._convert_widget.BATCH_CSV_COLUMNS">
+<span class="sig-prename descclassname"><span class="pre">pymif.napari._convert_widget.</span></span><span class="sig-name descname"><span class="pre">BATCH_CSV_COLUMNS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['input',</span> <span class="pre">'microscope',</span> <span class="pre">'output',</span> <span class="pre">'chunk_size',</span> <span class="pre">'max_size(MB)',</span> <span class="pre">'scene_index',</span> <span class="pre">'zarr_format',...</span></span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/napari/_convert_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.napari._convert_widget.BATCH_CSV_COLUMNS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.napari._convert_widget._indices_to_expr">
+<span class="sig-prename descclassname"><span class="pre">pymif.napari._convert_widget.</span></span><span class="sig-name descname"><span class="pre">_indices_to_expr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indices</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/napari/_convert_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.napari._convert_widget._indices_to_expr" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.napari._convert_widget._range_to_indices">
+<span class="sig-prename descclassname"><span class="pre">pymif.napari._convert_widget.</span></span><span class="sig-name descname"><span class="pre">_range_to_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">range_value</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/napari/_convert_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.napari._convert_widget._range_to_indices" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.napari._convert_widget._subset_string_from_widget">
+<span class="sig-prename descclassname"><span class="pre">pymif.napari._convert_widget.</span></span><span class="sig-name descname"><span class="pre">_subset_string_from_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/napari/_convert_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.napari._convert_widget._subset_string_from_widget" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.napari._convert_widget._channel_colors_from_metadata">
+<span class="sig-prename descclassname"><span class="pre">pymif.napari._convert_widget.</span></span><span class="sig-name descname"><span class="pre">_channel_colors_from_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selected_channel_names</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/napari/_convert_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.napari._convert_widget._channel_colors_from_metadata" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.napari._convert_widget.output_summary">
+<span class="sig-prename descclassname"><span class="pre">pymif.napari._convert_widget.</span></span><span class="sig-name descname"><span class="pre">output_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_singleton</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/napari/_convert_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.napari._convert_widget.output_summary" title="Link to this definition"></a></dt>
+<dd><p>Level-0 recap of the converted dataset, in the format of the mosaic fusion plan.</p>
+<p>One line such as <code class="docutils literal notranslate"><span class="pre">3</span> <span class="pre">t</span> <span class="pre">x</span> <span class="pre">2</span> <span class="pre">ch</span> <span class="pre">x</span> <span class="pre">120</span> <span class="pre">x</span> <span class="pre">1024</span> <span class="pre">x</span> <span class="pre">1024</span> <span class="pre">px</span> <span class="pre">(tczyx),</span> <span class="pre">1.51</span> <span class="pre">GB,</span>
+<span class="pre">voxel</span> <span class="pre">2</span> <span class="pre">x</span> <span class="pre">0.65</span> <span class="pre">x</span> <span class="pre">0.65</span> <span class="pre">micrometer</span></code>, following the selected ranges and
+channels and, with <code class="docutils literal notranslate"><span class="pre">drop_singleton</span></code>, the t/c/z axes dropped on write.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.napari._convert_widget._append_batch_csv">
+<span class="sig-prename descclassname"><span class="pre">pymif.napari._convert_widget.</span></span><span class="sig-name descname"><span class="pre">_append_batch_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/napari/_convert_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.napari._convert_widget._append_batch_csv" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.napari._convert_widget._compact_advanced_rows">
+<span class="sig-prename descclassname"><span class="pre">pymif.napari._convert_widget.</span></span><span class="sig-name descname"><span class="pre">_compact_advanced_rows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insert_after</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/napari/_convert_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.napari._convert_widget._compact_advanced_rows" title="Link to this definition"></a></dt>
+<dd><p>Regroup the “Additional parameters” of the converter into compact rows.</p>
+<p>Related controls (chunks, downscale, …) share one row instead of one row
+each. The magicgui widgets are moved, not copied, so <code class="docutils literal notranslate"><span class="pre">widget.chunk_x</span></code> and
+friends keep working (values, <code class="docutils literal notranslate"><span class="pre">enabled</span></code>, signals). Their original
+one-per-row wrappers are hidden for good.</p>
+<p>Returns the new row widgets; show or hide them together as one group.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.napari._convert_widget._run_conversion">
+<span class="sig-prename descclassname"><span class="pre">pymif.napari._convert_widget.</span></span><span class="sig-name descname"><span class="pre">_run_conversion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scene_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_levels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downscale_factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_format</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zarr_format</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shards</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shard_target_mb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shard_exclude_axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_singleton</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/napari/_convert_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.napari._convert_widget._run_conversion" title="Link to this definition"></a></dt>
+<dd><p>Run the conversion pipeline used by the napari worker thread.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.napari._convert_widget.convert_worker">
+<span class="sig-prename descclassname"><span class="pre">pymif.napari._convert_widget.</span></span><span class="sig-name descname"><span class="pre">convert_worker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/napari/_convert_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.napari._convert_widget.convert_worker" title="Link to this definition"></a></dt>
+<dd><p>Background worker wrapper used by the napari conversion widget.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymif.napari._convert_widget.convert_widget">
+<span class="sig-prename descclassname"><span class="pre">pymif.napari._convert_widget.</span></span><span class="sig-name descname"><span class="pre">convert_widget</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/pymif/blob/main/pymif/napari/_convert_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pymif.napari._convert_widget.convert_widget" title="Link to this definition"></a></dt>
+<dd><p>Create the main PyMIF napari conversion widget.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../_batch_csv/index.html" class="btn btn-neutral float-left" title="pymif.napari._batch_csv" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../_dataset_helpers/index.html" class="btn btn-neutral float-right" title="pymif.napari._dataset_helpers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Nicola Gritti.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

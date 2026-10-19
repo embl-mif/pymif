@@ -1,0 +1,22 @@
+pymif.cli.__arguments
+=====================
+
+.. py:module:: pymif.cli.__arguments
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   pymif.cli.__arguments._parse_arguments
+
+
+Module Contents
+---------------
+
+.. py:function:: _parse_arguments(argv=None)
+
+   Build and parse the PyMIF command line interface arguments.
+
+
