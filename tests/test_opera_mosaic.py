@@ -230,6 +230,36 @@ def test_tiff_stack_array(tmp_path):
     with pytest.raises(ValueError):
         TiffStackArray(["p0.tif"], (2, 4, 5), np.uint16)
 
+    # a plane read ahead is used by the next read of that plane only, and never pickled
+    plain = TiffStackArray(["p0.tif"], (1, 4, 5), np.uint16, folder=tmp_path)
+    plain.prefetch(0)
+    assert pickle.loads(pickle.dumps(plain))._ready is None and plain._ready is not None
+    reads = []
+    read = a._read
+    a._read = lambda z: reads.append(z) or read(z)
+    a.prefetch(2)
+    assert a[2, 0, 0] == 3 and a[2, 0, 0] == 3 and reads == [2, 2]
+    a.prefetch(0)
+    assert a[2, 0, 0] == 3 and a[0, 0, 0] == 2 and reads == [2, 2, 0, 2, 0]  # another plane drops it
+
+
+def test_opera_visualize_reads_one_plane_per_tile(export, monkeypatch):
+    """Tiles are read once, at the shown plane (napari would also read z = 0), ahead in threads."""
+    pytest.importorskip("napari")
+    from napari.components import ViewerModel
+
+    reads = []
+    read = TiffStackArray._read
+    monkeypatch.setattr(TiffStackArray, "_read", lambda self, z: reads.append((self.paths[0], z)) or read(self, z))
+    m = OperaMosaicManager(export, progress=False)
+    tiles = m.select(channel="EGFP", well="A1")
+    v = ViewerModel()
+    m.visualize(tiles=tiles, viewer=v)
+    assert len(v.layers) == len(tiles) and all(layer.visible for layer in v.layers)
+    assert sorted(reads) == sorted((t.data.paths[0], 1) for t in tiles)  # the middle of the 3 planes
+    assert all(t.data._ready is None for t in tiles)  # handed over to napari
+    assert v.layers[0].data[1].compute().any()
+
 
 def test_opera_fuse_and_pickle(export):
     m = OperaMosaicManager(export, progress=False)

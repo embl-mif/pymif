@@ -42,13 +42,25 @@ class TiffStackArray:
         self.ndim = 3
         self.chunks = (1,) + self.shape[1:]
         self.transform = transform
+        self._ready: Optional[Tuple[int, np.ndarray]] = None  # plane read ahead by prefetch()
 
     def path(self, z: int) -> Optional[str]:
         """Full path of plane ``z`` (``None`` for a missing plane)."""
         p = self.paths[z]
         return p if p is None or self.folder is None else os.path.join(self.folder, p)
 
+    def prefetch(self, z: int) -> None:
+        """Read plane ``z`` ahead (e.g. in a thread, for many tiles at once). The next
+        read of this stack uses it, or drops it if it asks for another plane."""
+        self._ready = (z, self._read(z))
+
     def _plane(self, z: int) -> np.ndarray:
+        ready, self._ready = self._ready, None
+        if ready is not None and ready[0] == z:
+            return ready[1]
+        return self._read(z)
+
+    def _read(self, z: int) -> np.ndarray:
         path = self.path(z)
         if path is None:
             return np.zeros(self.shape[1:], self.dtype)
@@ -80,6 +92,11 @@ class TiffStackArray:
         for i, z in enumerate(planes):
             out[i] = self._plane(int(z))[yx]
         return out
+
+    def __getstate__(self):
+        state = dict(self.__dict__)
+        state["_ready"] = None
+        return state
 
     def __len__(self) -> int:
         return self.shape[0]

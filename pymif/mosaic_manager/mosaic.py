@@ -76,6 +76,26 @@ def _link_layers(groups) -> None:
             link_layers(list(layers), ("contrast_limits", "gamma"))
 
 
+def _prefetch_planes(viewer, shown, workers: int = 8) -> None:
+    """Read ahead, in threads, the plane napari is about to show of every ``(layer, tile)``
+    whose data supports it (one file per plane, often on a network drive, read one by
+    one by napari otherwise). Only in a 2D view with the tiles' z axis sliced."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    dims = viewer.dims
+    if dims.ndisplay != 2 or dims.ndim - 3 in dims.displayed:
+        return
+    jobs = []
+    for layer, t in shown:
+        prefetch = getattr(t.data, "prefetch", None)
+        if prefetch is not None:
+            z = layer.world_to_data(dims.point)[0]
+            jobs.append((prefetch, int(np.clip(np.round(z), 0, t.shape[0] - 1))))  # as napari rounds
+    if jobs:
+        with ThreadPoolExecutor(min(workers, len(jobs))) as pool:
+            list(pool.map(lambda job: job[0](job[1]), jobs))
+
+
 class MosaicManager(ABC):
     """A set of separately acquired, positioned tiles (not yet one image).
 
@@ -300,11 +320,15 @@ class MosaicManager(ABC):
         units = units_for_axes({"axes": "zyx", "units": (self.tiles[0].units,) * 3}, "zyx")
         extra = {} if units is None else {"units": units}
         names = self.channels
+        index = {id(t): i for i, t in enumerate(self.tiles)}
         by_channel: Dict[str, list] = {}
+        shown = []
         for t in tiles:
-            i = self.tiles.index(t)
+            i = index[id(t)]
             limits = (contrast_limits or {}).get(t.channel)
             label = t.attrs.get("stack") or i
+            # added hidden: napari would read a plane at z = 0 (on creation) before the
+            # one at the current z (on insertion); a hidden layer is read once, when shown
             layer = viewer.add_image(
                 self._lazy(t),
                 name=f"{t.channel} {t.group or ''} [{label}]".replace("  ", " ")
@@ -316,6 +340,7 @@ class MosaicManager(ABC):
                 contrast_limits=limits,
                 metadata={"mosaic_tile": i, "mosaic_tile_id": self.tile_id(t), "mosaic_field": t.field,
                           "mosaic_path": str(self.path)},
+                visible=False,
                 **extra,
             )
             if limits is not None and np.issubdtype(t.dtype, np.integer):
@@ -324,7 +349,11 @@ class MosaicManager(ABC):
                 layer.contrast_limits_range = (info.min, info.max)
                 layer.contrast_limits = limits
             by_channel.setdefault(t.channel, []).append(layer)
+            shown.append((layer, t))
         _link_layers(by_channel.values())
+        _prefetch_planes(viewer, shown)
+        for layer, _ in shown:
+            layer.visible = True
         return viewer
 
     # ------------------------------------------------------------------
