@@ -64,6 +64,7 @@ The fusion options:
 | `-b`, `--blend` | `sigmoid` (default), `max`, `sum` or `midline` |
 | `-ss`, `--sigmoid_steepness` | steepness of the `sigmoid` transition, higher is sharper (default 4) |
 | `-ch`, `--channels` / `-g`, `--groups` | tile channels and groups (e.g. `L R`) to fuse |
+| `-f`, `--fields` | the field to fuse (groups of touching tiles, `field0`, `field1`, ... listed when the mosaic is loaded); default: the first field. Tiles from several fields are not fused: an error is printed (see [Fields](mosaic.md#fields)) |
 | `-t`, `--tiles` | only fuse these tiles, and fit the output to them: stacks such as `1-x00-y00` (every channel), or `channel/stack` ids |
 | `-st`, `--skip_tiles` | tiles to leave blank (the output keeps its size): `channel/stack` ids such as `cFos-647/1-x00-y00`, or a stack such as `1-x00-y00` for every channel |
 | `-ma`, `--midline_axis` | axis along which `sigmoid`/`midline` separate the tile groups: `x` (default), `y` or `z` |
@@ -74,7 +75,7 @@ The fusion options:
 
 Every output option of `convert` is available too, applied to the fused output. Two read differently for a mosaic: `-cs` is given in `C Z Y X` order (`C Y X` for projections), and `-s/--subset` crops the fused output (`z`/`y`/`x` in output voxels, after `-rds`) and selects channels (`c`), e.g. `"z=0:100;y=200:900;c=1"`. `-si` is reserved for Zeiss mosaics (not implemented yet).
 
-The batch CSV has the columns `input`, `microscope`, `output`, plus any of the output columns of `convert --batch` and of the fusion columns `downsample`, `projection`, `blend`, `sigmoid_steepness`, `channels`, `groups`, `tiles`, `skip_tiles`, `midline_axis`, `out_dtype`, `read_workers`, `temp_dir`, `overwrite`. Leave a cell empty for the default; lists are space separated. The napari *Mosaic Fusion* widget writes such rows with *Append to batch CSV*.
+The batch CSV has the columns `input`, `microscope`, `output`, plus any of the output columns of `convert --batch` and of the fusion columns `downsample`, `projection`, `blend`, `sigmoid_steepness`, `channels`, `groups`, `fields`, `tiles`, `skip_tiles`, `midline_axis`, `out_dtype`, `read_workers`, `temp_dir`, `overwrite`. Leave a cell empty for the default; lists are space separated. A row asking for tiles from several fields is not fused; the other rows still run, and the rows that were not fused are listed at the end. The napari *Mosaic Fusion* widget writes such rows with *Append to batch CSV*.
 
 ```text
 input,microscope,output,downsample,projection,blend,num_levels,shards

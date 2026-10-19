@@ -43,7 +43,7 @@ _CLICK_TOLERANCE = 4
 #: Columns of the CSV read by ``pymif fuse --batch``.
 MOSAIC_BATCH_COLUMNS = [
     "input", "microscope", "output",
-    "downsample", "projection", "blend", "channels", "groups", "tiles", "skip_tiles",
+    "downsample", "projection", "blend", "channels", "groups", "fields", "tiles", "skip_tiles",
     "midline_axis", "out_dtype", "read_workers", "temp_dir", "overwrite",
     "chunk_size", "max_size(MB)", "scene_index", "zarr_format", "downscale_factor", "subset",
     "channel_colors", "channel_names", "num_levels", "shards", "shard_target_mb", "shard_exclude_axes",
@@ -62,23 +62,40 @@ def group_labels(mosaic) -> list[str]:
     return [NO_GROUP if g is None else str(g) for g in mosaic.groups]
 
 
-def select_tiles(mosaic, channels: Sequence[str], groups: Sequence[str]):
-    """Tiles whose channel is in ``channels`` and group label is in ``groups``."""
+def select_tiles(mosaic, channels: Sequence[str], groups: Sequence[str], fields: Optional[Sequence[str]] = None):
+    """Tiles whose channel is in ``channels``, group label in ``groups`` and field in
+    ``fields`` (``None``: any field)."""
     channels, groups = set(channels), set(groups)
+    fields = None if fields is None else set(fields)
     return [
         t for t in mosaic.tiles
         if t.channel in channels and (NO_GROUP if t.group is None else str(t.group)) in groups
+        and (fields is None or t.field in fields)
     ]
 
 
-def default_output(input_path: Path, projection: Optional[str], ds: Sequence[int]) -> Path:
-    """``<folder>/<name>_MIP_ds8-8.ome.zarr`` (projection) or ``<name>_3D_ds4-8-8.ome.zarr``."""
+def field_summary(mosaic) -> str:
+    """One line per field: its name and stack positions (empty for a single field)."""
+    if len(mosaic.fields) < 2:
+        return ""
+    lines = []
+    for f in mosaic.fields:
+        stacks = sorted({stack_id(mosaic, t) for t in mosaic.field_tiles(f)})
+        lines.append(f"  {f}: {len(stacks)} stack position(s): {' '.join(stacks)}")
+    return "\n".join(lines)
+
+
+def default_output(input_path: Path, projection: Optional[str], ds: Sequence[int],
+                   field: Optional[str] = None) -> Path:
+    """``<folder>/<name>_MIP_ds8-8.ome.zarr`` (projection) or ``<name>_3D_ds4-8-8.ome.zarr``,
+    with ``_<field>`` before the suffix when one ``field`` of several is fused."""
     input_path = Path(input_path)
     if projection is None:
         kind = "3D_ds" + "-".join(str(v) for v in ds)
     else:
         kind = ("MIP" if projection == "max" else "SIP") + "_ds" + "-".join(str(v) for v in ds[1:])
-    return input_path / f"{input_path.name}_{kind}.ome.zarr"
+    tag = f"_{field}" if field else ""
+    return input_path / f"{input_path.name}_{kind}{tag}.ome.zarr"
 
 
 def folder_of(path: Path) -> Path:
@@ -170,6 +187,11 @@ def tile_footprints(mosaic) -> dict:
     return out
 
 
+def stack_fields(mosaic) -> dict:
+    """``{stack id: field}`` of every stack position."""
+    return {stack_id(mosaic, t): t.field for t in mosaic.tiles}
+
+
 def add_tile_map(viewer, mosaic):
     """Add the tile map of ``mosaic`` to ``viewer`` (replacing any earlier one), all tiles picked.
 
@@ -182,6 +204,7 @@ def add_tile_map(viewer, mosaic):
     for layer in [layer for layer in viewer.layers if layer.metadata.get("mosaic_tile_map")]:
         viewer.layers.remove(layer)
     footprints = tile_footprints(mosaic)
+    fields = stack_fields(mosaic)
     size = np.median([np.min(r[1] - r[0]) for r in footprints.values()])
     # the same units as the tile layers, or napari ignores units for every layer
     units = units_for_axes({"axes": "zyx", "units": (mosaic.tiles[0].units,) * 3}, "yx")
@@ -189,8 +212,9 @@ def add_tile_map(viewer, mosaic):
         list(footprints.values()),
         shape_type="rectangle",
         name=TILE_MAP,
-        features={"stack": list(footprints), "picked": [True] * len(footprints)},
-        text={"string": "{stack}", "size": 8, "color": "white"},
+        features={"stack": list(footprints), "field": [str(fields[k]) for k in footprints],
+                  "picked": [True] * len(footprints)},
+        text={"string": "{stack}\n{field}" if len(mosaic.fields) > 1 else "{stack}", "size": 8, "color": "white"},
         edge_width=max(size / 100, 1e-6),
         metadata={"mosaic_tile_map": True, "mosaic_path": str(mosaic.path)},
         **({} if units is None else {"units": units}),
@@ -317,13 +341,17 @@ def picked_tiles(mosaic, tiles, picked: Optional[Sequence[str]]):
 
 def batch_row(*, input_path, microscope: str, output, values: dict, all_groups: Sequence[str],
               skip_ids: Sequence[str], picked: Optional[Sequence[str]] = None,
-              all_stacks: Sequence[str] = ()) -> dict:
+              all_stacks: Sequence[str] = (), all_fields: Sequence[str] = ()) -> dict:
     """One ``pymif fuse --batch`` CSV row from the fusion widget ``values``.
 
     ``picked`` are the stack ids picked on the tile map (``None``: all); the ``tiles``
-    column stays empty (every tile) when they cover ``all_stacks``.
+    column stays empty (every tile) when they cover ``all_stacks``. The ``fields``
+    column stays empty when ``values["fields"]`` is missing or the mosaic has a single
+    field (``all_fields``); otherwise it names the fields, since an empty cell means
+    the first field.
     """
     groups = list(values["groups"])
+    fields = list(values.get("fields") or ())
     return {
         "input": str(Path(input_path)),
         "microscope": microscope,
@@ -334,6 +362,7 @@ def batch_row(*, input_path, microscope: str, output, values: dict, all_groups: 
         "channels": " ".join(values["channels"]),
         # every group selected = the default (all); "(none)" is how the CLI sees a missing group
         "groups": "" if set(groups) == set(all_groups) else " ".join("None" if g == NO_GROUP else g for g in groups),
+        "fields": "" if not fields or (len(all_fields) == 1 and set(fields) >= set(all_fields)) else " ".join(fields),
         "tiles": "" if picked is None or set(picked) >= set(all_stacks) else " ".join(picked),
         "skip_tiles": " ".join(skip_ids),
         "num_levels": str(values["levels"]),
@@ -496,16 +525,21 @@ def mosaic_widget():
         worker.start()
 
     def _populate(mosaic, input_path: Path):
-        channels, groups = mosaic.channels, group_labels(mosaic)
+        channels, groups, fields = mosaic.channels, group_labels(mosaic), mosaic.fields
         for w in (show_widget, fuse_widget):
             w.channels.choices = channels
             w.groups.choices = groups
             w.groups.value = groups
+            w.fields.choices = fields
+            w.fields.value = fields[:1]  # tiles of separate fields are not fused together
         show_widget.channels.value = channels[:1]  # one channel keeps napari responsive
         fuse_widget.channels.value = channels
         fuse_widget.blend.value = "sigmoid"  # smooth between tiles and between groups
         lo, hi = mosaic.bounding_box()
-        print(f"{len(mosaic.tiles)} tiles, channels {channels}, groups {groups}")
+        print(f"{len(mosaic.tiles)} tiles, channels {channels}, groups {groups}, fields {fields}")
+        if len(fields) > 1:
+            print(f"{len(fields)} separate fields (groups of touching tiles); {fields[0]} is selected, "
+                  "fields are fused one at a time:\n" + field_summary(mosaic))
         print("Extent (z, y, x): " + ", ".join(f"{a:.0f}..{b:.0f}" for a, b in zip(lo, hi))
               + f" {mosaic.tiles[0].units}")
         state["input_path"] = input_path
@@ -525,14 +559,16 @@ def mosaic_widget():
         call_button="Show tiles in napari",
         channels={"widget_type": "Select", "choices": [], "allow_multiple": True},
         groups={"widget_type": "Select", "choices": [], "allow_multiple": True},
+        fields={"widget_type": "Select", "choices": [], "allow_multiple": True,
+                "tooltip": "Fields: groups of touching tiles (field0, field1, ... by position)."},
         clear_layers={"label": "Remove existing layers", "widget_type": "CheckBox", "value": True,
                       "tooltip": "Remove the layers shown before (the tile map stays)."},
     )
-    def show_widget(channels=(), groups=(), clear_layers=True):
+    def show_widget(channels=(), groups=(), fields=(), clear_layers=True):
         mosaic = state["mosaic"]
-        tiles = picked_tiles(mosaic, select_tiles(mosaic, channels, groups), _picked())
+        tiles = picked_tiles(mosaic, select_tiles(mosaic, channels, groups, fields), _picked())
         if not tiles:
-            print("No picked tile matches the selected channels and groups.")
+            print("No picked tile matches the selected channels, groups and fields.")
             return
         _capture()
         try:
@@ -560,6 +596,9 @@ def mosaic_widget():
         call_button="Fuse to OME-Zarr",
         channels={"widget_type": "Select", "choices": [], "allow_multiple": True},
         groups={"widget_type": "Select", "choices": [], "allow_multiple": True},
+        fields={"widget_type": "Select", "choices": [], "allow_multiple": True,
+                "tooltip": "Field to fuse: fields are groups of touching tiles. Fields are fused one at a "
+                           "time; tiles from several fields are not fused."},
         tiles_to_fuse={"label": "Tiles to fuse", "choices": list(TILE_MODES), "value": "all tiles",
                        "tooltip": "Tiles whose layer is hidden (or not selected) are not read and stay blank; "
                                   "the output keeps its full size. Tiles that are not shown are fused."},
@@ -579,6 +618,7 @@ def mosaic_widget():
     def fuse_widget(
         channels=(),
         groups=(),
+        fields=(),
         tiles_to_fuse="all tiles",
         skip_all_channels=False,
         projection="none (3D)",
@@ -593,7 +633,7 @@ def mosaic_widget():
         output_path: Path = Path(),
     ):
         mosaic = state["mosaic"]
-        tiles = picked_tiles(mosaic, select_tiles(mosaic, channels, groups), _picked())
+        tiles = picked_tiles(mosaic, select_tiles(mosaic, channels, groups, fields), _picked())
         kwargs = fuse_kwargs(channels=channels, projection=projection, blend=blend, ds_z=ds_z,
                              ds_y=ds_y, ds_x=ds_x, levels=levels,
                              workers=workers, overwrite=overwrite)
@@ -603,6 +643,11 @@ def mosaic_widget():
             plan = mos.plan_fusion(tiles, **{k: kwargs[k] for k in ("channels", "projection", "blend", "ds", "skip")})
         except ValueError as e:
             print(f"Cannot fuse: {e}")
+            return
+        if plan.error:
+            _capture()
+            print(f"ERROR: {plan.error}")
+            _release()
             return
         out = Path(output_path)
         if out.exists() and not overwrite:
@@ -645,7 +690,8 @@ def mosaic_widget():
             return None
         v = {name: getattr(fuse_widget, name).value for name in
              ("channels", "projection", "blend", "ds_z", "ds_y", "ds_x")}
-        tiles = picked_tiles(mosaic, select_tiles(mosaic, v["channels"], fuse_widget.groups.value), _picked())
+        tiles = picked_tiles(mosaic, select_tiles(mosaic, v["channels"], fuse_widget.groups.value,
+                                                  fuse_widget.fields.value), _picked())
         return mos.plan_fusion(
             tiles,
             ds=(v["ds_z"], v["ds_y"], v["ds_x"]),
@@ -678,14 +724,17 @@ def mosaic_widget():
     def _update_output(*_, force=False):
         if "input_path" not in state:
             return
+        chosen = list(fuse_widget.fields.value)
+        several = state["mosaic"] is not None and len(state["mosaic"].fields) > 1
         new = default_output(state["input_path"], _PROJECTIONS[fuse_widget.projection.value],
-                             (fuse_widget.ds_z.value, fuse_widget.ds_y.value, fuse_widget.ds_x.value))
+                             (fuse_widget.ds_z.value, fuse_widget.ds_y.value, fuse_widget.ds_x.value),
+                             chosen[0] if several and len(chosen) == 1 else None)
         # Follow the parameters until the user types a path of their own.
         if force or Path(fuse_widget.output_path.value) == state["auto_output"]:
             fuse_widget.output_path.value = new
             state["auto_output"] = new
 
-    for name in ("channels", "groups", "tiles_to_fuse", "skip_all_channels", "projection", "blend",
+    for name in ("channels", "groups", "fields", "tiles_to_fuse", "skip_all_channels", "projection", "blend",
                  "ds_z", "ds_y", "ds_x"):
         getattr(fuse_widget, name).changed.connect(_update_plan)
     if viewer is not None:
@@ -701,13 +750,22 @@ def mosaic_widget():
     def batch_widget(batch_csv_path: Path = Path("mosaic_batch.csv")):
         mosaic = state["mosaic"]
         values = {name: getattr(fuse_widget, name).value for name in
-                  ("channels", "groups", "projection", "blend", "ds_z", "ds_y", "ds_x",
+                  ("channels", "groups", "fields", "projection", "blend", "ds_z", "ds_y", "ds_x",
                    "levels", "workers", "overwrite")}
+        try:
+            plan = _current_plan()
+        except ValueError:
+            plan = None  # e.g. no tile picked: pymif fuse reports it when the row runs
+        if plan is not None and plan.error:
+            _capture()
+            print(f"ERROR: {plan.error} The row is not appended.")
+            _release()
+            return
         skip_ids = _skip_ids()
         row = batch_row(input_path=state["input_path"], microscope=state["microscope"],
                         output=fuse_widget.output_path.value, values=values,
                         all_groups=group_labels(mosaic), skip_ids=skip_ids, picked=_picked(),
-                        all_stacks={stack_id(mosaic, t) for t in mosaic.tiles})
+                        all_stacks={stack_id(mosaic, t) for t in mosaic.tiles}, all_fields=mosaic.fields)
         _capture()  # print into this widget's log, not wherever sys.stdout points
         try:
             path = append_batch_csv(batch_csv_path, row, MOSAIC_BATCH_COLUMNS)
@@ -719,7 +777,7 @@ def mosaic_widget():
             print(f"Could not write the batch CSV: {e}")
         finally:
             _release()
-    for name in ("projection", "ds_z", "ds_y", "ds_x"):
+    for name in ("projection", "ds_z", "ds_y", "ds_x", "fields"):
         getattr(fuse_widget, name).changed.connect(_update_output)
 
     enable_drag_and_drop(load_widget.input_path, folder_of)
@@ -731,6 +789,7 @@ def mosaic_widget():
     for w in (show_widget, fuse_widget):
         w.channels.native.setMaximumHeight(64)
         w.groups.native.setMaximumHeight(48)
+        w.fields.native.setMaximumHeight(48)
         w.native.layout().setSpacing(2)
         w.native.layout().setContentsMargins(0, 0, 0, 0)
 

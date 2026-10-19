@@ -399,6 +399,12 @@ def _add_mosaic_arguments(parser, legacy: bool = False):
     parser.add_argument('-ch', '--channels', nargs='+', help='Tile channels to fuse, in output order. Default: all.')
     parser.add_argument('-g', '--groups', nargs='+', help='Tile groups to fuse (e.g. L R). Default: all.')
     parser.add_argument(
+        '-f', '--fields', nargs='+',
+        help='Field to fuse (the output fits it): fields are groups of touching tiles, named field0, field1, '
+             '... by position and listed when the mosaic is loaded. Tiles from several fields are not fused '
+             '(an error is printed). Default: the first field (field0), unless --tiles is given.',
+    )
+    parser.add_argument(
         '-t', '--tiles', nargs='+',
         help='Only fuse these tiles (the output fits them): stacks such as 1-x00-y00 (every channel), or '
              '"channel/stack" ids such as cFos-647/1-x00-y00. Default: all.',
@@ -470,18 +476,24 @@ FUSE_HELP = """\
     Examples:
       pymif fuse -i /path/to/2026-10-14_103957 -z out_3D.ome.zarr -rds 4 8 8 -nl 3
       pymif fuse -i /path/to/2026-10-14_103957 -z out_MIP.ome.zarr -rds 1 8 8 -p max -b midline
+      pymif fuse -i /path/to/2026-10-14_103957 -z field1_MIP.ome.zarr -rds 1 8 8 -p max -f field1 -st 3-x01-y00
       pymif fuse --batch mosaics.csv
+
+    Tiles that touch or overlap form a field (field0, field1, ... ordered by position); the fields are
+    listed when the mosaic is loaded. Only one field is fused at a time: the first one by default,
+    another with -f. Tiles from separate fields are never fused together: an error is printed and
+    the fusion is not done (in a batch, the other rows still run).
 
     The --batch CSV file has the columns input | microscope | output, plus any of the output columns of
     `pymif convert --batch` (chunk_size | max_size(MB) | zarr_format | downscale_factor | subset | channel_colors |
     channel_names | num_levels | shards | shard_target_mb | shard_exclude_axes | drop_singleton | num_workers)
     and of the fusion columns
-    downsample | projection | blend | sigmoid_steepness | channels | groups | tiles | skip_tiles | midline_axis |
+    downsample | projection | blend | sigmoid_steepness | channels | groups | fields | tiles | skip_tiles | midline_axis |
     out_dtype | read_workers | temp_dir | overwrite, e.g.
       input                  | microscope | output                 | downsample | projection | blend   | num_levels
       /path/to/acquisition_1 | luxendo    | /path/to/acq1_3D.zarr  | 4 8 8      | none       | sigmoid | 3
       /path/to/acquisition_1 | luxendo    | /path/to/acq1_MIP.zarr | 1 8 8      | max        | midline |
-    Leave a cell empty for the default. Lists (channels, groups, tiles, skip_tiles, channel_names...) are space
+    Leave a cell empty for the default. Lists (channels, groups, fields, tiles, skip_tiles, channel_names...) are space
     separated.
     The napari "Mosaic Fusion" widget writes such files with "Append to batch CSV".
 """

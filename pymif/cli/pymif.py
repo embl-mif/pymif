@@ -609,6 +609,7 @@ def mosaic_convert(
     sigmoid_steepness: Optional[float] = None,
     channels: Optional[List[str]] = None,
     groups: Optional[List[str]] = None,
+    fields: Optional[List[str]] = None,
     tiles: Optional[List[str]] = None,
     skip_tiles: Optional[List[str]] = None,
     midline_axis: str = "x",
@@ -622,7 +623,11 @@ def mosaic_convert(
     The ``convert`` options (``max_size`` ... ``num_workers``) have the same meaning as in
     :func:`zarr_convert`, applied to the fused output; ``subset`` crops it (z/y/x in
     output voxels) and selects channels (c). ``tiles`` lists the only tiles to fuse
-    (ids as for ``skip_tiles``); the output then fits them. The other options are those of
+    (ids as for ``skip_tiles``); the output then fits them. ``fields`` keeps only the
+    tiles of these fields (connected groups of touching tiles, ``field0``, ``field1``...);
+    without ``tiles`` and ``fields`` the first field is fused. Tiles from several fields
+    are not fused: an error is printed and ``False`` returned (``True`` once the output
+    is saved). The other options are those of
     :func:`pymif.mosaic_manager.fuse_tiles`: ``read_downsample`` is its ``ds`` and
     ``read_workers`` its ``workers``.
     """
@@ -634,13 +639,20 @@ def mosaic_convert(
     if scene_index is not None and resolved != "zeiss":
         print(f"\tscene_index={scene_index} is ignored for {resolved} mosaics.")
     mosaic = reader(input_path)
-    print(f"{len(mosaic.tiles)} tiles, channels {mosaic.channels}, groups {mosaic.groups}")
+    print(f"{len(mosaic.tiles)} tiles, channels {mosaic.channels}, groups {mosaic.groups}, "
+          f"fields {mosaic.fields}")
+    if len(mosaic.fields) > 1:
+        for f in mosaic.fields:
+            stacks = sorted({mosaic.tile_id(t).split("/", 1)[1] for t in mosaic.field_tiles(f)})
+            print(f"\t{f}: {len(stacks)} stack position(s): {' '.join(stacks)}")
 
-    use = mosaic.tiles
+    use = mosaic.fusion_tiles(list(tiles) if tiles else None, list(fields) if fields else None)
     if tiles:
-        wanted = {id(t) for t in mosaic.tiles_by_ids(list(tiles))}
-        use = [t for t in use if id(t) in wanted]
         print(f"Fusing only {len(use)} tile(s) of {list(tiles)}")
+    if fields:
+        print(f"Fusing only fields {list(fields)}: {len(use)} tile(s)")
+    elif not tiles and len(mosaic.fields) > 1:
+        print(f"Fusing the first field, {mosaic.fields[0]} ({len(use)} tiles); choose another with --fields.")
     if groups:
         wanted = {str(g) for g in groups}
         use = [t for t in use if str(t.group) in wanted]
@@ -657,6 +669,9 @@ def mosaic_convert(
     plan = plan_fusion(use, ds=ds, projection=projection, blend=blend, channels=selected,
                        crop=crop, skip=skip, out_dtype=out_dtype, midline_axis=midline_axis)
     print(f"\n--->Output: {plan.summary()}")
+    if plan.error:
+        print(f"ERROR: {plan.error}")
+        return False
 
     plan_md = {"axes": plan.axes, "size": [plan.shape], "dtype": str(plan.dtype)}
     if chunk_size is not None:
@@ -712,6 +727,7 @@ def mosaic_convert(
         **write_kwargs,
     )
     print(f"Saved {zarr_path}")
+    return True
 
 
 def convert_mosaic_single(args):
@@ -724,7 +740,8 @@ def convert_mosaic_single(args):
     }
     if "chunk_size" in kwargs:
         kwargs.pop("max_size", None)
-    mosaic_convert(**kwargs)
+    if not mosaic_convert(**kwargs):
+        raise SystemExit(1)
 
 
 def convert_mosaic_batch(args):
@@ -734,6 +751,7 @@ def convert_mosaic_batch(args):
     database = pd.read_csv(csv_path)
     print(database)
     columns = database.columns
+    not_fused = []
     for _, v in database.iterrows():
         print("-" * 20)
         kwargs = {
@@ -748,7 +766,7 @@ def convert_mosaic_batch(args):
         for key in ("projection", "blend", "midline_axis", "out_dtype", "temp_dir"):
             if key in columns and _present(v.get(key)):
                 kwargs[key] = str(v[key]).strip()
-        for key in ("channels", "groups", "tiles", "skip_tiles"):
+        for key in ("channels", "groups", "fields", "tiles", "skip_tiles"):
             if key in columns and _present(v.get(key)):
                 kwargs[key] = str(v[key]).split()
         if "read_workers" in columns and _present(v.get("read_workers")):
@@ -757,7 +775,10 @@ def convert_mosaic_batch(args):
             kwargs["sigmoid_steepness"] = float(v["sigmoid_steepness"])
         if "overwrite" in columns and _present(v.get("overwrite")):
             kwargs["overwrite"] = parse_bool(v["overwrite"])
-        mosaic_convert(**kwargs)
+        if not mosaic_convert(**kwargs):
+            not_fused.append(str(v["output"]))
+    if not_fused:
+        print(f"ERROR: {len(not_fused)} row(s) not fused (tiles from several fields): {', '.join(not_fused)}")
 
 
 # ---------------------------------------------------------------------------

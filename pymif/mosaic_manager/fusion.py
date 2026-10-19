@@ -35,6 +35,7 @@ import zarr
 
 from ..utils.metadata import ChannelInfo, build_metadata
 from ..utils.ngff import ZarrWriteConfig
+from .fields import check_single_field, fields_of, multiple_fields_message
 from .tile import Tile
 
 logger = logging.getLogger("pymif")
@@ -646,6 +647,7 @@ class FusionPlan:
     scale: Tuple[float, ...]  # level-0 voxel size of the spatial axes
     origin: Tuple[float, float, float]  # sample position of output voxel [0, 0, 0]
     n_skipped: int = 0  # tiles left blank
+    fields: List[str] = dataclasses.field(default_factory=list)  # fields of the tiles (skipped ones included)
 
     @property
     def nbytes(self) -> int:
@@ -658,7 +660,19 @@ class FusionPlan:
         vox = " x ".join(f"{v:.3g}" for v in self.scale)
         size = f"{self.nbytes / 1e9:.2f} GB" if self.nbytes >= 1e8 else f"{self.nbytes / 1e6:.1f} MB"
         blank = f", {self.n_skipped} tile(s) left blank" if self.n_skipped else ""
-        return f"{len(self.channels)} ch x {dims} px ({self.axes}), {size}, voxel {vox} {self.tiles[0].units}{blank}"
+        fields = f"; ERROR: {len(self.fields)} separate fields ({', '.join(self.fields)}), cannot be fused" \
+            if len(self.fields) > 1 else ""
+        return f"{len(self.channels)} ch x {dims} px ({self.axes}), {size}, voxel {vox} {self.tiles[0].units}{blank}{fields}"
+
+    @property
+    def multiple_fields(self) -> bool:
+        """Whether the fused tiles come from more than one field (such a plan is not fused)."""
+        return len(self.fields) > 1
+
+    @property
+    def error(self) -> Optional[str]:
+        """Why the plan cannot be fused (tiles from separate fields), or ``None``."""
+        return multiple_fields_message(self.fields) if self.multiple_fields else None
 
 
 def plan_fusion(
@@ -711,6 +725,7 @@ def plan_fusion(
         if not placed:
             raise ValueError("No tile intersects the crop.")
     layout = {n: [p for p in placed if p.tile.channel == n] for n in names}
+    fields = fields_of([p.tile for p in placed])
     # skipped tiles keep their place in the geometry (the output does not shrink) but are not read
     skipped = {id(t) for t in skip or ()}
     n_skipped = sum(id(p.tile) in skipped for p in placed)
@@ -742,6 +757,7 @@ def plan_fusion(
         scale=tuple(out_vox[1:] if flat else out_vox),
         origin=origin,
         n_skipped=n_skipped,
+        fields=fields,
     )
 
 
@@ -889,6 +905,12 @@ def fuse_tiles(
 
     Use :func:`plan_fusion` with the same arguments to get the output shape and
     size without reading or writing anything.
+
+    ``tiles`` must come from one field (``Tile.field``, set by
+    :class:`~pymif.mosaic_manager.MosaicManager`; skipped tiles count): tiles of
+    separate fields are not fused, a
+    :class:`~pymif.mosaic_manager.fields.MultipleFieldsError` is raised before
+    anything is read or written.
     """
     from ..microscope_manager.array_manager import ArrayManager
     from ..microscope_manager.zarr_manager import ZarrManager
@@ -900,6 +922,7 @@ def fuse_tiles(
     _check_write_options(write_options)
     plan = plan_fusion(tiles, ds=ds, projection=projection, blend=blend, channels=channels,
                        crop=crop, skip=skip, out_dtype=out_dtype, midline_axis=midline_axis)
+    check_single_field([p.tile for ps in plan.layout.values() for p in ps])
     blend, out_dtype, names, ds = plan.blend, plan.dtype, plan.channels, plan.ds
     flat = projection is not None
     n_ch = len(names)

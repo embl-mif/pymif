@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from dataclasses import field as _dc_field
 from typing import Any, Dict, Optional, Tuple
 
 import numpy as np
@@ -34,6 +35,13 @@ class Tile:
         :class:`~pymif.mosaic_manager.MosaicManager` refuses them.
     attrs
         Free-form, reader specific metadata (stack, grid position, ...).
+    units
+        Units of ``origin`` and ``voxel_size``.
+    field
+        Name of the field (connected group of touching tiles) the tile belongs to,
+        e.g. ``"field0"``. Set by :class:`~pymif.mosaic_manager.MosaicManager` when
+        the mosaic is loaded (see :func:`~pymif.mosaic_manager.fields.label_fields`),
+        unless the reader gives one.
     """
 
     data: Any
@@ -42,8 +50,9 @@ class Tile:
     channel: str
     group: Optional[str] = None
     timepoint: int = 0
-    attrs: Dict[str, Any] = field(default_factory=dict)
+    attrs: Dict[str, Any] = _dc_field(default_factory=dict)
     units: str = "micrometer"
+    field: Optional[str] = None
 
     def __post_init__(self) -> None:
         if len(self.data.shape) != 3:

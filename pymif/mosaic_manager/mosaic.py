@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, TYPE_CHECKING
 import dask.array as da
 import numpy as np
 
+from .fields import fields_of, label_fields
 from .tile import Tile
 
 if TYPE_CHECKING:
@@ -76,6 +77,13 @@ class MosaicManager(ABC):
 
         with mosaic_manager.LuxendoMosaicManager("raw_folder") as mosaic:
             mosaic.fuse("overview.ome.zarr", ds=(4, 8, 8), projection="max")
+
+    When loaded, every tile is labelled with the **field** it belongs to: tiles
+    whose boxes overlap or touch form one field (a connected component), named
+    ``field0``, ``field1``, ... by position (see :attr:`fields`). :meth:`fuse`
+    fuses the first field by default; pick another with
+    ``mosaic.fuse(out, field="field1")``. Tiles of several fields are never fused
+    together: that raises a :class:`~pymif.mosaic_manager.fields.MultipleFieldsError`.
     """
 
     def __init__(self, path: str | Path):
@@ -85,6 +93,7 @@ class MosaicManager(ABC):
         if not self.tiles:
             raise FileNotFoundError(f"No tiles found in {self.path}.")
         self._check_single_timepoint()
+        label_fields(self.tiles)
 
     def _check_single_timepoint(self) -> None:
         """Refuse timelapses: loading and fusion handle one timepoint so far.
@@ -118,13 +127,32 @@ class MosaicManager(ABC):
         """Tile group labels in order of first appearance."""
         return list(dict.fromkeys(t.group for t in self.tiles))
 
-    def select(self, channel: Optional[str] = None, group: Optional[str] = None, **attrs: Any) -> List[Tile]:
-        """Tiles matching ``channel``, ``group`` and any ``attrs`` entries, e.g. ``select(stack=1)``."""
+    @property
+    def fields(self) -> List[str]:
+        """Field names (connected groups of touching tiles), ordered by position."""
+        return fields_of(self.tiles)
+
+    def field_tiles(self, fields: "str | Sequence[str]") -> List[Tile]:
+        """Tiles of one field (``"field0"``) or of several (``["field0", "field2"]``).
+        Unknown fields raise ``KeyError``."""
+        names = [fields] if isinstance(fields, str) else list(fields)
+        unknown = [f for f in names if f not in self.fields]
+        if unknown:
+            raise KeyError(f"Unknown field(s) {unknown}; available: {self.fields}.")
+        wanted = set(names)
+        return [t for t in self.tiles if t.field in wanted]
+
+    def select(self, channel: Optional[str] = None, group: Optional[str] = None,
+               field: Optional[str] = None, **attrs: Any) -> List[Tile]:
+        """Tiles matching ``channel``, ``group``, ``field`` and any ``attrs`` entries,
+        e.g. ``select(field="field1", stack=1)``."""
         out = []
         for t in self.tiles:
             if channel is not None and t.channel != channel:
                 continue
             if group is not None and t.group != group:
+                continue
+            if field is not None and t.field != field:
                 continue
             if any(t.attrs.get(k) != v for k, v in attrs.items()):
                 continue
@@ -267,13 +295,15 @@ class MosaicManager(ABC):
             label = t.attrs.get("stack") or i
             layer = viewer.add_image(
                 self._lazy(t),
-                name=f"{t.channel} {t.group or ''} [{label}]".replace("  ", " "),
+                name=f"{t.channel} {t.group or ''} [{label}]".replace("  ", " ")
+                + (f" {t.field}" if len(self.fields) > 1 else ""),
                 scale=t.voxel_size,
                 translate=t.origin,
                 colormap=_COLORMAPS[names.index(t.channel) % len(_COLORMAPS)],
                 blending="additive",
                 contrast_limits=limits,
-                metadata={"mosaic_tile": i, "mosaic_tile_id": self.tile_id(t), "mosaic_path": str(self.path)},
+                metadata={"mosaic_tile": i, "mosaic_tile_id": self.tile_id(t), "mosaic_field": t.field,
+                          "mosaic_path": str(self.path)},
                 **extra,
             )
             if limits is not None and np.issubdtype(t.dtype, np.integer):
@@ -289,21 +319,76 @@ class MosaicManager(ABC):
     # fusion
     # ------------------------------------------------------------------
 
-    def fuse(self, out: str | Path, skip: Optional[Sequence["Tile | str"]] = None, **kwargs):
-        """Fuse the tiles into an OME-Zarr image; see :func:`~pymif.mosaic_manager.fuse_tiles`.
+    def fusion_tiles(
+        self,
+        tiles: Optional[Sequence["Tile | str"]] = None,
+        field: "str | Sequence[str] | None" = None,
+    ) -> List[Tile]:
+        """The tiles a fusion uses: ``tiles`` (default: all) restricted to ``field``.
 
-        ``skip`` lists tiles to leave blank, as ``Tile`` objects or as ids accepted by
-        :meth:`tiles_by_ids` (``"cFos-647/1-x00-y00"``, or ``"1-x00-y00"`` for every channel).
+        ``tiles`` are ``Tile`` objects or ids accepted by :meth:`tiles_by_ids`;
+        ``field`` is one field name or a list of them (see :meth:`field_tiles`).
+        Without ``tiles`` and ``field``, the tiles of the first field. The tiles keep
+        the mosaic order. Tiles of several fields are returned as asked, but
+        :func:`~pymif.mosaic_manager.fuse_tiles` refuses them.
+        """
+        if tiles is None and field is None and self.fields:
+            field = self.fields[0]
+            if len(self.fields) > 1:
+                logger.info("Mosaic has %d fields (%s): fusing the first one, %s.",
+                            len(self.fields), ", ".join(self.fields), field)
+        use = self.tiles if tiles is None else self._resolve_tiles(tiles)
+        if field is not None:
+            wanted = {id(t) for t in self.field_tiles(field)}
+            use = [t for t in use if id(t) in wanted]
+            if not use:
+                raise ValueError(f"None of the given tiles is in field(s) {field!r}.")
+        keep = {id(t) for t in use}
+        return [t for t in self.tiles if id(t) in keep]
+
+    def fuse(
+        self,
+        out: str | Path,
+        tiles: Optional[Sequence["Tile | str"]] = None,
+        field: "str | Sequence[str] | None" = None,
+        skip: Optional[Sequence["Tile | str"]] = None,
+        **kwargs,
+    ):
+        """Fuse tiles into an OME-Zarr image; see :func:`~pymif.mosaic_manager.fuse_tiles`.
+
+        Parameters
+        ----------
+        out
+            Output ``.ome.zarr`` path.
+        tiles
+            Only fuse these tiles, as ``Tile`` objects or ids accepted by
+            :meth:`tiles_by_ids` (``"cFos-647/1-x00-y00"``, or ``"1-x00-y00"`` for every
+            channel). The output fits them.
+        field
+            Only fuse the tiles of this field (``"field1"``); combined with ``tiles``,
+            only the given tiles of that field. The output fits the field. Without
+            ``tiles`` and ``field``, the first field (:attr:`fields`) is fused.
+        skip
+            Tiles to leave blank (same forms as ``tiles``): they are not read, but the
+            output keeps the size and position it has with them.
+
+        Tiles of more than one field are not fused: a
+        :class:`~pymif.mosaic_manager.fields.MultipleFieldsError` is raised.
         """
         from .fusion import fuse_tiles
 
+        use = self.fusion_tiles(tiles, field)
         if skip:
-            skip = self._resolve_skip(skip)
-        return fuse_tiles(self.tiles, out, skip=skip, **kwargs)
+            skip = self._resolve_tiles(skip)
+        return fuse_tiles(use, out, skip=skip, **kwargs)
 
-    def _resolve_skip(self, skip) -> List[Tile]:
-        ids = [s for s in skip if isinstance(s, str)]
-        return [s for s in skip if not isinstance(s, str)] + (self.tiles_by_ids(ids) if ids else [])
+    def _resolve_tiles(self, tiles) -> List[Tile]:
+        """``Tile`` objects of a list mixing tiles and tile ids."""
+        if isinstance(tiles, (str, Tile)):
+            tiles = [tiles]
+        ids = [s for s in tiles if isinstance(s, str)]
+        return [s for s in tiles if not isinstance(s, str)] + (self.tiles_by_ids(ids) if ids else [])
+
 
     # ------------------------------------------------------------------
     # resources
