@@ -4,6 +4,12 @@ On a light-sheet microscope the channels of one stack are often offset from each
 
 The correction works on any OME-Zarr image opened with `ZarrManager` (for example the output of `pymif convert` or of a [mosaic fusion](mosaic.md)) and writes a new OME-Zarr image. Only a Z translation per channel is corrected.
 
+![chromatic-shift-before](chromatic-shift-before.png)
+
+![chromatic-shift-after](chromatic-shift-after.png)
+
+*XZ section of a cleared mouse brain, autofluorescence in cyan and cFos in magenta (the reference channel), shown at pyramid level 2 (12 µm planes). Before the correction the autofluorescence sits above the cFos signal: a cyan rim shows on top of the brain and a magenta rim below it. The estimate moved the autofluorescence channel by +95.4 µm, about 32 planes at full resolution (3 µm). 29 of the 32 crops were used, and the lower and upper surfaces agreed to within 2 µm.*
+
 ## Quick start
 
 ```python
@@ -131,5 +137,3 @@ The output path must differ from the input. Call `apply_chromatic_shift()` befor
 | search-limit warning | the shift is larger than `max_shift`; increase it |
 | few crops used, low correlation | a channel with very little tissue contrast. Lower `min_correlation`, increase `n_regions` or `crop_yx`, or check the mask with `threshold` |
 | the coarse level is large | with pyramids that also downsample Z, the automatic coarse level can be a few hundred MB per channel; pass a coarser `coarse_level` |
-
-In a cleared whole mouse brain imaged with 6 µm Z steps, for example, the autofluorescence channel sat 104 µm (17 planes) away from the cFos channel. All 32 crops were usable with a spread of 1.8 µm, and the residual after correction was 0.05 µm. The cFos channel had almost no tissue contrast (tissue only a few counts above background), but its sample surface was enough.
