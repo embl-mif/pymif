@@ -526,6 +526,8 @@ def _mosaic_manager_name_map() -> Dict[str, Any]:
 
 def _resolve_mosaic_manager(input_path: str, microscope: Optional[str] = None):
     """Mosaic reader class from an explicit microscope name or by inspecting the folder."""
+    from pymif.mosaic_manager.opera_mosaic_manager import INDEX_NAMES
+
     readers = _mosaic_manager_name_map()
     if _present(microscope):
         key = str(microscope).strip().lower()
@@ -537,6 +539,9 @@ def _resolve_mosaic_manager(input_path: str, microscope: Optional[str] = None):
         raw = path / "raw" if (path / "raw").is_dir() else path
         if any(raw.glob("*/*.lux.h5")) or any(raw.glob("*.lux.h5")):
             return readers["luxendo"], "luxendo"
+    index = readers["opera"].find_index(path)  # Harmony export: Images/Index.xml
+    if index is not None and index.name.lower() in {n.lower() for n in INDEX_NAMES}:
+        return readers["opera"], "opera"
     raise TypeError(
         'Could not auto-detect the mosaic type from the input path. '
         f'Pass --microscope explicitly with one of {sorted(readers)}.'
@@ -617,6 +622,7 @@ def mosaic_convert(
     read_workers: int = 4,
     temp_dir: Optional[str] = None,
     overwrite: bool = False,
+    flatfield: bool = True,
 ):
     """Fuse a mosaic into an OME-Zarr image (CLI helper for ``pymif fuse``).
 
@@ -629,16 +635,20 @@ def mosaic_convert(
     are not fused: an error is printed and ``False`` returned (``True`` once the output
     is saved). The other options are those of
     :func:`pymif.mosaic_manager.fuse_tiles`: ``read_downsample`` is its ``ds`` and
-    ``read_workers`` its ``workers``.
+    ``read_workers`` its ``workers``. ``flatfield`` is passed to readers that correct
+    the tiles (Opera); the others ignore it.
     """
-    from pymif.mosaic_manager import fuse_tiles, plan_fusion
+    from pymif.mosaic_manager import fuse_tiles, plan_fusion, reader_options
     from pymif.mosaic_manager.fusion import SIGMOID_STEEPNESS
 
     reader, resolved = _resolve_mosaic_manager(input_path, microscope)
     print(f"\n--->Using mosaic manager: {reader.__name__} ({resolved})")
     if scene_index is not None and resolved != "zeiss":
         print(f"\tscene_index={scene_index} is ignored for {resolved} mosaics.")
-    mosaic = reader(input_path)
+    options = reader_options(reader, flatfield=flatfield)
+    if not flatfield and "flatfield" not in options:
+        print(f"\t--no_flatfield is ignored for {resolved} mosaics (no flat-field correction).")
+    mosaic = reader(input_path, **options)
     print(f"{len(mosaic.tiles)} tiles, channels {mosaic.channels}, groups {mosaic.groups}, "
           f"fields {mosaic.fields}")
     if len(mosaic.fields) > 1:
@@ -775,6 +785,8 @@ def convert_mosaic_batch(args):
             kwargs["sigmoid_steepness"] = float(v["sigmoid_steepness"])
         if "overwrite" in columns and _present(v.get("overwrite")):
             kwargs["overwrite"] = parse_bool(v["overwrite"])
+        if "flatfield" in columns and _present(v.get("flatfield")):
+            kwargs["flatfield"] = parse_bool(v["flatfield"])
         if not mosaic_convert(**kwargs):
             not_fused.append(str(v["output"]))
     if not_fused:

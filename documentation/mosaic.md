@@ -7,10 +7,10 @@ A mosaic manager is different from a [microscope manager](readers.md): a `Micros
 | Class | Reads | Status |
 |---|---|---|
 | `LuxendoMosaicManager` | raw Luxendo acquisitions (`raw/<stack>/Cam_*.lux.h5` + `.json`) | available |
-| `OperaMosaicManager` | Opera tiles | placeholder |
+| `OperaMosaicManager` | Opera Phenix / Operetta Harmony exports (`Images/Index.xml` + one TIFF per plane) | available |
 | `ZeissMosaicManager` | Zeiss CZI tiles | placeholder |
 
-`LuxendoMosaicManager` is for the **raw** tiles. Data already fused by the Luxendo software is read with `LuxendoManager`.
+`LuxendoMosaicManager` and `OperaMosaicManager` are for the **raw** tiles. Data already fused by the vendor software is read with `LuxendoManager` and `OperaManager` (Harmony's `stitchresult/*.ome.tiff`).
 
 ```{note}
 Mosaics are supported for a **single timepoint** so far. Loading a timelapse stops with an error that says so: several acquisitions of the same stack in one folder, or tiles whose metadata report different timepoints.
@@ -40,6 +40,25 @@ Loading reads only the JSON files (in parallel) and a single `.h5` header, so it
 `mosaic.tiles` is a list of `Tile` objects: a lazy `(z, y, x)` array (`data`), the position of its first voxel (`origin`), `voxel_size`, `channel`, an optional `group` and reader-specific `attrs`. `mosaic.tile(i)` returns one tile as an `ArrayManager`.
 
 For Luxendo data, the two illumination sides of a dye (e.g. `autofluo-488-L` and `autofluo-488-R`) become **one channel** (`autofluo-488`). The side is kept as the tile `group`. If a stack was re-acquired (`*_R_<n>.lux.h5`), only the latest retake is used.
+
+### Opera (Harmony exports)
+
+```python
+from pymif.mosaic_manager import OperaMosaicManager
+
+mosaic = OperaMosaicManager("path/to/plate__2026-06-18T20_23_37-Measurement 1")  # contains Images/
+mosaic.channels          # ['DAPI', 'Alexa 647_extended', ...]  (ChannelName of the index)
+mosaic.fields            # ['A3_field0', 'A3_field1', 'B2_field0', ...]
+mosaic.fuse("A3_MIP.ome.zarr", field="A3_field1", projection="max")
+```
+
+The path is the Harmony export folder, its `Images` folder or the `Index.xml` itself. Loading reads only the index (one pass, also for indexes of several hundred MB) and one TIFF header. Every Opera field of every channel is one tile, made of its planes (`r01c03f01p01-ch1sk1fk1fl1.tiff`, ...); tile ids are `channel/r01c03f01` (`"r01c03f01"` names that position in every channel).
+
+- **Fields per well.** Stage positions are relative to each well, so tiles are grouped into fields within each well and the fields are named after it: `A3_field0`, `A3_field1`, ... These are the clusters that Harmony stitches into `A3_F1.ome.tiff`, `A3_F2.ome.tiff`, ...
+- **Geometry**, as in the images stitched by Harmony (and read by `OperaManager`). The x/y pixel size is the `ImageResolution` of the index times the scale of the channel's `OrientationMatrix`, a calibration of a few percent (e.g. 0.5934 µm × 0.968 = 0.5744 µm). Tiles are centred on their field position, with the stage `y` axis running against the image rows. Planes are placed at their `PositionZ`, so the z step is the stage step.
+- **Flat-field correction** (`flatfield=True`, the default). Harmony stores, for every channel, a background profile `P` (a 2D polynomial with a mean of 1) and the mean background level `Mean` (`FlatfieldProfile` in the index, or `FFC_Profile/*.xml`). Every plane is corrected as Harmony does: pixels above the background level, `raw >= Mean·P`, become `raw - Mean·(P - 1)` (the uneven background is removed), darker pixels become `raw / P`, both rounded to the data type. The result matches Harmony's stitched images to within rounding. Channels with an `Identity` profile (e.g. brightfield) are not changed; `mosaic.flatfields` lists the correction of every channel. Pass `flatfield=False` for the raw data.
+
+Planes that Harmony marks as failed are read as zeros.
 
 ### Fields
 
@@ -139,7 +158,7 @@ The fused output stores a **display window** for every channel (OMERO `window` m
 1. **Level 0** is fused one region at a time (256 × 256 output voxels in y/x for 3D, 1024 × 1024 for projections, over the full z range) into a temporary zarr. For each region, only the tile voxels that fall inside it are read, downsampled and merged. Memory stays bounded and every full-resolution voxel is read once.
 2. The fused level 0, which is already downsampled and therefore small compared with the raw tiles, is written to the output with PyMIF's standard `to_zarr`. Pyramid levels, chunks, shards, compression and singleton axes therefore behave exactly as for any other conversion. The temporary store is then deleted.
 
-With `workers > 1`, the tiles of a region are read in **worker processes** when the tiles allow it (as Luxendo tiles do). h5py serialises reads within one process, so threads would not speed up reading HDF5 files. Merging and writing stay in the calling process. If worker processes cannot be started, fusion falls back to threads with a warning.
+With `workers > 1`, the tiles of a region are read in **worker processes** when the tiles allow it (as Luxendo and Opera tiles do). h5py serialises reads within one process, so threads would not speed up reading HDF5 files. Merging and writing stay in the calling process. If worker processes cannot be started, fusion falls back to threads with a warning.
 
 Raw tiles usually have no pyramid, so every fusion reads the full-resolution data, whatever `ds` is. On a network drive the read speed sets the run time. Put `temp_dir` on a local disk when the output is on a network share.
 
@@ -151,6 +170,8 @@ Raw tiles usually have no pyramid, so every fusion reads the full-resolution dat
 pymif fuse -i /path/to/2026-10-14_103957 -z acq_3D.ome.zarr -rds 4 8 8 -nl 3
 pymif fuse -i /path/to/2026-10-14_103957 -z acq_MIP.ome.zarr -rds 1 8 8 -p max -b midline
 pymif fuse -i /path/to/2026-10-14_103957 -z acq_field1_MIP.ome.zarr -rds 1 8 8 -p max -f field1
+pymif fuse -i "/path/to/plate-Measurement 1" -z A3_MIP.ome.zarr -p max -f A3_field1        # Opera
+pymif fuse -i "/path/to/plate-Measurement 1" -z A3_raw.ome.zarr -p max -f A3_field1 -nff   # without flat-field
 ```
 
 The fields are listed when the mosaic is loaded. Without `-f/--fields` (or `-t/--tiles`) the first field is fused. Asking for tiles from several fields prints an error and nothing is fused; in a `--batch` run that row is not done, the other rows still run, and the rows that were not fused are listed at the end.
@@ -161,7 +182,7 @@ The fields are listed when the mosaic is loaded. Without `-f/--fields` (or `-t/-
 
 `Plugins > PyMIF > Mosaic Fusion` opens a widget with three boxes:
 
-1. **Mosaic loading**: choose the microscope and the acquisition folder (browse, or drag and drop it, or any file inside it, from the file explorer), then *Load tiles*. This reads metadata only and adds a **tile map**: a `tile map` shapes layer with one rectangle per stack position, labelled with its stack id, all picked (green). Click a rectangle in the 2D view to unpick it (grey) or pick it again; dragging still pans. *Shift* + drag picks, and *Ctrl* + drag unpicks, every tile that lies even partially in the box shown while you drag (a temporary `tile map box` layer, removed on release) (*Shift* or *Ctrl* + click: one tile). A rectangle stands for that position in every channel and illumination side. Only picked tiles are shown and fused. When the mosaic has several [fields](#fields), each rectangle also shows its field, the log lists the stack positions of every field, and the *fields* selectors of *Show tiles* and *Fuse to OME-Zarr* start on the first field.
+1. **Mosaic loading**: choose the microscope and the acquisition folder (browse, or drag and drop it, or any file inside it, from the file explorer), then *Load tiles*. *Flat-field correction (Opera)* (on by default) corrects Opera tiles as Harmony does; other microscopes ignore it. This reads metadata only and adds a **tile map**: a `tile map` shapes layer with one rectangle per stack position, labelled with its stack id, all picked (green). Click a rectangle in the 2D view to unpick it (grey) or pick it again; dragging still pans. *Shift* + drag picks, and *Ctrl* + drag unpicks, every tile that lies even partially in the box shown while you drag (a temporary `tile map box` layer, removed on release) (*Shift* or *Ctrl* + click: one tile). A rectangle stands for that position in every channel and illumination side. Only picked tiles are shown and fused. When the mosaic has several [fields](#fields), each rectangle also shows its field, the log lists the stack positions of every field, and the *fields* selectors of *Show tiles* and *Fuse to OME-Zarr* start on the first field.
 2. **Show tiles**: show the picked tiles of the selected channels, groups and fields as one layer per tile at its stage position, with one linked contrast per channel. A channel starts at the whole range of its data type, so nothing is read before the tiles appear: set the contrast of one tile and the others follow. Every displayed plane reads data from all shown tiles, so show only a few channels or groups at a time. Change the picks on the tile map and click *Show tiles in napari* again to update the view; the contrast you set is kept, and *Remove existing layers* keeps the tile map.
 3. **Fuse to OME-Zarr**: the main fusion options, with a live estimate of the output size. Only the picked tiles of the selected field are fused, and the output fits them. Selecting several fields shows an error in the size estimate, and *Fuse to OME-Zarr* and *Append to batch CSV* then print an error and do nothing. With several fields, the default output name ends with the field, e.g. `<acquisition>_3D_ds4-8-8_field1.ome.zarr`. *Tiles to fuse* can be set to *visible layers only* or *selected layers only*: tiles whose layer is hidden (eye icon off) or not selected in the layer list are then left blank (the output keeps its size), and *Blank in all channels* also blanks that position in the other channels. Picked tiles that are not shown in napari are fused normally. The output path follows the parameters (for example `<acquisition>_3D_ds4-8-8.ome.zarr`) until you type your own; dropping a folder on the output field writes the result inside that folder. When fusion finishes, the result can be opened directly (the tile map is then hidden, since the result is not placed at the stage position).
 

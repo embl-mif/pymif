@@ -15,7 +15,7 @@ from ._batch_csv import append_batch_csv
 from ._layout import compose_dock, enable_drag_and_drop, make_button_holder, make_section
 from ._log import EmittingStream, make_log_appender
 
-#: Mosaic readers offered in the widget (Opera and Zeiss are placeholders for now).
+#: Mosaic readers offered in the widget (Zeiss is a placeholder for now).
 MOSAIC_READERS = {
     "luxendo": mos.LuxendoMosaicManager,
     "opera": mos.OperaMosaicManager,
@@ -44,7 +44,7 @@ _CLICK_TOLERANCE = 4
 MOSAIC_BATCH_COLUMNS = [
     "input", "microscope", "output",
     "downsample", "projection", "blend", "channels", "groups", "fields", "tiles", "skip_tiles",
-    "midline_axis", "out_dtype", "read_workers", "temp_dir", "overwrite",
+    "midline_axis", "out_dtype", "read_workers", "temp_dir", "overwrite", "flatfield",
     "chunk_size", "max_size(MB)", "scene_index", "zarr_format", "downscale_factor", "subset",
     "channel_colors", "channel_names", "num_levels", "shards", "shard_target_mb", "shard_exclude_axes",
     "drop_singleton", "num_workers",
@@ -341,14 +341,16 @@ def picked_tiles(mosaic, tiles, picked: Optional[Sequence[str]]):
 
 def batch_row(*, input_path, microscope: str, output, values: dict, all_groups: Sequence[str],
               skip_ids: Sequence[str], picked: Optional[Sequence[str]] = None,
-              all_stacks: Sequence[str] = (), all_fields: Sequence[str] = ()) -> dict:
+              all_stacks: Sequence[str] = (), all_fields: Sequence[str] = (),
+              flatfield: Optional[bool] = None) -> dict:
     """One ``pymif fuse --batch`` CSV row from the fusion widget ``values``.
 
     ``picked`` are the stack ids picked on the tile map (``None``: all); the ``tiles``
     column stays empty (every tile) when they cover ``all_stacks``. The ``fields``
     column stays empty when ``values["fields"]`` is missing or the mosaic has a single
     field (``all_fields``); otherwise it names the fields, since an empty cell means
-    the first field.
+    the first field. ``flatfield`` is the reader's flat-field option (``None``: the
+    reader has none, and the column stays empty).
     """
     groups = list(values["groups"])
     fields = list(values.get("fields") or ())
@@ -368,6 +370,7 @@ def batch_row(*, input_path, microscope: str, output, values: dict, all_groups: 
         "num_levels": str(values["levels"]),
         "read_workers": str(values["workers"]),
         "overwrite": str(bool(values["overwrite"])).lower(),
+        "flatfield": "" if flatfield is None else str(bool(flatfield)).lower(),
     }
 
 
@@ -390,9 +393,9 @@ def apply_display_windows(layers, windows, dtype) -> None:
 
 
 @thread_worker
-def _scan_worker(reader, path):
+def _scan_worker(reader, path, options=None):
     """Scan the acquisition folder in the background (opens every tile's metadata)."""
-    return reader(path)
+    return reader(path, **(options or {}))
 
 
 @thread_worker
@@ -499,19 +502,25 @@ def mosaic_widget():
         call_button="Load tiles",
         microscope={"choices": list(MOSAIC_READERS)},
         input_path={"widget_type": "FileEdit", "mode": "d", "label": "Acquisition folder"},
+        flatfield={"label": "Flat-field correction (Opera)",
+                   "tooltip": "Correct the tiles with the flat-field profiles stored by Harmony, "
+                              "as in the images stitched by Harmony."},
     )
-    def load_widget(microscope="luxendo", input_path: Path = Path()):
+    def load_widget(microscope="luxendo", input_path: Path = Path(), flatfield: bool = True):
         if not input_path or not Path(input_path).is_dir():
             print("Select the acquisition folder first.")
             return
         _capture()
         print(f"Scanning {input_path} ...")
-        worker = _scan_worker(MOSAIC_READERS[microscope], input_path)
+        reader = MOSAIC_READERS[microscope]
+        options = mos.reader_options(reader, flatfield=flatfield)
+        worker = _scan_worker(reader, input_path, options)
         _busy(True)
 
         @worker.returned.connect
         def _done(mosaic):
             state["mosaic"] = mosaic
+            state["flatfield"] = options.get("flatfield")
             _populate(mosaic, Path(input_path))
             _busy(False)
             _release()
@@ -765,7 +774,8 @@ def mosaic_widget():
         row = batch_row(input_path=state["input_path"], microscope=state["microscope"],
                         output=fuse_widget.output_path.value, values=values,
                         all_groups=group_labels(mosaic), skip_ids=skip_ids, picked=_picked(),
-                        all_stacks={stack_id(mosaic, t) for t in mosaic.tiles}, all_fields=mosaic.fields)
+                        all_stacks={stack_id(mosaic, t) for t in mosaic.tiles}, all_fields=mosaic.fields,
+                        flatfield=state.get("flatfield"))
         _capture()  # print into this widget's log, not wherever sys.stdout points
         try:
             path = append_batch_csv(batch_csv_path, row, MOSAIC_BATCH_COLUMNS)
