@@ -58,7 +58,7 @@ The fusion options:
 
 | Flag | Meaning |
 |---|---|
-| `-m`, `--microscope` | `luxendo`, `opera`, `zeiss`; auto-detected for raw Luxendo acquisitions |
+| `-m`, `--microscope` | `luxendo`, `opera`, `zeiss`; auto-detected for raw Luxendo acquisitions and Opera Harmony exports (`Images/Index.xml`) |
 | `-rds`, `--downsample` | downsampling while reading (block mean): one value or `Z Y X` (default 1) |
 | `-p`, `--projection` | `none` (3D, default), `max` or `sum` |
 | `-b`, `--blend` | `sigmoid` (default), `max`, `sum` or `midline` |
@@ -67,6 +67,7 @@ The fusion options:
 | `-f`, `--fields` | the field to fuse (groups of touching tiles, `field0`, `field1`, ... listed when the mosaic is loaded); default: the first field. Tiles from several fields are not fused: an error is printed (see [Fields](mosaic.md#fields)) |
 | `-t`, `--tiles` | only fuse these tiles, and fit the output to them: stacks such as `1-x00-y00` (every channel), or `channel/stack` ids |
 | `-st`, `--skip_tiles` | tiles to leave blank (the output keeps its size): `channel/stack` ids such as `cFos-647/1-x00-y00`, or a stack such as `1-x00-y00` for every channel |
+| `-nff`, `--no_flatfield` | Opera: do not apply Harmony's flat-field correction (applied by default, see [Opera](mosaic.md#opera-harmony-exports)) |
 | `-ma`, `--midline_axis` | axis along which `sigmoid`/`midline` separate the tile groups: `x` (default), `y` or `z` |
 | `-od`, `--out_dtype` | output dtype |
 | `-rw`, `--read_workers` | tiles read in parallel processes (default 4); not to be confused with `-nw` (write threads) |

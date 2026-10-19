@@ -523,3 +523,13 @@ def test_batch_row_fields():
                        all_groups=["L"], skip_ids=[], all_fields=["field0"])
     assert row["fields"] == ""
     assert "fields" in mw.MOSAIC_BATCH_COLUMNS
+
+
+def test_batch_row_flatfield():
+    values = {"channels": ["A"], "groups": ["L"], "projection": "max", "blend": "max",
+              "ds_z": 1, "ds_y": 2, "ds_x": 2, "levels": 1, "workers": 1, "overwrite": False}
+    common = dict(input_path="acq", output="o.zarr", values=values, all_groups=["L"], skip_ids=[])
+    assert mw.batch_row(microscope="luxendo", **common)["flatfield"] == ""  # reader without the option
+    assert mw.batch_row(microscope="opera", flatfield=False, **common)["flatfield"] == "false"
+    assert mw.batch_row(microscope="opera", flatfield=True, **common)["flatfield"] == "true"
+    assert "flatfield" in mw.MOSAIC_BATCH_COLUMNS

@@ -17,7 +17,7 @@ PyMIF has two extension points, and a new acquisition system needs one or both:
 - A **microscope manager** reads a dataset that already is **one image** (one array per pyramid level, possibly with several timepoints and channels). It is what `pymif convert` and the Converter widget use.
 - A **mosaic manager** reads an acquisition saved as **many tiles** at different stage positions. It only becomes an image once the tiles are fused, which `pymif fuse` and the Mosaic Fusion widget do. The fused result is an ordinary OME-Zarr image, read back with `ZarrManager`.
 
-Some systems need both: Luxendo data fused by the vendor software is read by `LuxendoManager`, the raw tiles by `LuxendoMosaicManager`.
+Some systems need both: Luxendo data fused by the vendor software is read by `LuxendoManager`, the raw tiles by `LuxendoMosaicManager` (likewise `OperaManager` and `OperaMosaicManager`).
 
 ## Adding a microscope manager
 
@@ -124,7 +124,7 @@ A `Tile` describes one stack and where it sits in the sample:
 
 Things to get right:
 
-- **Keep loading light.** `_scan()` should read metadata only, never pixel data. Pass `shape` and `dtype` to `H5Array` when the metadata knows them, so no file has to be opened: this matters on network drives (`LuxendoMosaicManager` reads its JSON files in parallel and a single `.h5` header).
+- **Keep loading light.** `_scan()` should read metadata only, never pixel data. Pass `shape` and `dtype` to `H5Array` when the metadata knows them, so no file has to be opened: this matters on network drives (`LuxendoMosaicManager` reads its JSON files in parallel and a single `.h5` header; `OperaMosaicManager` reads its index in one pass and a single TIFF header).
 - **Make tile data picklable for parallel fusion.** `fuse_tiles(workers > 1)` reads tiles in worker processes when the data allows it. `H5Array` opens the file on every read, holds no handle and sets `picklable = True`; use it, or the same pattern, for file-backed tiles. Other data falls back to threads.
 - **Close what you open.** Append open file handles to `self._open_files`; `close()` and the context manager close them.
 - **Name tiles stably.** `tile_id()` (`<channel>/<stack>`) is used by `skip`, the CSV batch `tiles` column and the napari tile map. Set `attrs["stack"]` to the vendor's stack name; without it the id falls back to the tile's index, which changes with the scan order.
@@ -136,9 +136,11 @@ Things to get right:
 1. Export the class from `pymif/mosaic_manager/__init__.py`.
 2. Command line: add a key to `_mosaic_manager_name_map()` in `pymif/cli/pymif.py` and to the `--microscope` choices in `_add_fuse_microscope()` (`pymif/cli/__arguments.py`). Add an auto-detection rule to `_resolve_mosaic_manager()` if the folder layout is recognisable.
 3. Napari: add it to `MOSAIC_READERS` in `pymif/napari/_mosaic_widget.py`.
+
+Reader options other than the path (such as `flatfield`) are passed by the command line and the napari widget only to readers whose constructor accepts them (`reader_options()`).
 4. Documentation: add it to the reader table in [Mosaics](mosaic.md).
 
-`OperaMosaicManager` and `ZeissMosaicManager` are registered placeholders whose `_scan()` raises `NotImplementedError`; implementing `_scan()` is all that is left for them.
+`ZeissMosaicManager` is a registered placeholder whose `_scan()` raises `NotImplementedError`; implementing `_scan()` is all that is left for it. For data stored as one file per plane, `TiffStackArray` (used by `OperaMosaicManager`) is the counterpart of `H5Array`; its optional `transform` corrects every plane when it is read (e.g. a flat-field).
 
 ### Test it
 

@@ -421,6 +421,9 @@ def _add_mosaic_arguments(parser, legacy: bool = False):
     parser.add_argument('-rw', '--read_workers', type=int, default=4,
                         help='Tiles read in parallel (worker processes). Not to be confused with -nw (write threads).')
     parser.add_argument('-td', '--temp_dir', help='Folder for the temporary fused level 0. Default: next to the output.')
+    parser.add_argument('-nff', '--no_flatfield', dest='flatfield', action='store_false',
+                        help='Opera: do not apply the flat-field correction stored by Harmony '
+                             '(applied by default, as in the images stitched by Harmony).')
     if legacy:
         parser.add_argument('-ow', '--overwrite', type=parse_bool, default=False,
                             help='Replace an existing output ("true" or "false").')
@@ -468,8 +471,8 @@ CONVERT_HELP = """\
 """
 
 FUSE_HELP = """\
-    Fuse the raw tiles of a mosaic (e.g. a raw Luxendo acquisition) into one OME-Zarr image,
-    3D or a 2D projection (-p max), or every mosaic listed in a CSV file (--batch).
+    Fuse the raw tiles of a mosaic (a raw Luxendo acquisition, an Opera Harmony export) into one
+    OME-Zarr image, 3D or a 2D projection (-p max), or every mosaic listed in a CSV file (--batch).
     The output options are those of `pymif convert`; -s/--subset crops the fused output
     (z/y/x in output voxels, after --downsample) and selects channels (c).
 
@@ -477,19 +480,21 @@ FUSE_HELP = """\
       pymif fuse -i /path/to/2026-10-14_103957 -z out_3D.ome.zarr -rds 4 8 8 -nl 3
       pymif fuse -i /path/to/2026-10-14_103957 -z out_MIP.ome.zarr -rds 1 8 8 -p max -b midline
       pymif fuse -i /path/to/2026-10-14_103957 -z field1_MIP.ome.zarr -rds 1 8 8 -p max -f field1 -st 3-x01-y00
+      pymif fuse -i "/path/to/plate-Measurement 1" -z A3_MIP.ome.zarr -p max -f A3_field1
       pymif fuse --batch mosaics.csv
 
-    Tiles that touch or overlap form a field (field0, field1, ... ordered by position); the fields are
-    listed when the mosaic is loaded. Only one field is fused at a time: the first one by default,
-    another with -f. Tiles from separate fields are never fused together: an error is printed and
-    the fusion is not done (in a batch, the other rows still run).
+    Tiles that touch or overlap form a field (field0, field1, ... ordered by position; for Opera plates
+    one set per well: A3_field0, A3_field1, ...); the fields are listed when the mosaic is loaded. Only
+    one field is fused at a time: the first one by default, another with -f. Tiles from separate fields
+    are never fused together: an error is printed and the fusion is not done (in a batch, the other
+    rows still run). Opera tiles are flat-field corrected as in Harmony, unless -nff is given.
 
     The --batch CSV file has the columns input | microscope | output, plus any of the output columns of
     `pymif convert --batch` (chunk_size | max_size(MB) | zarr_format | downscale_factor | subset | channel_colors |
     channel_names | num_levels | shards | shard_target_mb | shard_exclude_axes | drop_singleton | num_workers)
     and of the fusion columns
     downsample | projection | blend | sigmoid_steepness | channels | groups | fields | tiles | skip_tiles | midline_axis |
-    out_dtype | read_workers | temp_dir | overwrite, e.g.
+    out_dtype | read_workers | temp_dir | overwrite | flatfield (true/false, Opera only, default true), e.g.
       input                  | microscope | output                 | downsample | projection | blend   | num_levels
       /path/to/acquisition_1 | luxendo    | /path/to/acq1_3D.zarr  | 4 8 8      | none       | sigmoid | 3
       /path/to/acquisition_1 | luxendo    | /path/to/acq1_MIP.zarr | 1 8 8      | max        | midline |
@@ -618,8 +623,8 @@ def _add_fuse_microscope(parser):
         default=None,
         choices=['luxendo', 'opera', 'zeiss'],
         type=str,
-        help='Microscope of the mosaic. Leave empty to auto-detect (raw Luxendo acquisitions). '
-             'Opera and Zeiss mosaics are not implemented yet.',
+        help='Microscope of the mosaic. Leave empty to auto-detect (raw Luxendo acquisitions, Opera Harmony '
+             'exports with Images/Index.xml). Zeiss mosaics are not implemented yet.',
     )
 
 
@@ -685,7 +690,8 @@ def _parse_arguments(argv=None):
     _add_mosaic_arguments(fuse)
     _add_zarr_arguments(fuse)
     _adapt_zarr_help_for_mosaic(fuse)
-    _add_input_output(fuse, required=False, input_help='Acquisition folder (for Luxendo: the folder containing raw/).',
+    _add_input_output(fuse, required=False, input_help='Acquisition folder (for Luxendo: the folder containing raw/; '
+                                                       'for Opera: the Harmony export containing Images/).',
                       output_type=os.path.abspath)
 
     #####################################################################################
