@@ -181,7 +181,7 @@ The fields are listed when the mosaic is loaded. Without `-f/--fields` (or `-t/-
 
 ## Napari
 
-![napari-demo](napari-demo.png)
+![mosaic-demo](mosaic-demo.png)
 
 `Plugins > PyMIF > Mosaic Fusion` opens a widget with three boxes:
 

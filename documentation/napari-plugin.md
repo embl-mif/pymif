@@ -23,4 +23,4 @@ The widgets are built to be docked on any side of the napari window, or floated,
 
 `Plugins > PyMIF > Mosaic Fusion` loads the raw tiles of a mosaic, shows them as one layer per tile at its stage position, and fuses them into an OME-Zarr image in the background, with a live estimate of the output size. See [Mosaics](mosaic.md#napari) for details.
 
-![napari-demo](mosaic-demo.png)
+![mosaic-demo](mosaic-demo.png)
