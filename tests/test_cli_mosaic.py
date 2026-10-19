@@ -184,3 +184,59 @@ def test_fuse_only_some_tiles(acquisition, tmp_path, monkeypatch):
                    "shards": "none", "channels": "GFP", "tiles": "1-x00-y00"}]).to_csv(csv, index=False)
     _run(monkeypatch, "fuse", "--batch", str(csv))
     assert mm.ZarrManager(str(tmp_path / "b.ome.zarr")).data[0].shape[-1] == 32 // 2
+
+
+@pytest.fixture
+def two_fields(tmp_path):
+    """Raw Luxendo-like acquisition with two separate fields: stacks 1, 2 (touching) and stack 3 far away."""
+    raw = tmp_path / "fields" / "raw"
+    for stack, tx, value in (("1-x00-y00", 0.0, 10), ("1-x01-y00", 28.0, 20), ("3-x00-y00", 500.0, 30)):
+        _write_tile(raw / f"stack_{stack}_GFP-L", "Cam_bottom_00000", "GFP-L", stack,
+                    tx, 0.0, 30.0, shape=(8, 16, 16), value=value)
+    return tmp_path / "fields"
+
+
+def test_fuse_one_field(two_fields, tmp_path, monkeypatch, capsys):
+    from pymif.mosaic_manager import LuxendoMosaicManager
+
+    mosaic = LuxendoMosaicManager(two_fields, progress=False)
+    assert mosaic.fields == ["field0", "field1"]
+    far = {mosaic.tile_id(t).split("/")[1] for t in mosaic.field_tiles("field1")}
+    assert far == {"3-x00-y00"}
+
+    out = tmp_path / "far.ome.zarr"
+    _run(monkeypatch, "fuse", "-i", str(two_fields), "-z", str(out), "-p", "max", "-sh", "none", "-f", "field1")
+    printed = capsys.readouterr().out
+    assert "fields ['field0', 'field1']" in printed and "ERROR" not in printed
+    img = mm.ZarrManager(str(out)).data[0].compute()
+    assert img.shape[-1] == 32 // 2 and img.min() == 30  # only the far tile, 16 px of 2 um
+
+    # no --fields: the first field
+    _run(monkeypatch, "fuse", "-i", str(two_fields), "-z", str(tmp_path / "default.ome.zarr"), "-p", "max",
+         "-sh", "none")
+    assert "Fusing the first field, field0" in capsys.readouterr().out
+    img = mm.ZarrManager(str(tmp_path / "default.ome.zarr")).data[0].compute()
+    assert img.shape[-1] == (28 + 32) // 2 and img.max() == 20
+
+    # several fields: refused, nothing written
+    with pytest.raises(SystemExit) as exit_info:
+        _run(monkeypatch, "fuse", "-i", str(two_fields), "-z", str(tmp_path / "both.ome.zarr"), "-p", "max",
+             "-sh", "none", "-f", "field0", "field1")
+    assert exit_info.value.code == 1
+    assert "ERROR: Tiles from 2 separate fields" in capsys.readouterr().out
+    assert not (tmp_path / "both.ome.zarr").exists()
+
+    # from a batch CSV: field and skipped tile together; the row with two fields is refused, the others run
+    csv = tmp_path / "batch.csv"
+    pd.DataFrame([
+        {"input": str(two_fields), "output": str(tmp_path / "f01.ome.zarr"), "projection": "max",
+         "shards": "none", "fields": "field0 field1", "skip_tiles": ""},
+        {"input": str(two_fields), "output": str(tmp_path / "f0.ome.zarr"), "projection": "max",
+         "shards": "none", "fields": "field0", "skip_tiles": "1-x01-y00"},
+    ]).to_csv(csv, index=False)
+    _run(monkeypatch, "fuse", "--batch", str(csv))
+    assert "1 row(s) not fused" in capsys.readouterr().out
+    assert not (tmp_path / "f01.ome.zarr").exists()
+    img = mm.ZarrManager(str(tmp_path / "f0.ome.zarr")).data[0].compute()
+    assert img.shape[-1] == (28 + 32) // 2  # the skipped tile keeps its place
+    assert img[..., :8].min() == 10 and img[..., -2:].max() == 0

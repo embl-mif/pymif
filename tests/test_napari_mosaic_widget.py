@@ -457,3 +457,69 @@ def test_show_tiles_follows_picks_and_keeps_contrast(app, monkeypatch):
     assert [lay.metadata["mosaic_tile_id"] for lay in shown] == ["A/s0", "B/s0"]
     assert tuple(shown[0].contrast_limits) == (0, 500) and tuple(shown[1].contrast_limits) == (0, 65535)
     assert mw.find_tile_map(viewer.layers, m.path) is layer
+
+
+class TwoFieldMosaic(MosaicManager):
+    """One channel, two separate fields: stacks s0/s1 (x 0..24) and s2 (x 100..116)."""
+
+    def _scan(self):
+        def t(x, stack):
+            return Tile(np.full((8, 16, 16), 7, np.uint16), (0, 0, x), (1.0, 1.0, 1.0), "A", None,
+                        attrs={"stack": stack})
+
+        return [t(0, "s0"), t(8, "s1"), t(100, "s2")]
+
+
+def test_select_tiles_by_field():
+    m = TwoFieldMosaic(".")
+    assert m.fields == ["field0", "field1"]
+    assert [t.attrs["stack"] for t in mw.select_tiles(m, ["A"], [mw.NO_GROUP], ["field1"])] == ["s2"]
+    assert len(mw.select_tiles(m, ["A"], [mw.NO_GROUP])) == 3  # no field filter
+    assert "field1: 1 stack position(s): s2" in mw.field_summary(m)
+    assert mw.field_summary(FakeMosaic(".")) == ""
+    assert mw.stack_fields(m) == {"s0": "field0", "s1": "field0", "s2": "field1"}
+
+
+def test_widget_selects_first_field_and_refuses_several(app, tmp_path):
+    dock = mw.mosaic_widget()
+    m = TwoFieldMosaic(".")
+    dock.state["mosaic"] = m
+    dock.populate(m, tmp_path)
+    fw = dock.fuse_widget
+    assert list(fw.fields.choices) == ["field0", "field1"] and list(fw.fields.value) == ["field0"]
+    assert list(dock.show_widget.fields.value) == ["field0"]
+    fw.ds_z.value = fw.ds_y.value = fw.ds_x.value = 1
+    assert "separate fields" not in dock.plan_label.text()
+    assert "x 16 x 24 px" in dock.plan_label.text()  # the output fits field0
+    assert Path(fw.output_path.value).name.endswith("_field0.ome.zarr")
+
+    fw.fields.value = ["field1"]
+    assert "x 16 x 16 px" in dock.plan_label.text()  # the output fits field1
+    assert Path(fw.output_path.value).name.endswith("_field1.ome.zarr")
+
+    # several fields: shown as an error, neither fused nor appended to the batch CSV
+    fw.fields.value = ["field0", "field1"]
+    assert "2 separate fields (field0, field1), cannot be fused" in dock.plan_label.text()
+    fw.output_path.value = tmp_path / "both.ome.zarr"
+    fw()
+    assert not (tmp_path / "both.ome.zarr").exists()
+    dock.batch_widget.batch_csv_path.value = tmp_path / "batch.csv"
+    dock.batch_widget()
+    assert not (tmp_path / "batch.csv").exists()
+
+
+def test_batch_row_fields():
+    values = {"channels": ["A"], "groups": ["L"], "fields": ["field1"], "projection": "max", "blend": "max",
+              "ds_z": 1, "ds_y": 2, "ds_x": 2, "levels": 1, "workers": 1, "overwrite": False}
+    row = mw.batch_row(input_path="acq", microscope="luxendo", output="o.zarr", values=values,
+                       all_groups=["L"], skip_ids=[], all_fields=["field0", "field1"])
+    assert row["fields"] == "field1"
+    # an empty cell means the first field, so it is only left empty for a single-field mosaic
+    values["fields"] = ["field0"]
+    row = mw.batch_row(input_path="acq", microscope="luxendo", output="o.zarr", values=values,
+                       all_groups=["L"], skip_ids=[], all_fields=["field0", "field1"])
+    assert row["fields"] == "field0"
+    row = mw.batch_row(input_path="acq", microscope="luxendo", output="o.zarr", values=values,
+                       all_groups=["L"], skip_ids=[], all_fields=["field0"])
+    assert row["fields"] == ""
+    assert "fields" in mw.MOSAIC_BATCH_COLUMNS
