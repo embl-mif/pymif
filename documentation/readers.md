@@ -10,7 +10,7 @@ The main reader classes currently exposed by `pymif.microscope_manager` are:
 - `ScapeManager` — Leica SCAPE OME-TIFF + XLIF datasets.
 - `ViventisManager` — Viventis LS1 datasets.
 - `ZeissManager` — Zeiss CZI datasets.
-- `EvidentManager` — Olympus/Evident cellSens VSI datasets: the `.vsi` file plus its `_<name>_/` folder of `.ets` pixel data, read with slideio. Tiled acquisitions are stored stitched and are read as one image; select a scene with `scene_index` or `scene_name`.
+- `EvidentManager` — Olympus/Evident cellSens VSI datasets: the `.vsi` file plus its `_<name>_/` folder of `.ets` pixel data, read with slideio. Tiled acquisitions are stored stitched and are read as one image; select a scene with `scene_index` or `scene_name`. The lower-resolution levels that cellSens stores for large images (downsampled in Y and X only) are exposed as extra pyramid levels, so the raw file renders quickly in napari 3D; pass `native_levels=False` to read the full resolution only. Single-tile acquisitions usually have no stored levels.
 - `ZarrManager` — NGFF v0.4/v0.5 OME-Zarr datasets.
 - `ZarrV04Manager` — compatibility reader for older v0.4-style datasets.
 

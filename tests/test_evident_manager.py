@@ -49,15 +49,29 @@ def _raw_metadata(stack_name, channel_names, luts, z_positions=None):
 
 
 class FakeScene:
-    """Mimics slideio.Scene: read_block returns (Z, Y, X, C) and drops singleton Z and C."""
+    """Mimics slideio.Scene: read_block returns (Z, Y, X, C) and drops singleton Z and C.
 
-    def __init__(self, name, data, channel_names, resolution=(2.6e-7, 2.6e-7), z_resolution=1e-6):
+    ``level_sizes`` lists the (width, height) of stored lower-resolution levels;
+    a ``size`` passed to read_block rescales the block (nearest neighbour).
+    """
+
+    def __init__(self, name, data, channel_names, resolution=(2.6e-7, 2.6e-7), z_resolution=1e-6,
+                 level_sizes=()):
         self.name = name
         self.data = data  # TCZYX
         self.channel_names = channel_names
         self.resolution = resolution
         self.z_resolution = z_resolution
         self.t_resolution = 0.0
+        self.level_sizes = list(level_sizes)
+
+    @property
+    def num_zoom_levels(self):
+        return 1 + len(self.level_sizes)
+
+    def get_zoom_level_info(self, level):
+        w, h = ([self.size] + self.level_sizes)[level]
+        return types.SimpleNamespace(size=types.SimpleNamespace(width=w, height=h))
 
     @property
     def size(self):
@@ -77,6 +91,9 @@ class FakeScene:
         x, y, w, h = rect
         channels = channel_indices or list(range(self.num_channels))
         block = self.data[frames[0], channels, slices[0]:slices[1], y:y + h, x:x + w]  # CZYX
+        if size != (0, 0):
+            sw, sh = size
+            block = block[..., (np.arange(sh) * h) // sh, :][..., (np.arange(sw) * w) // sw]
         block = np.moveaxis(block, 0, -1)  # ZYXC
         if block.shape[-1] == 1:
             block = block[..., 0]
@@ -181,6 +198,37 @@ def test_evident_scene_selection(fake_vsi):
         mm.EvidentManager(path, scene_name="missing")
     with pytest.raises(ValueError, match="Invalid scene index"):
         vsi.read(scene_index=5)
+
+
+def test_evident_native_levels(fake_vsi):
+    path, data, slide = fake_vsi
+    scene = slide.scenes[0]  # 53 x 37 (width x height)
+    scene.level_sizes = [(26, 18), (13, 9)]  # 53/26 and 37/18 are not integer factors
+
+    vsi = mm.EvidentManager(path, chunks=(1, 1, 2, 16, 16))
+    assert vsi.metadata["size"] == [data.shape, (1, 2, 5, 18, 26), (1, 2, 5, 9, 13)]
+    z, y, x = vsi.metadata["scales"][0]
+    assert vsi.metadata["scales"][1] == pytest.approx((z, y * 37 / 18, x * 53 / 26))
+    # Levels with non-integer factors are read one whole plane at a time (no seams).
+    assert vsi.data[1].chunksize == (1, 1, 2, 18, 26)
+
+    for level, (w, h) in zip(vsi.data[1:], scene.level_sizes):
+        whole = scene.read_block((0, 0, 53, 37), size=(w, h), slices=(0, 5))  # ZYXC
+        np.testing.assert_array_equal(level[0].compute(), np.moveaxis(whole, -1, 0))
+    np.testing.assert_array_equal(vsi.data[0].compute(), data)
+
+    assert len(mm.EvidentManager(path, native_levels=False).data) == 1
+
+
+def test_evident_exact_levels_keep_chunks(fake_vsi):
+    path, data, slide = fake_vsi
+    scene = slide.scenes[0]
+    scene.data = data[..., :36, :52]
+    scene.level_sizes = [(26, 18)]  # exact factor 2
+
+    level = mm.EvidentManager(path, chunks=(1, 1, 2, 8, 8)).data[1]
+    assert level.chunksize == (1, 1, 2, 8, 8)
+    np.testing.assert_array_equal(level.compute(), scene.data[..., ::2, ::2])
 
 
 def test_evident_zarr_roundtrip(fake_vsi, tmp_path):
