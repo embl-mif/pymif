@@ -19,13 +19,13 @@ pymif convert -i INPUT_PATH -m MICROSCOPE -z OUTPUT_ZARR
 pymif convert --batch datasets.csv
 ```
 
-`-m` is one of `luxendo`, `opera`, `viventis`, `zeiss`, `zarr`, `zarrv04`, `scape`; leave it out to detect it from the input path. The output options:
+`-m` is one of `luxendo`, `opera`, `viventis`, `zeiss`, `evident`, `zarr`, `zarrv04`, `scape`; leave it out to detect it from the input path. The output options:
 
 | Flag | Meaning |
 |---|---|
 | `-cs`, `--chunk_size` | chunk size, one value per axis of the dataset |
 | `-ms`, `--max_size` | max chunk size in MB (ignored with `-cs`) |
-| `-si`, `--scene_index` | scene of a `.czi` file |
+| `-si`, `--scene_index` | scene of a `.czi` or `.vsi` file |
 | `-cn`, `--channel_names` / `-cc`, `--channel_colors` | names and colours (hex or matplotlib names) of the channels |
 | `-zf`, `--zarr_format` | 2 (NGFF 0.4) or 3 (NGFF 0.5, default) |
 | `-df`, `--downscale_factor` / `-nl`, `--num_levels` | pyramid factor and number of levels (estimated if omitted) |

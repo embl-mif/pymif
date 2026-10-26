@@ -44,6 +44,7 @@ dependencies = [
     "scikit-image==0.26.0",
     "scikit-learn==1.8.0",
     "scipy==1.17.1",
+    "slideio==2.10.0",
     "tifffile==2026.3.3",
     "tqdm==4.67.3",
     "typer==0.24.1",

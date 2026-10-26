@@ -83,6 +83,8 @@ def dataset_reader(microscope):
     """Return the PyMIF manager class matching the selected microscope key."""
     if microscope == "zeiss":
         reader = mm.ZeissManager
+    elif microscope == "evident":
+        reader = mm.EvidentManager
     elif microscope == "viventis":
         reader = mm.ViventisManager
     elif microscope == "opera":
@@ -348,7 +350,7 @@ def _run_conversion(
     """Run the conversion pipeline used by the napari worker thread."""
     print("Starting conversion in background thread...")
 
-    if file_format == "zeiss":
+    if file_format in ("zeiss", "evident"):
         dataset = reader(path, scene_index=scene_index, chunks=chunks)
     else:
         dataset = reader(path, chunks=chunks)
@@ -694,7 +696,7 @@ def convert_widget():
         call_button="Visualize in napari",
         input_path={"widget_type": "FileEdit", "mode": "d"},
         scene_index={"widget_type": "SpinBox", "min": 0, "max": 100, "step": 1},
-        file_format={"choices": ["viventis", "opera", "luxendo", "zarr", "zeiss","scape"]},
+        file_format={"choices": ["viventis", "opera", "luxendo", "zarr", "zeiss", "evident", "scape"]},
     )
     def make_visualize_widget(
         file_format="zarr",
@@ -964,7 +966,7 @@ def convert_widget():
 
     @make_visualize_widget.file_format.changed.connect
     def _update_mode(file_format):
-        if file_format == "zeiss": 
+        if file_format in ("zeiss", "evident"): 
             make_visualize_widget.scene_index.enabled = True 
         else: 
             make_visualize_widget.scene_index.enabled = False
@@ -981,7 +983,7 @@ def convert_widget():
         
         reader = dataset_reader(make_visualize_widget.file_format.value)
 
-        if make_visualize_widget.file_format.value == "zeiss":
+        if make_visualize_widget.file_format.value in ("zeiss", "evident"):
             dataset = reader(path, scene_index=make_visualize_widget.scene_index.value)
         else:
             dataset = reader(path)
