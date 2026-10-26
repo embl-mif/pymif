@@ -140,7 +140,7 @@ def test_zarr_convert_shards_none_disables_sharding(tmp_path):
         input_path=str(src),
         zarr_path=str(out),
         microscope="zarr",
-        chunk_size=[1, 1, 8, 64, 64],
+        chunk_size=[1, 8, 64, 64],  # source is czyx: singleton t was dropped on write
         zarr_format=3,
         num_levels=1,
         shards="none",
@@ -148,6 +148,29 @@ def test_zarr_convert_shards_none_disables_sharding(tmp_path):
 
     root = zarr.open_group(str(out), mode="r")
     assert root["0"].shards is None
+
+
+def test_zarr_convert_rejects_chunk_size_of_wrong_length(tmp_path):
+    """A chunk size that does not match the dataset axes must raise, not be ignored."""
+    src = tmp_path / "source5.zarr"
+    out = tmp_path / "out5.zarr"
+
+    lvl0 = np.arange(1 * 2 * 8 * 64 * 64, dtype="uint16").reshape(1, 2, 8, 64, 64)
+    metadata = {
+        "axes": "tczyx",
+        "scales": [(1.0, 1.0, 1.0)],
+        "time_increment": 1.0,
+        "time_increment_unit": "second",
+    }
+    mm.ArrayManager(lvl0, metadata, chunks=(1, 1, 8, 64, 64)).to_zarr(
+        str(src), ngff_version="0.5", zarr_format=3, overwrite=True,
+        drop_singleton=False,
+    )
+    with pytest.raises(ValueError, match="has 4 values, but the dataset has 5 axes"):
+        zarr_convert(
+            input_path=str(src), zarr_path=str(out), microscope="zarr",
+            chunk_size=[1, 8, 32, 32], zarr_format=3, num_levels=1,
+        )
 
 
 def test_zarr_convert_defaults_to_auto_shards(tmp_path):

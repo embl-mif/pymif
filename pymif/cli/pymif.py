@@ -56,6 +56,19 @@ def _select_chunk_size(metadata, max_size):
     return chunks, size_mb, n_chunks
 
 
+def _check_chunk_size(chunk_size, metadata):
+    """Return ``chunk_size`` as a tuple, or raise if it does not have one value per dataset axis."""
+    axes = _axes(metadata)
+    chunk_size = tuple(int(c) for c in chunk_size)
+    if len(chunk_size) != len(axes):
+        raise ValueError(
+            f"chunk_size={chunk_size} has {len(chunk_size)} values, but the dataset has "
+            f"{len(axes)} axes ({axes}, shape {tuple(metadata['size'][0])}). "
+            f"Provide one chunk size per axis, in {axes.upper()} order."
+        )
+    return chunk_size
+
+
 def _estimate_levels(metadata, downscale_factor):
     axes = _axes(metadata)
     size_map = dict(zip(axes, metadata["size"][0]))
@@ -302,7 +315,8 @@ def zarr_convert(
     # --- Select chunk size ---
     print(f"\n--->Select chunks.")
     if chunk_size is not None:
-        print(f"\tUsing user-provided chunk size: {chunk_size}")
+        chunk_size = _check_chunk_size(chunk_size, dataset.metadata)
+        print(f"\tUsing user-provided chunk size: {chunk_size} ({_axes(dataset.metadata)})")
         size_mb = _dataset_size_mb(dataset.metadata) * np.prod(chunk_size) / np.prod(dataset.metadata["size"][0])
         n_chunks = {ax: int(np.ceil(size / chunk)) for ax, size, chunk in zip(_axes(dataset.metadata), dataset.metadata["size"][0], chunk_size)}
     else:
