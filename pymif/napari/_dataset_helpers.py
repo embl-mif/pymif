@@ -48,12 +48,12 @@ def points_projection_kwargs():
 
     napari 0.9 deprecated ``out_of_slice_display`` in favour of
     ``projection_mode``; ``rescale_linear`` is what the old flag mapped to.
-    Older napari versions only know the old flag.
+    Older napari versions only know the old flag (napari 0.7 already has a
+    ``projection_mode`` argument, but only with ``none``/``all``).
     """
-    import inspect
-
     from napari.layers import Points
 
-    if "projection_mode" in inspect.signature(Points).parameters:
+    modes = getattr(Points, "_projectionclass", None)
+    if modes is not None and "rescale_linear" in {str(m) for m in modes}:
         return {"projection_mode": "rescale_linear"}
     return {"out_of_slice_display": True}

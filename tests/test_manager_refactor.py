@@ -517,8 +517,13 @@ def test_points_layer_has_no_deprecation_warning():
 
     from pymif.napari._dataset_helpers import points_projection_kwargs
 
+    from napari.layers import Points
+
     kwargs = points_projection_kwargs()
-    assert "out_of_slice_display" not in kwargs  # deprecated since napari 0.9
+    if "rescale_linear" in {str(m) for m in getattr(Points, "_projectionclass", ())}:
+        assert "out_of_slice_display" not in kwargs  # deprecated since napari 0.9
+    else:  # napari < 0.9 (0.7 has projection_mode, but without rescale_linear)
+        assert kwargs == {"out_of_slice_display": True}
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         ViewerModel().add_points(np.array([[0, 1, 1], [2, 1, 1]]), ndim=3, **kwargs)
