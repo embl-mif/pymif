@@ -6,4 +6,5 @@ from .zarr_v04_manager import ZarrV04Manager
 from .array_manager import ArrayManager
 from .opera_manager import OperaManager
 from .zeiss_manager import ZeissManager
+from .evident_manager import EvidentManager
 from .scape_manager import ScapeManager

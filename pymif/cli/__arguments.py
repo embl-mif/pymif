@@ -291,7 +291,7 @@ def _add_zarr_arguments(parser):
     parser.add_argument(
         '-si', '--scene_index',
         required= False,
-        help= 'Scene index for .czi files.',
+        help= 'Scene index for .czi and .vsi files.',
         type= int
     )
     parser.add_argument(
@@ -611,7 +611,7 @@ def _add_convert_microscope(parser):
         required=False,
         default=None,
         help='Microscope used for imaging. Leave empty to auto-detect from the input path.',
-        choices=['luxendo', 'opera', 'viventis', 'zeiss', 'zarrv04', 'zarr', 'scape'],
+        choices=['luxendo', 'opera', 'viventis', 'zeiss', 'evident', 'zarrv04', 'zarr', 'scape'],
         type=str,
     )
 

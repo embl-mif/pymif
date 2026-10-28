@@ -145,6 +145,7 @@ def _manager_name_map() -> Dict[str, Any]:
         'opera': mm.OperaManager,
         'viventis': mm.ViventisManager,
         'zeiss': mm.ZeissManager,
+        'evident': mm.EvidentManager,
         'zarrv04': mm.ZarrV04Manager,
         'zarr': mm.ZarrManager,
         'scape': mm.ScapeManager,
@@ -159,7 +160,7 @@ def _resolve_zarr_manager(input_path: str, microscope: Optional[str] = None):
         if manager is None:
             raise TypeError(
                 f'Microscope {microscope} not recognized. Should be one of '
-                f'"luxendo", "opera", "viventis", "zeiss", "zarrv04", "zarr", "scape".'
+                f'"luxendo", "opera", "viventis", "zeiss", "evident", "zarrv04", "zarr", "scape".'
             )
         return manager, key
 
@@ -183,6 +184,9 @@ def _resolve_zarr_manager(input_path: str, microscope: Optional[str] = None):
     if suffixes.endswith('.czi'):
         return mm.ZeissManager, 'zeiss'
 
+    if suffixes.endswith('.vsi'):
+        return mm.EvidentManager, 'evident'
+
     if suffixes.endswith('.ome.tif') or suffixes.endswith('.ome.tiff') or path.suffix.lower() in {'.tif', '.tiff'}:
         metadata_dir = path.parent / 'Metadata'
         if metadata_dir.exists() and any(metadata_dir.glob('*.xlif')):
@@ -191,7 +195,7 @@ def _resolve_zarr_manager(input_path: str, microscope: Optional[str] = None):
 
     raise TypeError(
         'Could not auto-detect the microscope from the input path. '
-        'Pass --microscope explicitly with one of "luxendo", "opera", "viventis", "zeiss", "zarrv04", "zarr", "scape".'
+        'Pass --microscope explicitly with one of "luxendo", "opera", "viventis", "zeiss", "evident", "zarrv04", "zarr", "scape".'
     )
 
 def zarr_convert(
@@ -200,7 +204,7 @@ def zarr_convert(
     microscope: Optional[str] = None, 
     max_size : Optional[int] = 100, 
     chunk_size : Optional[List[int]] = None,
-    scene_index : Optional[int] = 1,
+    scene_index : Optional[int] = None,
     channel_names : Optional[List[str]] = None,
     channel_colors : Optional[List[str]] = None,
     zarr_format : Optional[int] = 3,
@@ -223,7 +227,7 @@ def zarr_convert(
             Output .zarr path.
         microscope : str
             Microscope used to acquire input data.
-            One of \"luxendo\", \"opera\", \"viventis\", \"zeiss\", \"zarrv04\", \"zarr\".
+            One of \"luxendo\", \"opera\", \"viventis\", \"zeiss\", \"evident\", \"zarrv04\", \"zarr\".
         max_size : Optional[int]
             Max chunk size in MB. \n
             Default: 100
@@ -231,8 +235,8 @@ def zarr_convert(
             Chunk size in TCZYX format, or whatever axes are present in the dataset.
             Default: None
         scene_index : Optional[int]
-            Scene index for .czi files. \n
-            Default: -1
+            Scene index for .czi and .vsi files. \n
+            Default: None (scene 1 for .czi, scene 0 for .vsi)
         channel_names : Optional[List[str]]
             Name of channels.\n
             Example: \"-cn bf gfp rfp\"\n
@@ -292,7 +296,9 @@ def zarr_convert(
     
     # --- Figure out chunks dimensions ---
     if resolved_microscope.lower() == "zeiss":
-        dataset = manager(path=input_path, scene_index=scene_index)
+        dataset = manager(path=input_path, scene_index=1 if scene_index is None else scene_index)
+    elif resolved_microscope.lower() == "evident":
+        dataset = manager(path=input_path, scene_index=0 if scene_index is None else scene_index)
     else:
         dataset = manager(path=input_path)
         

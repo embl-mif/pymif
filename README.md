@@ -24,7 +24,7 @@ It is developed for users of the [Mesoscopic Imaging Facility (MIF)](https://www
 
 ## What PyMIF does
 
-- **Microscope managers** read Luxendo, Opera, SCAPE, Viventis, Zeiss and OME-Zarr datasets into one lazy (Dask) API with a shared metadata schema. → [Readers and conventions](documentation/readers.md)
+- **Microscope managers** read Luxendo, Opera, SCAPE, Viventis, Zeiss, Evident (Olympus VSI) and OME-Zarr datasets into one lazy (Dask) API with a shared metadata schema. → [Readers and conventions](documentation/readers.md)
 - **OME-Zarr writing**: full export, empty datasets and groups, image and label region updates, any subset of the `tczyx` axes. → [Python API](documentation/python-api.md)
 - **Pyramids and subsetting**: multiscale generation, cropping, channel reordering, metadata updates. → [Python API](documentation/python-api.md)
 - **Mosaics**: raw tiles shown at their stage position and fused into one OME-Zarr image (3D or projection). → [Mosaics](documentation/mosaic.md)

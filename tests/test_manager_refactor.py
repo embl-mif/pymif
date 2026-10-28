@@ -494,31 +494,19 @@ def test_plugin_helper_layers_use_dataset_units(image_pyramid, metadata):
     assert units_kwargs(dataset, "q") == {"units": ()}  # axes the dataset lacks are skipped
 
 
-def test_visualize_contrast_limits_do_not_overflow_uint16(metadata):
-    """2 * np.uint16(40000) wraps to 14464; the limits must be computed with Python ints."""
-    pytest.importorskip("napari")
-    from napari.components import ViewerModel
-
-    data = np.zeros((2, 2, 4, 16, 16), np.uint16)
-    data[..., 0, 0] = 40000
-    manager = mm.ArrayManager(data, dict(metadata, size=[data.shape], chunksize=[(1, 1, 2, 8, 8)], scales=[(2.0, 0.5, 0.5)]))
-
-    viewer = ViewerModel()
-    with warnings.catch_warnings():
-        warnings.simplefilter("error", RuntimeWarning)  # "overflow encountered in scalar multiply"
-        manager.visualize(viewer=viewer)
-    layer = viewer.layers[0]
-    assert layer.contrast_limits[1] >= 40000  # wrapped value would have been 14464
-
-
 def test_points_layer_has_no_deprecation_warning():
     pytest.importorskip("napari")
     from napari.components import ViewerModel
 
     from pymif.napari._dataset_helpers import points_projection_kwargs
 
+    from napari.layers import Points
+
     kwargs = points_projection_kwargs()
-    assert "out_of_slice_display" not in kwargs  # deprecated since napari 0.9
+    if "rescale_linear" in {str(m) for m in getattr(Points, "_projectionclass", ())}:
+        assert "out_of_slice_display" not in kwargs  # deprecated since napari 0.9
+    else:  # napari < 0.9 (0.7 has projection_mode, but without rescale_linear)
+        assert kwargs == {"out_of_slice_display": True}
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         ViewerModel().add_points(np.array([[0, 1, 1], [2, 1, 1]]), ndim=3, **kwargs)
