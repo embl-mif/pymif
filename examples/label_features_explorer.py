@@ -235,12 +235,15 @@ def object_radius_um(table, n_axes, voxel_um):
 
 def centroids_from_labels(labels, ids, max_voxels=3e7):
     """(centroid µm, radius µm) of every label in ids, from the finest level with at most max_voxels voxels."""
-    if "t" in labels.axes:
-        raise ValueError("time-lapse labels: add centroid columns to the table")
+    t = labels.axes.find("t")
+    if t >= 0 and labels.levels[0].shape[t] > 1:
+        raise ValueError("time-lapse labels: add centroid columns to the table "
+                         "(centroid-0/1/2, centroid_z/y/x or z/y/x)")
     level = next((i for i, a in enumerate(labels.levels) if np.prod(a.shape) <= max_voxels),
                  len(labels.levels) - 1)
     show_info(f"Computing the centroids on level {level} of the labels ...")
-    data = np.asarray(labels.levels[level])
+    data = labels.levels[level]
+    data = np.asarray(data[(slice(None),) * t + (0,)] if t >= 0 else data)  # a single time point
     where = np.flatnonzero(data)
     found, inverse, counts = np.unique(data.ravel()[where], return_inverse=True, return_counts=True)
     coords = np.unravel_index(where, data.shape)
