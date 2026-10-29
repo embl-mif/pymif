@@ -182,7 +182,10 @@ def read_table(path, **kwargs):
 
 
 def clean_table(table, label_column):
-    """One row per label (> 0), sorted by label; text columns become categories (1, 2, ...; 0 = empty)."""
+    """
+    One row per label (> 0), sorted by label; text columns become categories (1, 2, ...; 0 = empty);
+    inf becomes NaN (not plotted: the plot can't set its axis limits to inf).
+    """
     if label_column not in table.columns:
         raise ValueError(f"no column '{label_column}' in the table")
     table = table.copy()
@@ -190,6 +193,11 @@ def clean_table(table, label_column):
     table = table[table[label_column] > 0].copy()
     table[label_column] = table[label_column].astype(np.int64)
     table = table.drop_duplicates(label_column).sort_values(label_column).reset_index(drop=True)
+    numbers = table.select_dtypes("number").columns
+    infinite = np.isinf(table[numbers].to_numpy(float)).sum(axis=0)
+    if infinite.any():
+        print("inf -> NaN: " + ", ".join(f"{c} ({n} rows)" for c, n in zip(numbers, infinite) if n))
+        table[numbers] = table[numbers].replace([np.inf, -np.inf], np.nan)
     for column in table.columns:
         if not pd.api.types.is_numeric_dtype(table[column]):
             categories = pd.Categorical(table[column])
