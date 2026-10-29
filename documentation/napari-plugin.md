@@ -1,6 +1,6 @@
 # Napari plugin
 
-PyMIF provides napari widgets for conversion and mosaic fusion. After installing the napari extras (`pip install -e .[napari]`), they are in the `Plugins > PyMIF` menu.
+PyMIF provides napari widgets for conversion, mosaic fusion and the exploration of segmented objects. After installing the napari extras (`pip install -e .[napari]`), they are in the `Plugins > PyMIF` menu.
 
 ## Converter
 
@@ -24,3 +24,23 @@ The widgets are built to be docked on any side of the napari window, or floated,
 `Plugins > PyMIF > Mosaic Fusion` loads the raw tiles of a mosaic, shows them as one layer per tile at its stage position, and fuses them into an OME-Zarr image in the background, with a live estimate of the output size. See [Mosaics](mosaic.md#napari) for details.
 
 ![mosaic-demo](mosaic-demo.png)
+
+## Objects Explorer
+
+`Plugins > PyMIF > Objects Explorer` plots the features of segmented objects with [napari-clusters-plotter](https://github.com/BiAPoL/napari-clusters-plotter) and links the plot with the viewer. It loads three things, dropped on their field, dropped all at once anywhere on the panel, or browsed:
+
+- the intensity OME-Zarr (all channels and resolution levels, read lazily),
+- the labels OME-Zarr (optional: else the first group in `<intensity>.ome.zarr/labels/`),
+- a CSV with one row per object: a label column and any features.
+
+**Load** reads them in the background, then adds one layer per channel and the labels layer, and plots the first features of the table. The plot sits under the panel, behind a drag handle, with everything napari-clusters-plotter can do: x / y features, colour of the plot and of the labels by any feature, selections (lasso, ellipse, rectangle) to make clusters, 2D histogram. The plot is linked with the viewer:
+
+- **Click a point**: the viewer goes to that object (its plane, centred and zoomed in) and selects its label. Turn off the zoom and pan tools of the plot first: while one of them is on, clicks don't select points.
+- **Hover a point**: a thumbnail of the object appears next to the mouse, with XY and XZ views through its centre and the object outlined in magenta.
+- **Pick a label in napari**: its point is highlighted in the plot.
+
+Where the objects are comes from centroid columns of the CSV: `centroid-0/1/2` (skimage `regionprops_table`), `centroid_z/y/x` or `z/y/x`, in voxels of the labels at full resolution, or in µm (tick the box). Without them the centroids are computed from a low resolution level of the labels; this is slow for big images and can miss small objects. The size of the thumbnail comes from `bbox-*` columns (regionprops) or a size column (`area`, `volume`, ...).
+
+In the table, text columns become categories (1, 2, ...) and `inf` values become NaN. Those objects are then missing from plots of that feature.
+
+The same widget opens from a script, with the files given on the command line: `python examples/label_features_explorer.py image.ome.zarr labels.ome.zarr features.csv`.
