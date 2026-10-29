@@ -707,19 +707,33 @@ class FeatureExplorer(QWidget):
             self.viewer.dims.set_point(axis, value)
         if s.time_column is not None and first > 0:
             self.viewer.dims.set_point(first - 1, float(s.table[s.time_column].iloc[row]))
-        self.viewer.camera.center = tuple(centre[-3:])
+        scene = getattr(self.viewer, "scene", self.viewer)  # napari >= 0.9: viewer.scene.camera
+        scene.camera.center = tuple(centre[-3:])
         if self.zoom.isChecked():
-            try:
-                canvas = self.viewer.window._qt_viewer.canvas.size  # (height, width) in screen pixels
-                self.viewer.camera.zoom = 0.9 * min(canvas) / (2 * JUMP_CONTEXT * s.half_um[row])
-            except AttributeError:
-                pass
+            canvas = self._canvas_size()
+            if canvas is None:
+                show_warning("Could not read the size of the canvas: no zoom")
+            else:
+                scene.camera.zoom = 0.9 * min(canvas) / (2 * JUMP_CONTEXT * s.half_um[row])
         self._syncing = True
         try:
             s.layer.selected_label = label
             s.layer.show_selected_label = self.isolate.isChecked()
         finally:
             self._syncing = False
+
+    def _canvas_size(self):
+        """(height, width) of the canvas in screen pixels, or None."""
+        for get in (lambda: self.viewer.canvas.size,  # napari >= 0.9
+                    lambda: self.viewer._canvas_size,
+                    lambda: self.viewer.window._qt_viewer.canvas.size):
+            try:
+                size = tuple(get())
+            except (AttributeError, TypeError):
+                continue
+            if len(size) == 2 and min(size) > 0:
+                return size
+        return None
 
     def _on_label_selected(self, event=None):
         """A label picked in napari: highlight its point in the plot."""
