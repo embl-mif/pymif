@@ -65,6 +65,7 @@ THUMBNAIL_CONTEXT = 2.5    # thumbnail half width = 2.5 x object radius
 MAX_BOX_PX = 128           # thumbnails are read from the finest level with at most this many voxels per axis
 HOVER_RADIUS_PX = 7        # a point is hovered when the mouse is this close (screen pixels)
 HOVER_DELAY_MS = 40        # wait this long on a point before reading its thumbnail
+MIN_POINT_SIZE = 10        # smallest size of the plot points (matplotlib points², the area of a marker)
 JUMP_CONTEXT = 1.5         # after a click the viewer shows 1.5 x the thumbnail field of view
 OBJECT_RGB = (255, 0, 255)  # outline of the object in the thumbnail
 OTHER_RGB = (0, 200, 255)   # outlines of the other objects
@@ -83,6 +84,11 @@ def _labels_of_features(layer):
 
 
 ncp_utilities._get_unique_values = _labels_of_features
+
+# The scatter points get smaller with the number of points (8000 / n): with tens of thousands of objects
+# they can't be seen any more.
+_default_size = Scatter.default_size.fget
+Scatter.default_size = property(lambda self: max(MIN_POINT_SIZE, _default_size(self)))
 
 
 class Pyramid:
