@@ -43,4 +43,25 @@ Where the objects are comes from centroid columns of the CSV: `centroid-0/1/2` (
 
 In the table, text columns become categories (1, 2, ...) and `inf` values become NaN. Those objects are then missing from plots of that feature.
 
+Each object needs a single row. If a label appears several times, the table is not loaded and a message says which label is repeated. This usually means the table comes from several images: see below.
+
+### A table from several images
+
+A table with the columns `image_path` and `labels_path` describes objects from several images. Each row gives the intensity and labels OME-Zarr of its object's image, relative to the folder of the table (absolute paths work too; `\` is read as `/`, so a table written on Windows also works on Linux):
+
+```
+label,image_path,labels_path,area,solidity
+12,images/sample_01.ome.zarr,labels/sample_01_labels.ome.zarr,523,0.91
+12,images/sample_02.ome.zarr,labels/sample_02_labels.ome.zarr,388,0.87
+```
+
+The labels are always separate files in this mode. The **Intensity** and **Labels** fields are then not used, and greyed out.
+
+After **Load**, the panel lists the images of the table with their number of objects. Images whose files can't be found are greyed out, with the reason.
+
+- **Tick the images to plot**: the plot shows the objects of the ticked images only. **All** ticks all of them, **Only the shown one** keeps just the image in the viewer. At least one image stays ticked.
+- **The viewer shows one image at a time**, in bold in the list. Clicking a point of another image reads that image and shows it in the same layers, then goes to the object. Double-clicking an image in the list shows it too.
+- **Thumbnails** work for the objects of any ticked image; each image is read the first time it is needed.
+- The feature `image_index` (1, 2, ... as numbered in the list) is added, so the plot or the labels can be coloured by image. Clusters drawn in the plot are kept when images are unticked and ticked again.
+
 The same widget opens from a script, with the files given on the command line: `python examples/label_features_explorer.py image.ome.zarr labels.ome.zarr features.csv`.
