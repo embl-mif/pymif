@@ -99,4 +99,4 @@ For questions or bug reports, open an
 [issue](https://github.com/embl-mif/pymif/issues) on GitHub, or contact the current maintainers.
 
 > [!IMPORTANT]
-> If you use any of these resources, please acknowledge the maintainers and their departments.
+> If PyMIF contributes to your work, please acknowledge PyMIF and the EMBL Mesoscopic Imaging Facility in your publications.
