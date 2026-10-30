@@ -11,11 +11,11 @@ pytest.importorskip("qtpy")
 pytest.importorskip("napari")
 
 from napari.components import ViewerModel
-from qtpy.QtWidgets import QApplication, QPushButton, QScrollArea, QSplitter, QTextEdit, QToolButton, QWidget
+from qtpy.QtWidgets import QApplication, QLabel, QPushButton, QScrollArea, QSplitter, QTextEdit, QToolButton, QWidget
 
 import pymif.napari._convert_widget as convert_module
 import pymif.napari._export_widget as export_module
-from pymif.napari._layout import MIN_LOG_HEIGHT, compose_dock
+from pymif.napari._layout import LOGO_PATH, MIN_LOG_HEIGHT, compose_dock
 
 
 @pytest.fixture(scope="module")
@@ -250,3 +250,10 @@ def test_export_widget_is_scrollable_dock(app, monkeypatch):
 def test_compose_dock_without_bottom_pane(app):
     dock = compose_dock(QWidget())
     assert dock.findChild(QScrollArea) is not None and dock.findChild(QSplitter) is None
+
+
+def test_compose_dock_shows_logo(app):
+    assert LOGO_PATH.is_file()
+    dock = compose_dock(QWidget())
+    logo = dock.findChild(QLabel, "pymifLogo")
+    assert logo is not None and not logo.pixmap().isNull()

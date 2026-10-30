@@ -1,4 +1,10 @@
-# PyMIF — microscopy I/O, OME-Zarr conversion, and NGFF utilities
+<h1>
+  <img src="pymif/napari/resources/zarrsmith-icon.svg" alt="zarrsmith logo" width="120" align="left">
+  PyMIF — microscopy I/O, OME-Zarr forging, and NGFF utilities
+  <br clear="left">
+</h1>
+<!-- documentation/index.md repeats this header in Markdown (Sphinx needs a Markdown title and does not
+rewrite HTML paths) and includes this README from here. -->
 
 ![Python](https://img.shields.io/badge/python-3.12-green)
 [![License](https://img.shields.io/github/license/embl-mif/pymif.svg)](https://github.com/embl-mif/pymif/blob/main/LICENSE)
@@ -11,10 +17,7 @@
 
 **PyMIF** is a Python package for reading microscopy datasets from multiple acquisition systems, building multiscale pyramids, writing **OME-NGFF / OME-Zarr**, and working with those datasets from Python, the command line and napari.
 
-It is developed for users of the [Mesoscopic Imaging Facility (MIF)](https://www.embl.org/groups/mesoscopic-imaging-facility/). The rendered documentation is at **[embl-mif.github.io/pymif](https://embl-mif.github.io/pymif/)**.
-
-> [!NOTE]
-> PyMIF writes **NGFF v0.5 / Zarr v3** by default. **NGFF v0.4 / Zarr v2** datasets remain supported through `ZarrManager` and `ZarrV04Manager`.
+The rendered documentation is at **[embl-mif.github.io/pymif](https://embl-mif.github.io/pymif/)**.
 
 ---
 
@@ -91,3 +94,11 @@ pymif chromatic-shift -i INPUT_ZARR -z OUTPUT_ZARR -r shift.json   # align chann
 |---|---|
 | [API reference](https://embl-mif.github.io/pymif/autoapi/pymif/index.html) | generated from the docstrings |
 | [Contributing](documentation/contributing.md) | package layout, adding a microscope manager or a mosaic manager, `pymif.utils`, documentation |
+
+## Help
+
+For questions or bug reports, open an
+[issue](https://github.com/embl-mif/pymif/issues) on GitHub, or contact the current maintainers.
+
+> [!IMPORTANT]
+> If PyMIF contributes to your work, please acknowledge PyMIF and the EMBL Mesoscopic Imaging Facility in your publications.

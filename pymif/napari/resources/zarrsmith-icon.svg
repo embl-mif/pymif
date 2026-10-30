@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="160" height="160">
+  <title>zarrsmith</title>
+  <defs>
+    <linearGradient id="side" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#626B7E"/>
+      <stop offset="0.45" stop-color="#474F5F"/>
+      <stop offset="1" stop-color="#2F3540"/>
+    </linearGradient>
+    <linearGradient id="top" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8A94A6"/>
+      <stop offset="1" stop-color="#C3CAD6"/>
+    </linearGradient>
+    <linearGradient id="horn" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.35"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFB703" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#FFB703" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="reflection" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FF8C1A" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#FF8C1A" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- ground shadow -->
+  <ellipse cx="130" cy="236" rx="96" ry="5" fill="#000" opacity="0.18"/>
+
+  <!-- heat glow behind the chunked array -->
+  <ellipse cx="157" cy="88" rx="92" ry="80" fill="url(#glow)"/>
+
+  <!-- anvil: front side (horn, step, face, heel, waist, feet) -->
+  <path fill="url(#side)"
+        d="M12,160 C34,160 54,159 72,158 L96,158 L96,152 L226,152 L226,172
+           C206,173 188,176 178,184 C168,192 162,198 160,204
+           C172,212 186,218 198,222 L198,234 L156,234
+           C150,224 140,218 130,218 C120,218 110,224 104,234 L62,234 L62,222
+           C74,218 88,212 100,204 C98,196 92,188 82,182 C58,176 32,168 12,160 Z"/>
+  <!-- roundness of the horn -->
+  <path fill="url(#horn)" d="M12,160 C34,160 54,159 72,158 L82,158 L82,182 C58,176 32,168 12,160 Z"/>
+  <!-- shade under the heel overhang and at the waist -->
+  <path fill="#1F232B" opacity="0.35"
+        d="M226,172 C206,173 188,176 178,184 C168,192 162,198 160,204 L150,204 C154,194 162,184 174,178 C188,172 208,170 226,168 Z"/>
+
+  <!-- top surfaces: horn, step, face -->
+  <path fill="url(#top)" d="M72,150 C50,151 28,155 12,160 C30,159 52,158 72,158 Z"/>
+  <rect x="72" y="150" width="24" height="8" fill="url(#top)"/>
+  <rect x="96" y="142" width="130" height="10" fill="url(#top)"/>
+  <!-- warm reflection of the hot metal on the face -->
+  <ellipse cx="157" cy="147" rx="58" ry="4.5" fill="url(#reflection)"/>
+  <!-- polished edges -->
+  <g stroke="#DDE2EA" stroke-width="1.5" stroke-linecap="round" fill="none">
+    <line x1="96" y1="152" x2="226" y2="152"/>
+    <line x1="72" y1="158" x2="96" y2="158"/>
+    <path d="M12,160 C34,160 54,159 72,158"/>
+  </g>
+  <line x1="96" y1="152" x2="96" y2="158" stroke="#2F3540" stroke-width="1.5"/>
+
+  <!-- chunked array: 2x2x2 isometric cube, hot from the forge -->
+  <g transform="translate(14,4)" stroke-linejoin="round">
+    <polygon points="143,80 87.6,48 143,16 198.4,48" fill="#FFD166"/>
+    <polygon points="87.6,48 143,80 143,144 87.6,112" fill="#F77F00"/>
+    <polygon points="143,80 198.4,48 198.4,112 143,144" fill="#D62828"/>
+    <g stroke="#7A1E12" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.55">
+      <line x1="115.3" y1="32" x2="170.7" y2="64"/>
+      <line x1="170.7" y1="32" x2="115.3" y2="64"/>
+      <line x1="115.3" y1="64" x2="115.3" y2="128"/>
+      <line x1="87.6" y1="80" x2="143" y2="112"/>
+      <line x1="170.7" y1="64" x2="170.7" y2="128"/>
+      <line x1="143" y1="112" x2="198.4" y2="80"/>
+    </g>
+    <polygon points="143,16 198.4,48 198.4,112 143,144 87.6,112 87.6,48" fill="none" stroke="#7A1E12" stroke-width="3" opacity="0.7"/>
+  </g>
+
+  <!-- sparks -->
+  <g stroke="#FFB703" stroke-width="5" stroke-linecap="round">
+    <line x1="218" y1="36" x2="232" y2="26"/>
+    <line x1="194" y1="18" x2="202" y2="6"/>
+    <line x1="222" y1="68" x2="238" y2="66"/>
+  </g>
+
+  <!-- smaller chunks next to the array -->
+  <g stroke="#7A1E12" stroke-width="2" stroke-linejoin="round">
+    <g>
+      <polygon points="80,72 62.68,62 80,52 97.32,62" fill="#FFD166"/>
+      <polygon points="62.68,62 80,72 80,92 62.68,82" fill="#F77F00"/>
+      <polygon points="80,72 97.32,62 97.32,82 80,92" fill="#D62828"/>
+    </g>
+    <g>
+      <polygon points="84,116 70.14,108 84,100 97.86,108" fill="#FFD166"/>
+      <polygon points="70.14,108 84,116 84,132 70.14,124" fill="#F77F00"/>
+      <polygon points="84,116 97.86,108 97.86,124 84,132" fill="#D62828"/>
+    </g>
+  </g>
+</svg>
