@@ -7,8 +7,6 @@
 
 ```{include} ../README.md
 :start-after: rewrite HTML paths) and includes this README from here. -->
-:relative-docs: documentation/
-:relative-images:
 ```
 
 ```{toctree}

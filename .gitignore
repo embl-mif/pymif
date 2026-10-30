@@ -13,3 +13,4 @@ documentation/demonstration_open_zarr.gif
 documentation/Thumbs.db
 *build/
 zarrsmith/_version.py
+documentation/autoapi/
