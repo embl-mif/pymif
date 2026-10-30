@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from pymif.mosaic_manager import MosaicManager, Tile, fuse_tiles
+from zarrsmith.mosaic_manager import MosaicManager, Tile, fuse_tiles
 
 
 def _tile(value, origin, shape=(4, 8, 8), channel="A", group=None, vox=(1.0, 1.0, 1.0)):
@@ -160,7 +160,7 @@ def test_mosaic_base_inspection():
 def test_h5_tiles_with_worker_processes(tmp_path):
     import h5py
 
-    from pymif.mosaic_manager import H5Array
+    from zarrsmith.mosaic_manager import H5Array
 
     rng = np.random.default_rng(1)
     tiles = []
@@ -246,7 +246,7 @@ def test_skipped_tiles_are_left_blank(tmp_path):
     summed = _read(fuse_tiles(tiles, tmp_path / "sum.zarr", blend="sum", skip=[tiles[1]], progress=False))
     assert (summed[..., :8] == 10).all() and (summed[..., 8:12] == 0).all() and (summed[..., 12:] == 30).all()
 
-    from pymif.mosaic_manager import plan_fusion
+    from zarrsmith.mosaic_manager import plan_fusion
     assert "1 tile(s) left blank" in plan_fusion(tiles, skip=[tiles[0]]).summary()
     with pytest.raises(ValueError):
         plan_fusion(tiles, skip=tiles)
@@ -274,7 +274,7 @@ def test_tile_ids_and_skip_by_id(tmp_path):
 
 
 def test_display_window_from_fused_values(tmp_path):
-    from pymif.mosaic_manager import display_windows
+    from zarrsmith.mosaic_manager import display_windows
 
     rng = np.random.default_rng(3)
     data = rng.integers(900, 1100, (8, 32, 32)).astype(np.uint16)

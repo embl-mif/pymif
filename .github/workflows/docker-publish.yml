@@ -16,7 +16,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  # Explicit, not github.repository: the images up to 0.5.4 stay at ghcr.io/embl-mif/pymif.
+  IMAGE_NAME: ${{ github.repository_owner }}/zarrsmith
 
 jobs:
   build-and-push-image:
@@ -71,4 +72,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            PYMIF_VERSION=${{ steps.ver.outputs.version }}
+            ZARRSMITH_VERSION=${{ steps.ver.outputs.version }}

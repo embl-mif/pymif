@@ -1,4 +1,4 @@
-"""Console-to-log helpers shared by the PyMIF napari widgets."""
+"""Console-to-log helpers shared by the ZarrSmith napari widgets."""
 from __future__ import annotations
 
 import sys

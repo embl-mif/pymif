@@ -11,7 +11,7 @@ import dask.array as da
 if TYPE_CHECKING:
     import napari
 
-logger = logging.getLogger("pymif")
+logger = logging.getLogger("zarrsmith")
 
 
 class MicroscopeManager(ABC):
@@ -24,7 +24,7 @@ class MicroscopeManager(ABC):
     Subclasses implement two hooks and inherit :meth:`read`:
 
     * :meth:`_parse_metadata` -- return the normalized metadata dictionary
-      (see :func:`pymif.utils.metadata.build_metadata`);
+      (see :func:`zarrsmith.utils.metadata.build_metadata`);
     * :meth:`_build_dask_array` -- return one lazy dask array per pyramid level.
 
     Managers can be used as context managers so that any open file handle is
@@ -41,7 +41,7 @@ class MicroscopeManager(ABC):
         """Initialize the common manager state.
 
         Subclasses populate :attr:`data` with one dask array per pyramid level
-        and :attr:`metadata` with the normalized PyMIF metadata schema.
+        and :attr:`metadata` with the normalized ZarrSmith metadata schema.
         ``_open_files`` stores any file handles that should be closed through
         :meth:`close`.
 
@@ -106,7 +106,7 @@ class MicroscopeManager(ABC):
         path : str
             Output zarr path.
         **kwargs
-            Keyword arguments forwarded to :class:`~pymif.utils.ngff.ZarrWriteConfig`,
+            Keyword arguments forwarded to :class:`~zarrsmith.utils.ngff.ZarrWriteConfig`,
             such as ``ngff_version``, ``zarr_format``, ``compressor``,
             ``compressor_level``, ``overwrite``, ``chunks``, ``shards``,
             ``shard_target_mb``, ``shard_exclude_axes`` or ``drop_singleton``

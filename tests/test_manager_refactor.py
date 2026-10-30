@@ -10,19 +10,19 @@ import numpy as np
 import pytest
 import tifffile
 
-import pymif.microscope_manager as mm
-from pymif.utils.axes import to_tczyx
-from pymif.utils.dataset_ops import (
+import zarrsmith.microscope_manager as mm
+from zarrsmith.utils.axes import to_tczyx
+from zarrsmith.utils.dataset_ops import (
     apply_metadata_updates,
     infer_downscale_factors,
     known_updates,
     reorder_channels,
     subset_levels,
 )
-from pymif.utils.metadata import ChannelInfo, build_metadata, scale_for_level
-from pymif.utils.ngff import parse_channel_color
-from pymif.utils.ome import parse_ome_xml
-from pymif.utils.units import normalize_unit, to_micrometers
+from zarrsmith.utils.metadata import ChannelInfo, build_metadata, scale_for_level
+from zarrsmith.utils.ngff import parse_channel_color
+from zarrsmith.utils.ome import parse_ome_xml
+from zarrsmith.utils.units import normalize_unit, to_micrometers
 
 
 # ---------------------------------------------------------------------------
@@ -344,8 +344,8 @@ def test_scape_accepts_path_and_legacy_keyword(tmp_path):
 # ---------------------------------------------------------------------------
 
 def test_color_helpers_single_source():
-    from pymif.utils import colors, ngff
-    from pymif.utils.visualize import _parse_color
+    from zarrsmith.utils import colors, ngff
+    from zarrsmith.utils.visualize import _parse_color
 
     # historical import locations keep working and point to the same objects
     assert ngff.parse_color is colors.parse_color
@@ -358,7 +358,7 @@ def test_color_helpers_single_source():
 
 
 def test_downsample_nearest_numpy_and_dask_agree():
-    from pymif.utils.downsampling import downsample_nearest
+    from zarrsmith.utils.downsampling import downsample_nearest
 
     arr = np.arange(2 * 5 * 7).reshape(2, 5, 7)
     out_np = downsample_nearest(arr, (2, 2), spatial_axes=(1, 2))
@@ -370,7 +370,7 @@ def test_downsample_nearest_numpy_and_dask_agree():
 
 
 def test_chunk_helpers():
-    from pymif.utils.chunks import get_chunks, rechunk_to_shape, shape_tuple
+    from zarrsmith.utils.chunks import get_chunks, rechunk_to_shape, shape_tuple
 
     assert shape_tuple((1, 2), 2) == (1, 2) and shape_tuple((1, 2), 3) is None
     assert shape_tuple("auto", 2) is None and shape_tuple((0, 2), 2) is None
@@ -471,7 +471,7 @@ def test_plugin_helper_layers_use_dataset_units(image_pyramid, metadata):
     pytest.importorskip("napari")
     from napari.components import ViewerModel
 
-    from pymif.napari._dataset_helpers import axis_size, scale_for_axes, units_kwargs
+    from zarrsmith.napari._dataset_helpers import axis_size, scale_for_axes, units_kwargs
 
     dataset = mm.ArrayManager(image_pyramid, dict(metadata, time_increment_unit="s"))
     viewer = ViewerModel()
@@ -498,7 +498,7 @@ def test_points_layer_has_no_deprecation_warning():
     pytest.importorskip("napari")
     from napari.components import ViewerModel
 
-    from pymif.napari._dataset_helpers import points_projection_kwargs
+    from zarrsmith.napari._dataset_helpers import points_projection_kwargs
 
     from napari.layers import Points
 

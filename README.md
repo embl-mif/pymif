@@ -1,27 +1,31 @@
 <h1>
-  <img src="pymif/napari/resources/zarrsmith-icon.svg" alt="zarrsmith logo" width="120" align="left">
-  PyMIF — microscopy I/O, OME-Zarr forging, and NGFF utilities
+  <img src="https://raw.githubusercontent.com/embl-mif/zarrsmith/main/zarrsmith/napari/resources/zarrsmith-icon.svg" alt="ZarrSmith logo" width="120" align="left">
+  ZarrSmith — microscopy I/O, OME-Zarr forging, and NGFF utilities
   <br clear="left">
 </h1>
-<!-- documentation/index.md repeats this header in Markdown (Sphinx needs a Markdown title and does not
+<!-- The logo has an absolute URL so that it also shows on PyPI.
+documentation/index.md repeats this header in Markdown (Sphinx needs a Markdown title and does not
 rewrite HTML paths) and includes this README from here. -->
 
 ![Python](https://img.shields.io/badge/python-3.12-green)
-[![License](https://img.shields.io/github/license/embl-mif/pymif.svg)](https://github.com/embl-mif/pymif/blob/main/LICENSE)
-[![Tests](https://github.com/embl-mif/pymif/actions/workflows/tests.yml/badge.svg)](https://github.com/embl-mif/pymif/actions/workflows/tests.yml)
-[![codecov](https://codecov.io/gh/embl-mif/pymif/graph/badge.svg)](https://codecov.io/gh/embl-mif/pymif)
-[![Documentation](https://github.com/embl-mif/pymif/actions/workflows/documentation.yml/badge.svg)](https://github.com/embl-mif/pymif/actions/workflows/documentation.yml)
-[![Docker](https://github.com/embl-mif/pymif/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/embl-mif/pymif/actions/workflows/docker-publish.yml)
-[![GitHub release](https://img.shields.io/github/v/release/embl-mif/pymif.svg)](https://github.com/embl-mif/pymif/releases)
-[![GitHub stars](https://img.shields.io/github/stars/embl-mif/pymif.svg?style=social)](https://github.com/embl-mif/pymif/stargazers)
+[![License](https://img.shields.io/github/license/embl-mif/zarrsmith.svg)](https://github.com/embl-mif/zarrsmith/blob/main/LICENSE)
+[![Tests](https://github.com/embl-mif/zarrsmith/actions/workflows/tests.yml/badge.svg)](https://github.com/embl-mif/zarrsmith/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/gh/embl-mif/zarrsmith/graph/badge.svg)](https://codecov.io/gh/embl-mif/zarrsmith)
+[![Documentation](https://github.com/embl-mif/zarrsmith/actions/workflows/documentation.yml/badge.svg)](https://github.com/embl-mif/zarrsmith/actions/workflows/documentation.yml)
+[![Docker](https://github.com/embl-mif/zarrsmith/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/embl-mif/zarrsmith/actions/workflows/docker-publish.yml)
+[![GitHub release](https://img.shields.io/github/v/release/embl-mif/zarrsmith.svg)](https://github.com/embl-mif/zarrsmith/releases)
+[![GitHub stars](https://img.shields.io/github/stars/embl-mif/zarrsmith.svg?style=social)](https://github.com/embl-mif/zarrsmith/stargazers)
 
-**PyMIF** is a Python package for reading microscopy datasets from multiple acquisition systems, building multiscale pyramids, writing **OME-NGFF / OME-Zarr**, and working with those datasets from Python, the command line and napari.
+**ZarrSmith** is a Python package for reading microscopy datasets from multiple acquisition systems, building multiscale pyramids, writing **OME-NGFF / OME-Zarr**, and working with those datasets from Python, the command line and napari.
 
-The rendered documentation is at **[embl-mif.github.io/pymif](https://embl-mif.github.io/pymif/)**.
+The rendered documentation is at **[embl-mif.github.io/zarrsmith](https://embl-mif.github.io/zarrsmith/)**.
+
+> [!NOTE]
+> ZarrSmith was called **PyMIF** up to version 0.5.4. From 0.6.0, import `zarrsmith` and run the `zarrsmith` command instead of `pymif`. The Docker images of PyMIF stay available at `ghcr.io/embl-mif/pymif:<version>`; newer images are at `ghcr.io/embl-mif/zarrsmith`.
 
 ---
 
-## What PyMIF does
+## What ZarrSmith does
 
 - **Microscope managers** read Luxendo, Opera, SCAPE, Viventis, Zeiss, Evident (Olympus VSI) and OME-Zarr datasets into one lazy (Dask) API with a shared metadata schema. → [Readers and conventions](documentation/readers.md)
 - **OME-Zarr writing**: full export, empty datasets and groups, image and label region updates, any subset of the `tczyx` axes. → [Python API](documentation/python-api.md)
@@ -35,10 +39,10 @@ The rendered documentation is at **[embl-mif.github.io/pymif](https://embl-mif.g
 ## Installation
 
 ```console
-conda create -n pymif python=3.12
-conda activate pymif
-git clone https://github.com/embl-mif/pymif.git
-cd pymif
+conda create -n zarrsmith python=3.12
+conda activate zarrsmith
+git clone https://github.com/embl-mif/zarrsmith.git
+cd zarrsmith
 pip install .            # or: pip install -e .[napari] for development with the napari widgets
 ```
 
@@ -47,7 +51,7 @@ Versioning, releases and development installs: [Installation and versioning](doc
 ## Quick start
 
 ```python
-import pymif.microscope_manager as mm
+import zarrsmith.microscope_manager as mm
 
 source = mm.ViventisManager("path/to/Position_1")   # any microscope manager
 source.build_pyramid(num_levels=3)
@@ -58,9 +62,9 @@ z.visualize()                                       # open in napari
 ```
 
 ```console
-pymif convert -i INPUT_PATH -m MICROSCOPE -z OUTPUT_ZARR
-pymif fuse -i ACQUISITION_FOLDER -z OUTPUT_ZARR -rds 4 8 8   # fuse raw tiles
-pymif chromatic-shift -i INPUT_ZARR -z OUTPUT_ZARR -r shift.json   # align channels in Z
+zarrsmith convert -i INPUT_PATH -m MICROSCOPE -z OUTPUT_ZARR
+zarrsmith fuse -i ACQUISITION_FOLDER -z OUTPUT_ZARR -rds 4 8 8   # fuse raw tiles
+zarrsmith chromatic-shift -i INPUT_ZARR -z OUTPUT_ZARR -r shift.json   # align channels in Z
 ```
 
 ## Documentation
@@ -78,27 +82,27 @@ pymif chromatic-shift -i INPUT_ZARR -z OUTPUT_ZARR -r shift.json   # align chann
 |---|---|
 | [Python API](documentation/python-api.md) | export, empty datasets, axis-aware metadata, labels, region writes |
 | [Mosaics](documentation/mosaic.md) | raw tiles, placement check, fusion options |
-| [Chromatic shift correction](documentation/chromatic-shift.md) | measuring the Z offset between channels, the corrected dataset, checking the result, `pymif chromatic-shift` |
+| [Chromatic shift correction](documentation/chromatic-shift.md) | measuring the Z offset between channels, the corrected dataset, checking the result, `zarrsmith chromatic-shift` |
 | [Advanced writing options](documentation/advanced.md) | sharding, singleton axes, parallel writing, progress bar |
 
 **Interfaces**
 
 | Page | Contents |
 |---|---|
-| [Command line](documentation/cli.md) | `pymif convert`, `pymif fuse`, `pymif chromatic-shift` (one dataset or a CSV batch) |
+| [Command line](documentation/cli.md) | `zarrsmith convert`, `zarrsmith fuse`, `zarrsmith chromatic-shift` (one dataset or a CSV batch) |
 | [Napari plugin](documentation/napari-plugin.md) | converter, mosaic fusion and objects explorer widgets |
 
 **Reference**
 
 | Page | Contents |
 |---|---|
-| [API reference](https://embl-mif.github.io/pymif/autoapi/pymif/index.html) | generated from the docstrings |
-| [Contributing](documentation/contributing.md) | package layout, adding a microscope manager or a mosaic manager, `pymif.utils`, documentation |
+| [API reference](https://embl-mif.github.io/zarrsmith/autoapi/zarrsmith/index.html) | generated from the docstrings |
+| [Contributing](documentation/contributing.md) | package layout, adding a microscope manager or a mosaic manager, `zarrsmith.utils`, documentation |
 
 ## Help
 
 For questions or bug reports, open an
-[issue](https://github.com/embl-mif/pymif/issues) on GitHub, or contact the current maintainers.
+[issue](https://github.com/embl-mif/zarrsmith/issues) on GitHub, or contact the current maintainers.
 
 > [!IMPORTANT]
-> If PyMIF contributes to your work, please acknowledge PyMIF and the EMBL Mesoscopic Imaging Facility in your publications.
+> If ZarrSmith contributes to your work, please acknowledge ZarrSmith and the EMBL Mesoscopic Imaging Facility in your publications.

@@ -7,9 +7,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
-import pymif.microscope_manager as mm
-from pymif.cli import pymif as cli
-from pymif.mosaic_manager import fusion
+import zarrsmith.microscope_manager as mm
+from zarrsmith.cli import zarrsmith as cli
+from zarrsmith.mosaic_manager import fusion
 
 from .test_luxendo_mosaic import _write_tile
 
@@ -35,7 +35,7 @@ def small_regions(monkeypatch):
 
 
 def _run(monkeypatch, *argv):
-    monkeypatch.setattr(sys, "argv", ["pymif", *argv])
+    monkeypatch.setattr(sys, "argv", ["zarrsmith", *argv])
     cli.main()
 
 
@@ -139,18 +139,18 @@ def test_old_command_names_still_work(acquisition, tmp_path, monkeypatch, capsys
     out = tmp_path / "old.ome.zarr"
     _run(monkeypatch, "mosaic2zarr", "-i", str(acquisition), "-z", str(out), "--read_downsample",
          "2", "-p", "max", "-ow", "true")
-    assert "is now `pymif fuse`" in capsys.readouterr().err
+    assert "is now `zarrsmith fuse`" in capsys.readouterr().err
     csv = tmp_path / "old.csv"
     pd.DataFrame([{"input": str(acquisition), "microscope": "luxendo", "output": str(out),
                    "read_downsample": "2", "projection": "max", "overwrite": "true"}]).to_csv(csv, index=False)
     for old in ("batch-mosaic2zarr", "batchmosaic2zarr"):
         _run(monkeypatch, old, "-i", str(csv))
-        assert "is now `pymif fuse --batch`" in capsys.readouterr().err
+        assert "is now `zarrsmith fuse --batch`" in capsys.readouterr().err
 
     src = tmp_path / "src.zarr"
     mm.ZarrManager(str(out)).to_zarr(str(src))
     _run(monkeypatch, "2zarr", "-i", str(src), "-z", str(tmp_path / "conv.zarr"), "-sh", "none")
-    assert "is now `pymif convert`" in capsys.readouterr().err
+    assert "is now `zarrsmith convert`" in capsys.readouterr().err
     _run(monkeypatch, "convert", "-i", str(src), "-z", str(tmp_path / "conv2.zarr"), "-sh", "none")
     assert "is now" not in capsys.readouterr().err
 
@@ -197,7 +197,7 @@ def two_fields(tmp_path):
 
 
 def test_fuse_one_field(two_fields, tmp_path, monkeypatch, capsys):
-    from pymif.mosaic_manager import LuxendoMosaicManager
+    from zarrsmith.mosaic_manager import LuxendoMosaicManager
 
     mosaic = LuxendoMosaicManager(two_fields, progress=False)
     assert mosaic.fields == ["field0", "field1"]

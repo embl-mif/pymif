@@ -50,9 +50,9 @@ from qtpy.QtWidgets import (
 from scipy.spatial import cKDTree
 from skimage.segmentation import find_boundaries
 
-import pymif.microscope_manager as mm
-from pymif.microscope_manager.zarr_manager import ZarrDataset
-from pymif.utils.visualize import add_layers, channel_names, layer_geometry
+import zarrsmith.microscope_manager as mm
+from zarrsmith.microscope_manager.zarr_manager import ZarrDataset
+from zarrsmith.utils.visualize import add_layers, channel_names, layer_geometry
 from ._dataset_helpers import dataset_axes
 from ._layout import compose_dock, enable_drag_and_drop, make_button_holder, make_section, make_title
 
@@ -84,7 +84,7 @@ IMAGE_INDEX = "image_index"
 #: Name of the labels layer for a table from several images.
 LABELS_LAYER = "labels"
 #: Key of the labels layer metadata with the label of every row of its features (0 first).
-LABEL_IDS_KEY = "pymif_label_ids"
+LABEL_IDS_KEY = "zarrsmith_label_ids"
 
 #: Size of one thumbnail view on the screen (pixels).
 THUMBNAIL_PX = 170
@@ -118,11 +118,11 @@ def _patch_plotter():
       every row is given in the layer metadata instead (rows of an image that isn't shown get ids
       that aren't in the label image).
     * biaplotter makes the points smaller the more there are (8000 / n): with tens of thousands of
-      objects they can't be seen any more. A scatter plot with ``pymif_min_size`` keeps that size.
+      objects they can't be seen any more. A scatter plot with ``zarrsmith_min_size`` keeps that size.
     * No warning that the labels missing from the colours are transparent (wanted: they aren't in
       the table), nor that a categorical colour (an image, a cluster) uses a categorical colormap.
     """
-    if getattr(ncp_utilities, "_pymif_patched", False):
+    if getattr(ncp_utilities, "_zarrsmith_patched", False):
         return
     unique_values = ncp_utilities._get_unique_values
     default_size = Scatter.default_size.fget
@@ -145,10 +145,10 @@ def _patch_plotter():
             overlay_colormap.fset(self, value)
 
     ncp_utilities._get_unique_values = labels_of_features
-    Scatter.default_size = property(lambda self: max(getattr(self, "pymif_min_size", 0), default_size(self)))
+    Scatter.default_size = property(lambda self: max(getattr(self, "zarrsmith_min_size", 0), default_size(self)))
     PlotterWidget._set_layer_color = set_layer_color_quietly
     Artist.overlay_colormap = overlay_colormap.setter(set_overlay_colormap_quietly)
-    ncp_utilities._pymif_patched = True
+    ncp_utilities._zarrsmith_patched = True
 
 
 # ---------------------------------------------------------------------------
@@ -1092,7 +1092,7 @@ class ObjectsExplorer(QWidget):
     # ----------------------------------------------------------------- plot <-> viewer
     def _connect_plotter(self):
         canvas = self.plotter.plotting_widget
-        canvas.artists["SCATTER"].pymif_min_size = MIN_POINT_SIZE
+        canvas.artists["SCATTER"].zarrsmith_min_size = MIN_POINT_SIZE
         # click on a point: our jump (the plotter's own takes the row number as label and reads the whole image)
         canvas.artists["SCATTER"].highlighted_changed_signal.disconnect(self.plotter._on_highlighted_changed)
         for artist in canvas.artists.values():

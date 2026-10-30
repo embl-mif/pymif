@@ -10,8 +10,8 @@ from napari.qt.threading import thread_worker
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QToolButton
 
-from pymif.microscope_manager.readers import READERS
-from pymif.utils.chunks import default_chunk_size, default_num_levels
+from zarrsmith.microscope_manager.readers import READERS
+from zarrsmith.utils.chunks import default_chunk_size, default_num_levels
 from ._batch_csv import append_batch_csv
 from ._layout import compose_dock, enable_drag_and_drop, make_button_holder, make_log_pane, make_title
 from ._layout import make_section as _make_section
@@ -69,7 +69,7 @@ from ._log import EmittingStream, make_log_appender  # noqa: F401  (re-exported)
 
 
 def dataset_reader(microscope):
-    """Return the PyMIF manager class matching the selected microscope key."""
+    """Return the ZarrSmith manager class matching the selected microscope key."""
     if microscope not in READERS:
         raise ValueError(f"Unsupported microscope: {microscope}")
     return READERS[microscope]
@@ -359,7 +359,7 @@ def convert_worker(**kwargs):
 
 
 def convert_widget():
-    """Create the main PyMIF napari conversion widget."""
+    """Create the main ZarrSmith napari conversion widget."""
     viewer = current_viewer()
     
     def lock_roi_in_3d(event=None):
@@ -880,7 +880,7 @@ def convert_widget():
             "num_workers": "" if int(make_convert_widget.num_workers.value) <= 0 else str(int(make_convert_widget.num_workers.value)),
         }
         csv_path = _append_batch_csv(csv_path, row)
-        print(f"Appended batch row to {csv_path}. Run it with:\n  pymif convert --batch \"{csv_path}\"")
+        print(f"Appended batch row to {csv_path}. Run it with:\n  zarrsmith convert --batch \"{csv_path}\"")
 
     make_batch_csv_widget.batch_csv_path.value = str((Path(make_visualize_widget.input_path.value).parent if make_visualize_widget.input_path.value else Path.cwd()) / "batch.csv")
     make_batch_csv_widget.enabled = False

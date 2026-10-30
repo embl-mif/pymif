@@ -5,7 +5,7 @@ import dask.array as da
 import pytest
 import zarr
 
-import pymif.microscope_manager as mm
+import zarrsmith.microscope_manager as mm
 
 
 def _yx_metadata(dtype="uint16", data_type="intensity"):
@@ -152,7 +152,7 @@ def test_axis_aware_subset_without_time_or_channel(tmp_path):
 
 
 def test_region_write_pyramid_odd_spatial_size_uses_ceil_downsampling():
-    from pymif.utils.write_image_region import _generate_pyramid
+    from zarrsmith.utils.write_image_region import _generate_pyramid
 
     labels = np.zeros((2, 13, 128, 128), dtype=np.uint16)
     pyramid = _generate_pyramid(

@@ -5,7 +5,7 @@ import json
 import h5py
 import numpy as np
 
-from pymif.mosaic_manager import LuxendoMosaicManager
+from zarrsmith.mosaic_manager import LuxendoMosaicManager
 
 
 def _write_tile(folder, name, desc, stack, tx, ty, tz, shape=(4, 8, 6), value=1, time_point=None):
@@ -55,14 +55,14 @@ def test_luxendo_scan(tmp_path):
 
     zm = m.fuse(tmp_path / "f.zarr", blend="midline", chunks=(1, 4, 8, 8), progress=False, drop_singleton=False)
     assert zm.metadata["channel_names"] == ["GFP"]
-    # as for pymif convert, a single channel axis is dropped by default
+    # as for zarrsmith convert, a single channel axis is dropped by default
     assert m.fuse(tmp_path / "g.zarr", progress=False).metadata["axes"] == "zyx"
 
 
 def test_timelapse_is_refused(tmp_path):
     import pytest
 
-    from pymif.mosaic_manager import MosaicManager, Tile
+    from zarrsmith.mosaic_manager import MosaicManager, Tile
 
     # (a) numbered acquisitions of the same stack in one folder
     a = tmp_path / "a" / "raw" / "stack_1-x00-y00_GFP-L"
@@ -105,7 +105,7 @@ def test_timelapse_is_refused(tmp_path):
 def test_opera_reader_refuses_luxendo_data(tmp_path):
     import pytest
 
-    from pymif.mosaic_manager import OperaMosaicManager, WrongReaderError, detect_microscope
+    from zarrsmith.mosaic_manager import OperaMosaicManager, WrongReaderError, detect_microscope
 
     _write_tile(tmp_path / "raw" / "stack_1-x00-y00_ch_GFP-L", "Cam_bottom_00000", "GFP-L", "1-x00-y00", 0.0, 0.0, 30.0)
     assert detect_microscope(tmp_path) == "luxendo"

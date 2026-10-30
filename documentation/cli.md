@@ -1,22 +1,22 @@
 # Command line
 
-The `pymif` command has three subcommands:
+The `zarrsmith` command has three subcommands:
 
 | Command | Does |
 |---|---|
-| `pymif convert` | convert a dataset to OME-Zarr, or every dataset listed in a CSV file with `--batch` |
-| `pymif fuse` | fuse the raw tiles of a mosaic into one OME-Zarr image, or every mosaic listed in a CSV file with `--batch` |
-| `pymif chromatic-shift` | measure and correct the Z chromatic shift between the channels of an OME-Zarr image, or of every image listed in a CSV file with `--batch` |
+| `zarrsmith convert` | convert a dataset to OME-Zarr, or every dataset listed in a CSV file with `--batch` |
+| `zarrsmith fuse` | fuse the raw tiles of a mosaic into one OME-Zarr image, or every mosaic listed in a CSV file with `--batch` |
+| `zarrsmith chromatic-shift` | measure and correct the Z chromatic shift between the channels of an OME-Zarr image, or of every image listed in a CSV file with `--batch` |
 
-`pymif -h` lists them, and `pymif convert -h`, `pymif fuse -h` and `pymif chromatic-shift -h` show every option, examples and the batch CSV columns. `pymif --version` prints the installed version.
+`zarrsmith -h` lists them, and `zarrsmith convert -h`, `zarrsmith fuse -h` and `zarrsmith chromatic-shift -h` show every option, examples and the batch CSV columns. `zarrsmith --version` prints the installed version.
 
 Each command runs either one dataset (`-i INPUT -z OUTPUT`) or a CSV file (`--batch FILE.csv`), never both (`chromatic-shift` can also run with `-i` alone, to only measure). In a batch file, one row is one run and the columns take the place of the options.
 
 ## Convert a dataset
 
 ```console
-pymif convert -i INPUT_PATH -m MICROSCOPE -z OUTPUT_ZARR
-pymif convert --batch datasets.csv
+zarrsmith convert -i INPUT_PATH -m MICROSCOPE -z OUTPUT_ZARR
+zarrsmith convert --batch datasets.csv
 ```
 
 `-m` is one of `luxendo`, `opera`, `viventis`, `zeiss`, `evident`, `zarr`, `zarrv04`, `scape`; leave it out to detect it from the input path. The output options:
@@ -42,16 +42,16 @@ The batch CSV has the columns `input`, `microscope`, `output`, plus any of `chun
 
 ```console
 # 3D, downsampled 4 (z) x 8 (y) x 8 (x), smooth (sigmoid) transitions between tiles and illumination sides
-pymif fuse -i /path/to/2026-10-14_103957 -z acq_3D.ome.zarr -rds 4 8 8 -nl 3
+zarrsmith fuse -i /path/to/2026-10-14_103957 -z acq_3D.ome.zarr -rds 4 8 8 -nl 3
 
 # 2D maximum projection, downsampled 8 x 8 in y/x, sharp cut between illumination sides
-pymif fuse -i /path/to/2026-10-14_103957 -z acq_MIP.ome.zarr -rds 1 8 8 -p max -b midline
+zarrsmith fuse -i /path/to/2026-10-14_103957 -z acq_MIP.ome.zarr -rds 1 8 8 -p max -b midline
 
 # where are the tiles? (overlaps are brighter)
-pymif fuse -i /path/to/2026-10-14_103957 -z acq_tiles.ome.zarr -rds 1 8 8 -p max -b sum
+zarrsmith fuse -i /path/to/2026-10-14_103957 -z acq_tiles.ome.zarr -rds 1 8 8 -p max -b sum
 
 # many mosaics from a CSV file
-pymif fuse --batch mosaics.csv
+zarrsmith fuse --batch mosaics.csv
 ```
 
 The fusion options:
@@ -90,17 +90,17 @@ input,microscope,output,downsample,projection,blend,num_levels,shards
 
 ```console
 # measure, save the report and write the corrected image
-pymif chromatic-shift -i brain.ome.zarr -z brain_csc.ome.zarr -r shift.json
+zarrsmith chromatic-shift -i brain.ome.zarr -z brain_csc.ome.zarr -r shift.json
 
 # only measure
-pymif chromatic-shift -i brain.ome.zarr -r shift.json
+zarrsmith chromatic-shift -i brain.ome.zarr -r shift.json
 
 # apply known shifts (one per channel), or the shifts of an earlier report
-pymif chromatic-shift -i brain.ome.zarr -z brain_csc.ome.zarr -sf 0 104.4
-pymif chromatic-shift -i other.ome.zarr -z other_csc.ome.zarr -sf shift.json
+zarrsmith chromatic-shift -i brain.ome.zarr -z brain_csc.ome.zarr -sf 0 104.4
+zarrsmith chromatic-shift -i other.ome.zarr -z other_csc.ome.zarr -sf shift.json
 
 # many images from a CSV file
-pymif chromatic-shift --batch images.csv
+zarrsmith chromatic-shift --batch images.csv
 ```
 
 | Flag | Meaning |
@@ -135,9 +135,9 @@ The commands used to have other names. They still work, with their original opti
 
 | Old | New |
 |---|---|
-| `pymif 2zarr` | `pymif convert` |
-| `pymif batch2zarr -i FILE.csv` | `pymif convert --batch FILE.csv` |
-| `pymif mosaic2zarr` (`-ow true`) | `pymif fuse` (`--overwrite`) |
-| `pymif batch-mosaic2zarr -i FILE.csv` | `pymif fuse --batch FILE.csv` |
+| `zarrsmith 2zarr` | `zarrsmith convert` |
+| `zarrsmith batch2zarr -i FILE.csv` | `zarrsmith convert --batch FILE.csv` |
+| `zarrsmith mosaic2zarr` (`-ow true`) | `zarrsmith fuse` (`--overwrite`) |
+| `zarrsmith batch-mosaic2zarr -i FILE.csv` | `zarrsmith fuse --batch FILE.csv` |
 
 Batch CSV files written before the rename (with a `read_downsample` column) still run.

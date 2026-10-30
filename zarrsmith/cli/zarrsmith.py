@@ -7,10 +7,10 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 import pandas as pd
 
-import pymif.microscope_manager as mm
-from pymif.utils.axes import metadata_axes, metadata_axis_size
-from pymif.utils.chunks import default_chunk_size, default_num_levels
-from pymif.cli.__arguments import (
+import zarrsmith.microscope_manager as mm
+from zarrsmith.utils.axes import metadata_axes, metadata_axis_size
+from zarrsmith.utils.chunks import default_chunk_size, default_num_levels
+from zarrsmith.cli.__arguments import (
     _parse_arguments,
     parse_bool,
     parse_color,
@@ -187,11 +187,11 @@ def zarr_convert(
             Default: "auto"
         shard_target_mb : Optional[float]
             Target uncompressed shard size in MB, used when shards="auto".\n
-            Default: 1024 (pymif's own default; unset here means "let pymif choose")
+            Default: 1024 (zarrsmith's own default; unset here means "let zarrsmith choose")
         shard_exclude_axes : Optional[List[str]]
             Axes that shards="auto" never merges chunks along.\n
             Example: \"-sea t c\" (default) or \"-sea none\" to allow every axis to merge.\n
-            Default: None (falls back to pymif's own default of t, c)
+            Default: None (falls back to zarrsmith's own default of t, c)
         drop_singleton : Optional[bool]
             Remove singleton t/c/z axes from the output dataset.\n
             Example: \"-ds false\" to keep them.\n
@@ -326,11 +326,11 @@ def zarr_convert(
     print(f"PYRAMID LEVELS: {num_levels}.")
     print(f"ZARR FORMAT: {zarr_format}, NGFF VERSION: {ngff_version}.")
     print(f"DROP_SINGLETON: {drop_singleton}.")
-    print(f"NUM_WORKERS: {num_workers if num_workers is not None else '(pymif default)'}.")
+    print(f"NUM_WORKERS: {num_workers if num_workers is not None else '(zarrsmith default)'}.")
     print(f"SHARDS: {shards}.")
     if shards is not None:
-        print(f"SHARD_TARGET_MB: {to_zarr_kwargs.get('shard_target_mb', '(pymif default: 1024)')}.")
-        print(f"SHARD_EXCLUDE_AXES: {shard_exclude_axes if shard_exclude_axes is not None else '(pymif default: t, c)'}.")
+        print(f"SHARD_TARGET_MB: {to_zarr_kwargs.get('shard_target_mb', '(zarrsmith default: 1024)')}.")
+        print(f"SHARD_EXCLUDE_AXES: {shard_exclude_axes if shard_exclude_axes is not None else '(zarrsmith default: t, c)'}.")
 
     # --- Write to OME-Zarr format ---
     print("\n--->Writing to zarr")
@@ -394,7 +394,7 @@ def convert_batch(args):
         args (args): parsed arguments
     """
     csv_path = getattr(args, "input_file", args)  # parsed arguments or a path
-    print(f"Converting batch.\nRunning through: pymif convert --batch {csv_path}")
+    print(f"Converting batch.\nRunning through: zarrsmith convert --batch {csv_path}")
 
     database = pd.read_csv(csv_path)
     print(database)
@@ -422,7 +422,7 @@ def convert_single(args):
         args (args): parsed arguments
     """
     cli = (
-        f'pymif convert --input_path {args.input_path} --zarr_path {args.zarr_path} '
+        f'zarrsmith convert --input_path {args.input_path} --zarr_path {args.zarr_path} '
         f'--microscope {args.microscope} --max_size {args.max_size} '
         f'--scene_index {args.scene_index} --channel_names {args.channel_names} '
         f'--channel_colors {args.channel_colors} --zarr_format {args.zarr_format} '
@@ -451,7 +451,7 @@ def convert_single(args):
 # ---------------------------------------------------------------------------
 
 def _mosaic_manager_name_map() -> Dict[str, Any]:
-    from pymif.mosaic_manager import MOSAIC_READERS
+    from zarrsmith.mosaic_manager import MOSAIC_READERS
 
     return dict(MOSAIC_READERS)
 
@@ -460,8 +460,8 @@ def _resolve_mosaic_manager(input_path: str, microscope: Optional[str] = None):
     """Mosaic reader class from an explicit microscope name or by inspecting the folder.
 
     An explicit microscope that does not match a recognised folder is refused when
-    the reader is created (:class:`~pymif.mosaic_manager.WrongReaderError`)."""
-    from pymif.mosaic_manager import detect_microscope
+    the reader is created (:class:`~zarrsmith.mosaic_manager.WrongReaderError`)."""
+    from zarrsmith.mosaic_manager import detect_microscope
 
     readers = _mosaic_manager_name_map()
     if _present(microscope):
@@ -554,7 +554,7 @@ def mosaic_convert(
     overwrite: bool = False,
     flatfield: bool = True,
 ):
-    """Fuse a mosaic into an OME-Zarr image (CLI helper for ``pymif fuse``).
+    """Fuse a mosaic into an OME-Zarr image (CLI helper for ``zarrsmith fuse``).
 
     The ``convert`` options (``max_size`` ... ``num_workers``) have the same meaning as in
     :func:`zarr_convert`, applied to the fused output; ``subset`` crops it (z/y/x in
@@ -564,12 +564,12 @@ def mosaic_convert(
     without ``tiles`` and ``fields`` the first field is fused. Tiles from several fields
     are not fused: an error is printed and ``False`` returned (``True`` once the output
     is saved). The other options are those of
-    :func:`pymif.mosaic_manager.fuse_tiles`: ``read_downsample`` is its ``ds`` and
+    :func:`zarrsmith.mosaic_manager.fuse_tiles`: ``read_downsample`` is its ``ds`` and
     ``read_workers`` its ``workers``. ``flatfield`` is passed to readers that correct
     the tiles (Opera); the others ignore it.
     """
-    from pymif.mosaic_manager import fuse_tiles, plan_fusion, reader_options
-    from pymif.mosaic_manager.fusion import SIGMOID_STEEPNESS
+    from zarrsmith.mosaic_manager import fuse_tiles, plan_fusion, reader_options
+    from zarrsmith.mosaic_manager.fusion import SIGMOID_STEEPNESS
 
     reader, resolved = _resolve_mosaic_manager(input_path, microscope)
     print(f"\n--->Using mosaic manager: {reader.__name__} ({resolved})")
@@ -893,10 +893,10 @@ def chromatic_shift_batch(args):
 
 
 def main(argv=None):
-    """Entry point of the ``pymif`` command: ``convert``, ``fuse`` or ``chromatic-shift``."""
+    """Entry point of the ``zarrsmith`` command: ``convert``, ``fuse`` or ``chromatic-shift``."""
     args = _parse_arguments(argv)
     if args.renamed_to:
-        print(f"Note: `pymif {args.command}` is now `{args.renamed_to}`; the old name still works for now.",
+        print(f"Note: `zarrsmith {args.command}` is now `{args.renamed_to}`; the old name still works for now.",
               file=sys.stderr)
     runners = {
         "convert": convert_single,

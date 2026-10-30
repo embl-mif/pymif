@@ -9,7 +9,7 @@ from .mosaic import MosaicManager
 from .opera_mosaic_manager import INDEX_NAMES, OperaMosaicManager
 from .zeiss_mosaic_manager import ZeissMosaicManager
 
-#: Mosaic readers by microscope name (``pymif fuse --microscope``, napari widget).
+#: Mosaic readers by microscope name (``zarrsmith fuse --microscope``, napari widget).
 MOSAIC_READERS: Dict[str, Type[MosaicManager]] = {
     "luxendo": LuxendoMosaicManager,
     "opera": OperaMosaicManager,

@@ -13,9 +13,9 @@ pytest.importorskip("napari")
 from napari.components import ViewerModel
 from qtpy.QtWidgets import QApplication, QLabel, QPushButton, QScrollArea, QSplitter, QTextEdit, QToolButton, QWidget
 
-import pymif.napari._convert_widget as convert_module
-import pymif.napari._export_widget as export_module
-from pymif.napari._layout import LOGO_PATH, MIN_LOG_HEIGHT, compose_dock
+import zarrsmith.napari._convert_widget as convert_module
+import zarrsmith.napari._export_widget as export_module
+from zarrsmith.napari._layout import LOGO_PATH, MIN_LOG_HEIGHT, compose_dock
 
 
 @pytest.fixture(scope="module")
@@ -47,7 +47,7 @@ def section_of(widget):
     """The bordered section frame that contains ``widget``."""
     parent = widget.parentWidget()
     while parent is not None:
-        if parent.objectName() == "pymifSection":
+        if parent.objectName() == "zarrsmithSection":
             return parent
         parent = parent.parentWidget()
     return None
@@ -188,7 +188,7 @@ def test_button_still_runs_the_conversion_and_locks_while_running(converter, app
 
 def _dataset(shape=(3, 2, 10, 20, 30), axes="tczyx"):
     import numpy as np
-    from pymif.microscope_manager import ArrayManager
+    from zarrsmith.microscope_manager import ArrayManager
 
     return ArrayManager(
         np.zeros(shape, dtype="uint16"),
@@ -255,5 +255,5 @@ def test_compose_dock_without_bottom_pane(app):
 def test_compose_dock_shows_logo(app):
     assert LOGO_PATH.is_file()
     dock = compose_dock(QWidget())
-    logo = dock.findChild(QLabel, "pymifLogo")
+    logo = dock.findChild(QLabel, "zarrsmithLogo")
     assert logo is not None and not logo.pixmap().isNull()

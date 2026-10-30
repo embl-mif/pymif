@@ -130,7 +130,7 @@ def to_zarr(
     data_levels : sequence of dask.array.Array
         Pyramid levels ordered from finest to coarsest resolution.
     metadata : dict
-        Normalized PyMIF metadata dictionary describing axes, scales, channel
+        Normalized ZarrSmith metadata dictionary describing axes, scales, channel
         metadata and units.
     config : ZarrWriteConfig | None
         Output configuration controlling NGFF version, zarr format, overwrite
@@ -194,7 +194,7 @@ def write_multiscale_to_group(
 ):
     """Write a pyramid of Dask arrays into an existing zarr group.
 
-    Used by :class:`pymif.microscope_manager.ZarrManager` for raw data, image
+    Used by :class:`zarrsmith.microscope_manager.ZarrManager` for raw data, image
     subgroups and label groups.  The axes may be any subset of ``tczyx``.
     """
     cfg = config or ZarrWriteConfig()

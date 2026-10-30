@@ -1,8 +1,8 @@
 """Dataset helpers shared by the napari widgets (no Qt dependency, so unit-testable)."""
 from __future__ import annotations
 
-from pymif.utils.axes import metadata_axes, metadata_axis_size
-from pymif.utils.visualize import units_for_axes
+from zarrsmith.utils.axes import metadata_axes, metadata_axis_size
+from zarrsmith.utils.visualize import units_for_axes
 
 
 def dataset_axes(dataset) -> str:

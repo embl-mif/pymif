@@ -16,7 +16,7 @@ from .mosaic import MosaicManager
 from .tiff_array import TiffStackArray
 from .tile import Tile
 
-logger = logging.getLogger("pymif")
+logger = logging.getLogger("zarrsmith")
 
 #: Names of the image index written by Harmony exports, in order of preference.
 INDEX_NAMES = ("Index.xml", "Index.idx.xml")
@@ -302,7 +302,7 @@ def _orientation(settings) -> Optional[List[List[float]]]:
 class OperaMosaicManager(MosaicManager):
     """Raw Opera Phenix / Operetta (Revvity Harmony) tiles, before any stitching.
 
-    Not to be confused with :class:`~pymif.microscope_manager.OperaManager`, which
+    Not to be confused with :class:`~zarrsmith.microscope_manager.OperaManager`, which
     reads images stitched by Harmony (``stitchresult/*.ome.tiff``). This manager reads
     a Harmony export: ``Images/Index.xml`` and one TIFF file per plane
     (``r01c03f01p01-ch1sk1fk1fl1.tiff``: row 1, column 3, Opera field 1, plane 1, channel 1).

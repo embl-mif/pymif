@@ -15,7 +15,7 @@ from .tile import Tile
 if TYPE_CHECKING:
     import napari
 
-logger = logging.getLogger("pymif")
+logger = logging.getLogger("zarrsmith")
 
 _COLORMAPS = ("green", "magenta", "cyan", "yellow", "red", "blue")
 
@@ -58,7 +58,7 @@ def _central_tiles(tiles: Sequence[Tile], n: int) -> List[Tile]:
 
 def reader_options(reader, **options) -> Dict[str, Any]:
     """The ``options`` that the mosaic ``reader`` class accepts, e.g. ``flatfield``,
-    which only :class:`~pymif.mosaic_manager.OperaMosaicManager` takes."""
+    which only :class:`~zarrsmith.mosaic_manager.OperaMosaicManager` takes."""
     import inspect
 
     accepted = inspect.signature(reader.__init__).parameters
@@ -99,7 +99,7 @@ def _prefetch_planes(viewer, shown, workers: int = 8) -> None:
 class MosaicManager(ABC):
     """A set of separately acquired, positioned tiles (not yet one image).
 
-    Unlike a :class:`~pymif.microscope_manager.MicroscopeManager`, which wraps one
+    Unlike a :class:`~zarrsmith.microscope_manager.MicroscopeManager`, which wraps one
     image, a mosaic exposes the raw tiles lazily and fuses them on request with
     :meth:`fuse`. Subclasses implement :meth:`_scan` only.
 
@@ -113,7 +113,7 @@ class MosaicManager(ABC):
     ``field0``, ``field1``, ... by position (see :attr:`fields`). :meth:`fuse`
     fuses the first field by default; pick another with
     ``mosaic.fuse(out, field="field1")``. Tiles of several fields are never fused
-    together: that raises a :class:`~pymif.mosaic_manager.fields.MultipleFieldsError`.
+    together: that raises a :class:`~zarrsmith.mosaic_manager.fields.MultipleFieldsError`.
     """
 
     def __init__(self, path: str | Path):
@@ -229,7 +229,7 @@ class MosaicManager(ABC):
         return tuple(float(v) for v in lo), tuple(float(v) for v in hi)
 
     def tile(self, i: int):
-        """Tile ``i`` as an :class:`~pymif.microscope_manager.ArrayManager` (axes ``zyx``)."""
+        """Tile ``i`` as an :class:`~zarrsmith.microscope_manager.ArrayManager` (axes ``zyx``)."""
         from ..microscope_manager.array_manager import ArrayManager
 
         t = self.tiles[i]
@@ -374,7 +374,7 @@ class MosaicManager(ABC):
         ``field`` is one field name or a list of them (see :meth:`field_tiles`).
         Without ``tiles`` and ``field``, the tiles of the first field. The tiles keep
         the mosaic order. Tiles of several fields are returned as asked, but
-        :func:`~pymif.mosaic_manager.fuse_tiles` refuses them.
+        :func:`~zarrsmith.mosaic_manager.fuse_tiles` refuses them.
         """
         if tiles is None and field is None and self.fields:
             field = self.fields[0]
@@ -398,7 +398,7 @@ class MosaicManager(ABC):
         skip: Optional[Sequence["Tile | str"]] = None,
         **kwargs,
     ):
-        """Fuse tiles into an OME-Zarr image; see :func:`~pymif.mosaic_manager.fuse_tiles`.
+        """Fuse tiles into an OME-Zarr image; see :func:`~zarrsmith.mosaic_manager.fuse_tiles`.
 
         Parameters
         ----------
@@ -417,7 +417,7 @@ class MosaicManager(ABC):
             output keeps the size and position it has with them.
 
         Tiles of more than one field are not fused: a
-        :class:`~pymif.mosaic_manager.fields.MultipleFieldsError` is raised.
+        :class:`~zarrsmith.mosaic_manager.fields.MultipleFieldsError` is raised.
         """
         from .fusion import fuse_tiles
 

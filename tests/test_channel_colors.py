@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import pytest
 
-import pymif.microscope_manager as mm
-from pymif.utils.ngff import ome_color_to_hex, parse_color
+import zarrsmith.microscope_manager as mm
+from zarrsmith.utils.ngff import ome_color_to_hex, parse_color
 
 
 @pytest.mark.parametrize(

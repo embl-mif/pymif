@@ -40,7 +40,7 @@ def units_for_axes(metadata: Dict[str, Any], requested: "Iterable[str]"):
 
     Layers added without units default to ``pixel``. napari then disables units
     for rendering ("Inconsistent units across layers") as soon as it also holds
-    layers with physical units. Every layer that PyMIF adds, image or helper
+    layers with physical units. Every layer that ZarrSmith adds, image or helper
     (ROI, Z range...), therefore takes its units from here so they all agree
     with each other and with a converted zarr opened by ``napari-ome-zarr``.
 
@@ -99,7 +99,7 @@ def visualize(
         import napari
     except ImportError:
         warnings.warn(
-            "napari is not installed. Install with `pip install pymif[napari]` "
+            "napari is not installed. Install with `pip install zarrsmith[napari]` "
             "to use visualization.",
             stacklevel=2,
         )

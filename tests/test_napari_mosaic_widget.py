@@ -12,8 +12,8 @@ pytest.importorskip("napari")
 
 from qtpy.QtWidgets import QApplication
 
-from pymif.mosaic_manager import MosaicManager, Tile
-from pymif.napari import _mosaic_widget as mw
+from zarrsmith.mosaic_manager import MosaicManager, Tile
+from zarrsmith.napari import _mosaic_widget as mw
 
 
 class FakeMosaic(MosaicManager):
@@ -92,7 +92,7 @@ def test_visualize_places_tiles_with_shared_contrast():
 
 
 def test_contrast_limits_sample_tile_centres():
-    from pymif.mosaic_manager.mosaic import _centre_block
+    from zarrsmith.mosaic_manager.mosaic import _centre_block
 
     assert _centre_block((2079, 1024, 1024), 64) == (slice(1024, 1088), slice(512, 576), slice(512, 576))
     assert _centre_block((8, 16, 16), 64) == (slice(0, 8), slice(0, 16), slice(0, 16))
@@ -149,7 +149,7 @@ def test_drag_and_drop_on_folder_fields(app, tmp_path):
 
 
 def test_contrast_uses_central_tiles_of_each_group():
-    from pymif.mosaic_manager.mosaic import _central_tiles
+    from zarrsmith.mosaic_manager.mosaic import _central_tiles
 
     tiles = [
         Tile(np.zeros((2, 4, 4), np.uint16), (0, 4 * iy, 4 * ix + (100 if g == "R" else 0)), (1.0, 1.0, 1.0), "A", g)
@@ -188,9 +188,9 @@ def test_batch_csv_export_runs_with_the_cli(app, tmp_path, monkeypatch):
 
     import pandas as pd
 
-    import pymif.microscope_manager as mm
-    from pymif.cli import pymif as cli
-    from pymif.mosaic_manager import LuxendoMosaicManager
+    import zarrsmith.microscope_manager as mm
+    from zarrsmith.cli import zarrsmith as cli
+    from zarrsmith.mosaic_manager import LuxendoMosaicManager
 
     from .test_luxendo_mosaic import _write_tile
 
@@ -220,7 +220,7 @@ def test_batch_csv_export_runs_with_the_cli(app, tmp_path, monkeypatch):
     assert row["downsample"] == "1 2 2" and row["blend"] == "sigmoid" and row["groups"] == ""
 
     pd.read_csv(csv).iloc[:1].to_csv(csv, index=False)
-    monkeypatch.setattr(sys, "argv", ["pymif", "fuse", "--batch", str(csv)])
+    monkeypatch.setattr(sys, "argv", ["zarrsmith", "fuse", "--batch", str(csv)])
     cli.main()
     assert mm.ZarrManager(str(out)).metadata["axes"] == "yx"
 

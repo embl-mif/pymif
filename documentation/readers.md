@@ -1,10 +1,10 @@
 # Readers and conventions
 
-The microscope managers in `pymif.microscope_manager` read a dataset and normalize it to one shared API.
+The microscope managers in `zarrsmith.microscope_manager` read a dataset and normalize it to one shared API.
 
-The main reader classes currently exposed by `pymif.microscope_manager` are:
+The main reader classes currently exposed by `zarrsmith.microscope_manager` are:
 
-- `ArrayManager` — wrap an in-memory NumPy or Dask array using PyMIF metadata conventions.
+- `ArrayManager` — wrap an in-memory NumPy or Dask array using ZarrSmith metadata conventions.
 - `LuxendoManager` — Luxendo XML + HDF5 datasets.
 - `OperaManager` — Opera Phenix / Opera PE OME-TIFF style datasets.
 - `ScapeManager` — Leica SCAPE OME-TIFF + XLIF datasets.
@@ -25,12 +25,12 @@ All file-based readers share the same conventions:
       lux.to_zarr("output.zarr")
   ```
 - The metadata uses one spelling everywhere: channel colors are `RRGGBB` hex strings (no `#`), spatial units are NGFF names such as `"micrometer"`, and time units are e.g. `"second"`.
-- Progress messages (opened scenes, subsets, metadata updates, the Zarr tree printed when opening a store) go through the standard `logging` module under the `"pymif"` logger and are silent by default. Show them with:
+- Progress messages (opened scenes, subsets, metadata updates, the Zarr tree printed when opening a store) go through the standard `logging` module under the `"zarrsmith"` logger and are silent by default. Show them with:
 
   ```python
   import logging
   logging.basicConfig(format="%(message)s")
-  logging.getLogger("pymif").setLevel(logging.INFO)
+  logging.getLogger("zarrsmith").setLevel(logging.INFO)
   ```
 
 To support a new acquisition system, see [Adding a microscope manager](contributing.md#adding-a-microscope-manager); for acquisitions saved as separate tiles, see [Mosaics](mosaic.md).

@@ -14,13 +14,13 @@ from .h5_array import H5Array
 from .mosaic import MosaicManager
 from .tile import Tile
 
-logger = logging.getLogger("pymif")
+logger = logging.getLogger("zarrsmith")
 
 
 class LuxendoMosaicManager(MosaicManager):
     """Raw Luxendo tiles (``*.lux.h5`` + ``*.json``) of one acquisition, before any fusion.
 
-    Not to be confused with :class:`~pymif.microscope_manager.LuxendoManager`, which
+    Not to be confused with :class:`~zarrsmith.microscope_manager.LuxendoManager`, which
     reads images already fused by the Luxendo software. This manager scans a raw
     acquisition folder such as ``2026-10-14_103957`` (tiles live in
     ``raw/<stack folder>/Cam_*.lux.h5``) and exposes every tile lazily:
@@ -30,14 +30,14 @@ class LuxendoMosaicManager(MosaicManager):
       both halves of a sample end up in the same fused channel;
     * ``group``: the illumination side, ``"L"`` or ``"R"`` (used by ``blend="sigmoid"`` and ``"midline"``);
     * ``timepoint``: the JSON ``time_point`` (mosaics with several timepoints are
-      refused for now, see :class:`~pymif.mosaic_manager.MosaicManager`);
+      refused for now, see :class:`~zarrsmith.mosaic_manager.MosaicManager`);
     * ``attrs``: ``stack``, ``stack_description``, ``grid`` (``(ix, iy)``),
       ``channel_description`` and ``path``.
 
     Tile positions come from ``affine_to_sample`` in the JSON (the tile is centred
     on the stage translation in x/y; z is the plane position along the stacking
     direction). If a stack was re-acquired (``*_R_<n>.lux.h5``) only the latest
-    retake is used. Tiles are :class:`~pymif.mosaic_manager.H5Array` objects, so no
+    retake is used. Tiles are :class:`~zarrsmith.mosaic_manager.H5Array` objects, so no
     file stays open. Scanning reads only the JSON files (in parallel) and opens a
     single ``.h5`` file, which keeps loading fast on network drives.
     """

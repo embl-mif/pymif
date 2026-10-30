@@ -5,8 +5,8 @@ import numpy as np
 import pytest
 import zarr
 
-from pymif.mosaic_manager import Tile, fuse_tiles
-from pymif.mosaic_manager import fusion
+from zarrsmith.mosaic_manager import Tile, fuse_tiles
+from zarrsmith.mosaic_manager import fusion
 
 
 def _noise_tiles(tmp_path, shape=(20, 40, 40), step=(32, 32), groups=True, zarr_chunks=None):

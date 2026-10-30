@@ -1,12 +1,12 @@
 # Napari plugin
 
-PyMIF provides napari widgets for conversion, mosaic fusion and the exploration of segmented objects. After installing the napari extras (`pip install -e .[napari]`), they are in the `Plugins > PyMIF` menu.
+ZarrSmith provides napari widgets for conversion, mosaic fusion and the exploration of segmented objects. After installing the napari extras (`pip install -e .[napari]`), they are in the `Plugins > ZarrSmith` menu.
 
 ## Converter
 
 The conversion widget is available from:
 
-`Plugins > PyMIF > Converter Plugin`
+`Plugins > ZarrSmith > Converter Plugin`
 
 The widget can load data, preview channels, define a 3D ROI, restrict z/time/channel ranges, choose pyramid settings, and export to OME-Zarr. For axis-aware zarr datasets, controls tied to missing axes are disabled; for example, a dataset with `axes="yx"` has no active T slider or channel selector.
 
@@ -21,7 +21,7 @@ The widgets are built to be docked on any side of the napari window, or floated,
 
 ## Mosaic Fusion
 
-`Plugins > PyMIF > Mosaic Fusion` loads the raw tiles of a mosaic, shows them as one layer per tile at its stage position, and fuses them into an OME-Zarr image in the background, with a live estimate of the output size. See [Mosaics](mosaic.md#napari) for details.
+`Plugins > ZarrSmith > Mosaic Fusion` loads the raw tiles of a mosaic, shows them as one layer per tile at its stage position, and fuses them into an OME-Zarr image in the background, with a live estimate of the output size. See [Mosaics](mosaic.md#napari) for details.
 
 ![mosaic-demo](mosaic-demo.png)
 
@@ -31,7 +31,7 @@ The widgets are built to be docked on any side of the napari window, or floated,
 
 *A table from three images: hovering a point shows a thumbnail of its object; clicking a point of another image shows that image and goes to the object; unticking an image removes its objects from the plot.*
 
-`Plugins > PyMIF > Objects Explorer` plots the features of segmented objects with [napari-clusters-plotter](https://github.com/BiAPoL/napari-clusters-plotter) and links the plot with the viewer. It loads three things, dropped on their field, dropped all at once anywhere on the panel, or browsed:
+`Plugins > ZarrSmith > Objects Explorer` plots the features of segmented objects with [napari-clusters-plotter](https://github.com/BiAPoL/napari-clusters-plotter) and links the plot with the viewer. It loads three things, dropped on their field, dropped all at once anywhere on the panel, or browsed:
 
 - the intensity OME-Zarr (all channels and resolution levels, read lazily),
 - the labels OME-Zarr (optional: else the first group in `<intensity>.ome.zarr/labels/`),

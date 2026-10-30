@@ -31,7 +31,7 @@ def xml_attr(node: ET.Element, name: str, cast: Callable[[str], T] = str, *,
 
 @dataclass
 class OmePixels:
-    """Subset of the OME ``<Pixels>`` element used by PyMIF."""
+    """Subset of the OME ``<Pixels>`` element used by ZarrSmith."""
 
     size_t: int
     size_c: int

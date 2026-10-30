@@ -14,10 +14,10 @@ In the batch CSV, leave a cell empty to use the default (so an empty `shards` ce
 
 ## Sharding (zarr v3 only)
 
-Sharding is on by default (`shards="auto"`). Without it every chunk is its own file; with sharding, many chunks are packed into one larger file (a *shard*), which greatly reduces the number of files on disk while each chunk stays individually readable. Sharding needs zarr v3 / NGFF 0.5: with zarr v2 PyMIF issues a warning and sets sharding to none.
+Sharding is on by default (`shards="auto"`). Without it every chunk is its own file; with sharding, many chunks are packed into one larger file (a *shard*), which greatly reduces the number of files on disk while each chunk stays individually readable. Sharding needs zarr v3 / NGFF 0.5: with zarr v2 ZarrSmith issues a warning and sets sharding to none.
 
 ```python
-# Let PyMIF choose shard sizes (about shard_target_mb of uncompressed data per shard)
+# Let ZarrSmith choose shard sizes (about shard_target_mb of uncompressed data per shard)
 dataset.to_zarr("out.zarr", shards="auto", shard_target_mb=256)
 
 # Disable sharding: one file per chunk
@@ -29,7 +29,7 @@ dataset.to_zarr("out.zarr", shards=(1, 1, 8, 2160, 4096))
 ```
 
 ```console
-pymif convert -i INPUT -m opera -z OUT.zarr -sh auto -stm 256 -sea t c   # or: -sh none to disable
+zarrsmith convert -i INPUT -m opera -z OUT.zarr -sh auto -stm 256 -sea t c   # or: -sh none to disable
 ```
 
 - `shards="auto"` picks a shard shape per pyramid level and leaves small levels unsharded.
@@ -48,14 +48,14 @@ Note that, because this is on by default, existing code that writes datasets wit
 
 ## Parallel writing
 
-Blocks of the dataset are compressed and written by several threads at once. `num_workers` sets the thread count; by default PyMIF uses **half of the available cores, capped at 8**, because writing stops getting faster beyond roughly 8 threads while memory use keeps growing.
+Blocks of the dataset are compressed and written by several threads at once. `num_workers` sets the thread count; by default ZarrSmith uses **half of the available cores, capped at 8**, because writing stops getting faster beyond roughly 8 threads while memory use keeps growing.
 
 ```python
 dataset.to_zarr("out.zarr", num_workers=4)
 ```
 
 ```console
-pymif convert -i INPUT -m opera -z OUT.zarr -nw 4
+zarrsmith convert -i INPUT -m opera -z OUT.zarr -nw 4
 ```
 
 How it works:

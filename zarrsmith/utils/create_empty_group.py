@@ -15,7 +15,7 @@ def _metadata_for_legacy_label(metadata: dict[str, Any], requested_data_type: st
     """Keep old ``is_label=True`` calls working by dropping an image C axis.
 
     New callers can request channelled labels explicitly with
-    ``data_type='label'`` and metadata whose axes include ``c``.  Old PyMIF
+    ``data_type='label'`` and metadata whose axes include ``c``.  Old ZarrSmith
     examples passed the intensity image metadata plus ``is_label=True``; those
     should still create ``tzyx`` labels.
     """

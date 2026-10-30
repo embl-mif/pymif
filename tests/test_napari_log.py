@@ -12,7 +12,7 @@ pytest.importorskip("napari")
 
 from qtpy.QtWidgets import QApplication, QTextEdit
 
-from pymif.napari._convert_widget import EmittingStream, make_log_appender
+from zarrsmith.napari._convert_widget import EmittingStream, make_log_appender
 
 
 @pytest.fixture(scope="module")

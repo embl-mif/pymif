@@ -14,11 +14,11 @@ import sys
 from importlib.metadata import version as get_version, PackageNotFoundError
 sys.path.insert(0, os.path.abspath(".."))
 
-project = 'PyMIF'
+project = 'ZarrSmith'
 copyright = '2023, European Molecular Biology Laboratory (EMBL)'
 author = 'Nicola Gritti'
 try:
-    release = get_version("pymif")
+    release = get_version("zarrsmith")
 except PackageNotFoundError:
     # The version comes from git tags at install time; without an install it is unknown.
     release = "unknown"
@@ -37,7 +37,7 @@ myst_enable_extensions = [
 myst_heading_anchors = 3
 
 autoapi_dirs = [
-    '../pymif',
+    '../zarrsmith',
     ]
 
 source_suffix = {
@@ -52,7 +52,7 @@ def linkcode_resolve(domain, info):
     if not info['module']:
         return None
     filename = info['module'].replace('.', '/')
-    return "https://github.com/embl-mif/pymif/blob/main/%s.py" % filename
+    return "https://github.com/embl-mif/zarrsmith/blob/main/%s.py" % filename
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '*.txt']
@@ -63,7 +63,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '*.txt']
 html_theme = 'sphinx_rtd_theme'
 html_static_path = []
 # One copy of the logo, shipped with the package for the napari widgets.
-html_logo = '../pymif/napari/resources/zarrsmith-icon.svg'
+html_logo = '../zarrsmith/napari/resources/zarrsmith-icon.svg'
 
 # -- GitHub alerts -----------------------------------------------------------
 # The pages use GitHub alerts (> [!NOTE] ...), which MyST renders as a plain quote;

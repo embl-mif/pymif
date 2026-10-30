@@ -26,7 +26,7 @@ def subset_dask_array(
             continue
         axis = axes_tuple.index(ax)
         slicer = [slice(None)] * arr.ndim
-        # Preserve dimensionality when a single integer is requested; PyMIF
+        # Preserve dimensionality when a single integer is requested; ZarrSmith
         # metadata keeps the axis with length 1 after subsetting.
         slicer[axis] = [indices] if isinstance(indices, int) else indices
         arr = arr[tuple(slicer)]

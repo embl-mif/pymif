@@ -1,6 +1,6 @@
-# PyMIF notebooks
+# ZarrSmith notebooks
 
-This folder contains a user-friendly notebook collection for the current PyMIF API.
+This folder contains a user-friendly notebook collection for the current ZarrSmith API.
 
 Recommended order:
 
@@ -16,7 +16,7 @@ Recommended order:
 10. `09_legacy_options_v04_and_troubleshooting.ipynb`
 11. `10_mosaic_fusion.ipynb`: fuse the raw tiles of a mosaic into a 3D volume or a 2D MIP
 
-The notebooks write small synthetic examples to `pymif_tutorial_output/` in the working directory where you run them.
+The notebooks write small synthetic examples to `zarrsmith_tutorial_output/` in the working directory where you run them.
 
 ## Main beginner rules
 
@@ -27,10 +27,10 @@ The notebooks write small synthetic examples to `pymif_tutorial_output/` in the 
 - Use `data_type="label"` and an integer dtype for labels.
 - For segmentation labels, prefer explicit no-channel axes such as `"tzyx"`.
 - Use `mode="r+"` when adding groups or labels to an existing Zarr.
-- PyMIF reports progress through the standard `logging` module (silent by default). Run `logging.basicConfig(format="%(message)s")` and `logging.getLogger("pymif").setLevel(logging.INFO)` to see it; the notebooks that need it do this in their setup cell.
+- ZarrSmith reports progress through the standard `logging` module (silent by default). Run `logging.basicConfig(format="%(message)s")` and `logging.getLogger("zarrsmith").setLevel(logging.INFO)` to see it; the notebooks that need it do this in their setup cell.
 - `to_zarr()` shows a progress bar while writing; pass `progress=False` to silence it.
 - Vendor readers are context managers (`with mm.LuxendoManager(path) as m: ...`) and always report channel colors as `RRGGBB` and units as NGFF names such as `micrometer`.
 
 ## Optional dependencies
 
-Most notebooks require PyMIF plus its normal Dask/Zarr/image dependencies. Visualization cells require napari and a GUI-capable Python session.
+Most notebooks require ZarrSmith plus its normal Dask/Zarr/image dependencies. Visualization cells require napari and a GUI-capable Python session.

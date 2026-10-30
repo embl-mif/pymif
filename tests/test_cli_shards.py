@@ -5,9 +5,9 @@ import numpy as np
 import pytest
 import zarr
 
-import pymif.microscope_manager as mm
-from pymif.cli.__arguments import parse_shard_exclude_axes_spec, parse_shards_spec
-from pymif.cli.pymif import (
+import zarrsmith.microscope_manager as mm
+from zarrsmith.cli.__arguments import parse_shard_exclude_axes_spec, parse_shards_spec
+from zarrsmith.cli.zarrsmith import (
     _normalize_shard_exclude_axes,
     _normalize_shards,
     zarr_convert,
@@ -50,7 +50,7 @@ def test_parse_shard_exclude_axes_spec_invalid_raises():
         parse_shard_exclude_axes_spec("t q")
 
 
-# --- _normalize_shards / _normalize_shard_exclude_axes (pymif.py, CLI list or CSV string) ---
+# --- _normalize_shards / _normalize_shard_exclude_axes (zarrsmith.py, CLI list or CSV string) ---
 
 def test_normalize_shards_from_cli_list():
     assert _normalize_shards(["auto"]) == "auto"

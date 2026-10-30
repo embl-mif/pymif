@@ -1,34 +1,34 @@
-name: pymif
-display_name: PyMIF
+name: zarrsmith
+display_name: ZarrSmith
 contributions:
   commands:
-    - id: pymif.convert
-      python_name: pymif.napari._convert_widget:convert_widget
+    - id: zarrsmith.convert
+      python_name: zarrsmith.napari._convert_widget:convert_widget
       title: Converter Plugin
-    - id: pymif.export_widget
-      python_name: pymif.napari._export_widget:export_widget
+    - id: zarrsmith.export_widget
+      python_name: zarrsmith.napari._export_widget:export_widget
       title: Export Widget
-    - id: pymif.mosaic
-      python_name: pymif.napari._mosaic_widget:mosaic_widget
+    - id: zarrsmith.mosaic
+      python_name: zarrsmith.napari._mosaic_widget:mosaic_widget
       title: Mosaic Fusion
-    - id: pymif.explorer
-      python_name: pymif.napari._explorer_widget:explorer_widget
+    - id: zarrsmith.explorer
+      python_name: zarrsmith.napari._explorer_widget:explorer_widget
       title: Objects Explorer
-  # napari lists the widgets in this order in Plugins > PyMIF
+  # napari lists the widgets in this order in Plugins > ZarrSmith
   widgets:
-    - command: pymif.convert
+    - command: zarrsmith.convert
       display_name: Converter Plugin
-    - command: pymif.mosaic
+    - command: zarrsmith.mosaic
       display_name: Mosaic Fusion
-    - command: pymif.explorer
+    - command: zarrsmith.explorer
       display_name: Objects Explorer
-    - command: pymif.export_widget
+    - command: zarrsmith.export_widget
       display_name: Export Viewer
   menus:
     "napari/menu/plugins":
-      - submenu: PyMIF
+      - submenu: ZarrSmith
         items:
-          - command: pymif.convert
-          - command: pymif.mosaic
-          - command: pymif.explorer
-          - command: pymif.export_widget
+          - command: zarrsmith.convert
+          - command: zarrsmith.mosaic
+          - command: zarrsmith.explorer
+          - command: zarrsmith.export_widget

@@ -11,7 +11,7 @@ pytest.importorskip("napari")
 from magicgui import magicgui
 from qtpy.QtWidgets import QApplication, QCheckBox, QToolButton, QVBoxLayout, QWidget
 
-from pymif.napari._convert_widget import _compact_advanced_rows, _make_section
+from zarrsmith.napari._convert_widget import _compact_advanced_rows, _make_section
 
 ADVANCED = [
     "chunk_x", "chunk_y", "chunk_z", "n_levels", "downscale_z", "downscale_y",
@@ -115,7 +115,7 @@ def test_make_section_wraps_widgets_in_a_bordered_frame(app):
     frame = _make_section(a)
     frame.layout().addWidget(b)
 
-    assert frame.objectName() == "pymifSection"
+    assert frame.objectName() == "zarrsmithSection"
     assert "border" in frame.styleSheet()
     assert a.parent() is frame and b.parent() is frame
     assert frame.layout().count() == 2

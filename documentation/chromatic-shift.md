@@ -1,8 +1,8 @@
 # Chromatic shift correction
 
-On a light-sheet microscope the channels of one stack are often offset from each other along **Z**. The detection focal planes of different wavelengths do not coincide, and the offset changes every time the system is realigned, so a bead calibration from another day does not apply. PyMIF therefore measures the offset **on the sample itself** and writes a corrected copy of the OME-Zarr dataset.
+On a light-sheet microscope the channels of one stack are often offset from each other along **Z**. The detection focal planes of different wavelengths do not coincide, and the offset changes every time the system is realigned, so a bead calibration from another day does not apply. ZarrSmith therefore measures the offset **on the sample itself** and writes a corrected copy of the OME-Zarr dataset.
 
-The correction works on any OME-Zarr image opened with `ZarrManager` (for example the output of `pymif convert` or of a [mosaic fusion](mosaic.md)) and writes a new OME-Zarr image. Only a Z translation per channel is corrected.
+The correction works on any OME-Zarr image opened with `ZarrManager` (for example the output of `zarrsmith convert` or of a [mosaic fusion](mosaic.md)) and writes a new OME-Zarr image. Only a Z translation per channel is corrected.
 
 ![chromatic-shift-before](chromatic-shift-before.png)
 
@@ -15,7 +15,7 @@ The correction works on any OME-Zarr image opened with `ZarrManager` (for exampl
 ```python
 import json
 from pathlib import Path
-import pymif.microscope_manager as mm
+import zarrsmith.microscope_manager as mm
 
 z = mm.ZarrManager("brain.ome.zarr")
 
@@ -36,12 +36,12 @@ A shift is the displacement applied to that channel: positive values move its co
 
 ## Command line
 
-The same steps are available as `pymif chromatic-shift`, for scripts and pipelines:
+The same steps are available as `zarrsmith chromatic-shift`, for scripts and pipelines:
 
 ```console
-pymif chromatic-shift -i brain.ome.zarr -z brain_corrected.ome.zarr -r chromatic_shift.json
-pymif chromatic-shift -i brain.ome.zarr -r chromatic_shift.json                 # only measure
-pymif chromatic-shift -i other.ome.zarr -z other_corrected.ome.zarr -sf chromatic_shift.json
+zarrsmith chromatic-shift -i brain.ome.zarr -z brain_corrected.ome.zarr -r chromatic_shift.json
+zarrsmith chromatic-shift -i brain.ome.zarr -r chromatic_shift.json                 # only measure
+zarrsmith chromatic-shift -i other.ome.zarr -z other_corrected.ome.zarr -sf chromatic_shift.json
 ```
 
 Add `--fail_on_warning` in a pipeline: when the report has warnings, the command exits with an error and writes only the report. Every option, and the `--batch` CSV columns, are in [Command line](cli.md#correct-the-chromatic-shift).
@@ -111,14 +111,16 @@ For example, with level 0 at 2 µm and a pyramid that halves Z at every level, t
 | `include_labels` | `True` | also write labels; they follow the reference channel and are only padded or cropped |
 | `overwrite`, `num_workers`, `progress` | | as for [`to_zarr`](advanced.md) |
 
-The added or removed planes are rounded to whole planes of the coarsest level, so every pyramid level stays aligned (each level is shifted directly, keeping the input's own downsampling). Planes added below the data move the image origin; PyMIF does not write translations in the NGFF metadata, so the output's root attribute `pymif_chromatic_shift` records it instead, together with what was applied:
+The added or removed planes are rounded to whole planes of the coarsest level, so every pyramid level stays aligned (each level is shifted directly, keeping the input's own downsampling). Planes added below the data move the image origin; ZarrSmith does not write translations in the NGFF metadata, so the output's root attribute `zarrsmith_chromatic_shift` records it instead, together with what was applied:
 
 ```python
-out.root.attrs["pymif_chromatic_shift"]
+out.root.attrs["zarrsmith_chromatic_shift"]
 # {'shifts': [0.0, 104.4], 'unit': 'micrometer', 'extent': 'union', 'order': 1,
 #  'z_offset': 0.0,          # where input plane 0 now sits, in micrometer
 #  'estimate': {...}}        # summary of the report, when one was passed
 ```
+
+Datasets corrected with PyMIF (version 0.5.4 or older) have the same record under `pymif_chromatic_shift`.
 
 The output path must differ from the input. Call `apply_chromatic_shift()` before in-memory edits such as `subset_dataset()`: it copies the on-disk settings of each array and refuses datasets that no longer match them.
 

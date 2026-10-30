@@ -8,10 +8,10 @@ import pandas as pd
 import pytest
 import tifffile
 
-import pymif.microscope_manager as mm
-from pymif.cli import pymif as cli
-from pymif.mosaic_manager import OperaFlatfield, OperaMosaicManager, TiffStackArray, fusion
-from pymif.mosaic_manager import opera_mosaic_manager as opera
+import zarrsmith.microscope_manager as mm
+from zarrsmith.cli import zarrsmith as cli
+from zarrsmith.mosaic_manager import OperaFlatfield, OperaMosaicManager, TiffStackArray, fusion
+from zarrsmith.mosaic_manager import opera_mosaic_manager as opera
 
 NY, NX = 8, 10  # rows, columns of every plane
 PROFILE = ("{Background: {Character: NonFlat, Mean: 100.0, NoiseConst: 1.3, NonFlatness: {Corrected: 0.1, "
@@ -134,7 +134,7 @@ def test_flatfield_profile_and_formula():
 def test_flatfield_foreground_is_ignored_with_a_warning(caplog):
     text = PROFILE.replace("Channel: 1,", "Foreground: {Character: NonFlat, Mean: 5.0, Profile: {Coefficients: "
                            "[[1.0]], Type: Polynomial}}, Channel: 1,")
-    with caplog.at_level("WARNING", logger="pymif"):
+    with caplog.at_level("WARNING", logger="zarrsmith"):
         ff = OperaFlatfield.from_profile(text, "EGFP")
     assert ff.mean == 100.0 and "Foreground" in caplog.text
 
@@ -278,7 +278,7 @@ def test_opera_fuse_and_pickle(export):
 
 
 def _run(monkeypatch, *argv):
-    monkeypatch.setattr(sys, "argv", ["pymif", *argv])
+    monkeypatch.setattr(sys, "argv", ["zarrsmith", *argv])
     cli.main()
 
 
@@ -298,7 +298,7 @@ def test_cli_fuse_opera(export, tmp_path, monkeypatch):
 
 def test_wrong_reader_is_refused(export, monkeypatch):
     """An Opera export opened with the Luxendo reader fails at once, naming the right reader."""
-    from pymif.mosaic_manager import LuxendoMosaicManager, WrongReaderError, detect_microscope
+    from zarrsmith.mosaic_manager import LuxendoMosaicManager, WrongReaderError, detect_microscope
 
     for path in (export, export / "Images", export / "Images" / "Index.xml"):
         assert detect_microscope(path) == "opera"
@@ -325,7 +325,7 @@ def test_cli_fuse_batch_flatfield_column(export, tmp_path, monkeypatch):
 
 
 def test_reader_options():
-    from pymif.mosaic_manager import LuxendoMosaicManager, reader_options
+    from zarrsmith.mosaic_manager import LuxendoMosaicManager, reader_options
 
     assert reader_options(OperaMosaicManager, flatfield=False) == {"flatfield": False}
     assert reader_options(LuxendoMosaicManager, flatfield=False) == {}

@@ -1,2 +1,2 @@
-recursive-include pymif/napari *.yaml
-recursive-include pymif/napari/resources *.svg
+recursive-include zarrsmith/napari *.yaml
+recursive-include zarrsmith/napari/resources *.svg

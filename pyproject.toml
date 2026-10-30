@@ -1,22 +1,22 @@
 [build-system]
-requires = ["setuptools>=70", "setuptools-scm>=8", "wheel"]
+requires = ["setuptools>=77", "setuptools-scm>=8", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pymif"
+name = "zarrsmith"
 dynamic = ["version"]
-description = "A collection of functions in Python for MIF users."
+description = "Microscopy I/O, OME-Zarr forging and NGFF utilities: read vendor datasets, write multiscale OME-Zarr, fuse mosaics, from Python, the command line and napari."
 readme = "README.md"
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
   { name = "Nicola Gritti", email = "nicola.gritti@embl.es" },
 ]
 requires-python = ">=3.12"
-keywords = ["microscopy", "zarr", "ome-zarr", "napari"]
+keywords = ["microscopy", "zarr", "ome-zarr", "ngff", "napari"]
 classifiers = [
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.12",
-  "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
 ]
 dependencies = [
@@ -48,11 +48,17 @@ dependencies = [
     "zict>=3.0.0",
 ]
 
+[project.urls]
+Homepage = "https://github.com/embl-mif/zarrsmith"
+Documentation = "https://embl-mif.github.io/zarrsmith/"
+Issues = "https://github.com/embl-mif/zarrsmith/issues"
+Changelog = "https://github.com/embl-mif/zarrsmith/releases"
+
 [project.scripts]
-pymif = "pymif.cli.pymif:main"
+zarrsmith = "zarrsmith.cli.zarrsmith:main"
 
 [project.entry-points."napari.manifest"]
-pymif = "pymif.napari:napari.yaml"
+zarrsmith = "zarrsmith.napari:napari.yaml"
 
 [project.optional-dependencies]
 napari = [
@@ -82,7 +88,7 @@ docs = [
     "myst-parser>=5.0.0",
 ]
 all = [
-    "pymif[napari,notebooks,dev,docs]",
+    "zarrsmith[napari,notebooks,dev,docs]",
 ]
 
 [tool.setuptools]
@@ -90,12 +96,12 @@ include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["pymif*"]
+include = ["zarrsmith*"]
 
 # The version is derived from git tags (vX.Y.Z), which are created automatically
 # by .github/workflows/release.yml when a PR is merged into main.
 [tool.setuptools_scm]
-version_file = "pymif/_version.py"
+version_file = "zarrsmith/_version.py"
 fallback_version = "0.0.0"
 
 [tool.setuptools_scm.scm.git]

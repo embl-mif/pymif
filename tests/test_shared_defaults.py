@@ -4,9 +4,9 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-import pymif.microscope_manager as mm
-from pymif.utils.axes import metadata_axes, metadata_axis_size
-from pymif.utils.chunks import default_chunk_size, default_num_levels
+import zarrsmith.microscope_manager as mm
+from zarrsmith.utils.axes import metadata_axes, metadata_axis_size
+from zarrsmith.utils.chunks import default_chunk_size, default_num_levels
 
 
 def _metadata(axes, size, dtype="uint16"):
@@ -39,7 +39,7 @@ def test_default_num_levels():
 
 def test_napari_reader_uses_the_shared_registry():
     pytest.importorskip("magicgui")
-    from pymif.napari._convert_widget import dataset_reader
+    from zarrsmith.napari._convert_widget import dataset_reader
 
     assert dataset_reader("zeiss") is mm.READERS["zeiss"] is mm.ZeissManager
     with pytest.raises(ValueError, match="Unsupported"):
@@ -47,7 +47,7 @@ def test_napari_reader_uses_the_shared_registry():
 
 
 def test_cli_reader_detection(tmp_path):
-    from pymif.cli.pymif import _resolve_zarr_manager
+    from zarrsmith.cli.zarrsmith import _resolve_zarr_manager
 
     store = tmp_path / "a.zarr"
     store.mkdir()
@@ -62,7 +62,7 @@ def test_cli_reader_detection(tmp_path):
 def test_cli_color_errors_are_argparse_errors():
     import argparse
 
-    from pymif.cli.__arguments import parse_color
+    from zarrsmith.cli.__arguments import parse_color
 
     assert parse_color("#ff00ff") == "FF00FF" and parse_color("cyan") == "00FFFF"
     with pytest.raises(argparse.ArgumentTypeError, match="Invalid color"):
@@ -74,7 +74,7 @@ def test_add_layers_returns_the_layers():
     import dask.array as da
     from napari.components import ViewerModel
 
-    from pymif.utils.visualize import add_layers
+    from zarrsmith.utils.visualize import add_layers
 
     md = {"axes": "czyx", "scales": [(2.0, 0.5, 0.5)], "units": ("micrometer",) * 3,
           "channel_names": ["A", "B"], "channel_colors": ["FF0000", "00FF00"]}

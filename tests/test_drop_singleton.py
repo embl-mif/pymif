@@ -5,9 +5,9 @@ import pandas as pd
 import pytest
 import zarr
 
-import pymif.microscope_manager as mm
-from pymif.cli.__arguments import parse_bool
-from pymif.cli.pymif import convert_batch, zarr_convert
+import zarrsmith.microscope_manager as mm
+from zarrsmith.cli.__arguments import parse_bool
+from zarrsmith.cli.zarrsmith import convert_batch, zarr_convert
 
 
 def _manager(shape=(1, 2, 1, 64, 64), axes="tczyx", chunks=None):

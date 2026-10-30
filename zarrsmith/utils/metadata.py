@@ -1,4 +1,4 @@
-"""Shared construction of the normalized PyMIF metadata dictionary."""
+"""Shared construction of the normalized ZarrSmith metadata dictionary."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -13,7 +13,7 @@ class ChannelInfo:
     """Name and display color of a single channel.
 
     ``color`` may be anything understood by
-    :func:`~pymif.utils.ngff.parse_channel_color`; it is
+    :func:`~zarrsmith.utils.ngff.parse_channel_color`; it is
     normalized to ``RRGGBB`` by :func:`build_metadata`.
     """
 

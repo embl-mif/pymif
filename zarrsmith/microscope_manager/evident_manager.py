@@ -10,7 +10,7 @@ import numpy as np
 from .microscope_manager import MicroscopeManager
 from ..utils.metadata import ChannelInfo, build_metadata, scale_for_level
 
-logger = logging.getLogger("pymif")
+logger = logging.getLogger("zarrsmith")
 
 #: Tag of the per-frame stage Z position (µm) in the VSI metadata; slideio does not name it.
 _FRAME_Z_TAG = 2014
@@ -141,7 +141,7 @@ class EvidentManager(MicroscopeManager):
     These are exposed as further pyramid levels, downsampled in Y and X only,
     which makes napari 3D rendering of the raw file fast. Single-tile
     acquisitions usually have only the full resolution.
-    :meth:`build_pyramid` (used by ``pymif convert``) always rebuilds the
+    :meth:`build_pyramid` (used by ``zarrsmith convert``) always rebuilds the
     pyramid from the full resolution.
     """
 

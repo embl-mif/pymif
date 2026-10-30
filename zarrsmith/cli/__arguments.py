@@ -5,8 +5,8 @@ import os
 import re
 import textwrap
 
-from pymif import __version__
-from pymif.utils.colors import parse_color as _parse_color
+from zarrsmith import __version__
+from zarrsmith.utils.colors import parse_color as _parse_color
 
 
 class MultilineDefaultsHelpFormatter(
@@ -38,7 +38,7 @@ def valid_output_path(x):
 
 def parse_color(value: str) -> str:
     """A CLI color (6-digit hex code, ``#`` optional, or a matplotlib color name) as ``RRGGBB``;
-    see :func:`pymif.utils.colors.parse_color`."""
+    see :func:`zarrsmith.utils.colors.parse_color`."""
     try:
         return _parse_color(value)
     except TypeError as error:
@@ -427,9 +427,9 @@ CONVERT_HELP = """\
     Convert a dataset to OME-Zarr, or every dataset listed in a CSV file (--batch).
 
     Examples:
-      pymif convert -i /path/to/dataset -z out.ome.zarr
-      pymif convert -i /path/to/file.czi -m zeiss -si 1 -z out.ome.zarr -nl 4 -sh auto
-      pymif convert --batch datasets.csv
+      zarrsmith convert -i /path/to/dataset -z out.ome.zarr
+      zarrsmith convert -i /path/to/file.czi -m zeiss -si 1 -z out.ome.zarr -nl 4 -sh auto
+      zarrsmith convert --batch datasets.csv
 
     The --batch CSV file has the columns input | microscope | output, plus any of
     chunk_size | max_size(MB) | scene_index | zarr_format | downscale_factor | subset | channel_colors |
@@ -448,15 +448,15 @@ CONVERT_HELP = """\
 FUSE_HELP = """\
     Fuse the raw tiles of a mosaic (a raw Luxendo acquisition, an Opera Harmony export) into one
     OME-Zarr image, 3D or a 2D projection (-p max), or every mosaic listed in a CSV file (--batch).
-    The output options are those of `pymif convert`; -s/--subset crops the fused output
+    The output options are those of `zarrsmith convert`; -s/--subset crops the fused output
     (z/y/x in output voxels, after --downsample) and selects channels (c).
 
     Examples:
-      pymif fuse -i /path/to/2026-10-14_103957 -z out_3D.ome.zarr -rds 4 8 8 -nl 3
-      pymif fuse -i /path/to/2026-10-14_103957 -z out_MIP.ome.zarr -rds 1 8 8 -p max -b midline
-      pymif fuse -i /path/to/2026-10-14_103957 -z field1_MIP.ome.zarr -rds 1 8 8 -p max -f field1 -st 3-x01-y00
-      pymif fuse -i "/path/to/plate-Measurement 1" -z A3_MIP.ome.zarr -p max -f A3_field1
-      pymif fuse --batch mosaics.csv
+      zarrsmith fuse -i /path/to/2026-10-14_103957 -z out_3D.ome.zarr -rds 4 8 8 -nl 3
+      zarrsmith fuse -i /path/to/2026-10-14_103957 -z out_MIP.ome.zarr -rds 1 8 8 -p max -b midline
+      zarrsmith fuse -i /path/to/2026-10-14_103957 -z field1_MIP.ome.zarr -rds 1 8 8 -p max -f field1 -st 3-x01-y00
+      zarrsmith fuse -i "/path/to/plate-Measurement 1" -z A3_MIP.ome.zarr -p max -f A3_field1
+      zarrsmith fuse --batch mosaics.csv
 
     Tiles that touch or overlap form a field (field0, field1, ... ordered by position; for Opera plates
     one set per well: A3_field0, A3_field1, ...); the fields are listed when the mosaic is loaded. Only
@@ -465,7 +465,7 @@ FUSE_HELP = """\
     rows still run). Opera tiles are flat-field corrected as in Harmony, unless -nff is given.
 
     The --batch CSV file has the columns input | microscope | output, plus any of the output columns of
-    `pymif convert --batch` (chunk_size | max_size(MB) | zarr_format | downscale_factor | subset | channel_colors |
+    `zarrsmith convert --batch` (chunk_size | max_size(MB) | zarr_format | downscale_factor | subset | channel_colors |
     channel_names | num_levels | shards | shard_target_mb | shard_exclude_axes | drop_singleton | num_workers)
     and of the fusion columns
     downsample | projection | blend | sigmoid_steepness | channels | groups | fields | tiles | skip_tiles | midline_axis |
@@ -484,12 +484,12 @@ CHROMATIC_SHIFT_HELP = """\
     compression and metadata as the input. Only a Z translation per channel is corrected.
 
     Examples:
-      pymif chromatic-shift -i brain.ome.zarr -z brain_csc.ome.zarr -r shift.json
-      pymif chromatic-shift -i brain.ome.zarr -r shift.json                  (measure only)
-      pymif chromatic-shift -i brain.ome.zarr -z brain_csc.ome.zarr -sf 0 104.4
-      pymif chromatic-shift -i other.ome.zarr -z other_csc.ome.zarr -sf shift.json
-      pymif chromatic-shift -i brain.ome.zarr -z brain_csc.ome.zarr -r shift.json --fail_on_warning
-      pymif chromatic-shift --batch images.csv
+      zarrsmith chromatic-shift -i brain.ome.zarr -z brain_csc.ome.zarr -r shift.json
+      zarrsmith chromatic-shift -i brain.ome.zarr -r shift.json                  (measure only)
+      zarrsmith chromatic-shift -i brain.ome.zarr -z brain_csc.ome.zarr -sf 0 104.4
+      zarrsmith chromatic-shift -i other.ome.zarr -z other_csc.ome.zarr -sf shift.json
+      zarrsmith chromatic-shift -i brain.ome.zarr -z brain_csc.ome.zarr -r shift.json --fail_on_warning
+      zarrsmith chromatic-shift --batch images.csv
 
     Shifts are corrections in the Z unit (usually micrometer): positive values move a channel
     towards higher Z. The reference channel gets 0.
@@ -572,11 +572,11 @@ def _add_chromatic_shift_arguments(parser):
 
 #: Old command names, kept working: old name -> (mode, new spelling)
 RENAMED = {
-    '2zarr': ('convert', 'pymif convert'),
-    'batch2zarr': ('convert_batch', 'pymif convert --batch'),
-    'mosaic2zarr': ('fuse', 'pymif fuse'),
-    'batch-mosaic2zarr': ('fuse_batch', 'pymif fuse --batch'),
-    'batchmosaic2zarr': ('fuse_batch', 'pymif fuse --batch'),
+    '2zarr': ('convert', 'zarrsmith convert'),
+    'batch2zarr': ('convert_batch', 'zarrsmith convert --batch'),
+    'mosaic2zarr': ('fuse', 'zarrsmith fuse'),
+    'batch-mosaic2zarr': ('fuse_batch', 'zarrsmith fuse --batch'),
+    'batchmosaic2zarr': ('fuse_batch', 'zarrsmith fuse --batch'),
 }
 
 
@@ -618,7 +618,7 @@ def _add_batch_file(parser):
 
 
 def _parse_arguments(argv=None):
-    """Build and parse the PyMIF command line interface arguments."""
+    """Build and parse the ZarrSmith command line interface arguments."""
 
     parser = argparse.ArgumentParser(
         description="""\
@@ -632,7 +632,7 @@ def _parse_arguments(argv=None):
 
     subparsers = parser.add_subparsers(
         title='Commands',
-        description="Run `pymif <command> -h` for the options of a command.",
+        description="Run `zarrsmith <command> -h` for the options of a command.",
         dest='command',
         metavar='{convert,fuse,chromatic-shift}',
         required=True,

@@ -20,19 +20,19 @@ WORKDIR /app
 COPY . /app
 
 # Optional: choose extras at build time (default = base)
-ARG PYMIF_EXTRAS=""
+ARG ZARRSMITH_EXTRAS=""
 # Package version (set by CI); the image has no git, so setuptools-scm cannot read tags
-ARG PYMIF_VERSION=""
+ARG ZARRSMITH_VERSION=""
 
 # Upgrade pip and install package
 RUN pip install --upgrade pip && \
-    if [ -n "$PYMIF_VERSION" ]; then \
-        export SETUPTOOLS_SCM_PRETEND_VERSION="$PYMIF_VERSION"; \
+    if [ -n "$ZARRSMITH_VERSION" ]; then \
+        export SETUPTOOLS_SCM_PRETEND_VERSION="$ZARRSMITH_VERSION"; \
     fi && \
-    if [ -z "$PYMIF_EXTRAS" ]; then \
+    if [ -z "$ZARRSMITH_EXTRAS" ]; then \
         pip install .; \
     else \
-        pip install ".[${PYMIF_EXTRAS}]"; \
+        pip install ".[${ZARRSMITH_EXTRAS}]"; \
     fi
 
 # Default shell

@@ -1,4 +1,4 @@
-"""Compute the next pymif release version for a merged pull request.
+"""Compute the next zarrsmith release version for a merged pull request.
 
 Usage: python next_version.py <pr.json>
 

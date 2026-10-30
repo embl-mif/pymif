@@ -1,10 +1,10 @@
 import dask.array as da
 
-from pymif.utils.pyramid import build_pyramid
-from pymif.utils.write_image_region import (
+from zarrsmith.utils.pyramid import build_pyramid
+from zarrsmith.utils.write_image_region import (
     _scale_index as _scale_image_index,
 )
-from pymif.utils.write_label_region import (
+from zarrsmith.utils.write_label_region import (
     _scale_index as _scale_label_index,
 )
 

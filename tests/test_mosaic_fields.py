@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from pymif.mosaic_manager import (MosaicManager, MultipleFieldsError, Tile, connected_components, fuse_tiles,
+from zarrsmith.mosaic_manager import (MosaicManager, MultipleFieldsError, Tile, connected_components, fuse_tiles,
                                   plan_fusion)
 
 

@@ -14,7 +14,7 @@ from .zarr_manager import ZarrManager
 from .zarr_v04_manager import ZarrV04Manager
 from .zeiss_manager import ZeissManager
 
-#: Readers by microscope name (``pymif convert --microscope``, napari converter).
+#: Readers by microscope name (``zarrsmith convert --microscope``, napari converter).
 READERS: Dict[str, Type[MicroscopeManager]] = {
     "luxendo": LuxendoManager,
     "opera": OperaManager,

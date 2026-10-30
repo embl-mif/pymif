@@ -13,5 +13,5 @@
     "10_mosaic_fusion.ipynb"
   ],
   "readme": "README.md",
-  "purpose": "Examples for the current PyMIF manager API, OME-Zarr groups, labels, mosaic fusion, and legacy options."
+  "purpose": "Examples for the current ZarrSmith manager API, OME-Zarr groups, labels, mosaic fusion, and legacy options."
 }

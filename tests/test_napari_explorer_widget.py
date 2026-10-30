@@ -15,9 +15,9 @@ pytest.importorskip("napari")
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QApplication
 
-import pymif.microscope_manager as mm
-from pymif.microscope_manager.zarr_manager import ZarrDataset
-from pymif.napari import _explorer_widget as ew
+import zarrsmith.microscope_manager as mm
+from zarrsmith.microscope_manager.zarr_manager import ZarrDataset
+from zarrsmith.napari import _explorer_widget as ew
 
 #: Two cubes in a 1 x 8 x 32 x 32 label image: label -> (z, y, x) slices.
 OBJECTS = {3: (slice(2, 6), slice(4, 12), slice(4, 12)), 5: (slice(1, 3), slice(20, 28), slice(16, 30))}

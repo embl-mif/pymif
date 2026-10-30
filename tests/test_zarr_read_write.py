@@ -5,7 +5,7 @@ import zarr
 import numpy as np
 import pytest
 
-import pymif.microscope_manager as mm
+import zarrsmith.microscope_manager as mm
 
 
 def _assert_metadata_equal_basic(m1, m2):

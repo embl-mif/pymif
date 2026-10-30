@@ -32,15 +32,15 @@ class Tile:
     timepoint
         Index of the timepoint the tile belongs to (``0`` for a single timepoint).
         Mosaics with more than one timepoint are not supported yet:
-        :class:`~pymif.mosaic_manager.MosaicManager` refuses them.
+        :class:`~zarrsmith.mosaic_manager.MosaicManager` refuses them.
     attrs
         Free-form, reader specific metadata (stack, grid position, ...).
     units
         Units of ``origin`` and ``voxel_size``.
     field
         Name of the field (connected group of touching tiles) the tile belongs to,
-        e.g. ``"field0"``. Set by :class:`~pymif.mosaic_manager.MosaicManager` when
-        the mosaic is loaded (see :func:`~pymif.mosaic_manager.fields.label_fields`),
+        e.g. ``"field0"``. Set by :class:`~zarrsmith.mosaic_manager.MosaicManager` when
+        the mosaic is loaded (see :func:`~zarrsmith.mosaic_manager.fields.label_fields`),
         unless the reader gives one.
     """
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import zarr
 
-import pymif.microscope_manager as mm
+import zarrsmith.microscope_manager as mm
 
 
 def test_subgroup_and_label_discovery(tmp_path, image_pyramid, metadata):

@@ -74,7 +74,7 @@ class ZarrWriteConfig:
         Applies to both zarr v2 and v3. This only changes the write-time
         chunk shape; it does not touch ``metadata['chunksize']``, which is
         only used when a pyramid is built via
-        :func:`~pymif.utils.pyramid.build_pyramid`.
+        :func:`~zarrsmith.utils.pyramid.build_pyramid`.
     shards
         Zarr v3 sharding configuration, applied per pyramid level. One of:
 
@@ -851,7 +851,7 @@ def _validate_metadata(
 
 
 def _build_axes(axes: tuple[str, ...], metadata: dict[str, Any]) -> list[dict[str, Any]]:
-    """Build the NGFF ``axes`` description from the normalized PyMIF metadata."""
+    """Build the NGFF ``axes`` description from the normalized ZarrSmith metadata."""
     axes = normalize_axes(axes)
     axis_types = {"t": "time", "c": "channel", "z": "space", "y": "space", "x": "space"}
     spatial_labels = spatial_axes_in_order(axes)

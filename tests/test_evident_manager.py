@@ -10,8 +10,8 @@ import types
 import numpy as np
 import pytest
 
-import pymif.microscope_manager as mm
-from pymif.cli.pymif import _resolve_zarr_manager
+import zarrsmith.microscope_manager as mm
+from zarrsmith.cli.zarrsmith import _resolve_zarr_manager
 
 
 def _number(value, units="10^-6m^1"):

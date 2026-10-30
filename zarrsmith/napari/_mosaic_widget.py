@@ -10,7 +10,7 @@ from napari import current_viewer
 from napari.qt.threading import thread_worker
 from qtpy.QtWidgets import QLabel, QVBoxLayout, QWidget
 
-from pymif import mosaic_manager as mos
+from zarrsmith import mosaic_manager as mos
 from ._batch_csv import append_batch_csv
 from ._layout import compose_dock, enable_drag_and_drop, make_button_holder, make_log_pane, make_section, make_title
 from ._log import EmittingStream, make_log_appender
@@ -36,7 +36,7 @@ _MAP_COLORS = {True: ((0.2, 0.9, 0.3, 0.15), (0.2, 0.9, 0.3, 1.0)),
 #: A press that moves more than this (canvas pixels) is a pan, not a click on the tile map.
 _CLICK_TOLERANCE = 4
 
-#: Columns of the CSV read by ``pymif fuse --batch``.
+#: Columns of the CSV read by ``zarrsmith fuse --batch``.
 MOSAIC_BATCH_COLUMNS = [
     "input", "microscope", "output",
     "downsample", "projection", "blend", "channels", "groups", "fields", "tiles", "skip_tiles",
@@ -120,7 +120,7 @@ def fuse_kwargs(
     workers: int,
     overwrite: bool,
 ) -> dict:
-    """Map the fusion widget values onto :func:`~pymif.mosaic_manager.fuse_tiles` arguments."""
+    """Map the fusion widget values onto :func:`~zarrsmith.mosaic_manager.fuse_tiles` arguments."""
     return {
         "channels": list(channels),
         "projection": _PROJECTIONS[projection],
@@ -192,7 +192,7 @@ def add_tile_map(viewer, mosaic):
     be edited (napari would let you move or delete rectangles); :func:`toggle_tile_at`
     picks or unpicks a tile.
     """
-    from pymif.utils.visualize import units_for_axes
+    from zarrsmith.utils.visualize import units_for_axes
 
     for layer in [layer for layer in viewer.layers if layer.metadata.get("mosaic_tile_map")]:
         viewer.layers.remove(layer)
@@ -336,7 +336,7 @@ def batch_row(*, input_path, microscope: str, output, values: dict, all_groups: 
               skip_ids: Sequence[str], picked: Optional[Sequence[str]] = None,
               all_stacks: Sequence[str] = (), all_fields: Sequence[str] = (),
               flatfield: Optional[bool] = None) -> dict:
-    """One ``pymif fuse --batch`` CSV row from the fusion widget ``values``.
+    """One ``zarrsmith fuse --batch`` CSV row from the fusion widget ``values``.
 
     ``picked`` are the stack ids picked on the tile map (``None``: all); the ``tiles``
     column stays empty (every tile) when they cover ``all_stacks``. The ``fields``
@@ -402,7 +402,7 @@ def _fuse_worker(tiles, out, kwargs):
 # ---------------------------------------------------------------------------
 
 def mosaic_widget():
-    """Create the PyMIF mosaic widget: load raw tiles, show them, fuse them."""
+    """Create the ZarrSmith mosaic widget: load raw tiles, show them, fuse them."""
     viewer = current_viewer()
     state = {"mosaic": None, "auto_output": None, "streams": None}
 
@@ -740,7 +740,7 @@ def mosaic_widget():
         viewer.layers.selection.events.changed.connect(_update_plan)
         viewer.layers.events.removed.connect(_update_plan)
 
-    # ----- 4. batch CSV export (run later with pymif fuse --batch) -----
+    # ----- 4. batch CSV export (run later with zarrsmith fuse --batch) -----
     @magicgui(
         call_button="Append to batch CSV",
         batch_csv_path={"widget_type": "FileEdit", "mode": "w", "label": "Batch CSV",
@@ -754,7 +754,7 @@ def mosaic_widget():
         try:
             plan = _current_plan()
         except ValueError:
-            plan = None  # e.g. no tile picked: pymif fuse reports it when the row runs
+            plan = None  # e.g. no tile picked: zarrsmith fuse reports it when the row runs
         if plan is not None and plan.error:
             _capture()
             print(f"ERROR: {plan.error} The row is not appended.")
@@ -772,7 +772,7 @@ def mosaic_widget():
             only = f", {len(row['tiles'].split())} picked stack position(s)" if row["tiles"] else ""
             blank = f", {len(skip_ids)} tile id(s) left blank" if skip_ids else ""
             print(f"Appended {Path(row['output']).name} to {path}{only}{blank}. Run it with:\n"
-                  f"  pymif fuse --batch \"{path}\"")
+                  f"  zarrsmith fuse --batch \"{path}\"")
         except OSError as e:
             print(f"Could not write the batch CSV: {e}")
         finally:

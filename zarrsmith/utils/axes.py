@@ -31,7 +31,7 @@ def infer_axes_from_ndim(ndim: int) -> tuple[str, ...]:
 def normalize_axes(axes: str | Sequence[str] | None, ndim: int | None = None) -> tuple[str, ...]:
     """Return validated, lowercase axis labels.
 
-    PyMIF Zarr datasets intentionally support only image-style axes made from
+    ZarrSmith Zarr datasets intentionally support only image-style axes made from
     the labels ``t``, ``c``, ``z``, ``y`` and ``x``.  Any subset and any order of
     those labels is accepted, but labels must be unique and must match the array
     dimensionality when ``ndim`` is supplied.
@@ -91,7 +91,7 @@ def spatial_axis_indices(axes: str | Sequence[str]) -> tuple[int, ...]:
 
 
 def normalize_data_type(data_type: str | None = None, *, is_label: bool | None = None) -> str:
-    """Normalize PyMIF's image-vs-label flag to ``intensity`` or ``label``."""
+    """Normalize ZarrSmith's image-vs-label flag to ``intensity`` or ``label``."""
     if data_type is None:
         return "label" if is_label else "intensity"
 

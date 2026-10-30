@@ -1,15 +1,15 @@
 """
 Explore the features of segmented objects in napari, with napari-clusters-plotter.
 
-Opens napari with the Objects Explorer widget of PyMIF (also in Plugins > PyMIF > Objects Explorer),
-and loads the files given on the command line. See pymif/napari/_explorer_widget.py for what it does.
+Opens napari with the Objects Explorer widget of ZarrSmith (also in Plugins > ZarrSmith > Objects Explorer),
+and loads the files given on the command line. See zarrsmith/napari/_explorer_widget.py for what it does.
 
 Run:
     python label_features_explorer.py
     python label_features_explorer.py image.ome.zarr labels.ome.zarr features.csv
     python label_features_explorer.py image.ome.zarr "" features.csv --label-column label
 
-Needs napari and napari-clusters-plotter (pip install pymif[napari]).
+Needs napari and napari-clusters-plotter (pip install zarrsmith[napari]).
 """
 
 import argparse
@@ -17,7 +17,7 @@ import argparse
 import napari
 from qtpy.QtCore import QTimer
 
-from pymif.napari._explorer_widget import explorer_widget
+from zarrsmith.napari._explorer_widget import explorer_widget
 
 
 def main():

@@ -41,12 +41,12 @@ from scipy import ndimage as ndi
 
 from .axes import normalize_axes, spatial_axes_in_order
 
-logger = logging.getLogger("pymif")
+logger = logging.getLogger("zarrsmith")
 
 Extent = Literal["union", "same", "intersection"]
 
 # Root attribute recording the applied correction in the output store.
-PROVENANCE_KEY = "pymif_chromatic_shift"
+PROVENANCE_KEY = "zarrsmith_chromatic_shift"
 
 # Extra planes read around each crop so the Gaussian derivative has context.
 _FILTER_MARGIN = 3
@@ -299,7 +299,7 @@ def estimate_chromatic_shift(
     Parameters
     ----------
     data_levels, metadata
-        Multiscale pyramid (finest first) and normalized PyMIF metadata. The
+        Multiscale pyramid (finest first) and normalized ZarrSmith metadata. The
         axes must include ``c``, ``z``, ``y`` and ``x``.
     reference_channel
         Channel that stays in place; the others are aligned to it.
@@ -740,7 +740,7 @@ def write_chromatic_shift_corrected(
     and dimension names, and every group copies its source attributes, so
     the output has the structure of the input with only the Z size changed.
     The applied correction is recorded in the root attribute
-    ``pymif_chromatic_shift``.
+    ``zarrsmith_chromatic_shift``.
 
     Image datasets whose channel count matches ``shifts`` are corrected
     channel by channel. Datasets without a channel axis (labels) follow the

@@ -4,7 +4,7 @@ from __future__ import annotations
 import zarr
 import pytest
 
-import pymif.microscope_manager as mm
+import zarrsmith.microscope_manager as mm
 
 
 def test_create_empty_dataset_from_metadata_v04(tmp_path, metadata):

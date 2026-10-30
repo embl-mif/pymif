@@ -1,4 +1,4 @@
-"""Layout helpers that keep the PyMIF napari widgets usable at any dock size."""
+"""Layout helpers that keep the ZarrSmith napari widgets usable at any dock size."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -37,7 +37,7 @@ LOGO_SIZE = 40
 def make_logo_header() -> QWidget:
     """A slim row with the logo, shown above the scrollable content of a dock."""
     logo = QLabel()
-    logo.setObjectName("pymifLogo")
+    logo.setObjectName("zarrsmithLogo")
     logo.setPixmap(QIcon(str(LOGO_PATH)).pixmap(QSize(LOGO_SIZE, LOGO_SIZE)))
     header = QWidget()
     row = QHBoxLayout(header)
@@ -54,7 +54,7 @@ def make_title(text: str) -> QLabel:
     return label
 
 
-def make_log_pane(title: str = "PyMIF Log:"):
+def make_log_pane(title: str = "ZarrSmith Log:"):
     """The log of a widget: a read-only text box under its title and a Clear button.
 
     Returns ``(section, text_box)``; the section is the ``bottom`` pane of :func:`compose_dock`.
@@ -87,9 +87,9 @@ def make_section(*widgets, margins=(6, 4, 6, 6), spacing=3):
     napari themes. More widgets can be added later via ``section.layout()``.
     """
     frame = QFrame()
-    frame.setObjectName("pymifSection")
+    frame.setObjectName("zarrsmithSection")
     frame.setStyleSheet(
-        "QFrame#pymifSection { border: 1px solid rgba(128, 128, 128, 0.55);"
+        "QFrame#zarrsmithSection { border: 1px solid rgba(128, 128, 128, 0.55);"
         " border-radius: 6px; }"
     )
     inner = QVBoxLayout(frame)

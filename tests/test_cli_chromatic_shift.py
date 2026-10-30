@@ -8,9 +8,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
-import pymif.microscope_manager as mm
-from pymif.cli import pymif as cli
-from pymif.utils.chromatic_shift import PROVENANCE_KEY
+import zarrsmith.microscope_manager as mm
+from zarrsmith.cli import zarrsmith as cli
+from zarrsmith.utils.chromatic_shift import PROVENANCE_KEY
 
 from .test_chromatic_shift import SPACING, _expected_shifts, _synthetic_sample, _write_store
 
@@ -27,7 +27,7 @@ def store(tmp_path, sample):
 
 
 def _run(monkeypatch, *argv):
-    monkeypatch.setattr(sys, "argv", ["pymif", *map(str, argv)])
+    monkeypatch.setattr(sys, "argv", ["zarrsmith", *map(str, argv)])
     cli.main()
 
 

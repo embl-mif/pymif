@@ -1,8 +1,8 @@
 # Mosaics: raw tiles and fusion
 
-Some acquisitions are saved as many separate **tiles** (stacks acquired at different stage positions) instead of one image. `pymif.mosaic_manager` reads such tiles lazily, shows them in napari at their position and **fuses** them into one OME-Zarr image.
+Some acquisitions are saved as many separate **tiles** (stacks acquired at different stage positions) instead of one image. `zarrsmith.mosaic_manager` reads such tiles lazily, shows them in napari at their position and **fuses** them into one OME-Zarr image.
 
-A mosaic manager is different from a [microscope manager](readers.md): a `MicroscopeManager` is *one* image, while a `MosaicManager` is a set of positioned tiles that only becomes an image once it is fused. The fused result is an ordinary OME-Zarr dataset, so everything else in PyMIF works on it.
+A mosaic manager is different from a [microscope manager](readers.md): a `MicroscopeManager` is *one* image, while a `MosaicManager` is a set of positioned tiles that only becomes an image once it is fused. The fused result is an ordinary OME-Zarr dataset, so everything else in ZarrSmith works on it.
 
 | Class | Reads | Status |
 |---|---|---|
@@ -12,18 +12,18 @@ A mosaic manager is different from a [microscope manager](readers.md): a `Micros
 
 `LuxendoMosaicManager` and `OperaMosaicManager` are for the **raw** tiles. Data already fused by the vendor software is read with `LuxendoManager` and `OperaManager` (Harmony's `stitchresult/*.ome.tiff`).
 
-Every reader first checks that the folder is not another microscope's: a Harmony export (`Images/Index.xml`) opened with `LuxendoMosaicManager`, or a Luxendo acquisition (`*.lux.h5`) opened with `OperaMosaicManager`, stops at once with a `WrongReaderError` naming the right reader. `detect_microscope(path)` returns `"opera"`, `"luxendo"` or `None`; `pymif fuse` uses it when `--microscope` is not given, and the napari widget switches its *Microscope* choice to the detected one.
+Every reader first checks that the folder is not another microscope's: a Harmony export (`Images/Index.xml`) opened with `LuxendoMosaicManager`, or a Luxendo acquisition (`*.lux.h5`) opened with `OperaMosaicManager`, stops at once with a `WrongReaderError` naming the right reader. `detect_microscope(path)` returns `"opera"`, `"luxendo"` or `None`; `zarrsmith fuse` uses it when `--microscope` is not given, and the napari widget switches its *Microscope* choice to the detected one.
 
 ```{note}
 Mosaics are supported for a **single timepoint** so far. Loading a timelapse stops with an error that says so: several acquisitions of the same stack in one folder, or tiles whose metadata report different timepoints.
 ```
 
-A runnable walk-through with synthetic data is in [examples/10_mosaic_fusion.ipynb](https://github.com/embl-mif/pymif/blob/main/examples/10_mosaic_fusion.ipynb).
+A runnable walk-through with synthetic data is in [examples/10_mosaic_fusion.ipynb](https://github.com/embl-mif/zarrsmith/blob/main/examples/10_mosaic_fusion.ipynb).
 
 ## Load and inspect
 
 ```python
-from pymif.mosaic_manager import LuxendoMosaicManager, plan_fusion
+from zarrsmith.mosaic_manager import LuxendoMosaicManager, plan_fusion
 
 mosaic = LuxendoMosaicManager("path/to/2026-10-14_103957")   # acquisition folder (contains raw/)
 mosaic.channels          # ['autofluo-488', 'cFos-647']
@@ -46,7 +46,7 @@ For Luxendo data, the two illumination sides of a dye (e.g. `autofluo-488-L` and
 ### Opera (Harmony exports)
 
 ```python
-from pymif.mosaic_manager import OperaMosaicManager
+from zarrsmith.mosaic_manager import OperaMosaicManager
 
 mosaic = OperaMosaicManager("path/to/plate__2026-06-18T20_23_37-Measurement 1")  # contains Images/
 mosaic.channels          # ['DAPI', 'Alexa 647_extended', ...]  (ChannelName of the index)
@@ -125,7 +125,7 @@ The projection is computed at full resolution along z and then downsampled in y/
 | `overwrite` | bool | replace an existing output |
 | `temp_dir` | path | where the temporary fused level 0 goes (default: next to the output) |
 
-Every other option of `to_zarr` is passed through unchanged, exactly as for `pymif convert`: `chunks` (in output axis order, `c, z, y, x` or `c, y, x`), `shards`, `shard_target_mb`, `shard_exclude_axes`, `zarr_format`, `ngff_version`, `compressor`, `compressor_level`, `drop_singleton`, `num_workers` (write threads) and `storage_options`. See [Advanced writing options](advanced.md). As with `pymif convert`, a single fused channel is written without its channel axis unless `drop_singleton=False`.
+Every other option of `to_zarr` is passed through unchanged, exactly as for `zarrsmith convert`: `chunks` (in output axis order, `c, z, y, x` or `c, y, x`), `shards`, `shard_target_mb`, `shard_exclude_axes`, `zarr_format`, `ngff_version`, `compressor`, `compressor_level`, `drop_singleton`, `num_workers` (write threads) and `storage_options`. See [Advanced writing options](advanced.md). As with `zarrsmith convert`, a single fused channel is written without its channel axis unless `drop_singleton=False`.
 
 ```python
 mosaic.fuse(
@@ -154,12 +154,12 @@ Blend modes:
 
 `plan_fusion(mosaic.tiles, ...)` takes the fusion arguments (`ds`, `projection`, `blend`, `channels`, `crop`, `skip`, `out_dtype`, `midline_axis`) and returns the level-0 geometry without reading anything: `plan.summary()`, `plan.shape`, `plan.scale`, `plan.nbytes`.
 
-The fused output stores a **display window** for every channel (OMERO `window` metadata): the 0.5th to 99.9th percentile of the fused values, ignoring blank areas. Viewers that read it (napari-ome-zarr, Fiji, the *Open result* option of the napari widget) show the result with a usable contrast instead of the whole 0 to 65535 range. Read it with `pymif.mosaic_manager.display_windows(path)`.
+The fused output stores a **display window** for every channel (OMERO `window` metadata): the 0.5th to 99.9th percentile of the fused values, ignoring blank areas. Viewers that read it (napari-ome-zarr, Fiji, the *Open result* option of the napari widget) show the result with a usable contrast instead of the whole 0 to 65535 range. Read it with `zarrsmith.mosaic_manager.display_windows(path)`.
 
 ## How fusion works
 
 1. **Level 0** is fused one region at a time (256 × 256 output voxels in y/x for 3D, 1024 × 1024 for projections, over the full z range) into a temporary zarr. For each region, only the tile voxels that fall inside it are read, downsampled and merged. Memory stays bounded and every full-resolution voxel is read once.
-2. The fused level 0, which is already downsampled and therefore small compared with the raw tiles, is written to the output with PyMIF's standard `to_zarr`. Pyramid levels, chunks, shards, compression and singleton axes therefore behave exactly as for any other conversion. The temporary store is then deleted.
+2. The fused level 0, which is already downsampled and therefore small compared with the raw tiles, is written to the output with ZarrSmith's standard `to_zarr`. Pyramid levels, chunks, shards, compression and singleton axes therefore behave exactly as for any other conversion. The temporary store is then deleted.
 
 With `workers > 1`, the tiles of a region are read in **worker processes** when the tiles allow it (as Luxendo and Opera tiles do). h5py serialises reads within one process, so threads would not speed up reading HDF5 files. Merging and writing stay in the calling process. If worker processes cannot be started, fusion falls back to threads with a warning.
 
@@ -167,14 +167,14 @@ Raw tiles usually have no pyramid, so every fusion reads the full-resolution dat
 
 ## Command line
 
-`pymif fuse` fuses one mosaic, or many from a CSV file with `--batch`. Every output option of `pymif convert` is available with the same flags. See [Command line](cli.md#fuse-a-mosaic).
+`zarrsmith fuse` fuses one mosaic, or many from a CSV file with `--batch`. Every output option of `zarrsmith convert` is available with the same flags. See [Command line](cli.md#fuse-a-mosaic).
 
 ```console
-pymif fuse -i /path/to/2026-10-14_103957 -z acq_3D.ome.zarr -rds 4 8 8 -nl 3
-pymif fuse -i /path/to/2026-10-14_103957 -z acq_MIP.ome.zarr -rds 1 8 8 -p max -b midline
-pymif fuse -i /path/to/2026-10-14_103957 -z acq_field1_MIP.ome.zarr -rds 1 8 8 -p max -f field1
-pymif fuse -i "/path/to/plate-Measurement 1" -z A3_MIP.ome.zarr -p max -f A3_field1        # Opera
-pymif fuse -i "/path/to/plate-Measurement 1" -z A3_raw.ome.zarr -p max -f A3_field1 -nff   # without flat-field
+zarrsmith fuse -i /path/to/2026-10-14_103957 -z acq_3D.ome.zarr -rds 4 8 8 -nl 3
+zarrsmith fuse -i /path/to/2026-10-14_103957 -z acq_MIP.ome.zarr -rds 1 8 8 -p max -b midline
+zarrsmith fuse -i /path/to/2026-10-14_103957 -z acq_field1_MIP.ome.zarr -rds 1 8 8 -p max -f field1
+zarrsmith fuse -i "/path/to/plate-Measurement 1" -z A3_MIP.ome.zarr -p max -f A3_field1        # Opera
+zarrsmith fuse -i "/path/to/plate-Measurement 1" -z A3_raw.ome.zarr -p max -f A3_field1 -nff   # without flat-field
 ```
 
 The fields are listed when the mosaic is loaded. Without `-f/--fields` (or `-t/--tiles`) the first field is fused. Asking for tiles from several fields prints an error and nothing is fused; in a `--batch` run that row is not done, the other rows still run, and the rows that were not fused are listed at the end.
@@ -183,16 +183,16 @@ The fields are listed when the mosaic is loaded. Without `-f/--fields` (or `-t/-
 
 ![mosaic-demo](mosaic-demo.png)
 
-`Plugins > PyMIF > Mosaic Fusion` opens a widget with three boxes:
+`Plugins > ZarrSmith > Mosaic Fusion` opens a widget with three boxes:
 
 1. **Mosaic loading**: choose the microscope and the acquisition folder (browse, or drag and drop it, or any file inside it, from the file explorer), then *Load tiles*. *Flat-field correction (Opera)* (on by default) corrects Opera tiles as Harmony does; other microscopes ignore it. This reads metadata only and adds a **tile map**: a `tile map` shapes layer with one rectangle per stack position, labelled with its stack id, all picked (green). Click a rectangle in the 2D view to unpick it (grey) or pick it again; dragging still pans. *Shift* + drag picks, and *Ctrl* + drag unpicks, every tile that lies even partially in the box shown while you drag (a temporary `tile map box` layer, removed on release) (*Shift* or *Ctrl* + click: one tile). A rectangle stands for that position in every channel and illumination side. Only picked tiles are shown and fused. When the mosaic has several [fields](#fields), each rectangle also shows its field, the log lists the stack positions of every field, and the *fields* selectors of *Show tiles* and *Fuse to OME-Zarr* start on the first field.
 2. **Show tiles**: show the picked tiles of the selected channels, groups and fields as one layer per tile at its stage position, with one linked contrast per channel. A channel starts at the whole range of its data type, so nothing is read before the tiles appear: set the contrast of one tile and the others follow. Every displayed plane reads data from all shown tiles, so show only a few channels or groups at a time. Change the picks on the tile map and click *Show tiles in napari* again to update the view; the contrast you set is kept, and *Remove existing layers* keeps the tile map.
 3. **Fuse to OME-Zarr**: the main fusion options, with a live estimate of the output size. Only the picked tiles of the selected field are fused, and the output fits them. Selecting several fields shows an error in the size estimate, and *Fuse to OME-Zarr* and *Append to batch CSV* then print an error and do nothing. With several fields, the default output name ends with the field, e.g. `<acquisition>_3D_ds4-8-8_field1.ome.zarr`. *Tiles to fuse* can be set to *visible layers only* or *selected layers only*: tiles whose layer is hidden (eye icon off) or not selected in the layer list are then left blank (the output keeps its size), and *Blank in all channels* also blanks that position in the other channels. Picked tiles that are not shown in napari are fused normally. The output path follows the parameters (for example `<acquisition>_3D_ds4-8-8.ome.zarr`) until you type your own; dropping a folder on the output field writes the result inside that folder. When fusion finishes, the result can be opened directly (the tile map is then hidden, since the result is not placed at the stage position).
 
-4. **Batch CSV export**: *Append to batch CSV* adds the current settings, including the picked tiles (`tiles` column) and the tiles left blank, as a row of a CSV file. Run the file later, for example on a workstation close to the data, with `pymif fuse --batch mosaic_batch.csv`.
+4. **Batch CSV export**: *Append to batch CSV* adds the current settings, including the picked tiles (`tiles` column) and the tiles left blank, as a row of a CSV file. Run the file later, for example on a workstation close to the data, with `zarrsmith fuse --batch mosaic_batch.csv`.
 
 Loading and fusion run in the background, and their progress is shown in the log at the bottom.
 
 ## Adding a mosaic reader
 
-A new tile format only needs a `MosaicManager` subclass that implements `_scan()`, returning one `Tile` per acquired tile; `visualize()`, `fuse()`, `pymif fuse` and the napari widget then work unchanged. See [Adding a mosaic manager](contributing.md#adding-a-mosaic-manager) for the `Tile` fields, how to keep loading fast and fusion parallel, and where to register the reader.
+A new tile format only needs a `MosaicManager` subclass that implements `_scan()`, returning one `Tile` per acquired tile; `visualize()`, `fuse()`, `zarrsmith fuse` and the napari widget then work unchanged. See [Adding a mosaic manager](contributing.md#adding-a-mosaic-manager) for the `Tile` fields, how to keep loading fast and fusion parallel, and where to register the reader.

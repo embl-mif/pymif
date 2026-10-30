@@ -1,4 +1,4 @@
-"""Fuse the tiles of a :class:`~pymif.mosaic_manager.MosaicManager` into one OME-Zarr image.
+"""Fuse the tiles of a :class:`~zarrsmith.mosaic_manager.MosaicManager` into one OME-Zarr image.
 
 Fusion runs in two steps:
 
@@ -14,7 +14,7 @@ Fusion runs in two steps:
 2. The fused level 0 (already downsampled, so small compared with the raw tiles)
    is written to the final OME-Zarr with :meth:`MicroscopeManager.to_zarr`, so
    pyramid levels, chunks, sharding, compression, zarr format and singleton axes
-   behave exactly as for any other PyMIF conversion (``pymif convert``).
+   behave exactly as for any other ZarrSmith conversion (``zarrsmith convert``).
 """
 from __future__ import annotations
 
@@ -38,7 +38,7 @@ from ..utils.ngff import ZarrWriteConfig
 from .fields import check_single_field, fields_of, multiple_fields_message
 from .tile import Tile
 
-logger = logging.getLogger("pymif")
+logger = logging.getLogger("zarrsmith")
 
 BLENDS = ("sigmoid", "max", "sum", "midline")
 PROJECTIONS = (None, "max", "sum")
@@ -846,7 +846,7 @@ def fuse_tiles(
         Tile channels to fuse, in output order. Default: all, in tile order.
     channel_names, channel_colors
         Names and colours (hex or matplotlib names) written for the output
-        channels. Default: the tile channel names and the PyMIF palette.
+        channels. Default: the tile channel names and the ZarrSmith palette.
     crop
         Part of the output to write, in output voxels (after ``ds``), e.g.
         ``{"y": slice(100, 900), "z": slice(0, 50)}``. For projections, a ``z``
@@ -864,7 +864,7 @@ def fuse_tiles(
         Number of regions fused in parallel (threads or processes, see ``executor``).
     executor
         ``"process"``, ``"thread"`` or ``"auto"`` (processes when ``workers > 1`` and
-        every tile's data is picklable, e.g. :class:`~pymif.mosaic_manager.H5Array`;
+        every tile's data is picklable, e.g. :class:`~zarrsmith.mosaic_manager.H5Array`;
         threads otherwise). h5py serialises reads inside one process, so processes
         are what actually speeds up reading from HDF5 tiles.
     out_dtype
@@ -892,8 +892,8 @@ def fuse_tiles(
     progress
         Show progress bars.
     **write_options
-        Any other :meth:`~pymif.microscope_manager.MicroscopeManager.to_zarr`
-        option, as for ``pymif convert``: ``chunks``, ``shards``, ``shard_target_mb``,
+        Any other :meth:`~zarrsmith.microscope_manager.MicroscopeManager.to_zarr`
+        option, as for ``zarrsmith convert``: ``chunks``, ``shards``, ``shard_target_mb``,
         ``shard_exclude_axes``, ``zarr_format``, ``ngff_version``, ``compressor``,
         ``compressor_level``, ``drop_singleton``, ``num_workers``, ``storage_options``.
         ``chunks`` is given in the output axis order (``c, z, y, x``, or ``c, y, x``
@@ -907,9 +907,9 @@ def fuse_tiles(
     size without reading or writing anything.
 
     ``tiles`` must come from one field (``Tile.field``, set by
-    :class:`~pymif.mosaic_manager.MosaicManager`; skipped tiles count): tiles of
+    :class:`~zarrsmith.mosaic_manager.MosaicManager`; skipped tiles count): tiles of
     separate fields are not fused, a
-    :class:`~pymif.mosaic_manager.fields.MultipleFieldsError` is raised before
+    :class:`~zarrsmith.mosaic_manager.fields.MultipleFieldsError` is raised before
     anything is read or written.
     """
     from ..microscope_manager.array_manager import ArrayManager
@@ -990,7 +990,7 @@ def fuse_tiles(
             samples = _fuse_level0(regions, level0, executor="thread", **options)
         windows = _display_windows(samples, n_ch, out_dtype)
 
-        # ----- 2. pyramid + OME-Zarr through the standard PyMIF writer -----
+        # ----- 2. pyramid + OME-Zarr through the standard ZarrSmith writer -----
         metadata = build_metadata(
             size=[plan.shape],
             scales=[plan.scale],

@@ -5,7 +5,7 @@ Typical Python usage of the managers and of the zarr writing helpers.
 ## Read, build a pyramid and export
 
 ```python
-import pymif.microscope_manager as mm
+import zarrsmith.microscope_manager as mm
 
 # Read a source dataset
 source = mm.ViventisManager("path/to/Position_1")
@@ -24,7 +24,7 @@ viewer = z.visualize(start_level=0, in_memory=False)
 ## Create an empty zarr dataset from metadata
 
 ```python
-import pymif.microscope_manager as mm
+import zarrsmith.microscope_manager as mm
 
 z = mm.ZarrManager(
     "empty.zarr",
@@ -56,7 +56,7 @@ For example, a two-dimensional YX intensity image can be written as:
 ```python
 import dask.array as da
 import numpy as np
-import pymif.microscope_manager as mm
+import zarrsmith.microscope_manager as mm
 
 img = np.zeros((512, 512), dtype=np.uint16)
 levels = [da.from_array(img, chunks=(256, 256))]
@@ -73,7 +73,7 @@ metadata = {
 mm.ArrayManager(levels, metadata).to_zarr("yx_image.zarr")
 ```
 
-Use `data_type="label"` for segmentation, mask, or annotation data. Label arrays must use an integer dtype. For NGFF v0.5/Zarr v3, PyMIF stores the semantic type under `attrs["ome"]["data_type"]`, writes array-level `dimension_names`, writes `multiscales[0]["type"] = "label"`, and adds `image-label` metadata. For NGFF v0.4/Zarr v2, the equivalent metadata is stored directly on the group attributes.
+Use `data_type="label"` for segmentation, mask, or annotation data. Label arrays must use an integer dtype. For NGFF v0.5/Zarr v3, ZarrSmith stores the semantic type under `attrs["ome"]["data_type"]`, writes array-level `dimension_names`, writes `multiscales[0]["type"] = "label"`, and adds `image-label` metadata. For NGFF v0.4/Zarr v2, the equivalent metadata is stored directly on the group attributes.
 
 Legacy calls that create labels from an intensity image metadata dictionary still work:
 
@@ -93,7 +93,7 @@ z.create_empty_group("classes", label_metadata, data_type="label")
 
 ```python
 import numpy as np
-import pymif.microscope_manager as mm
+import zarrsmith.microscope_manager as mm
 
 z = mm.ZarrManager("output.zarr", mode="a")
 patch = np.full((1, 1, 2, 64, 64), 999, dtype=np.uint16)

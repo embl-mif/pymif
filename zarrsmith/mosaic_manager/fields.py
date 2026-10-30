@@ -4,7 +4,7 @@ A mosaic can hold several separate fields, e.g. two samples or two regions of on
 sample imaged in the same acquisition. Fusing tiles of different fields into one
 image puts them on a single canvas that spans all of them, with blank space in
 between. Every tile therefore gets a ``field`` label when a
-:class:`~pymif.mosaic_manager.MosaicManager` is loaded, fusion uses the first
+:class:`~zarrsmith.mosaic_manager.MosaicManager` is loaded, fusion uses the first
 field by default, and fusing tiles of more than one field is refused
 (:class:`MultipleFieldsError`).
 """
@@ -18,7 +18,7 @@ import numpy as np
 
 from .tile import Tile
 
-logger = logging.getLogger("pymif")
+logger = logging.getLogger("zarrsmith")
 
 #: Prefix of the field names: ``field0``, ``field1``, ...
 FIELD_PREFIX = "field"

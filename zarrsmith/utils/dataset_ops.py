@@ -1,7 +1,7 @@
 """Dataset-level operations shared by ``MicroscopeManager`` and ``ZarrManager``.
 
 Each function works on a single ``(data, metadata)`` pair (a list of dask arrays
-plus the PyMIF metadata dictionary) so that the single-dataset managers and the
+plus the ZarrSmith metadata dictionary) so that the single-dataset managers and the
 multi-dataset ``ZarrManager`` (raw + groups + labels) run exactly the same
 validation code.
 """
@@ -22,7 +22,7 @@ from .axes import (
     normalize_data_type,
 )
 
-logger = logging.getLogger("pymif")
+logger = logging.getLogger("zarrsmith")
 
 
 def _axes_of(metadata: dict[str, Any]) -> str:

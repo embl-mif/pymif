@@ -5,8 +5,8 @@ import zarr
 import numpy as np
 import pytest
 
-import pymif.microscope_manager as mm
-from pymif.utils.ngff import _resolve_shards_for_levels
+import zarrsmith.microscope_manager as mm
+from zarrsmith.utils.ngff import _resolve_shards_for_levels
 
 
 def test_auto_shards_never_merge_t_or_c_by_default(tmp_path, image_pyramid, metadata):

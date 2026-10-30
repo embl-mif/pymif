@@ -10,7 +10,7 @@ import numpy as np
 class TiffStackArray:
     """Lazy, picklable ``(z, y, x)`` stack of single-plane TIFF files (one file per plane).
 
-    Like :class:`~pymif.mosaic_manager.H5Array`, it holds no open file, so it can be
+    Like :class:`~zarrsmith.mosaic_manager.H5Array`, it holds no open file, so it can be
     sent to worker processes and needs no ``close()``. Slicing reads only the planes it
     needs; every plane is decoded in full (``chunks`` is ``(1, y, x)``, which the fusion
     uses to size its regions).

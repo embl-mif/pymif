@@ -13,7 +13,7 @@ from ..utils.axes import normalize_axes, normalize_data_type
 from ..utils.ngff import _infer_data_type_from_group, _register_label_on_labels_group
 from collections.abc import Iterator, Sequence
 
-logger = logging.getLogger("pymif")
+logger = logging.getLogger("zarrsmith")
 
 if TYPE_CHECKING:
     import napari
@@ -174,7 +174,7 @@ class ZarrManager(MicroscopeManager):
         data_type: str = "intensity",
         zarr_levels: List[Any] | None = None,
     ) -> Dict[str, Any]:
-        """Translate NGFF metadata blocks into the normalized PyMIF schema.
+        """Translate NGFF metadata blocks into the normalized ZarrSmith schema.
 
         The normalized schema is axis-aware: ``axes`` may be any unique
         combination of ``t``, ``c``, ``z``, ``y`` and ``x``. Spatial ``scales``
@@ -474,7 +474,7 @@ class ZarrManager(MicroscopeManager):
         except ImportError:
             import warnings
             warnings.warn(
-                "napari is not installed. Install with `pip install pymif[napari]` to use visualization.",
+                "napari is not installed. Install with `pip install zarrsmith[napari]` to use visualization.",
                 stacklevel=2,
             )
             return None
@@ -751,7 +751,7 @@ class ZarrManager(MicroscopeManager):
         The shift is measured on the sample's Z-facing surfaces (top and
         bottom), first on a coarse level and then on crops of a finer level.
         Keyword arguments are forwarded to
-        :func:`~pymif.utils.chromatic_shift.estimate_chromatic_shift`
+        :func:`~zarrsmith.utils.chromatic_shift.estimate_chromatic_shift`
         (``timepoint``, ``coarse_level``, ``refine_level``, ``max_shift``,
         ``n_regions``, ``crop_yx``, ``min_z_normal``, ``min_correlation``,
         ``threshold``).
@@ -804,7 +804,7 @@ class ZarrManager(MicroscopeManager):
             (padded or cropped to the new Z extent, following the reference
             channel).
         overwrite, num_workers, progress
-            Same meaning as in :class:`~pymif.utils.ngff.ZarrWriteConfig`.
+            Same meaning as in :class:`~zarrsmith.utils.ngff.ZarrWriteConfig`.
 
         Every array keeps its source's chunks, shards, codecs and dimension
         names, every group its attributes (pixel sizes, channel metadata...).
@@ -853,7 +853,7 @@ class ZarrManager(MicroscopeManager):
 
         Combines :meth:`estimate_chromatic_shift` (``estimate_kwargs``) and
         :meth:`apply_chromatic_shift`. The estimate report is stored in the
-        output root attribute ``pymif_chromatic_shift``.
+        output root attribute ``zarrsmith_chromatic_shift``.
         """
         report = self.estimate_chromatic_shift(reference_channel, **estimate_kwargs)
         return self.apply_chromatic_shift(

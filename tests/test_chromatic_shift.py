@@ -7,8 +7,8 @@ import pytest
 import zarr
 from scipy import ndimage as ndi
 
-import pymif.microscope_manager as mm
-from pymif.utils.chromatic_shift import (
+import zarrsmith.microscope_manager as mm
+from zarrsmith.utils.chromatic_shift import (
     PROVENANCE_KEY,
     plan_z_extent,
     shift_along_axis,

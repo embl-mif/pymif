@@ -4,7 +4,7 @@ from __future__ import annotations
 import numpy as np
 import zarr
 
-import pymif.microscope_manager as mm
+import zarrsmith.microscope_manager as mm
 
 
 def test_write_image_region_and_reopen(tmp_path, image_pyramid, metadata):
