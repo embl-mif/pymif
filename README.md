@@ -17,6 +17,8 @@ rewrite HTML paths) and includes this README from here. -->
 
 **PyMIF** is a Python package for reading microscopy datasets from multiple acquisition systems, building multiscale pyramids, writing **OME-NGFF / OME-Zarr**, and working with those datasets from Python, the command line and napari.
 
+The rendered documentation is at **[embl-mif.github.io/pymif](https://embl-mif.github.io/pymif/)**.
+
 ---
 
 ## What PyMIF does
