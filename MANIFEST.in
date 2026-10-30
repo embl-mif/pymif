@@ -1,1 +1,2 @@
 recursive-include pymif/napari *.yaml
+recursive-include pymif/napari/resources *.svg

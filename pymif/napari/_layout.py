@@ -4,7 +4,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Callable, Optional
 
-from qtpy.QtCore import Qt
+from qtpy.QtCore import QSize, Qt
+from qtpy.QtGui import QIcon
 from qtpy.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -27,6 +28,23 @@ MIN_LOG_HEIGHT = 140
 MIN_CONTENT_HEIGHT = 120
 #: Style of the title of a section.
 TITLE_STYLE = "QLabel { font-weight: bold; font-size: 13px; padding: 2px 0px; }"
+#: The logo shown at the top of every widget (also the logo of the documentation).
+LOGO_PATH = Path(__file__).parent / "resources" / "zarrsmith-icon.svg"
+#: Height of the logo, in logical pixels (the SVG is rendered sharp at any screen scaling).
+LOGO_SIZE = 40
+
+
+def make_logo_header() -> QWidget:
+    """A slim row with the logo, shown above the scrollable content of a dock."""
+    logo = QLabel()
+    logo.setObjectName("pymifLogo")
+    logo.setPixmap(QIcon(str(LOGO_PATH)).pixmap(QSize(LOGO_SIZE, LOGO_SIZE)))
+    header = QWidget()
+    row = QHBoxLayout(header)
+    row.setContentsMargins(6, 4, 6, 2)
+    row.addWidget(logo)
+    row.addStretch(1)
+    return header
 
 
 def make_title(text: str) -> QLabel:
@@ -100,6 +118,7 @@ def make_button_holder(button: QPushButton) -> QWidget:
 def compose_dock(content: QWidget, bottom: QWidget | None = None) -> QWidget:
     """Build the dock widget: scrollable content and an optional resizable bottom pane.
 
+    * the logo sits in a slim row above everything, always visible.
     * ``content`` (all the boxes) goes in one scroll area, so nothing is ever cut
       off, whatever the size or position of the dock (side or bottom).
     * ``bottom`` (typically the log) sits under a splitter handle, so it can be
@@ -111,6 +130,7 @@ def compose_dock(content: QWidget, bottom: QWidget | None = None) -> QWidget:
     outer = QVBoxLayout(container)
     outer.setContentsMargins(0, 0, 0, 0)
     outer.setSpacing(0)
+    outer.addWidget(make_logo_header())
 
     scroll = QScrollArea()
     scroll.setWidgetResizable(True)

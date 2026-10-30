@@ -14,7 +14,7 @@ from importlib.metadata import version as get_version, PackageNotFoundError
 sys.path.insert(0, os.path.abspath(".."))
 
 project = 'PyMIF'
-copyright = '2025, Nicola Gritti'
+copyright = '2023, European Molecular Biology Laboratory (EMBL)'
 author = 'Nicola Gritti'
 try:
     release = get_version("pymif")
@@ -61,3 +61,5 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '*.txt']
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = []
+# One copy of the logo, shipped with the package for the napari widgets.
+html_logo = '../pymif/napari/resources/zarrsmith-icon.svg'

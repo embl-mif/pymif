@@ -1,3 +1,5 @@
+![zarrsmith logo](pymif/napari/resources/zarrsmith-icon.svg)
+
 # PyMIF — microscopy I/O, OME-Zarr conversion, and NGFF utilities
 
 ![Python](https://img.shields.io/badge/python-3.12-green)
