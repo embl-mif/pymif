@@ -1,0 +1,41 @@
+zarrsmith.microscope_manager.readers
+====================================
+
+.. py:module:: zarrsmith.microscope_manager.readers
+
+.. autoapi-nested-parse::
+
+   Dataset readers by microscope, and detection of the reader of a path (CLI and napari).
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   zarrsmith.microscope_manager.readers.READERS
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   zarrsmith.microscope_manager.readers.detect_reader
+
+
+Module Contents
+---------------
+
+.. py:data:: READERS
+   :type:  Dict[str, Type[zarrsmith.microscope_manager.microscope_manager.MicroscopeManager]]
+
+.. py:function:: detect_reader(path: str | pathlib.Path) -> Optional[Tuple[Type[zarrsmith.microscope_manager.microscope_manager.MicroscopeManager], str]]
+
+   ``(reader, microscope name)`` of the dataset at ``path``, from its layout, or ``None``.
+
+   Zarr stores of both NGFF versions are read by :class:`ZarrManager` (``zarrv04`` names a
+   store without ``zarr.json``).
+
+

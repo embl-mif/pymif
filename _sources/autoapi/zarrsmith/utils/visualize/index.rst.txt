@@ -1,0 +1,83 @@
+zarrsmith.utils.visualize
+=========================
+
+.. py:module:: zarrsmith.utils.visualize
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   zarrsmith.utils.visualize._parse_color
+   zarrsmith.utils.visualize._axis_scale
+   zarrsmith.utils.visualize.units_for_axes
+   zarrsmith.utils.visualize._axis_units
+   zarrsmith.utils.visualize._set_axis_labels
+   zarrsmith.utils.visualize.visualize
+   zarrsmith.utils.visualize.channel_names
+   zarrsmith.utils.visualize.layer_geometry
+   zarrsmith.utils.visualize.add_layers
+
+
+Module Contents
+---------------
+
+.. py:function:: _parse_color(color: Union[int, str]) -> tuple[float, float, float]
+
+   Convert an OME int, hex string or color name to an RGB float tuple for napari.
+
+
+.. py:function:: _axis_scale(metadata: Dict[str, Any], axes: tuple[str, ...], level: int, *, drop_channel: bool) -> tuple[float, ...]
+
+.. py:function:: units_for_axes(metadata: Dict[str, Any], requested: Iterable[str])
+
+   Per-axis units for napari layers covering the axes ``requested``, or ``None``.
+
+   Layers added without units default to ``pixel``. napari then disables units
+   for rendering ("Inconsistent units across layers") as soon as it also holds
+   layers with physical units. Every layer that ZarrSmith adds, image or helper
+   (ROI, Z range...), therefore takes its units from here so they all agree
+   with each other and with a converted zarr opened by ``napari-ome-zarr``.
+
+   ``None`` is returned (so the caller omits ``units``) when napari has no
+   layer units or a unit cannot be parsed.
+
+
+.. py:function:: _axis_units(metadata: Dict[str, Any], axes: tuple[str, ...], *, drop_channel: bool)
+
+   Units of the axes shown by an image/label layer (channel axis optionally removed).
+
+
+.. py:function:: _set_axis_labels(viewer, axes: tuple[str, ...], *, drop_channel: bool) -> None
+
+.. py:function:: visualize(data_levels: List[dask.array.Array], metadata: Dict[str, Any], start_level: int = 0, stop_level: int = -1, in_memory: bool = False, viewer: napari.Viewer | None = None) -> napari.Viewer | None
+
+   Visualize an axis-aware multiscale dataset with napari.
+
+   Datasets without a ``t`` axis are passed to napari without an artificial time
+   dimension, so napari will not expose an active T slider.  Datasets without a
+   ``c`` axis are displayed as a single image/label layer rather than channel
+   layers.
+
+
+.. py:function:: channel_names(metadata: Dict[str, Any], n: int) -> list[str]
+
+   Names of the ``n`` channels of a dataset (``ch_0``, ``ch_1``, ... when not in its metadata).
+
+
+.. py:function:: layer_geometry(metadata: Dict[str, Any], axes, level: int = 0, *, drop_channel: bool) -> Dict[str, Any]
+
+   ``scale`` (and ``units``, when known) of a napari layer showing ``level`` of a dataset.
+
+
+.. py:function:: add_layers(viewer, data_levels: List[Any], metadata: Dict[str, Any], *, level: int = 0, name: str | None = None, **kwargs) -> list
+
+   Add a dataset to ``viewer`` and return its layers: one labels layer for label data, else one
+   image layer per channel (named ``"<name>: <channel>"`` when ``name`` is given).
+
+   ``data_levels`` are the levels shown (``level``: the first one's index in the dataset).
+   The colours are the channel colours of the metadata (gray without them); ``kwargs`` go to napari
+   and replace any of these settings (e.g. ``contrast_limits``, ``blending``, ``colormap``).
+
+

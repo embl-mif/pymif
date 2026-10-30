@@ -1,0 +1,690 @@
+zarrsmith.napari._explorer_widget
+=================================
+
+.. py:module:: zarrsmith.napari._explorer_widget
+
+.. autoapi-nested-parse::
+
+   napari widget to explore the features of segmented objects, with napari-clusters-plotter.
+
+   Three things are loaded (dropped on their field, all at once anywhere on the panel, or browsed):
+
+   * an intensity OME-Zarr (all channels and resolution levels, read lazily),
+   * the labels OME-Zarr (optional: else the first group in ``<intensity>.ome.zarr/labels/``),
+   * a CSV with one row per object: a label column and any features.
+
+   A table from several images has two more columns, ``image_path`` and ``labels_path``: the intensity and
+   labels OME-Zarr of the image of every row, relative to the folder of the table. The intensity and labels
+   fields are then not used: the panel lists the images of the table, the plot shows the objects of the
+   ticked ones, and the viewer shows one image at a time (the one of the last clicked object).
+
+   The features are plotted by napari-clusters-plotter, under the panel, with everything it can do
+   (x / y features, colour of the plot and the labels by any feature, selections to make clusters,
+   histogram, ...). The plot is linked with the viewer:
+
+   * click a point: the viewer goes to that object (its image, its plane, centred, zoomed in) and selects
+     its label,
+   * hover a point: a thumbnail of the object (XY and XZ through its centre, the intensity with the
+     object outlined in magenta) appears next to the mouse,
+   * pick a label in napari: its point is highlighted in the plot.
+
+   Where the objects are comes from centroid columns of the CSV: ``centroid-0/1/2`` (skimage
+   ``regionprops_table``), ``centroid_z/y/x`` or ``z/y/x``, in voxels of the labels (full resolution) or
+   in µm. Without them they are computed from a low resolution level of the labels (slow for big
+   images, and small objects can be missed). The size of the thumbnail comes from ``bbox-*`` columns
+   (regionprops) or a size column (``area``, ``volume``, ...).
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   zarrsmith.napari._explorer_widget._PLOTTER_IMPORT_ERROR
+   zarrsmith.napari._explorer_widget.LABEL_COLUMNS
+   zarrsmith.napari._explorer_widget.SIZE_COLUMNS
+   zarrsmith.napari._explorer_widget.TIME_COLUMNS
+   zarrsmith.napari._explorer_widget.TABLE_SUFFIXES
+   zarrsmith.napari._explorer_widget.PATH_COLUMNS
+   zarrsmith.napari._explorer_widget.IMAGE_INDEX
+   zarrsmith.napari._explorer_widget.LABELS_LAYER
+   zarrsmith.napari._explorer_widget.LABEL_IDS_KEY
+   zarrsmith.napari._explorer_widget.THUMBNAIL_PX
+   zarrsmith.napari._explorer_widget.THUMBNAIL_CONTEXT
+   zarrsmith.napari._explorer_widget.MAX_BOX_PX
+   zarrsmith.napari._explorer_widget.HOVER_RADIUS_PX
+   zarrsmith.napari._explorer_widget.HOVER_DELAY_MS
+   zarrsmith.napari._explorer_widget.MAX_THUMBNAILS
+   zarrsmith.napari._explorer_widget.JUMP_CONTEXT
+   zarrsmith.napari._explorer_widget.MIN_POINT_SIZE
+   zarrsmith.napari._explorer_widget.OBJECT_RGB
+   zarrsmith.napari._explorer_widget.OTHER_RGB
+
+
+Exceptions
+----------
+
+.. autoapisummary::
+
+   zarrsmith.napari._explorer_widget.RepeatedLabelsError
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   zarrsmith.napari._explorer_widget.ImageSource
+   zarrsmith.napari._explorer_widget.Session
+   zarrsmith.napari._explorer_widget.ThumbnailPopup
+   zarrsmith.napari._explorer_widget.ObjectsExplorer
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   zarrsmith.napari._explorer_widget._patch_plotter
+   zarrsmith.napari._explorer_widget.spatial_axes
+   zarrsmith.napari._explorer_widget.voxel_sizes
+   zarrsmith.napari._explorer_widget.as_labels
+   zarrsmith.napari._explorer_widget.box
+   zarrsmith.napari._explorer_widget.resample
+   zarrsmith.napari._explorer_widget.thumbnail_views
+   zarrsmith.napari._explorer_widget.read_table
+   zarrsmith.napari._explorer_widget.has_path_columns
+   zarrsmith.napari._explorer_widget.path_text
+   zarrsmith.napari._explorer_widget.resolve_path
+   zarrsmith.napari._explorer_widget.repeated_labels_message
+   zarrsmith.napari._explorer_widget.clean_table
+   zarrsmith.napari._explorer_widget.guess_label_column
+   zarrsmith.napari._explorer_widget.centroid_columns
+   zarrsmith.napari._explorer_widget.object_radius_um
+   zarrsmith.napari._explorer_widget.centroids_from_labels
+   zarrsmith.napari._explorer_widget.contrast_limits
+   zarrsmith.napari._explorer_widget.image_contrast_limits
+   zarrsmith.napari._explorer_widget.image_channel_names
+   zarrsmith.napari._explorer_widget.add_image_layers
+   zarrsmith.napari._explorer_widget.zarr_path
+   zarrsmith.napari._explorer_widget.short_name
+   zarrsmith.napari._explorer_widget.sort_dropped
+   zarrsmith.napari._explorer_widget.open_labels
+   zarrsmith.napari._explorer_widget.read_image
+   zarrsmith.napari._explorer_widget.image_sources
+   zarrsmith.napari._explorer_widget.read_dataset
+   zarrsmith.napari._explorer_widget.path_field
+   zarrsmith.napari._explorer_widget.field_path
+   zarrsmith.napari._explorer_widget._form
+   zarrsmith.napari._explorer_widget.explorer_widget
+
+
+Module Contents
+---------------
+
+.. py:data:: _PLOTTER_IMPORT_ERROR
+
+.. py:data:: LABEL_COLUMNS
+   :value: ('label', 'label_id', 'labels', 'id', 'object_id', 'cell_id')
+
+
+.. py:data:: SIZE_COLUMNS
+   :value: ('area', 'volume', 'num_pixels', 'n_voxels', 'voxels', 'size')
+
+
+.. py:data:: TIME_COLUMNS
+   :value: ('frame', 't', 'timepoint', 'time')
+
+
+.. py:data:: TABLE_SUFFIXES
+   :value: ('.csv', '.tsv', '.txt')
+
+
+.. py:data:: PATH_COLUMNS
+
+.. py:data:: IMAGE_INDEX
+   :value: 'image_index'
+
+
+.. py:data:: LABELS_LAYER
+   :value: 'labels'
+
+
+.. py:data:: LABEL_IDS_KEY
+   :value: 'zarrsmith_label_ids'
+
+
+.. py:data:: THUMBNAIL_PX
+   :value: 170
+
+
+.. py:data:: THUMBNAIL_CONTEXT
+   :value: 2.5
+
+
+.. py:data:: MAX_BOX_PX
+   :value: 128
+
+
+.. py:data:: HOVER_RADIUS_PX
+   :value: 7
+
+
+.. py:data:: HOVER_DELAY_MS
+   :value: 40
+
+
+.. py:data:: MAX_THUMBNAILS
+   :value: 500
+
+
+.. py:data:: JUMP_CONTEXT
+   :value: 1.5
+
+
+.. py:data:: MIN_POINT_SIZE
+   :value: 10
+
+
+.. py:data:: OBJECT_RGB
+   :value: (255, 0, 255)
+
+
+.. py:data:: OTHER_RGB
+   :value: (0, 200, 255)
+
+
+.. py:function:: _patch_plotter()
+
+   Changes to napari-clusters-plotter, for the layers and the plot of this widget only.
+
+   * It colours a labels layer by ``np.unique`` of the whole label image on every redraw (minutes
+     for a big image) and gives the colour of row i of the features to the i-th label. The label of
+     every row is given in the layer metadata instead (rows of an image that isn't shown get ids
+     that aren't in the label image).
+   * biaplotter makes the points smaller the more there are (8000 / n): with tens of thousands of
+     objects they can't be seen any more. A scatter plot with ``zarrsmith_min_size`` keeps that size.
+   * No warning that the labels missing from the colours are transparent (wanted: they aren't in
+     the table), nor that a categorical colour (an image, a cluster) uses a categorical colormap.
+
+
+.. py:exception:: RepeatedLabelsError
+
+   Bases: :py:obj:`ValueError`
+
+
+   The table has several rows for the same object (the user is asked to fix the table).
+
+
+.. py:function:: spatial_axes(dataset)
+
+.. py:function:: voxel_sizes(dataset)
+
+   Voxel size (µm) of the spatial axes, at every level.
+
+
+.. py:function:: as_labels(labels, image)
+
+   The labels without their channel axis (of size 1), with the voxel size of ``image`` when they were
+   saved without one (all 1) on its grid. A ZarrDataset when something changed, else ``labels`` itself.
+
+
+.. py:function:: box(dataset, centre_um, half_um, channel=0, t=0)
+
+   Cube of side 2 x half_um around centre_um ({axis: µm}) from the finest level that has at most
+   MAX_BOX_PX voxels per axis, zero padded at the image borders.
+   Returns (array of the spatial axes, index of its first voxel, voxel size, offset of the level (µm)).
+
+
+.. py:function:: resample(labels, start, size, offset, shape, to_start, to_size, to_offset)
+
+   Labels of one box (nearest voxel) at the voxel centres of another box.
+
+
+.. py:function:: thumbnail_views(image, labels, label)
+
+   RGB views through the centre of a box: XY (and XZ in 3D), the object outlined in magenta.
+
+
+.. py:function:: read_table(path, **kwargs)
+
+   CSV / TSV, the separator guessed from the header.
+
+
+.. py:function:: has_path_columns(columns)
+
+   True for a table from several images (it has the image_path and labels_path columns).
+
+
+.. py:function:: path_text(value)
+
+   A path of the table as text: '' when empty, '\' read as '/' (a table written on Windows).
+
+
+.. py:function:: resolve_path(value, folder)
+
+   A path of the table, relative to ``folder`` (the folder of the table) unless absolute; None if empty.
+
+
+.. py:function:: repeated_labels_message(rows, label_column, image_column=None)
+
+   What to tell the user about the repeated objects in ``rows`` (the repeated rows of the table).
+
+
+.. py:function:: clean_table(table, label_column, notes=None, image_column=None)
+
+   One row per label (> 0), sorted by label (by image, then label, with an ``image_column``);
+   text columns become categories (1, 2, ...; 0 = empty), except the path columns;
+   inf becomes NaN (not plotted: the plot can't set its axis limits to inf).
+   A label repeated (in an image) raises a RepeatedLabelsError. What was changed is appended to ``notes``.
+
+
+.. py:function:: guess_label_column(columns)
+
+   The label column among ``columns`` (by name), else the first one.
+
+
+.. py:function:: centroid_columns(table, axes)
+
+   Names of the centroid columns (in the order of the axes), or None.
+
+
+.. py:function:: object_radius_um(table, n_axes, voxel_um)
+
+   Radius of every object (µm) from regionprops bbox columns or a size column (voxels), else NaN.
+
+
+.. py:function:: centroids_from_labels(labels, ids, max_voxels=30000000.0, notes=None)
+
+   (centroid µm, radius µm) of every label in ids, from the finest level with at most max_voxels voxels.
+
+
+.. py:function:: contrast_limits(array)
+
+   1 - 99.9 percentiles of an image, from at most ~4 million of its voxels.
+
+
+.. py:function:: image_contrast_limits(image)
+
+   Contrast limits of every channel (a single one without a channel axis), from the lowest level.
+
+
+.. py:function:: image_channel_names(image)
+
+   Name of every channel of an image (``intensity`` without a channel axis).
+
+
+.. py:function:: add_image_layers(viewer, image, name, limits)
+
+   The intensity image, one layer per channel (all levels, read when needed), blended additively.
+   In the colours of the file, or napari's when it has none or only white ones (all looking the same).
+
+
+.. py:function:: zarr_path(text)
+
+   A dropped path as the OME-Zarr folder (a metadata file inside it -> the folder).
+
+
+.. py:function:: short_name(path)
+
+.. py:function:: sort_dropped(paths)
+
+   Files dropped together, by kind: {"table" | "labels" | "image": path}.
+   A table by its suffix, labels by their name, anything else is the intensity image.
+
+
+.. py:function:: open_labels(image_zarr, labels_path, notes)
+
+   The labels OME-Zarr at ``labels_path``, else the first label group of the intensity OME-Zarr.
+
+
+.. py:function:: read_image(image_path, labels_path, rows, label_column, centroids_um=False)
+
+   Read one image (in a background thread): its image and labels datasets, where its objects (``rows``, its rows of the
+   table) are, as centroid and thumbnail half width (µm), and the contrast limits of its channels.
+
+
+.. py:class:: ImageSource(key, image_path, labels_path, rows, problem=None)
+
+   One image of the table: its files, its rows of the table and, read when first needed, its data.
+
+
+   .. py:attribute:: rows
+
+
+   .. py:attribute:: problem
+      :value: None
+
+
+
+   .. py:property:: name
+
+
+   .. py:property:: is_read
+
+
+   .. py:method:: read(table, label_column, centroids_um=False)
+
+      See read_image; read once (from any thread).
+
+
+
+.. py:function:: image_sources(table, table_path)
+
+   The images of a table from several images, in the order of the table, with what is wrong with
+   their files (``problem``) when they can't be used.
+
+
+.. py:function:: read_dataset(image_path, labels_path, table_path, label_column, centroids_um=False)
+
+   Read the table and its first usable image (runs in a background thread): a generator that yields
+   progress messages and returns a dict with the cleaned table and its images (ImageSource).
+   A table with image_path and labels_path columns is from several images: ``image_path`` and
+   ``labels_path`` are then not used.
+
+
+.. py:class:: Session(table, label_column, sources, multi=False, centroids_um=False)
+
+   What is loaded: the table (one row per object, sorted), its images and the layers of the shown one.
+
+
+   .. py:attribute:: labels
+
+
+   .. py:attribute:: source_of_row
+
+
+   .. py:attribute:: time_column
+
+
+   .. py:attribute:: active
+      :value: None
+
+
+
+   .. py:attribute:: feature_rows
+
+
+   .. py:attribute:: extra
+
+
+   .. py:method:: data(index)
+
+      What was read from an image (read now if needed: from a background thread).
+
+
+
+   .. py:method:: position(row)
+
+      (centroid µm, thumbnail half width µm) of the object of a table row.
+
+
+
+   .. py:method:: features(rows)
+
+      Features of the labels layer for these table rows, and the label of every row (0 first) for
+      the plotter: the label in the shown image, else an id that isn't in its label image.
+
+
+
+   .. py:method:: keep_plotter_columns()
+
+      Columns that the plotter added to the layer features (clusters, ...), kept by table row.
+
+
+
+   .. py:method:: thumbnail(row, channel, field_of_view_um=0)
+
+      RGB views of the object of a table row (runs in a background thread).
+
+
+
+.. py:function:: path_field(mode, placeholder, filter=None)
+
+   A path field (magicgui ``FileEdit``, ``mode`` ``"d"``: a folder, ``"r"``: a file) that takes a file or
+   folder dropped on it. Several files dropped at once go on to the panel, which sorts them out.
+
+
+.. py:function:: field_path(field)
+
+   The path in a path field as text ('' when empty).
+
+
+.. py:class:: ThumbnailPopup(parent=None)
+
+   Bases: :py:obj:`qtpy.QtWidgets.QFrame`
+
+
+   Small window next to the mouse: the views of an object and a few of its features.
+
+
+   .. py:attribute:: views
+
+
+   .. py:attribute:: text
+
+
+   .. py:method:: show_views(text, views)
+
+
+   .. py:method:: move_near_mouse()
+
+
+.. py:function:: _form(*rows)
+
+   A widget with a form layout; a row is (label, widget) or a widget spanning both columns.
+
+
+.. py:class:: ObjectsExplorer(viewer, plotter)
+
+   Bases: :py:obj:`qtpy.QtWidgets.QWidget`
+
+
+   The panel: loads the data and links the plot of napari-clusters-plotter with the viewer.
+
+
+   .. py:attribute:: session
+      :value: None
+
+
+
+   .. py:attribute:: _multi_table
+      :value: False
+
+
+
+   .. py:attribute:: _ticked
+
+
+   .. py:attribute:: _syncing
+      :value: False
+
+
+
+   .. py:attribute:: _highlight
+      :value: None
+
+
+
+   .. py:attribute:: _hover_row
+      :value: None
+
+
+
+   .. py:attribute:: _thumbnails
+
+
+   .. py:attribute:: popup
+
+
+   .. py:attribute:: _hover_timer
+
+
+   .. py:method:: _build_ui()
+
+
+   .. py:method:: dragEnterEvent(event)
+
+
+   .. py:method:: dropEvent(event)
+
+      Several files dropped on the panel: sorted by kind (table, labels, intensity).
+
+
+
+   .. py:method:: _table_changed(*_)
+
+
+   .. py:method:: _isolate_toggled(on)
+
+
+   .. py:method:: load()
+
+      Read the data in the background, then show it (the data loaded before stays until then).
+
+
+
+   .. py:method:: _load_failed(error)
+
+
+   .. py:method:: _load_done()
+
+
+   .. py:method:: _show(data)
+
+
+   .. py:method:: _show_dataset(data)
+
+
+   .. py:method:: _fill_image_list()
+
+
+   .. py:method:: _mark_shown_image()
+
+
+   .. py:method:: _ticks_changed(item=None)
+
+      Images ticked or unticked in the list: the plot shows the objects of the ticked ones.
+
+
+
+   .. py:method:: _tick(which)
+
+      Tick the usable images for which ``which(index)`` is true, untick the others.
+
+
+
+   .. py:method:: show_image(index, row=None)
+
+      Show an image of the table (read in the background if needed), then go to a row's object.
+
+
+
+   .. py:method:: _image_read(session, index, row)
+
+
+   .. py:method:: _clear_highlight()
+
+
+   .. py:method:: _opening_done()
+
+
+   .. py:method:: _show_image(index)
+
+      Show an image already read: its channels in new layers, its labels in the labels layer.
+
+
+
+   .. py:method:: _set_features()
+
+      Features of the labels layer: the objects of the ticked images (and the plotter's columns).
+
+
+
+   .. py:method:: _choose_plot_features(skip)
+
+      First features of the table on x, y and as colour.
+
+
+
+   .. py:method:: _set_plot_features(x, y, hue)
+
+
+   .. py:method:: _clear()
+
+
+   .. py:method:: _connect_plotter()
+
+
+   .. py:method:: _plot_points()
+
+      Table row of every point of the plot (-1: another layer), updated when the plot data change.
+
+
+
+   .. py:method:: _point_under(event)
+
+      Index of the plot point within HOVER_RADIUS_PX of the mouse, or None.
+
+
+
+   .. py:method:: _on_highlighted(highlighted)
+
+      A point clicked in the plot: go to its object (showing its image first).
+
+      The plot sends its highlight again whenever it redraws (new features, another colour, ...):
+      only a change of the highlight is a click.
+
+
+
+   .. py:method:: go_to(row)
+
+      Move the viewer to the object of a table row of the shown image: its plane, centred and
+      zoomed in, its label selected.
+
+
+
+   .. py:method:: _canvas_size()
+
+      (height, width) of the canvas in screen pixels, or None.
+
+
+
+   .. py:method:: _on_label_selected(event=None)
+
+      A label picked in napari: highlight its point in the plot.
+
+
+
+   .. py:method:: _on_mouse_move(event)
+
+
+   .. py:method:: _hide_popup(*_)
+
+
+   .. py:method:: _thumbnail_key()
+
+
+   .. py:method:: _hover_text()
+
+
+   .. py:method:: _request_thumbnail()
+
+
+   .. py:method:: _thumbnail_read(views)
+
+
+   .. py:method:: _thumbnail_failed(error)
+
+
+   .. py:method:: _worker_done()
+
+
+.. py:function:: explorer_widget()
+
+   The Objects Explorer dock: the panel, and under it the plot of napari-clusters-plotter.
+
+   The dock exposes ``dock.explorer`` (the panel, :class:`ObjectsExplorer`) and ``dock.plotter``.
+
+

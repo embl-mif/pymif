@@ -1,0 +1,35 @@
+zarrsmith
+=========
+
+.. py:module:: zarrsmith
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/zarrsmith/_version/index
+   /autoapi/zarrsmith/cli/index
+   /autoapi/zarrsmith/microscope_manager/index
+   /autoapi/zarrsmith/mosaic_manager/index
+   /autoapi/zarrsmith/napari/index
+   /autoapi/zarrsmith/utils/index
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   zarrsmith.__version__
+
+
+Package Contents
+----------------
+
+.. py:data:: __version__
+   :value: '0.0.0'
+
+

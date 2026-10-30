@@ -1,0 +1,295 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>zarrsmith.napari._layout &mdash; ZarrSmith 0.6.2.dev2+g423d5bb1d documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=0b5a380a"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="zarrsmith.napari._log" href="../_log/index.html" />
+    <link rel="prev" title="zarrsmith.napari._export_widget" href="../_export_widget/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            ZarrSmith
+              <img src="../../../../_static/zarrsmith-icon.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing and extending ZarrSmith</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">zarrsmith</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../_version/index.html">zarrsmith._version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html">zarrsmith.cli</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../microscope_manager/index.html">zarrsmith.microscope_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../mosaic_manager/index.html">zarrsmith.mosaic_manager</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">zarrsmith.napari</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../utils/index.html">zarrsmith.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">ZarrSmith</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../api_reference.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">zarrsmith</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">zarrsmith.napari</a></li>
+      <li class="breadcrumb-item active">zarrsmith.napari._layout</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/zarrsmith/napari/_layout/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-zarrsmith.napari._layout">
+<span id="zarrsmith-napari-layout"></span><h1>zarrsmith.napari._layout<a class="headerlink" href="#module-zarrsmith.napari._layout" title="Link to this heading"></a></h1>
+<p>Layout helpers that keep the ZarrSmith napari widgets usable at any dock size.</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._layout.MIN_WIDTH" title="zarrsmith.napari._layout.MIN_WIDTH"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MIN_WIDTH</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._layout.MIN_LOG_HEIGHT" title="zarrsmith.napari._layout.MIN_LOG_HEIGHT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MIN_LOG_HEIGHT</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._layout.MIN_CONTENT_HEIGHT" title="zarrsmith.napari._layout.MIN_CONTENT_HEIGHT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MIN_CONTENT_HEIGHT</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._layout.TITLE_STYLE" title="zarrsmith.napari._layout.TITLE_STYLE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TITLE_STYLE</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._layout.LOGO_PATH" title="zarrsmith.napari._layout.LOGO_PATH"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LOGO_PATH</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._layout.LOGO_SIZE" title="zarrsmith.napari._layout.LOGO_SIZE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LOGO_SIZE</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._layout.make_logo_header" title="zarrsmith.napari._layout.make_logo_header"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_logo_header</span></code></a>(→ qtpy.QtWidgets.QWidget)</p></td>
+<td><p>A slim row with the logo, shown above the scrollable content of a dock.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._layout.make_title" title="zarrsmith.napari._layout.make_title"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_title</span></code></a>(→ qtpy.QtWidgets.QLabel)</p></td>
+<td><p>The bold title of a section.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._layout.make_log_pane" title="zarrsmith.napari._layout.make_log_pane"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_log_pane</span></code></a>([title])</p></td>
+<td><p>The log of a widget: a read-only text box under its title and a Clear button.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._layout.make_section" title="zarrsmith.napari._layout.make_section"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_section</span></code></a>(*widgets[, margins, spacing])</p></td>
+<td><p>Wrap widgets in a rounded, bordered frame to visually separate a block.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._layout.make_button_holder" title="zarrsmith.napari._layout.make_button_holder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_button_holder</span></code></a>(→ qtpy.QtWidgets.QWidget)</p></td>
+<td><p>A small holder for an action button.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._layout.compose_dock" title="zarrsmith.napari._layout.compose_dock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compose_dock</span></code></a>(→ qtpy.QtWidgets.QWidget)</p></td>
+<td><p>Build the dock widget: scrollable content and an optional resizable bottom pane.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._layout.enable_drag_and_drop" title="zarrsmith.napari._layout.enable_drag_and_drop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enable_drag_and_drop</span></code></a>(→ None)</p></td>
+<td><p>Let a magicgui <code class="docutils literal notranslate"><span class="pre">FileEdit</span></code> accept a file or folder dropped from the file explorer.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._layout.MIN_WIDTH">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._layout.</span></span><span class="sig-name descname"><span class="pre">MIN_WIDTH</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">260</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_layout.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._layout.MIN_WIDTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._layout.MIN_LOG_HEIGHT">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._layout.</span></span><span class="sig-name descname"><span class="pre">MIN_LOG_HEIGHT</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">140</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_layout.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._layout.MIN_LOG_HEIGHT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._layout.MIN_CONTENT_HEIGHT">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._layout.</span></span><span class="sig-name descname"><span class="pre">MIN_CONTENT_HEIGHT</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">120</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_layout.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._layout.MIN_CONTENT_HEIGHT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._layout.TITLE_STYLE">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._layout.</span></span><span class="sig-name descname"><span class="pre">TITLE_STYLE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'QLabel</span> <span class="pre">{</span> <span class="pre">font-weight:</span> <span class="pre">bold;</span> <span class="pre">font-size:</span> <span class="pre">13px;</span> <span class="pre">padding:</span> <span class="pre">2px</span> <span class="pre">0px;</span> <span class="pre">}'</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_layout.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._layout.TITLE_STYLE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._layout.LOGO_PATH">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._layout.</span></span><span class="sig-name descname"><span class="pre">LOGO_PATH</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_layout.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._layout.LOGO_PATH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._layout.LOGO_SIZE">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._layout.</span></span><span class="sig-name descname"><span class="pre">LOGO_SIZE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_layout.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._layout.LOGO_SIZE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._layout.make_logo_header">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._layout.</span></span><span class="sig-name descname"><span class="pre">make_logo_header</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">qtpy.QtWidgets.QWidget</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_layout.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._layout.make_logo_header" title="Link to this definition"></a></dt>
+<dd><p>A slim row with the logo, shown above the scrollable content of a dock.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._layout.make_title">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._layout.</span></span><span class="sig-name descname"><span class="pre">make_title</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">qtpy.QtWidgets.QLabel</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_layout.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._layout.make_title" title="Link to this definition"></a></dt>
+<dd><p>The bold title of a section.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._layout.make_log_pane">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._layout.</span></span><span class="sig-name descname"><span class="pre">make_log_pane</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ZarrSmith</span> <span class="pre">Log:'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_layout.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._layout.make_log_pane" title="Link to this definition"></a></dt>
+<dd><p>The log of a widget: a read-only text box under its title and a Clear button.</p>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">(section,</span> <span class="pre">text_box)</span></code>; the section is the <code class="docutils literal notranslate"><span class="pre">bottom</span></code> pane of <a class="reference internal" href="#zarrsmith.napari._layout.compose_dock" title="zarrsmith.napari._layout.compose_dock"><code class="xref py py-func docutils literal notranslate"><span class="pre">compose_dock()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._layout.make_section">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._layout.</span></span><span class="sig-name descname"><span class="pre">make_section</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">widgets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">margins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6,</span> <span class="pre">4,</span> <span class="pre">6,</span> <span class="pre">6)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_layout.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._layout.make_section" title="Link to this definition"></a></dt>
+<dd><p>Wrap widgets in a rounded, bordered frame to visually separate a block.</p>
+<p>The border uses a translucent grey so it reads on both light and dark
+napari themes. More widgets can be added later via <code class="docutils literal notranslate"><span class="pre">section.layout()</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._layout.make_button_holder">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._layout.</span></span><span class="sig-name descname"><span class="pre">make_button_holder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">button</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">qtpy.QtWidgets.QPushButton</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">qtpy.QtWidgets.QWidget</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_layout.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._layout.make_button_holder" title="Link to this definition"></a></dt>
+<dd><p>A small holder for an action button.</p>
+<p>Disable the <em>holder</em> to lock the button: a disabled parent keeps its
+children disabled even if the button re-enables itself (magicgui does).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._layout.compose_dock">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._layout.</span></span><span class="sig-name descname"><span class="pre">compose_dock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">qtpy.QtWidgets.QWidget</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">qtpy.QtWidgets.QWidget</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">qtpy.QtWidgets.QWidget</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_layout.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._layout.compose_dock" title="Link to this definition"></a></dt>
+<dd><p>Build the dock widget: scrollable content and an optional resizable bottom pane.</p>
+<ul class="simple">
+<li><p>the logo sits in a slim row above everything, always visible.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">content</span></code> (all the boxes) goes in one scroll area, so nothing is ever cut
+off, whatever the size or position of the dock (side or bottom).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bottom</span></code> (typically the log) sits under a splitter handle, so it can be
+dragged taller or shorter.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._layout.enable_drag_and_drop">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._layout.</span></span><span class="sig-name descname"><span class="pre">enable_drag_and_drop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_edit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">placeholder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Drop</span> <span class="pre">a</span> <span class="pre">file</span> <span class="pre">or</span> <span class="pre">folder</span> <span class="pre">here,</span> <span class="pre">or</span> <span class="pre">browse'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_only</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_layout.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._layout.enable_drag_and_drop" title="Link to this definition"></a></dt>
+<dd><p>Let a magicgui <code class="docutils literal notranslate"><span class="pre">FileEdit</span></code> accept a file or folder dropped from the file explorer.</p>
+<p><code class="docutils literal notranslate"><span class="pre">transform</span></code> maps the dropped path to the value to set (e.g. a file to its
+folder); by default the dropped path is used as is. Paths are not resolved,
+so a mapped network drive (<code class="docutils literal notranslate"><span class="pre">Y:\...</span></code>) keeps its drive letter.
+With <code class="docutils literal notranslate"><span class="pre">single_only</span></code>, several files dropped at once are left to the parent
+widget (e.g. a panel that sorts them out); else the first one is used.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../_export_widget/index.html" class="btn btn-neutral float-left" title="zarrsmith.napari._export_widget" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../_log/index.html" class="btn btn-neutral float-right" title="zarrsmith.napari._log" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, European Molecular Biology Laboratory (EMBL).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

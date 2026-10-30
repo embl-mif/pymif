@@ -1,0 +1,52 @@
+zarrsmith.utils.write_image_region
+==================================
+
+.. py:module:: zarrsmith.utils.write_image_region
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   zarrsmith.utils.write_image_region.write_image_region
+   zarrsmith.utils.write_image_region._write_region
+   zarrsmith.utils.write_image_region._get_nested_group
+   zarrsmith.utils.write_image_region._is_reciprocal_integer_shrink
+   zarrsmith.utils.write_image_region._generate_pyramid
+   zarrsmith.utils.write_image_region._scale_index
+
+
+Module Contents
+---------------
+
+.. py:function:: write_image_region(root: zarr.Group, mode: str, data: Union[numpy.ndarray, dask.array.Array, list[Union[numpy.ndarray, dask.array.Array]]], t: int | slice = slice(None), c: int | slice = slice(None), z: int | slice = slice(None), y: int | slice = slice(None), x: int | slice = slice(None), level: int = 0, group_name: Optional[str] = None, downscale_factor: zarrsmith.utils.downsampling.SpatialFactor | None = None)
+
+   Write image data into an existing OME-Zarr pyramid region.
+
+   The target array axes are read from the group's multiscales metadata.  Axes
+   may be any subset of ``tczyx``; selectors for missing axes are ignored.
+
+
+.. py:function:: _write_region(*, root: zarr.Group, mode: str, data: Union[numpy.ndarray, dask.array.Array, list[Union[numpy.ndarray, dask.array.Array]]], selectors: dict[str, int | slice], level: int, group_name: Optional[str], downscale_factor: zarrsmith.utils.downsampling.SpatialFactor | None, expected_data_type: str | None = None)
+
+.. py:function:: _get_nested_group(root: zarr.Group, group_name: str | None) -> zarr.Group | None
+
+   Resolve a potentially nested group path such as ``labels/nuclei``.
+
+
+.. py:function:: _is_reciprocal_integer_shrink(scale: collections.abc.Sequence[float]) -> tuple[bool, tuple[int, ...]]
+
+   Return integer downsampling factors for shrink scales such as 1, 1/2, 1/4.
+
+
+.. py:function:: _generate_pyramid(ref_data, total_levels: int, ref_level: int = 0, *, axes: str | collections.abc.Sequence[str] = 'tczyx', downscale_factor: zarrsmith.utils.downsampling.SpatialFactor = 2, level_scale_ratios: list[tuple[float, ...]] | None = None)
+
+   Generate a full pyramid from a reference level using axis-aware zoom.
+
+
+.. py:function:: _scale_index(index_tuple, shape, scale_factor: zarrsmith.utils.downsampling.SpatialFactor, axes: str | collections.abc.Sequence[str] = 'tczyx')
+
+   Scale spatial selectors for an array with arbitrary ``tczyx`` axes.
+
+

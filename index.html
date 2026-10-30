@@ -1,0 +1,285 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZarrSmith — microscopy I/O, OME-Zarr forging, and NGFF utilities &mdash; ZarrSmith 0.6.2.dev2+g423d5bb1d documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=0b5a380a"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation and versioning" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            ZarrSmith
+              <img src="_static/zarrsmith-icon.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing and extending ZarrSmith</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">ZarrSmith</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ZarrSmith — microscopy I/O, OME-Zarr forging, and NGFF utilities</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <!-- The header of README.md, in Markdown. The logo is the html_logo of conf.py, which Sphinx copies to _static/. -->
+<img src="_static/zarrsmith-icon.svg" alt="zarrsmith logo" width="120" align="left">
+<section id="zarrsmith-microscopy-i-o-ome-zarr-forging-and-ngff-utilities">
+<h1>ZarrSmith — microscopy I/O, OME-Zarr forging, and NGFF utilities<a class="headerlink" href="#zarrsmith-microscopy-i-o-ome-zarr-forging-and-ngff-utilities" title="Link to this heading"></a></h1>
+<br clear="left">
+<p><img alt="Python" src="https://img.shields.io/badge/python-3.12%20%7C%203.13-green" />
+<a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/embl-mif/zarrsmith.svg" /></a>
+<a class="reference external" href="https://github.com/embl-mif/zarrsmith/actions/workflows/tests.yml"><img alt="Tests" src="https://github.com/embl-mif/zarrsmith/actions/workflows/tests.yml/badge.svg" /></a>
+<a class="reference external" href="https://codecov.io/gh/embl-mif/zarrsmith"><img alt="codecov" src="https://codecov.io/gh/embl-mif/zarrsmith/graph/badge.svg" /></a>
+<a class="reference external" href="https://github.com/embl-mif/zarrsmith/actions/workflows/documentation.yml"><img alt="Documentation" src="https://github.com/embl-mif/zarrsmith/actions/workflows/documentation.yml/badge.svg" /></a>
+<a class="reference external" href="https://github.com/embl-mif/zarrsmith/actions/workflows/docker-publish.yml"><img alt="Docker" src="https://github.com/embl-mif/zarrsmith/actions/workflows/docker-publish.yml/badge.svg" /></a>
+<a class="reference external" href="https://github.com/embl-mif/zarrsmith/releases"><img alt="GitHub release" src="https://img.shields.io/github/v/release/embl-mif/zarrsmith.svg" /></a>
+<a class="reference external" href="https://github.com/embl-mif/zarrsmith/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/embl-mif/zarrsmith.svg?style=social" /></a></p>
+<p><strong>ZarrSmith</strong> is a Python package for reading microscopy datasets from multiple acquisition systems, building multiscale pyramids, writing <strong>OME-NGFF / OME-Zarr</strong>, and working with those datasets from Python, the command line and napari.</p>
+<p>The rendered documentation is at <strong><a class="reference external" href="https://embl-mif.github.io/zarrsmith/">embl-mif.github.io/zarrsmith</a></strong>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>ZarrSmith was called <strong>PyMIF</strong> up to version 0.5.5. From 0.6.0, import <code class="docutils literal notranslate"><span class="pre">zarrsmith</span></code> and run the <code class="docutils literal notranslate"><span class="pre">zarrsmith</span></code> command instead of <code class="docutils literal notranslate"><span class="pre">pymif</span></code>. The Docker images of PyMIF stay available at <code class="docutils literal notranslate"><span class="pre">ghcr.io/embl-mif/pymif:&lt;version&gt;</span></code>; newer images are at <code class="docutils literal notranslate"><span class="pre">ghcr.io/embl-mif/zarrsmith</span></code>.</p>
+</div>
+<hr class="docutils" />
+<section id="what-zarrsmith-does">
+<h2>What ZarrSmith does<a class="headerlink" href="#what-zarrsmith-does" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Microscope managers</strong> read Luxendo, Opera, SCAPE, Viventis, Zeiss, Evident (Olympus VSI) and OME-Zarr datasets into one lazy (Dask) API with a shared metadata schema. → <a class="reference external" href="https://embl-mif.github.io/zarrsmith/readers.html">Readers and conventions</a></p></li>
+<li><p><strong>OME-Zarr writing</strong>: full export, empty datasets and groups, image and label region updates, any subset of the <code class="docutils literal notranslate"><span class="pre">tczyx</span></code> axes. → <a class="reference external" href="https://embl-mif.github.io/zarrsmith/python-api.html">Python API</a></p></li>
+<li><p><strong>Pyramids and subsetting</strong>: multiscale generation, cropping, channel reordering, metadata updates. → <a class="reference external" href="https://embl-mif.github.io/zarrsmith/python-api.html">Python API</a></p></li>
+<li><p><strong>Mosaics</strong>: raw tiles shown at their stage position and fused into one OME-Zarr image (3D or projection). → <a class="reference external" href="https://embl-mif.github.io/zarrsmith/mosaic.html">Mosaics</a></p></li>
+<li><p><strong>Chromatic shift correction</strong>: the Z offset between channels measured on the sample itself, and a corrected copy with the same layout as the input. → <a class="reference external" href="https://embl-mif.github.io/zarrsmith/chromatic-shift.html">Chromatic shift correction</a></p></li>
+<li><p><strong>Command line</strong>: one-off and CSV-batch conversion, mosaic fusion and chromatic shift correction. → <a class="reference external" href="https://embl-mif.github.io/zarrsmith/cli.html">Command line</a></p></li>
+<li><p><strong>Napari widgets</strong>: conversion with ROI selection, mosaic fusion, exploration of segmented objects (features plot linked with the viewer). → <a class="reference external" href="https://embl-mif.github.io/zarrsmith/napari-plugin.html">Napari plugin</a></p></li>
+<li><p><strong>Output tuning</strong>: sharding, singleton axes, parallel writing, progress bars. → <a class="reference external" href="https://embl-mif.github.io/zarrsmith/advanced.html">Advanced writing options</a></p></li>
+</ul>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">conda create -n zarrsmith python=3.12</span>
+<span class="go">conda activate zarrsmith</span>
+<span class="go">pip install zarrsmith</span>
+</pre></div>
+</div>
+<p>Optional extras:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install "zarrsmith[napari]"      # napari widgets</span>
+<span class="go">pip install "zarrsmith[notebooks]"   # Jupyter, to run the example notebooks</span>
+<span class="go">pip install "zarrsmith[dev]"         # tests and packaging</span>
+<span class="go">pip install "zarrsmith[docs]"        # documentation build</span>
+<span class="go">pip install "zarrsmith[all]"         # all of the above</span>
+</pre></div>
+</div>
+<p>Extras can be combined, e.g. <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;zarrsmith[napari,notebooks]&quot;</span></code>.</p>
+<p>Installing from source, development installs, versioning and releases: <a class="reference external" href="https://embl-mif.github.io/zarrsmith/installation.html">Installation and versioning</a>.</p>
+</section>
+<section id="quick-start">
+<h2>Quick start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">zarrsmith.microscope_manager</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mm</span>
+
+<span class="n">source</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">ViventisManager</span><span class="p">(</span><span class="s2">"path/to/Position_1"</span><span class="p">)</span>   <span class="c1"># any microscope manager</span>
+<span class="n">source</span><span class="o">.</span><span class="n">build_pyramid</span><span class="p">(</span><span class="n">num_levels</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">source</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="s2">"output.zarr"</span><span class="p">)</span>                       <span class="c1"># NGFF v0.5 / Zarr v3</span>
+
+<span class="n">z</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">ZarrManager</span><span class="p">(</span><span class="s2">"output.zarr"</span><span class="p">)</span>
+<span class="n">z</span><span class="o">.</span><span class="n">visualize</span><span class="p">()</span>                                       <span class="c1"># open in napari</span>
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">zarrsmith convert -i INPUT_PATH -m MICROSCOPE -z OUTPUT_ZARR</span>
+<span class="go">zarrsmith fuse -i ACQUISITION_FOLDER -z OUTPUT_ZARR -rds 4 8 8   # fuse raw tiles</span>
+<span class="go">zarrsmith chromatic-shift -i INPUT_ZARR -z OUTPUT_ZARR -r shift.json   # align channels in Z</span>
+</pre></div>
+</div>
+</section>
+<section id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading"></a></h2>
+<p><strong>Getting started</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Page</p></th>
+<th class="head"><p>Contents</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://embl-mif.github.io/zarrsmith/installation.html">Installation and versioning</a></p></td>
+<td><p>environments, extras, release labels</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://embl-mif.github.io/zarrsmith/readers.html">Readers and conventions</a></p></td>
+<td><p>supported microscopes, shared reader behaviour, logging</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Working with data</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Page</p></th>
+<th class="head"><p>Contents</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://embl-mif.github.io/zarrsmith/python-api.html">Python API</a></p></td>
+<td><p>export, empty datasets, axis-aware metadata, labels, region writes</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://embl-mif.github.io/zarrsmith/mosaic.html">Mosaics</a></p></td>
+<td><p>raw tiles, placement check, fusion options</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://embl-mif.github.io/zarrsmith/chromatic-shift.html">Chromatic shift correction</a></p></td>
+<td><p>measuring the Z offset between channels, the corrected dataset, checking the result, <code class="docutils literal notranslate"><span class="pre">zarrsmith</span> <span class="pre">chromatic-shift</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://embl-mif.github.io/zarrsmith/advanced.html">Advanced writing options</a></p></td>
+<td><p>sharding, singleton axes, parallel writing, progress bar</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Interfaces</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Page</p></th>
+<th class="head"><p>Contents</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://embl-mif.github.io/zarrsmith/cli.html">Command line</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">zarrsmith</span> <span class="pre">convert</span></code>, <code class="docutils literal notranslate"><span class="pre">zarrsmith</span> <span class="pre">fuse</span></code>, <code class="docutils literal notranslate"><span class="pre">zarrsmith</span> <span class="pre">chromatic-shift</span></code> (one dataset or a CSV batch)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://embl-mif.github.io/zarrsmith/napari-plugin.html">Napari plugin</a></p></td>
+<td><p>converter, mosaic fusion and objects explorer widgets</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Reference</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Page</p></th>
+<th class="head"><p>Contents</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://embl-mif.github.io/zarrsmith/autoapi/zarrsmith/index.html">API reference</a></p></td>
+<td><p>generated from the docstrings</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://embl-mif.github.io/zarrsmith/contributing.html">Contributing</a></p></td>
+<td><p>package layout, adding a microscope manager or a mosaic manager, <code class="docutils literal notranslate"><span class="pre">zarrsmith.utils</span></code>, documentation</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="help">
+<h2>Help<a class="headerlink" href="#help" title="Link to this heading"></a></h2>
+<p>For questions or bug reports, open an
+<a class="reference external" href="https://github.com/embl-mif/zarrsmith/issues">issue</a> on GitHub, or contact the current maintainers.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>If ZarrSmith contributes to your work, please acknowledge ZarrSmith and the EMBL Mesoscopic Imaging Facility in your publications.</p>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation and versioning" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, European Molecular Biology Laboratory (EMBL).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

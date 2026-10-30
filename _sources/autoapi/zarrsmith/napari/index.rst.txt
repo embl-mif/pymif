@@ -1,0 +1,22 @@
+zarrsmith.napari
+================
+
+.. py:module:: zarrsmith.napari
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/zarrsmith/napari/_batch_csv/index
+   /autoapi/zarrsmith/napari/_convert_widget/index
+   /autoapi/zarrsmith/napari/_dataset_helpers/index
+   /autoapi/zarrsmith/napari/_explorer_widget/index
+   /autoapi/zarrsmith/napari/_export_widget/index
+   /autoapi/zarrsmith/napari/_layout/index
+   /autoapi/zarrsmith/napari/_log/index
+   /autoapi/zarrsmith/napari/_mosaic_widget/index
+
+

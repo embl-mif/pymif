@@ -1,0 +1,265 @@
+zarrsmith.microscope_manager.evident_manager
+============================================
+
+.. py:module:: zarrsmith.microscope_manager.evident_manager
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   zarrsmith.microscope_manager.evident_manager.logger
+   zarrsmith.microscope_manager.evident_manager._FRAME_Z_TAG
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   zarrsmith.microscope_manager.evident_manager.VsiSceneArray
+   zarrsmith.microscope_manager.evident_manager.EvidentManager
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   zarrsmith.microscope_manager.evident_manager._open_scene
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+
+.. py:data:: _FRAME_Z_TAG
+   :value: 2014
+
+
+.. py:function:: _open_scene(path: str, scene_index: int)
+
+.. py:class:: VsiSceneArray(path: str, scene_index: int, shape: Tuple[int, ...], dtype, full_size: Optional[Tuple[int, int]] = None)
+
+   Lazy, read-only TCZYX view of one scene of an Olympus/Evident ``.vsi`` file.
+
+   Every ``__getitem__`` call reads the requested block with slideio, so
+   ``dask.array.from_array`` can wrap it directly. The slideio scene is opened
+   on first use and dropped when pickled, so the object can be sent to worker
+   processes.
+
+   ``full_size`` is the ``(width, height)`` of the full-resolution scene. When
+   ``shape`` is smaller in Y/X, the array is one of the lower-resolution
+   levels stored in the file: blocks are requested in full-resolution
+   coordinates and slideio reads them from the matching stored level.
+
+
+   .. py:attribute:: path
+      :value: ''
+
+
+
+   .. py:attribute:: scene_index
+
+
+   .. py:attribute:: shape
+      :type:  Tuple[int, ...]
+
+
+   .. py:attribute:: dtype
+
+
+   .. py:attribute:: ndim
+
+
+   .. py:attribute:: full_size
+
+
+   .. py:attribute:: _scene
+      :value: None
+
+
+
+   .. py:property:: is_full_resolution
+      :type: bool
+
+
+
+   .. py:property:: exact_factors
+      :type: bool
+
+
+      ``True`` if the full resolution is an integer multiple of this level in Y and X.
+
+      Only then do blocks read separately join without seams; other levels must
+      be read one whole plane at a time (slideio rescales every block it reads).
+
+
+
+   .. py:method:: __getstate__()
+
+
+   .. py:property:: scene
+
+
+   .. py:method:: __getitem__(key)
+
+
+   .. py:method:: _read(t, c0, c1, z0, z1, y0, y1, x0, x1) -> numpy.ndarray
+
+      Read one timepoint as CZYX. slideio returns (Z, Y, X, C) and drops singleton Z and C.
+
+
+
+   .. py:method:: __len__() -> int
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: EvidentManager(path, scene_index: Optional[int] = 0, scene_name: Optional[str] = None, chunks: Optional[Tuple[int, ...]] = None, native_levels: bool = True)
+
+   Bases: :py:obj:`zarrsmith.microscope_manager.microscope_manager.MicroscopeManager`
+
+
+   A manager class for reading Olympus/Evident ``.vsi`` datasets (cellSens).
+
+   A ``.vsi`` file only holds the metadata: the pixels live in the companion
+   folder ``_<name>_/stack*/frame_t*.ets``, which must sit next to the ``.vsi``
+   file. Tiled acquisitions are stored already stitched, so a 2 x 2 tile scan
+   is read as one large image. The pixels are read lazily with slideio.
+
+   A VSI file can hold several scenes (e.g. an overview and the acquired
+   stack); one scene is loaded at a time and :meth:`read` can be called again
+   with another ``scene_index``.
+
+   cellSens stores lower-resolution levels for large (e.g. tiled) images.
+   These are exposed as further pyramid levels, downsampled in Y and X only,
+   which makes napari 3D rendering of the raw file fast. Single-tile
+   acquisitions usually have only the full resolution.
+   :meth:`build_pyramid` (used by ``zarrsmith convert``) always rebuilds the
+   pyramid from the full resolution.
+
+
+   .. py:attribute:: DEFAULT_CHUNKS
+      :value: (1, 1, 8, 2048, 2048)
+
+
+
+   .. py:attribute:: MAX_PLANE_CHUNK_BYTES
+      :value: 134217728
+
+
+
+   .. py:attribute:: native_levels
+      :value: True
+
+
+
+   .. py:attribute:: _slide
+
+
+   .. py:attribute:: scenes
+
+
+   .. py:attribute:: _raw_metadata
+      :value: None
+
+
+
+   .. py:method:: read(scene_index: Optional[int] = None) -> None
+
+      Read one scene of the VSI dataset and populate ``self.data`` and ``self.metadata``.
+
+      Parameters
+      ----------
+      scene_index : int, optional
+          Scene to load. Defaults to the scene currently selected.
+
+
+
+   .. py:method:: _level_sizes() -> List[Tuple[int, int]]
+
+      ``(width, height)`` of the full resolution and of every stored lower-resolution level.
+
+
+
+   .. py:method:: _level_chunks(array: VsiSceneArray)
+
+      Chunks of one level: the requested ones, or whole planes when blocks would show seams.
+
+
+
+   .. py:method:: _build_dask_array() -> List[dask.array.Array]
+
+      Return the selected scene as TCZYX dask arrays, one per stored resolution level.
+
+
+
+   .. py:property:: raw_metadata
+      :type: Dict[str, Any]
+
+
+      The full VSI metadata tree, as decoded by slideio (nested ``name``/``tag``/``value`` nodes).
+
+
+
+   .. py:method:: _nodes(node: Dict[str, Any], name: Optional[str] = None, tag: Optional[int] = None) -> Iterator[Dict[str, Any]]
+      :staticmethod:
+
+
+      All nodes below ``node`` (included) matching ``name`` and/or ``tag``.
+
+
+
+   .. py:method:: _child_value(node: Dict[str, Any], name: str) -> Any
+      :staticmethod:
+
+
+      Value of the first direct child called ``name``, or ``None``.
+
+
+
+   .. py:method:: _number(node: Dict[str, Any]) -> Optional[float]
+      :staticmethod:
+
+
+      Numeric value of a VSI property node (stored in its ``Value`` child).
+
+
+
+   .. py:method:: _scene_volume() -> Optional[Dict[str, Any]]
+
+      Metadata subtree (``Multidimensional image volume``) describing the selected scene.
+
+
+
+   .. py:method:: _channel_colors(volume: Optional[Dict[str, Any]]) -> Dict[str, str]
+
+      Display color of each channel name, from the last entry of its display LUT.
+
+
+
+   .. py:method:: _z_step(volume: Optional[Dict[str, Any]]) -> float
+
+      Z step in micrometers.
+
+      Taken from the scene calibration when present, otherwise from the
+      stage Z position recorded for every frame (multi-tile acquisitions
+      only store the latter).
+
+
+
+   .. py:method:: _parse_metadata() -> Dict[str, Any]
+
+      Parse metadata of the currently selected scene.
+
+      Returns
+      -------
+      Dict[str, Any]
+          A dictionary containing dataset shape, voxel sizes, channel info, and other metadata.
+
+
+

@@ -1,0 +1,77 @@
+zarrsmith.utils.to_zarr
+=======================
+
+.. py:module:: zarrsmith.utils.to_zarr
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   zarrsmith.utils.to_zarr._DROPPABLE_AXES
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   zarrsmith.utils.to_zarr._drop_axes_from_config_shapes
+   zarrsmith.utils.to_zarr._drop_singleton_axes
+   zarrsmith.utils.to_zarr._metadata_for_write
+   zarrsmith.utils.to_zarr.to_zarr
+   zarrsmith.utils.to_zarr.write_multiscale_to_group
+
+
+Module Contents
+---------------
+
+.. py:data:: _DROPPABLE_AXES
+   :value: ('t', 'c', 'z')
+
+
+.. py:function:: _drop_axes_from_config_shapes(value, keep: list[int], ndim: int)
+
+   Drop entries of a chunks/shards spec that refer to removed axes.
+
+   Handles a single shape or one shape per level; anything that does not look
+   like a full-``ndim`` shape (``None``, ``"auto"``) is returned unchanged.
+
+
+.. py:function:: _drop_singleton_axes(data_levels: Sequence[dask.array.Array], metadata: dict, config: zarrsmith.utils.ngff.ZarrWriteConfig) -> tuple[list[dask.array.Array], dict, zarrsmith.utils.ngff.ZarrWriteConfig]
+
+   Remove singleton ``t``/``c``/``z`` axes from the data and metadata.
+
+   ``y`` and ``x`` are never dropped. Returns the inputs unchanged when
+   ``config.drop_singleton`` is false or no axis qualifies.
+
+
+.. py:function:: _metadata_for_write(metadata: dict, axes: tuple[str, ...], *, config: zarrsmith.utils.ngff.ZarrWriteConfig, is_label: bool | None = None) -> dict
+
+.. py:function:: to_zarr(path: str | pathlib.Path, data_levels: Sequence[dask.array.Array], metadata: dict, *, config: zarrsmith.utils.ngff.ZarrWriteConfig | None = None)
+
+   Write a pyramid of dask arrays to an OME-Zarr root group.
+
+   Parameters
+   ----------
+   path : str | Path
+       Destination zarr store.
+   data_levels : sequence of dask.array.Array
+       Pyramid levels ordered from finest to coarsest resolution.
+   metadata : dict
+       Normalized ZarrSmith metadata dictionary describing axes, scales, channel
+       metadata and units.
+   config : ZarrWriteConfig | None
+       Output configuration controlling NGFF version, zarr format, overwrite
+       behaviour and compression.
+
+
+.. py:function:: write_multiscale_to_group(group: zarr.Group, data_levels: Sequence[dask.array.Array], metadata: dict, *, config: zarrsmith.utils.ngff.ZarrWriteConfig | None = None, name: str | None = None, is_label: bool = False)
+
+   Write a pyramid of Dask arrays into an existing zarr group.
+
+   Used by :class:`zarrsmith.microscope_manager.ZarrManager` for raw data, image
+   subgroups and label groups.  The axes may be any subset of ``tczyx``.
+
+

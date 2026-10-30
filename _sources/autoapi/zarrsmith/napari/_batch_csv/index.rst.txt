@@ -1,0 +1,31 @@
+zarrsmith.napari._batch_csv
+===========================
+
+.. py:module:: zarrsmith.napari._batch_csv
+
+.. autoapi-nested-parse::
+
+   Batch CSV export shared by the napari widgets (no Qt dependency, so unit-testable).
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   zarrsmith.napari._batch_csv.append_batch_csv
+
+
+Module Contents
+---------------
+
+.. py:function:: append_batch_csv(csv_path, row: Mapping[str, object], columns: Sequence[str]) -> pathlib.Path
+
+   Append ``row`` to the batch CSV at ``csv_path`` and return the path written.
+
+   The file gets a ``.csv`` suffix if it has none. ``columns`` come first, in that
+   order; columns that an existing file already has are kept after them. An
+   existing file that cannot be read raises instead of being overwritten.
+
+

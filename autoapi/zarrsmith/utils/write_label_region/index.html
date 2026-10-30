@@ -1,0 +1,197 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>zarrsmith.utils.write_label_region &mdash; ZarrSmith 0.6.2.dev2+g423d5bb1d documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=0b5a380a"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="zarrsmith.utils.zoom" href="../zoom/index.html" />
+    <link rel="prev" title="zarrsmith.utils.write_image_region" href="../write_image_region/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            ZarrSmith
+              <img src="../../../../_static/zarrsmith-icon.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing and extending ZarrSmith</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">zarrsmith</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../_version/index.html">zarrsmith._version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html">zarrsmith.cli</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../microscope_manager/index.html">zarrsmith.microscope_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../mosaic_manager/index.html">zarrsmith.mosaic_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../napari/index.html">zarrsmith.napari</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">zarrsmith.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">ZarrSmith</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../api_reference.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">zarrsmith</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">zarrsmith.utils</a></li>
+      <li class="breadcrumb-item active">zarrsmith.utils.write_label_region</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/zarrsmith/utils/write_label_region/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-zarrsmith.utils.write_label_region">
+<span id="zarrsmith-utils-write-label-region"></span><h1>zarrsmith.utils.write_label_region<a class="headerlink" href="#module-zarrsmith.utils.write_label_region" title="Link to this heading"></a></h1>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.utils.write_label_region.write_label_region" title="zarrsmith.utils.write_label_region.write_label_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_label_region</span></code></a>(root, mode, data[, t, z, y, x, ...])</p></td>
+<td><p>Internal function that writes label data (pyramid or single array) to a zarr group.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.utils.write_label_region._scale_index" title="zarrsmith.utils.write_label_region._scale_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_scale_index</span></code></a>(index_tuple, shape, scale_factor[, axes])</p></td>
+<td><p>Compatibility wrapper for tests and legacy callers.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.write_label_region.write_label_region">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.write_label_region.</span></span><span class="sig-name descname"><span class="pre">write_label_region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">zarr.Group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dask.array.Array</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dask.array.Array</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">slice</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">slice(None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">slice</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">slice(None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">slice</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">slice(None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">slice</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">slice(None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'labels/nuclei'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downscale_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../downsampling/index.html#zarrsmith.utils.downsampling.SpatialFactor" title="zarrsmith.utils.downsampling.SpatialFactor"><span class="pre">zarrsmith.utils.downsampling.SpatialFactor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/write_label_region.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.write_label_region.write_label_region" title="Link to this definition"></a></dt>
+<dd><p>Internal function that writes label data (pyramid or single array) to a zarr group.</p>
+<p>If a single array is provided, the function automatically generates
+the complete pyramid by upsampling and downsampling from the given level.</p>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>root<span class="classifier">zarr.Group</span></dt><dd><p>The root Zarr group.</p>
+</dd>
+<dt>mode<span class="classifier">str</span></dt><dd><p>Zarr open mode (“r+”, “a”, or “w”). Must allow writing.</p>
+</dd>
+<dt>data<span class="classifier">np.ndarray, da.Array, or list thereof</span></dt><dd><p>Array(s) to write. If a list, each entry corresponds to one resolution level.
+If a single array, pyramid levels will be generated automatically.</p>
+</dd>
+<dt>t, z, y, x<span class="classifier">int or slice</span></dt><dd><p>Indices/slices for each dimension.</p>
+</dd>
+<dt>level<span class="classifier">int</span></dt><dd><p>Pyramid level of the provided <cite>data</cite> if <cite>data</cite> is a single array.</p>
+</dd>
+<dt>group_name<span class="classifier">str, optional</span></dt><dd><p>Name of the label group inside the root (e.g. “labels/nuclei”).</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.write_label_region._scale_index">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.write_label_region.</span></span><span class="sig-name descname"><span class="pre">_scale_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index_tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../downsampling/index.html#zarrsmith.utils.downsampling.SpatialFactor" title="zarrsmith.utils.downsampling.SpatialFactor"><span class="pre">zarrsmith.utils.downsampling.SpatialFactor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tzyx'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/write_label_region.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.write_label_region._scale_index" title="Link to this definition"></a></dt>
+<dd><p>Compatibility wrapper for tests and legacy callers.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../write_image_region/index.html" class="btn btn-neutral float-left" title="zarrsmith.utils.write_image_region" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../zoom/index.html" class="btn btn-neutral float-right" title="zarrsmith.utils.zoom" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, European Molecular Biology Laboratory (EMBL).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

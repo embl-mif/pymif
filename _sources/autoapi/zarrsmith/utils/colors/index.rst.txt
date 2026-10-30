@@ -1,0 +1,82 @@
+zarrsmith.utils.colors
+======================
+
+.. py:module:: zarrsmith.utils.colors
+
+.. autoapi-nested-parse::
+
+   Channel color parsing shared by the readers, the Zarr writer and napari.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   zarrsmith.utils.colors._HEX_COLOR_PATTERN
+   zarrsmith.utils.colors._ARGB_PATTERN
+   zarrsmith.utils.colors.DEFAULT_CHANNEL_PALETTE
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   zarrsmith.utils.colors.default_channel_color
+   zarrsmith.utils.colors.parse_color
+   zarrsmith.utils.colors.ome_color_to_hex
+   zarrsmith.utils.colors.parse_channel_color
+   zarrsmith.utils.colors.hex_to_rgb
+
+
+Module Contents
+---------------
+
+.. py:data:: _HEX_COLOR_PATTERN
+
+.. py:data:: _ARGB_PATTERN
+
+.. py:data:: DEFAULT_CHANNEL_PALETTE
+   :value: ('FFFFFF', 'FF0000', '00FF00', '0000FF', 'FFFF00', 'FF00FF', '00FFFF')
+
+
+.. py:function:: default_channel_color(index: int) -> str
+
+   Return the default ``RRGGBB`` color for channel ``index`` (cycles the palette).
+
+
+.. py:function:: parse_color(value: str) -> str
+
+   Parse a color to a six-digit uppercase hex string (without ``#``).
+
+   Accepts 6-digit hex codes (``#`` optional) and matplotlib color names
+   (e.g. ``"magenta"``, ``"cyan"``).
+
+
+.. py:function:: ome_color_to_hex(value: int | str) -> str
+
+   Convert an OME-XML ``Color`` (signed 32-bit RGBA integer) to ``RRGGBB``.
+
+
+.. py:function:: parse_channel_color(raw: Any, index: int = 0) -> str
+
+   Convert a vendor-specific channel color to ``RRGGBB``.
+
+   This is the single entry point used by the microscope managers, the Zarr
+   writer and the napari viewer. It accepts:
+
+   * ``None`` / empty values -> the default palette color for ``index``;
+   * integers or integer strings: 24-bit RGB (``0 <= v <= 0xFFFFFF``, as written
+     by Opera) or signed 32-bit OME ``RGBA`` (see :func:`ome_color_to_hex`);
+   * ``0x``-prefixed hex strings;
+   * ``#AARRGGBB`` / ``AARRGGBB`` (Zeiss) -> alpha dropped;
+   * 6-digit hex codes and matplotlib color names (see :func:`parse_color`).
+
+
+.. py:function:: hex_to_rgb(hex_color: str) -> tuple[float, float, float]
+
+   Convert ``RRGGBB`` to an ``(r, g, b)`` tuple of floats in ``[0, 1]``.
+
+

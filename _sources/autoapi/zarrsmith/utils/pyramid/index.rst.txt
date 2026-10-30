@@ -1,0 +1,52 @@
+zarrsmith.utils.pyramid
+=======================
+
+.. py:module:: zarrsmith.utils.pyramid
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   zarrsmith.utils.pyramid.SpatialFactor
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   zarrsmith.utils.pyramid._target_chunks
+   zarrsmith.utils.pyramid.factor_power
+   zarrsmith.utils.pyramid.multiply_scales
+   zarrsmith.utils.pyramid.build_pyramid
+
+
+Module Contents
+---------------
+
+.. py:data:: SpatialFactor
+
+.. py:function:: _target_chunks(data_level: dask.array.Array, metadata: Dict[str, Any]) -> tuple[int, ...]
+
+   Choose the level-independent chunk shape for a pyramid build.
+
+
+.. py:function:: factor_power(factors: Sequence[int], exponent: int) -> tuple[int, ...]
+
+.. py:function:: multiply_scales(scales: Sequence[float], factors: Sequence[int]) -> tuple[float, ...]
+
+.. py:function:: build_pyramid(data_levels: List[dask.array.Array], metadata: Dict[str, Any], num_levels: int = 3, downscale_factor: SpatialFactor = 2, start_level: int = 0) -> Tuple[List[dask.array.Array], Dict[str, Any]]
+
+   Generate a multiscale pyramid and updated metadata for NGFF-compatible
+   OME-Zarr writing.
+
+   This function is axis-aware and uses metadata["axes"] to find Z, Y, X.
+
+   downscale_factor can be either:
+
+   - 2, meaning downsample Z, Y and X by 2
+   - (1, 2, 2), meaning keep Z unchanged and downsample only YX
+
+

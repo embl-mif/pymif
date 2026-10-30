@@ -1,0 +1,872 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>zarrsmith.mosaic_manager.fusion &mdash; ZarrSmith 0.6.2.dev2+g423d5bb1d documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=0b5a380a"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="zarrsmith.mosaic_manager.h5_array" href="../h5_array/index.html" />
+    <link rel="prev" title="zarrsmith.mosaic_manager.fields" href="../fields/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            ZarrSmith
+              <img src="../../../../_static/zarrsmith-icon.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing and extending ZarrSmith</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">zarrsmith</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../_version/index.html">zarrsmith._version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html">zarrsmith.cli</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../microscope_manager/index.html">zarrsmith.microscope_manager</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">zarrsmith.mosaic_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../napari/index.html">zarrsmith.napari</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../utils/index.html">zarrsmith.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">ZarrSmith</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../api_reference.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">zarrsmith</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">zarrsmith.mosaic_manager</a></li>
+      <li class="breadcrumb-item active">zarrsmith.mosaic_manager.fusion</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/zarrsmith/mosaic_manager/fusion/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-zarrsmith.mosaic_manager.fusion">
+<span id="zarrsmith-mosaic-manager-fusion"></span><h1>zarrsmith.mosaic_manager.fusion<a class="headerlink" href="#module-zarrsmith.mosaic_manager.fusion" title="Link to this heading"></a></h1>
+<p>Fuse the tiles of a <a class="reference internal" href="../index.html#zarrsmith.mosaic_manager.MosaicManager" title="zarrsmith.mosaic_manager.MosaicManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">MosaicManager</span></code></a> into one OME-Zarr image.</p>
+<p>Fusion runs in two steps:</p>
+<ol class="arabic simple">
+<li><p><strong>Level 0</strong> is computed region by region into a temporary zarr store whose
+chunks are the regions: for each region only the tile voxels that fall in it
+are read, downsampled and merged. Regions are sized to cover whole source
+chunks in <code class="docutils literal notranslate"><span class="pre">y</span></code>/<code class="docutils literal notranslate"><span class="pre">x</span></code> (so compressed tile chunks are decoded about once) and cut
+into <code class="docutils literal notranslate"><span class="pre">z</span></code> slabs of bounded size, so memory stays bounded whatever the depth and
+no dask graph over all tiles is ever built. One whole region (read, merge,
+write) is the unit of parallel work; regions never share a chunk, so workers
+write without locks. Sigmoid weights are only evaluated where tiles or groups
+overlap.</p></li>
+<li><p>The fused level 0 (already downsampled, so small compared with the raw tiles)
+is written to the final OME-Zarr with <code class="xref py py-meth docutils literal notranslate"><span class="pre">MicroscopeManager.to_zarr()</span></code>, so
+pyramid levels, chunks, sharding, compression, zarr format and singleton axes
+behave exactly as for any other ZarrSmith conversion (<code class="docutils literal notranslate"><span class="pre">zarrsmith</span> <span class="pre">convert</span></code>).</p></li>
+</ol>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion.logger" title="zarrsmith.mosaic_manager.fusion.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logger</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion.BLENDS" title="zarrsmith.mosaic_manager.fusion.BLENDS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BLENDS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion.PROJECTIONS" title="zarrsmith.mosaic_manager.fusion.PROJECTIONS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PROJECTIONS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion.SIGMOID_STEEPNESS" title="zarrsmith.mosaic_manager.fusion.SIGMOID_STEEPNESS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SIGMOID_STEEPNESS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._SLAB_PLANES" title="zarrsmith.mosaic_manager.fusion._SLAB_PLANES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_SLAB_PLANES</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._REGION_3D" title="zarrsmith.mosaic_manager.fusion._REGION_3D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_REGION_3D</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._REGION_2D" title="zarrsmith.mosaic_manager.fusion._REGION_2D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_REGION_2D</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._REGION_MAX" title="zarrsmith.mosaic_manager.fusion._REGION_MAX"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_REGION_MAX</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._REGION_VOXELS" title="zarrsmith.mosaic_manager.fusion._REGION_VOXELS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_REGION_VOXELS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._TEMP_COMPRESSORS" title="zarrsmith.mosaic_manager.fusion._TEMP_COMPRESSORS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_TEMP_COMPRESSORS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion.DISPLAY_PERCENTILES" title="zarrsmith.mosaic_manager.fusion.DISPLAY_PERCENTILES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DISPLAY_PERCENTILES</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._WINDOW_SAMPLES" title="zarrsmith.mosaic_manager.fusion._WINDOW_SAMPLES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_WINDOW_SAMPLES</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._RESERVED_WRITE_OPTIONS" title="zarrsmith.mosaic_manager.fusion._RESERVED_WRITE_OPTIONS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_RESERVED_WRITE_OPTIONS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._Placed" title="zarrsmith.mosaic_manager.fusion._Placed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_Placed</span></code></a></p></td>
+<td><p>A tile positioned on the output grid (integer offsets/sizes, <code class="docutils literal notranslate"><span class="pre">z,</span> <span class="pre">y,</span> <span class="pre">x</span></code>).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._Region" title="zarrsmith.mosaic_manager.fusion._Region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_Region</span></code></a></p></td>
+<td><p>One output region of one channel and the tiles that overlap it.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion.FusionPlan" title="zarrsmith.mosaic_manager.fusion.FusionPlan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FusionPlan</span></code></a></p></td>
+<td><p>Level-0 geometry of a fusion, computed without reading any pixel data.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._place_tiles" title="zarrsmith.mosaic_manager.fusion._place_tiles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_place_tiles</span></code></a>(tiles, ds)</p></td>
+<td><p>Place <code class="docutils literal notranslate"><span class="pre">tiles</span></code> on a common output grid.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._crop_bounds" title="zarrsmith.mosaic_manager.fusion._crop_bounds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_crop_bounds</span></code></a>(→ List[Tuple[int, int]])</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(start,</span> <span class="pre">stop)</span></code> per <code class="docutils literal notranslate"><span class="pre">z,</span> <span class="pre">y,</span> <span class="pre">x</span></code> axis from a <code class="docutils literal notranslate"><span class="pre">{&quot;z&quot;:</span> <span class="pre">slice,</span> <span class="pre">...}</span></code> crop on the output grid.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._downsample" title="zarrsmith.mosaic_manager.fusion._downsample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_downsample</span></code></a>(→ numpy.ndarray)</p></td>
+<td><p>Block-mean downsample a block whose shape is a multiple of <code class="docutils literal notranslate"><span class="pre">ds</span></code>, to float32.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._cast" title="zarrsmith.mosaic_manager.fusion._cast"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_cast</span></code></a>(→ numpy.ndarray)</p></td>
+<td><p>Cast a float array to <code class="docutils literal notranslate"><span class="pre">dtype</span></code>, rounding and clipping for integers.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._combine" title="zarrsmith.mosaic_manager.fusion._combine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_combine</span></code></a>(→ None)</p></td>
+<td><p>Merge <code class="docutils literal notranslate"><span class="pre">blk</span></code> into the <code class="docutils literal notranslate"><span class="pre">acc</span></code> view in place (<code class="docutils literal notranslate"><span class="pre">cov</span></code> marks voxels already written).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._group_extents" title="zarrsmith.mosaic_manager.fusion._group_extents"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_group_extents</span></code></a>(→ Dict[Optional[str], Tuple[int, int]])</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(start,</span> <span class="pre">stop)</span></code> of every group along <code class="docutils literal notranslate"><span class="pre">axis</span></code>, in output voxels.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._midline_ranges" title="zarrsmith.mosaic_manager.fusion._midline_ranges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_midline_ranges</span></code></a>(→ Dict[Optional[str], Tuple[float, float]])</p></td>
+<td><p>Owner interval (output voxels, along <code class="docutils literal notranslate"><span class="pre">axis</span></code>) of every group.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._sigmoid_transitions" title="zarrsmith.mosaic_manager.fusion._sigmoid_transitions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_sigmoid_transitions</span></code></a>(→ Dict[Optional[str], ...)</p></td>
+<td><p>Overlaps of every group with its neighbours along <code class="docutils literal notranslate"><span class="pre">axis</span></code> (groups ordered as for</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._source_chunks" title="zarrsmith.mosaic_manager.fusion._source_chunks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_source_chunks</span></code></a>(→ Optional[Tuple[int, int, int]])</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">y,</span> <span class="pre">x)</span></code> chunk shape of a tile's data (zarr, h5py, dask, ...), or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._region_shape" title="zarrsmith.mosaic_manager.fusion._region_shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_region_shape</span></code></a>(→ Tuple[int, int, int])</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">y,</span> <span class="pre">x)</span></code> size of the output regions fused at once, in output voxels.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._overlap" title="zarrsmith.mosaic_manager.fusion._overlap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_overlap</span></code></a>(p, region, zrange)</p></td>
+<td><p>Output-grid ranges <code class="docutils literal notranslate"><span class="pre">(k0,</span> <span class="pre">k1,</span> <span class="pre">j0,</span> <span class="pre">j1,</span> <span class="pre">i0,</span> <span class="pre">i1)</span></code> where tile <code class="docutils literal notranslate"><span class="pre">p</span></code> meets <code class="docutils literal notranslate"><span class="pre">region</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._target" title="zarrsmith.mosaic_manager.fusion._target"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_target</span></code></a>(p, region, zrange, flat)</p></td>
+<td><p>Canvas slices of <code class="docutils literal notranslate"><span class="pre">region</span></code> covered by tile <code class="docutils literal notranslate"><span class="pre">p</span></code> (<code class="docutils literal notranslate"><span class="pre">None</span></code> if they do not overlap).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._read_block" title="zarrsmith.mosaic_manager.fusion._read_block"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_read_block</span></code></a>(→ numpy.ndarray)</p></td>
+<td><p>Read and downsample the part of one tile inside one region (runs in workers).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._merge_groups" title="zarrsmith.mosaic_manager.fusion._merge_groups"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_merge_groups</span></code></a>(→ numpy.ndarray)</p></td>
+<td><p>Merge per-group canvases: each group wins on its own side of the cut, others fill gaps.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._log_border_distance" title="zarrsmith.mosaic_manager.fusion._log_border_distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_log_border_distance</span></code></a>(→ numpy.ndarray)</p></td>
+<td><p>ln of the distance from the centres of output voxels <code class="docutils literal notranslate"><span class="pre">lo..hi</span></code> to the nearer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._tile_log_weight" title="zarrsmith.mosaic_manager.fusion._tile_log_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_tile_log_weight</span></code></a>(→ numpy.ndarray)</p></td>
+<td><p>Log weight of tile <code class="docutils literal notranslate"><span class="pre">p</span></code> on its part of <code class="docutils literal notranslate"><span class="pre">region</span></code> (shape of <a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._read_block" title="zarrsmith.mosaic_manager.fusion._read_block"><code class="xref py py-func docutils literal notranslate"><span class="pre">_read_block()</span></code></a>).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._softmax_add" title="zarrsmith.mosaic_manager.fusion._softmax_add"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_softmax_add</span></code></a>(→ None)</p></td>
+<td><p>Add <code class="docutils literal notranslate"><span class="pre">values</span></code> with weights <code class="docutils literal notranslate"><span class="pre">exp(log_weight)</span></code> to the running weighted sum</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._runs" title="zarrsmith.mosaic_manager.fusion._runs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_runs</span></code></a>(→ List[slice])</p></td>
+<td><p>Slices of the runs of <code class="docutils literal notranslate"><span class="pre">True</span></code> in a 1D boolean array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._sigmoid_add" title="zarrsmith.mosaic_manager.fusion._sigmoid_add"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_sigmoid_add</span></code></a>(→ None)</p></td>
+<td><p>Add tile block <code class="docutils literal notranslate"><span class="pre">blk</span></code> at canvas slices <code class="docutils literal notranslate"><span class="pre">sl</span></code> to a group's softmax <code class="docutils literal notranslate"><span class="pre">state</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._new_softmax_state" title="zarrsmith.mosaic_manager.fusion._new_softmax_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_new_softmax_state</span></code></a>(shape)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._group_log_weight" title="zarrsmith.mosaic_manager.fusion._group_log_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_group_log_weight</span></code></a>(→ numpy.ndarray)</p></td>
+<td><p>Log weight of a group at voxel centres <code class="docutils literal notranslate"><span class="pre">pos</span></code> along the midline axis: across</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._merge_sigmoid" title="zarrsmith.mosaic_manager.fusion._merge_sigmoid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_merge_sigmoid</span></code></a>(→ numpy.ndarray)</p></td>
+<td><p>Weighted mean of every group, then of the groups across their overlaps.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._fuse_region" title="zarrsmith.mosaic_manager.fusion._fuse_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_fuse_region</span></code></a>(→ numpy.ndarray)</p></td>
+<td><p>Read the tiles of region <code class="docutils literal notranslate"><span class="pre">r</span></code>, merge them, write the region into <code class="docutils literal notranslate"><span class="pre">arr</span></code> and</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._fuse_level0" title="zarrsmith.mosaic_manager.fusion._fuse_level0"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_fuse_level0</span></code></a>(→ Dict[int, numpy.ndarray])</p></td>
+<td><p>Fuse and write every region of level 0; return a sample of values per channel index.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._display_windows" title="zarrsmith.mosaic_manager.fusion._display_windows"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_display_windows</span></code></a>(→ List[Tuple[float, float]])</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(start,</span> <span class="pre">end)</span></code> display window per channel from the fused-value samples.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._write_display_windows" title="zarrsmith.mosaic_manager.fusion._write_display_windows"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_write_display_windows</span></code></a>(→ None)</p></td>
+<td><p>Store the display windows in the OMERO channel metadata (NGFF 0.4 and 0.5).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion.display_windows" title="zarrsmith.mosaic_manager.fusion.display_windows"><code class="xref py py-obj docutils literal notranslate"><span class="pre">display_windows</span></code></a>(→ List[Tuple[float, float]])</p></td>
+<td><p>Display window <code class="docutils literal notranslate"><span class="pre">(start,</span> <span class="pre">end)</span></code> of every channel of an OME-Zarr image, from its</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion.plan_fusion" title="zarrsmith.mosaic_manager.fusion.plan_fusion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plan_fusion</span></code></a>(, projection, blend, channels, crop, skip)</p></td>
+<td><p>Validate fusion arguments and compute the level-0 geometry (see <a class="reference internal" href="#zarrsmith.mosaic_manager.fusion.fuse_tiles" title="zarrsmith.mosaic_manager.fusion.fuse_tiles"><code class="xref py py-func docutils literal notranslate"><span class="pre">fuse_tiles()</span></code></a>).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._spatial_factor" title="zarrsmith.mosaic_manager.fusion._spatial_factor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_spatial_factor</span></code></a>(value, flat)</p></td>
+<td><p>Pyramid downscale factor for the output axes (<code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">y,</span> <span class="pre">x)</span></code> given; z dropped for projections).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._check_write_options" title="zarrsmith.mosaic_manager.fusion._check_write_options"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_check_write_options</span></code></a>(→ None)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion.fuse_tiles" title="zarrsmith.mosaic_manager.fusion.fuse_tiles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fuse_tiles</span></code></a>(tiles, out, *[, ds, projection, blend, ...])</p></td>
+<td><p>Fuse <code class="docutils literal notranslate"><span class="pre">tiles</span></code> into an OME-Zarr image and return it as a <code class="docutils literal notranslate"><span class="pre">ZarrManager</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.logger">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">logger</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.BLENDS">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">BLENDS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('sigmoid',</span> <span class="pre">'max',</span> <span class="pre">'sum',</span> <span class="pre">'midline')</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.BLENDS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.PROJECTIONS">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">PROJECTIONS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(None,</span> <span class="pre">'max',</span> <span class="pre">'sum')</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.PROJECTIONS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.SIGMOID_STEEPNESS">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">SIGMOID_STEEPNESS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4.0</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.SIGMOID_STEEPNESS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._SLAB_PLANES">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_SLAB_PLANES</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">64</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._SLAB_PLANES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._REGION_3D">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_REGION_3D</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(256,</span> <span class="pre">256)</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._REGION_3D" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._REGION_2D">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_REGION_2D</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(1024,</span> <span class="pre">1024)</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._REGION_2D" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._REGION_MAX">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_REGION_MAX</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2048</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._REGION_MAX" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._REGION_VOXELS">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_REGION_VOXELS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8388608</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._REGION_VOXELS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._TEMP_COMPRESSORS">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_TEMP_COMPRESSORS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'auto'</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._TEMP_COMPRESSORS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.DISPLAY_PERCENTILES">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">DISPLAY_PERCENTILES</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0.5,</span> <span class="pre">99.9)</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.DISPLAY_PERCENTILES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._WINDOW_SAMPLES">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_WINDOW_SAMPLES</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">65536</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._WINDOW_SAMPLES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._RESERVED_WRITE_OPTIONS">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_RESERVED_WRITE_OPTIONS</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._RESERVED_WRITE_OPTIONS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._Placed">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_Placed</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._Placed" title="Link to this definition"></a></dt>
+<dd><p>A tile positioned on the output grid (integer offsets/sizes, <code class="docutils literal notranslate"><span class="pre">z,</span> <span class="pre">y,</span> <span class="pre">x</span></code>).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._Placed.tile">
+<span class="sig-name descname"><span class="pre">tile</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../tile/index.html#zarrsmith.mosaic_manager.tile.Tile" title="zarrsmith.mosaic_manager.tile.Tile"><span class="pre">zarrsmith.mosaic_manager.tile.Tile</span></a></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._Placed.tile" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._Placed.offset">
+<span class="sig-name descname"><span class="pre">offset</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._Placed.offset" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._Placed.size">
+<span class="sig-name descname"><span class="pre">size</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._Placed.size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._place_tiles">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_place_tiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../tile/index.html#zarrsmith.mosaic_manager.tile.Tile" title="zarrsmith.mosaic_manager.tile.Tile"><span class="pre">zarrsmith.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._place_tiles" title="Link to this definition"></a></dt>
+<dd><p>Place <code class="docutils literal notranslate"><span class="pre">tiles</span></code> on a common output grid.</p>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">(placed,</span> <span class="pre">grid_shape,</span> <span class="pre">out_voxel,</span> <span class="pre">origin)</span></code>. All tiles must share the
+voxel size and unit. A tile covers <code class="docutils literal notranslate"><span class="pre">shape</span> <span class="pre">//</span> <span class="pre">ds</span></code> output voxels starting at
+<code class="docutils literal notranslate"><span class="pre">round((tile</span> <span class="pre">origin</span> <span class="pre">-</span> <span class="pre">global</span> <span class="pre">origin)</span> <span class="pre">/</span> <span class="pre">output</span> <span class="pre">voxel</span> <span class="pre">size)</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._crop_bounds">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_crop_bounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._crop_bounds" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">(start,</span> <span class="pre">stop)</span></code> per <code class="docutils literal notranslate"><span class="pre">z,</span> <span class="pre">y,</span> <span class="pre">x</span></code> axis from a <code class="docutils literal notranslate"><span class="pre">{&quot;z&quot;:</span> <span class="pre">slice,</span> <span class="pre">...}</span></code> crop on the output grid.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._downsample">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_downsample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._downsample" title="Link to this definition"></a></dt>
+<dd><p>Block-mean downsample a block whose shape is a multiple of <code class="docutils literal notranslate"><span class="pre">ds</span></code>, to float32.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._cast">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_cast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.dtype</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._cast" title="Link to this definition"></a></dt>
+<dd><p>Cast a float array to <code class="docutils literal notranslate"><span class="pre">dtype</span></code>, rounding and clipping for integers.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._combine">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_combine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">acc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cov</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blk</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._combine" title="Link to this definition"></a></dt>
+<dd><p>Merge <code class="docutils literal notranslate"><span class="pre">blk</span></code> into the <code class="docutils literal notranslate"><span class="pre">acc</span></code> view in place (<code class="docutils literal notranslate"><span class="pre">cov</span></code> marks voxels already written).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._group_extents">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_group_extents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">placed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._Placed" title="zarrsmith.mosaic_manager.fusion._Placed"><span class="pre">_Placed</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._group_extents" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">(start,</span> <span class="pre">stop)</span></code> of every group along <code class="docutils literal notranslate"><span class="pre">axis</span></code>, in output voxels.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._midline_ranges">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_midline_ranges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">placed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._Placed" title="zarrsmith.mosaic_manager.fusion._Placed"><span class="pre">_Placed</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._midline_ranges" title="Link to this definition"></a></dt>
+<dd><p>Owner interval (output voxels, along <code class="docutils literal notranslate"><span class="pre">axis</span></code>) of every group.</p>
+<p>Groups are ordered by the centre of their extent; consecutive groups are
+separated at the middle of their overlap (or of the gap between them).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._sigmoid_transitions">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_sigmoid_transitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">placed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._Placed" title="zarrsmith.mosaic_manager.fusion._Placed"><span class="pre">_Placed</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._sigmoid_transitions" title="Link to this definition"></a></dt>
+<dd><p>Overlaps of every group with its neighbours along <code class="docutils literal notranslate"><span class="pre">axis</span></code> (groups ordered as for
+<code class="docutils literal notranslate"><span class="pre">midline</span></code>), as <code class="docutils literal notranslate"><span class="pre">(start,</span> <span class="pre">stop,</span> <span class="pre">direction)</span></code> in output voxels: <code class="docutils literal notranslate"><span class="pre">+1</span></code> if the
+group’s weight rises across the overlap, <code class="docutils literal notranslate"><span class="pre">-1</span></code> if it falls.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._Region">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_Region</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._Region" title="Link to this definition"></a></dt>
+<dd><p>One output region of one channel and the tiles that overlap it.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._Region.channel_index">
+<span class="sig-name descname"><span class="pre">channel_index</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._Region.channel_index" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._Region.bounds">
+<span class="sig-name descname"><span class="pre">bounds</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._Region.bounds" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._Region.placed">
+<span class="sig-name descname"><span class="pre">placed</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._Placed" title="zarrsmith.mosaic_manager.fusion._Placed"><span class="pre">_Placed</span></a><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._Region.placed" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._Region.midline">
+<span class="sig-name descname"><span class="pre">midline</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._Region.midline" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._Region.transitions">
+<span class="sig-name descname"><span class="pre">transitions</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._Region.transitions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._Region.zrange">
+<span class="sig-name descname"><span class="pre">zrange</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0,</span> <span class="pre">0)</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._Region.zrange" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._source_chunks">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_source_chunks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._source_chunks" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">y,</span> <span class="pre">x)</span></code> chunk shape of a tile’s data (zarr, h5py, dask, …), or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._region_shape">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_region_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../tile/index.html#zarrsmith.mosaic_manager.tile.Tile" title="zarrsmith.mosaic_manager.tile.Tile"><span class="pre">zarrsmith.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._region_shape" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">y,</span> <span class="pre">x)</span></code> size of the output regions fused at once, in output voxels.</p>
+<p>A region is read in one go from every tile it overlaps, and a compressed source
+chunk is decoded in full by every region that touches it. So regions are made at
+least as large as the (downsampled) source chunks in y and x, preferably twice as
+large, which keeps the number of times each chunk is decoded close to one. Along
+z, 3D regions are cut into slabs of whole source chunks so that a region holds
+about <code class="docutils literal notranslate"><span class="pre">_REGION_VOXELS</span></code> voxels whatever the depth. Projections keep the whole z
+range (it is reduced while reading).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._overlap">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_overlap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._Placed" title="zarrsmith.mosaic_manager.fusion._Placed"><span class="pre">_Placed</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zrange</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._overlap" title="Link to this definition"></a></dt>
+<dd><p>Output-grid ranges <code class="docutils literal notranslate"><span class="pre">(k0,</span> <span class="pre">k1,</span> <span class="pre">j0,</span> <span class="pre">j1,</span> <span class="pre">i0,</span> <span class="pre">i1)</span></code> where tile <code class="docutils literal notranslate"><span class="pre">p</span></code> meets <code class="docutils literal notranslate"><span class="pre">region</span></code>
+(<code class="docutils literal notranslate"><span class="pre">y0,</span> <span class="pre">y1,</span> <span class="pre">x0,</span> <span class="pre">x1</span></code>) within <code class="docutils literal notranslate"><span class="pre">zrange</span></code> (<code class="docutils literal notranslate"><span class="pre">z0,</span> <span class="pre">z1</span></code>), or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._target">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_target</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._Placed" title="zarrsmith.mosaic_manager.fusion._Placed"><span class="pre">_Placed</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zrange</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._target" title="Link to this definition"></a></dt>
+<dd><p>Canvas slices of <code class="docutils literal notranslate"><span class="pre">region</span></code> covered by tile <code class="docutils literal notranslate"><span class="pre">p</span></code> (<code class="docutils literal notranslate"><span class="pre">None</span></code> if they do not overlap).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._read_block">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_read_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._read_block" title="Link to this definition"></a></dt>
+<dd><p>Read and downsample the part of one tile inside one region (runs in workers).</p>
+<p>Returns float32 <code class="docutils literal notranslate"><span class="pre">(h,</span> <span class="pre">w)</span></code> for projections, <code class="docutils literal notranslate"><span class="pre">(d,</span> <span class="pre">h,</span> <span class="pre">w)</span></code> otherwise.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._merge_groups">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_merge_groups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">midline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._merge_groups" title="Link to this definition"></a></dt>
+<dd><p>Merge per-group canvases: each group wins on its own side of the cut, others fill gaps.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._log_border_distance">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_log_border_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._log_border_distance" title="Link to this definition"></a></dt>
+<dd><p>ln of the distance from the centres of output voxels <code class="docutils literal notranslate"><span class="pre">lo..hi</span></code> to the nearer
+border of the interval <code class="docutils literal notranslate"><span class="pre">[start,</span> <span class="pre">start</span> <span class="pre">+</span> <span class="pre">size)</span></code> (all inside it).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._tile_log_weight">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_tile_log_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._Placed" title="zarrsmith.mosaic_manager.fusion._Placed"><span class="pre">_Placed</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zrange</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steepness</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._tile_log_weight" title="Link to this definition"></a></dt>
+<dd><p>Log weight of tile <code class="docutils literal notranslate"><span class="pre">p</span></code> on its part of <code class="docutils literal notranslate"><span class="pre">region</span></code> (shape of <a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._read_block" title="zarrsmith.mosaic_manager.fusion._read_block"><code class="xref py py-func docutils literal notranslate"><span class="pre">_read_block()</span></code></a>).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._softmax_add">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_softmax_add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._softmax_add" title="Link to this definition"></a></dt>
+<dd><p>Add <code class="docutils literal notranslate"><span class="pre">values</span></code> with weights <code class="docutils literal notranslate"><span class="pre">exp(log_weight)</span></code> to the running weighted sum
+<code class="docutils literal notranslate"><span class="pre">state</span> <span class="pre">=</span> <span class="pre">(acc,</span> <span class="pre">wsum,</span> <span class="pre">log_max)</span></code> at <code class="docutils literal notranslate"><span class="pre">sel</span></code> (a tuple of slices), in place.</p>
+<p>Only voxels where <code class="docutils literal notranslate"><span class="pre">mask</span></code> is true are updated (all of them when <code class="docutils literal notranslate"><span class="pre">None</span></code>).
+<code class="docutils literal notranslate"><span class="pre">log_weight</span></code> may be any array broadcastable to the selection.</p>
+<p>Equivalent to <code class="docutils literal notranslate"><span class="pre">new</span> <span class="pre">=</span> <span class="pre">max(old,</span> <span class="pre">lw);</span> <span class="pre">acc</span> <span class="pre">=</span> <span class="pre">acc</span> <span class="pre">*</span> <span class="pre">exp(old</span> <span class="pre">-</span> <span class="pre">new)</span> <span class="pre">+</span> <span class="pre">exp(lw</span> <span class="pre">-</span> <span class="pre">new)</span> <span class="pre">*</span> <span class="pre">v</span></code>
+(and likewise for <code class="docutils literal notranslate"><span class="pre">wsum</span></code>), but one of the two exponentials is always
+<code class="docutils literal notranslate"><span class="pre">exp(0)</span> <span class="pre">=</span> <span class="pre">1</span></code>, so a single <code class="docutils literal notranslate"><span class="pre">exp(-|lw</span> <span class="pre">-</span> <span class="pre">old|)</span></code> is computed and the updates are
+done in place on the voxels where each case applies. The result is identical.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._runs">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_runs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">slice</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._runs" title="Link to this definition"></a></dt>
+<dd><p>Slices of the runs of <code class="docutils literal notranslate"><span class="pre">True</span></code> in a 1D boolean array.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._sigmoid_add">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_sigmoid_add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blk</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._sigmoid_add" title="Link to this definition"></a></dt>
+<dd><p>Add tile block <code class="docutils literal notranslate"><span class="pre">blk</span></code> at canvas slices <code class="docutils literal notranslate"><span class="pre">sl</span></code> to a group’s softmax <code class="docutils literal notranslate"><span class="pre">state</span></code>.</p>
+<p>Where no tile was added before (most of a tile, away from the overlaps), the
+weighted sum is simply initialised with the tile; the weighted update of
+<a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._softmax_add" title="zarrsmith.mosaic_manager.fusion._softmax_add"><code class="xref py py-func docutils literal notranslate"><span class="pre">_softmax_add()</span></code></a> only runs on the boxes where the tile meets the tiles in
+<code class="docutils literal notranslate"><span class="pre">previous</span></code> (their canvas slices, to which <code class="docutils literal notranslate"><span class="pre">sl</span></code> is then appended). The
+result is identical to running <a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._softmax_add" title="zarrsmith.mosaic_manager.fusion._softmax_add"><code class="xref py py-func docutils literal notranslate"><span class="pre">_softmax_add()</span></code></a> on the whole block.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._new_softmax_state">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_new_softmax_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._new_softmax_state" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._group_log_weight">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_group_log_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transitions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steepness</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._group_log_weight" title="Link to this definition"></a></dt>
+<dd><p>Log weight of a group at voxel centres <code class="docutils literal notranslate"><span class="pre">pos</span></code> along the midline axis: across
+each overlap with a neighbour, <code class="docutils literal notranslate"><span class="pre">steepness</span> <span class="pre">*</span> <span class="pre">ln</span></code> of the relative distance from the
+side where the group comes in; 0 (full weight) outside its overlaps.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._merge_sigmoid">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_merge_sigmoid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transitions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steepness</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._merge_sigmoid" title="Link to this definition"></a></dt>
+<dd><p>Weighted mean of every group, then of the groups across their overlaps.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._fuse_region">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_fuse_region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._Region" title="zarrsmith.mosaic_manager.fusion._Region"><span class="pre">_Region</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steepness</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">SIGMOID_STEEPNESS</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._fuse_region" title="Link to this definition"></a></dt>
+<dd><p>Read the tiles of region <code class="docutils literal notranslate"><span class="pre">r</span></code>, merge them, write the region into <code class="docutils literal notranslate"><span class="pre">arr</span></code> and
+return a small sample of its non-zero values (for the display window).</p>
+<p>Runs in the workers: regions are aligned with the chunks of <code class="docutils literal notranslate"><span class="pre">arr</span></code>, so two
+regions never write the same chunk and need no lock.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._fuse_level0">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_fuse_level0</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steepness</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._fuse_level0" title="Link to this definition"></a></dt>
+<dd><p>Fuse and write every region of level 0; return a sample of values per channel index.</p>
+<p>The unit of parallel work is one whole region: a worker reads the tiles that
+overlap it, merges them and writes the result. Regions match the chunks of
+<code class="docutils literal notranslate"><span class="pre">arr</span></code> exactly, so concurrent writes never touch the same chunk. At most
+<code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">workers</span></code> regions are in flight at a time, which bounds memory.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._display_windows">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_display_windows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._display_windows" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">(start,</span> <span class="pre">end)</span></code> display window per channel from the fused-value samples.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._write_display_windows">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_write_display_windows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">windows</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._write_display_windows" title="Link to this definition"></a></dt>
+<dd><p>Store the display windows in the OMERO channel metadata (NGFF 0.4 and 0.5).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.display_windows">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">display_windows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.display_windows" title="Link to this definition"></a></dt>
+<dd><p>Display window <code class="docutils literal notranslate"><span class="pre">(start,</span> <span class="pre">end)</span></code> of every channel of an OME-Zarr image, from its
+OMERO metadata (written by <a class="reference internal" href="#zarrsmith.mosaic_manager.fusion.fuse_tiles" title="zarrsmith.mosaic_manager.fusion.fuse_tiles"><code class="xref py py-func docutils literal notranslate"><span class="pre">fuse_tiles()</span></code></a> from the fused values).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.FusionPlan">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">FusionPlan</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.FusionPlan" title="Link to this definition"></a></dt>
+<dd><p>Level-0 geometry of a fusion, computed without reading any pixel data.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.FusionPlan.tiles">
+<span class="sig-name descname"><span class="pre">tiles</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../tile/index.html#zarrsmith.mosaic_manager.tile.Tile" title="zarrsmith.mosaic_manager.tile.Tile"><span class="pre">zarrsmith.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.FusionPlan.tiles" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.FusionPlan.placed">
+<span class="sig-name descname"><span class="pre">placed</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._Placed" title="zarrsmith.mosaic_manager.fusion._Placed"><span class="pre">_Placed</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.FusionPlan.placed" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.FusionPlan.layout">
+<span class="sig-name descname"><span class="pre">layout</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion._Placed" title="zarrsmith.mosaic_manager.fusion._Placed"><span class="pre">_Placed</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.FusionPlan.layout" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.FusionPlan.channels">
+<span class="sig-name descname"><span class="pre">channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.FusionPlan.channels" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.FusionPlan.ds">
+<span class="sig-name descname"><span class="pre">ds</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.FusionPlan.ds" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.FusionPlan.blend">
+<span class="sig-name descname"><span class="pre">blend</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.FusionPlan.blend" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.FusionPlan.dtype">
+<span class="sig-name descname"><span class="pre">dtype</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.dtype</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.FusionPlan.dtype" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.FusionPlan.axes">
+<span class="sig-name descname"><span class="pre">axes</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.FusionPlan.axes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.FusionPlan.grid_shape">
+<span class="sig-name descname"><span class="pre">grid_shape</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.FusionPlan.grid_shape" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.FusionPlan.shape">
+<span class="sig-name descname"><span class="pre">shape</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.FusionPlan.shape" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.FusionPlan.scale">
+<span class="sig-name descname"><span class="pre">scale</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.FusionPlan.scale" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.FusionPlan.origin">
+<span class="sig-name descname"><span class="pre">origin</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.FusionPlan.origin" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.FusionPlan.n_skipped">
+<span class="sig-name descname"><span class="pre">n_skipped</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.FusionPlan.n_skipped" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.FusionPlan.fields">
+<span class="sig-name descname"><span class="pre">fields</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.FusionPlan.fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.FusionPlan.nbytes">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">nbytes</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.FusionPlan.nbytes" title="Link to this definition"></a></dt>
+<dd><p>Size of level 0 in bytes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.FusionPlan.summary">
+<span class="sig-name descname"><span class="pre">summary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.FusionPlan.summary" title="Link to this definition"></a></dt>
+<dd><p>One line such as <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">ch</span> <span class="pre">x</span> <span class="pre">260</span> <span class="pre">x</span> <span class="pre">1100</span> <span class="pre">x</span> <span class="pre">1500</span> <span class="pre">px</span> <span class="pre">(czyx),</span> <span class="pre">1.71</span> <span class="pre">GB,</span> <span class="pre">voxel</span> <span class="pre">12</span> <span class="pre">x</span> <span class="pre">11.7</span> <span class="pre">x</span> <span class="pre">11.7</span> <span class="pre">micrometer</span></code> (MB below 0.1 GB).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.FusionPlan.multiple_fields">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">multiple_fields</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.FusionPlan.multiple_fields" title="Link to this definition"></a></dt>
+<dd><p>Whether the fused tiles come from more than one field (such a plan is not fused).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.FusionPlan.error">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">error</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.FusionPlan.error" title="Link to this definition"></a></dt>
+<dd><p>Why the plan cannot be fused (tiles from separate fields), or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.plan_fusion">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">plan_fusion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../tile/index.html#zarrsmith.mosaic_manager.tile.Tile" title="zarrsmith.mosaic_manager.tile.Tile"><span class="pre">zarrsmith.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sigmoid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../tile/index.html#zarrsmith.mosaic_manager.tile.Tile" title="zarrsmith.mosaic_manager.tile.Tile"><span class="pre">zarrsmith.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">midline_axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'x'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zarrsmith.mosaic_manager.fusion.FusionPlan" title="zarrsmith.mosaic_manager.fusion.FusionPlan"><span class="pre">FusionPlan</span></a></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.plan_fusion" title="Link to this definition"></a></dt>
+<dd><p>Validate fusion arguments and compute the level-0 geometry (see <a class="reference internal" href="#zarrsmith.mosaic_manager.fusion.fuse_tiles" title="zarrsmith.mosaic_manager.fusion.fuse_tiles"><code class="xref py py-func docutils literal notranslate"><span class="pre">fuse_tiles()</span></code></a>).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._spatial_factor">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_spatial_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._spatial_factor" title="Link to this definition"></a></dt>
+<dd><p>Pyramid downscale factor for the output axes (<code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">y,</span> <span class="pre">x)</span></code> given; z dropped for projections).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion._check_write_options">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">_check_write_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion._check_write_options" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fusion.fuse_tiles">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fusion.</span></span><span class="sig-name descname"><span class="pre">fuse_tiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../tile/index.html#zarrsmith.mosaic_manager.tile.Tile" title="zarrsmith.mosaic_manager.tile.Tile"><span class="pre">zarrsmith.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sigmoid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../tile/index.html#zarrsmith.mosaic_manager.tile.Tile" title="zarrsmith.mosaic_manager.tile.Tile"><span class="pre">zarrsmith.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">levels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downscale_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">midline_axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'x'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigmoid_steepness</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">SIGMOID_STEEPNESS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_compression</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">write_options</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fusion.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fusion.fuse_tiles" title="Link to this definition"></a></dt>
+<dd><p>Fuse <code class="docutils literal notranslate"><span class="pre">tiles</span></code> into an OME-Zarr image and return it as a <code class="docutils literal notranslate"><span class="pre">ZarrManager</span></code>.</p>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>tiles</dt><dd><p>Tiles to fuse (all must share voxel size and unit).</p>
+</dd>
+<dt>out</dt><dd><p>Output <code class="docutils literal notranslate"><span class="pre">.ome.zarr</span></code> path.</p>
+</dd>
+<dt>ds</dt><dd><p><code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">y,</span> <span class="pre">x)</span></code> integer downsampling factors applied while reading the tiles
+(each output voxel is the mean of its block).</p>
+</dd>
+<dt>projection</dt><dd><p><code class="docutils literal notranslate"><span class="pre">None</span></code> for a 3D volume, <code class="docutils literal notranslate"><span class="pre">&quot;max&quot;</span></code>/<code class="docutils literal notranslate"><span class="pre">&quot;sum&quot;</span></code> for a 2D projection along z.</p>
+</dd>
+<dt>blend</dt><dd><p>How tiles that overlap are merged:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;sigmoid&quot;</span></code> (default) – smooth transition: across an overlap, the
+share of each tile follows a sigmoid of the log ratio of the distances
+to the two tile borders, from 0 at a tile’s border through 1/2 in the
+middle of the overlap to 1 at the other tile’s border, so no seam is
+visible. The tiles of each <code class="docutils literal notranslate"><span class="pre">group</span></code> are fused separately, then the
+groups are merged the same way across their overlap along
+<code class="docutils literal notranslate"><span class="pre">midline_axis</span></code> (the switch is centred where <code class="docutils literal notranslate"><span class="pre">&quot;midline&quot;</span></code> cuts);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;max&quot;</span></code> – keep the brighter value;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;sum&quot;</span></code> – add the values, so overlaps show up as brighter bands;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;midline&quot;</span></code> – <code class="docutils literal notranslate"><span class="pre">max</span></code> within each tile <code class="docutils literal notranslate"><span class="pre">group</span></code>; where groups
+overlap, the image switches sharply from one group to the next at the
+middle of their overlap, along <code class="docutils literal notranslate"><span class="pre">midline_axis</span></code>.</p></li>
+</ul>
+</dd>
+<dt>channels</dt><dd><p>Tile channels to fuse, in output order. Default: all, in tile order.</p>
+</dd>
+<dt>channel_names, channel_colors</dt><dd><p>Names and colours (hex or matplotlib names) written for the output
+channels. Default: the tile channel names and the ZarrSmith palette.</p>
+</dd>
+<dt>crop</dt><dd><p>Part of the output to write, in output voxels (after <code class="docutils literal notranslate"><span class="pre">ds</span></code>), e.g.
+<code class="docutils literal notranslate"><span class="pre">{&quot;y&quot;:</span> <span class="pre">slice(100,</span> <span class="pre">900),</span> <span class="pre">&quot;z&quot;:</span> <span class="pre">slice(0,</span> <span class="pre">50)}</span></code>. For projections, a <code class="docutils literal notranslate"><span class="pre">z</span></code>
+crop limits the planes that are projected.</p>
+</dd>
+<dt>skip</dt><dd><p>Tiles to leave blank: they are not read, but the output keeps the size and
+position it has with them, so their area stays 0 (where no other tile
+covers it). With <code class="docutils literal notranslate"><span class="pre">blend=&quot;midline&quot;</span></code>/<code class="docutils literal notranslate"><span class="pre">&quot;sigmoid&quot;</span></code> they still count for
+the position of the switch between groups.</p>
+</dd>
+<dt>levels</dt><dd><p>Number of pyramid levels.</p>
+</dd>
+<dt>downscale_factor</dt><dd><p>Factor between pyramid levels: one integer or <code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">y,</span> <span class="pre">x)</span></code>.</p>
+</dd>
+<dt>workers</dt><dd><p>Number of regions fused in parallel (threads or processes, see <code class="docutils literal notranslate"><span class="pre">executor</span></code>).</p>
+</dd>
+<dt>executor</dt><dd><p><code class="docutils literal notranslate"><span class="pre">&quot;process&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;thread&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> (processes when <code class="docutils literal notranslate"><span class="pre">workers</span> <span class="pre">&gt;</span> <span class="pre">1</span></code> and
+every tile’s data is picklable, e.g. <a class="reference internal" href="../index.html#zarrsmith.mosaic_manager.H5Array" title="zarrsmith.mosaic_manager.H5Array"><code class="xref py py-class docutils literal notranslate"><span class="pre">H5Array</span></code></a>;
+threads otherwise). h5py serialises reads inside one process, so processes
+are what actually speeds up reading from HDF5 tiles.</p>
+</dd>
+<dt>out_dtype</dt><dd><p>Output dtype. Default: input dtype for <code class="docutils literal notranslate"><span class="pre">sigmoid</span></code>/<code class="docutils literal notranslate"><span class="pre">max</span></code>/<code class="docutils literal notranslate"><span class="pre">midline</span></code>,
+<code class="docutils literal notranslate"><span class="pre">float32</span></code> for <code class="docutils literal notranslate"><span class="pre">sum</span></code>.</p>
+</dd>
+<dt>midline_axis</dt><dd><p><code class="docutils literal notranslate"><span class="pre">&quot;x&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;y&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;z&quot;</span></code>: axis along which groups are separated
+(<code class="docutils literal notranslate"><span class="pre">midline</span></code> and <code class="docutils literal notranslate"><span class="pre">sigmoid</span></code>).</p>
+</dd>
+<dt>sigmoid_steepness</dt><dd><p>Steepness of the <code class="docutils literal notranslate"><span class="pre">sigmoid</span></code> transition (&gt; 0). The share of a tile
+goes from 10% to 90% over the central <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">2</span> <span class="pre">/</span> <span class="pre">(1</span> <span class="pre">+</span> <span class="pre">9</span> <span class="pre">**</span> <span class="pre">(1</span> <span class="pre">/</span> <span class="pre">s))</span></code>
+of the overlap: about 27% for the default 4, 14% for 8, 50% for 2.</p>
+</dd>
+<dt>overwrite</dt><dd><p>Replace <code class="docutils literal notranslate"><span class="pre">out</span></code> if it exists.</p>
+</dd>
+<dt>name</dt><dd><p>Image name stored in the metadata.</p>
+</dd>
+<dt>temp_dir</dt><dd><p>Folder for the temporary fused level 0 (deleted at the end). Default:
+next to <code class="docutils literal notranslate"><span class="pre">out</span></code>. A local disk is faster when <code class="docutils literal notranslate"><span class="pre">out</span></code> is on a network share.</p>
+</dd>
+<dt>temp_compression</dt><dd><p>Compress the temporary level 0. Off by default: skipping compression (and
+decoding it again for the pyramid) is noticeably faster, but the temporary
+store then takes the full uncompressed size of level 0 (<code class="docutils literal notranslate"><span class="pre">plan_fusion(...).nbytes</span></code>),
+so <code class="docutils literal notranslate"><span class="pre">temp_dir</span></code> needs room for it. Turn it on when disk space is short.</p>
+</dd>
+<dt>progress</dt><dd><p>Show progress bars.</p>
+</dd>
+<dt><a href="#id1"><span class="problematic" id="id2">**</span></a>write_options</dt><dd><p>Any other <a class="reference internal" href="../../microscope_manager/index.html#zarrsmith.microscope_manager.MicroscopeManager.to_zarr" title="zarrsmith.microscope_manager.MicroscopeManager.to_zarr"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_zarr()</span></code></a>
+option, as for <code class="docutils literal notranslate"><span class="pre">zarrsmith</span> <span class="pre">convert</span></code>: <code class="docutils literal notranslate"><span class="pre">chunks</span></code>, <code class="docutils literal notranslate"><span class="pre">shards</span></code>, <code class="docutils literal notranslate"><span class="pre">shard_target_mb</span></code>,
+<code class="docutils literal notranslate"><span class="pre">shard_exclude_axes</span></code>, <code class="docutils literal notranslate"><span class="pre">zarr_format</span></code>, <code class="docutils literal notranslate"><span class="pre">ngff_version</span></code>, <code class="docutils literal notranslate"><span class="pre">compressor</span></code>,
+<code class="docutils literal notranslate"><span class="pre">compressor_level</span></code>, <code class="docutils literal notranslate"><span class="pre">drop_singleton</span></code>, <code class="docutils literal notranslate"><span class="pre">num_workers</span></code>, <code class="docutils literal notranslate"><span class="pre">storage_options</span></code>.
+<code class="docutils literal notranslate"><span class="pre">chunks</span></code> is given in the output axis order (<code class="docutils literal notranslate"><span class="pre">c,</span> <span class="pre">z,</span> <span class="pre">y,</span> <span class="pre">x</span></code>, or <code class="docutils literal notranslate"><span class="pre">c,</span> <span class="pre">y,</span> <span class="pre">x</span></code>
+for projections).</p>
+</dd>
+</dl>
+<p>The display window of every channel (OMERO <code class="docutils literal notranslate"><span class="pre">window</span></code> metadata) is set to the
+0.5th-99.9th percentile of the fused values, ignoring blank areas, so viewers
+open the result with a usable contrast; see <a class="reference internal" href="#zarrsmith.mosaic_manager.fusion.display_windows" title="zarrsmith.mosaic_manager.fusion.display_windows"><code class="xref py py-func docutils literal notranslate"><span class="pre">display_windows()</span></code></a>.</p>
+<p>Use <a class="reference internal" href="#zarrsmith.mosaic_manager.fusion.plan_fusion" title="zarrsmith.mosaic_manager.fusion.plan_fusion"><code class="xref py py-func docutils literal notranslate"><span class="pre">plan_fusion()</span></code></a> with the same arguments to get the output shape and
+size without reading or writing anything.</p>
+<p><code class="docutils literal notranslate"><span class="pre">tiles</span></code> must come from one field (<code class="docutils literal notranslate"><span class="pre">Tile.field</span></code>, set by
+<a class="reference internal" href="../index.html#zarrsmith.mosaic_manager.MosaicManager" title="zarrsmith.mosaic_manager.MosaicManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">MosaicManager</span></code></a>; skipped tiles count): tiles of
+separate fields are not fused, a
+<a class="reference internal" href="../fields/index.html#zarrsmith.mosaic_manager.fields.MultipleFieldsError" title="zarrsmith.mosaic_manager.fields.MultipleFieldsError"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleFieldsError</span></code></a> is raised before
+anything is read or written.</p>
+</section>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../fields/index.html" class="btn btn-neutral float-left" title="zarrsmith.mosaic_manager.fields" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../h5_array/index.html" class="btn btn-neutral float-right" title="zarrsmith.mosaic_manager.h5_array" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, European Molecular Biology Laboratory (EMBL).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

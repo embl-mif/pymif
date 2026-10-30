@@ -1,0 +1,267 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>zarrsmith.mosaic_manager.fields &mdash; ZarrSmith 0.6.2.dev2+g423d5bb1d documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=0b5a380a"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="zarrsmith.mosaic_manager.fusion" href="../fusion/index.html" />
+    <link rel="prev" title="zarrsmith.mosaic_manager" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            ZarrSmith
+              <img src="../../../../_static/zarrsmith-icon.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing and extending ZarrSmith</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">zarrsmith</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../_version/index.html">zarrsmith._version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html">zarrsmith.cli</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../microscope_manager/index.html">zarrsmith.microscope_manager</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">zarrsmith.mosaic_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../napari/index.html">zarrsmith.napari</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../utils/index.html">zarrsmith.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">ZarrSmith</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../api_reference.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">zarrsmith</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">zarrsmith.mosaic_manager</a></li>
+      <li class="breadcrumb-item active">zarrsmith.mosaic_manager.fields</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/zarrsmith/mosaic_manager/fields/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-zarrsmith.mosaic_manager.fields">
+<span id="zarrsmith-mosaic-manager-fields"></span><h1>zarrsmith.mosaic_manager.fields<a class="headerlink" href="#module-zarrsmith.mosaic_manager.fields" title="Link to this heading"></a></h1>
+<p>Fields of a mosaic: groups of tiles that touch or overlap (connected components).</p>
+<p>A mosaic can hold several separate fields, e.g. two samples or two regions of one
+sample imaged in the same acquisition. Fusing tiles of different fields into one
+image puts them on a single canvas that spans all of them, with blank space in
+between. Every tile therefore gets a <code class="docutils literal notranslate"><span class="pre">field</span></code> label when a
+<a class="reference internal" href="../index.html#zarrsmith.mosaic_manager.MosaicManager" title="zarrsmith.mosaic_manager.MosaicManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">MosaicManager</span></code></a> is loaded, fusion uses the first
+field by default, and fusing tiles of more than one field is refused
+(<a class="reference internal" href="#zarrsmith.mosaic_manager.fields.MultipleFieldsError" title="zarrsmith.mosaic_manager.fields.MultipleFieldsError"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleFieldsError</span></code></a>).</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fields.logger" title="zarrsmith.mosaic_manager.fields.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logger</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fields.FIELD_PREFIX" title="zarrsmith.mosaic_manager.fields.FIELD_PREFIX"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FIELD_PREFIX</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="exceptions">
+<h2>Exceptions<a class="headerlink" href="#exceptions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fields.MultipleFieldsError" title="zarrsmith.mosaic_manager.fields.MultipleFieldsError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultipleFieldsError</span></code></a></p></td>
+<td><p>Tiles of more than one field were given to one fusion, which is not allowed.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fields.natural_key" title="zarrsmith.mosaic_manager.fields.natural_key"><code class="xref py py-obj docutils literal notranslate"><span class="pre">natural_key</span></code></a>(name)</p></td>
+<td><p>Sort key putting <code class="docutils literal notranslate"><span class="pre">field2</span></code> before <code class="docutils literal notranslate"><span class="pre">field10</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fields.connected_components" title="zarrsmith.mosaic_manager.fields.connected_components"><code class="xref py py-obj docutils literal notranslate"><span class="pre">connected_components</span></code></a>(→ List[int])</p></td>
+<td><p>Component index of every tile: tiles whose boxes overlap or touch are connected.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fields.label_fields" title="zarrsmith.mosaic_manager.fields.label_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">label_fields</span></code></a>(→ List[str])</p></td>
+<td><p>Set <code class="docutils literal notranslate"><span class="pre">tile.field</span></code> on every tile to the name of its connected component.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fields.fields_of" title="zarrsmith.mosaic_manager.fields.fields_of"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fields_of</span></code></a>(→ List[str])</p></td>
+<td><p>Names of the fields of <code class="docutils literal notranslate"><span class="pre">tiles</span></code>, in natural order (tiles without one ignored).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fields.multiple_fields_message" title="zarrsmith.mosaic_manager.fields.multiple_fields_message"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiple_fields_message</span></code></a>(→ str)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.mosaic_manager.fields.check_single_field" title="zarrsmith.mosaic_manager.fields.check_single_field"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_single_field</span></code></a>(→ List[str])</p></td>
+<td><p>Raise <a class="reference internal" href="#zarrsmith.mosaic_manager.fields.MultipleFieldsError" title="zarrsmith.mosaic_manager.fields.MultipleFieldsError"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleFieldsError</span></code></a> (and log the error) if <code class="docutils literal notranslate"><span class="pre">tiles</span></code> come from</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fields.logger">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fields.</span></span><span class="sig-name descname"><span class="pre">logger</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fields.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fields.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fields.FIELD_PREFIX">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fields.</span></span><span class="sig-name descname"><span class="pre">FIELD_PREFIX</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'field'</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fields.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fields.FIELD_PREFIX" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fields.MultipleFieldsError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fields.</span></span><span class="sig-name descname"><span class="pre">MultipleFieldsError</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fields.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fields.MultipleFieldsError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></p>
+<p>Tiles of more than one field were given to one fusion, which is not allowed.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fields.natural_key">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fields.</span></span><span class="sig-name descname"><span class="pre">natural_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fields.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fields.natural_key" title="Link to this definition"></a></dt>
+<dd><p>Sort key putting <code class="docutils literal notranslate"><span class="pre">field2</span></code> before <code class="docutils literal notranslate"><span class="pre">field10</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fields.connected_components">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fields.</span></span><span class="sig-name descname"><span class="pre">connected_components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../tile/index.html#zarrsmith.mosaic_manager.tile.Tile" title="zarrsmith.mosaic_manager.tile.Tile"><span class="pre">zarrsmith.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fields.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fields.connected_components" title="Link to this definition"></a></dt>
+<dd><p>Component index of every tile: tiles whose boxes overlap or touch are connected.</p>
+<p>Two tiles touch when their <code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">y,</span> <span class="pre">x)</span></code> boxes (<code class="xref py py-attr docutils literal notranslate"><span class="pre">Tile.extent</span></code>) overlap or
+are less than <code class="docutils literal notranslate"><span class="pre">tolerance</span></code> apart on every axis (default: one voxel). Components
+are numbered by their position: by the <code class="docutils literal notranslate"><span class="pre">y</span></code> then <code class="docutils literal notranslate"><span class="pre">x</span></code> then <code class="docutils literal notranslate"><span class="pre">z</span></code> start of their
+bounding box, so the numbering does not depend on the tile order.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fields.label_fields">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fields.</span></span><span class="sig-name descname"><span class="pre">label_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../tile/index.html#zarrsmith.mosaic_manager.tile.Tile" title="zarrsmith.mosaic_manager.tile.Tile"><span class="pre">zarrsmith.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fields.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fields.label_fields" title="Link to this definition"></a></dt>
+<dd><p>Set <code class="docutils literal notranslate"><span class="pre">tile.field</span></code> on every tile to the name of its connected component.</p>
+<p>Tiles that already have a field (given by the reader) keep it. Returns the
+field names in order. See <a class="reference internal" href="#zarrsmith.mosaic_manager.fields.connected_components" title="zarrsmith.mosaic_manager.fields.connected_components"><code class="xref py py-func docutils literal notranslate"><span class="pre">connected_components()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fields.fields_of">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fields.</span></span><span class="sig-name descname"><span class="pre">fields_of</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../tile/index.html#zarrsmith.mosaic_manager.tile.Tile" title="zarrsmith.mosaic_manager.tile.Tile"><span class="pre">zarrsmith.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fields.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fields.fields_of" title="Link to this definition"></a></dt>
+<dd><p>Names of the fields of <code class="docutils literal notranslate"><span class="pre">tiles</span></code>, in natural order (tiles without one ignored).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fields.multiple_fields_message">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fields.</span></span><span class="sig-name descname"><span class="pre">multiple_fields_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fields.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fields.multiple_fields_message" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.mosaic_manager.fields.check_single_field">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.mosaic_manager.fields.</span></span><span class="sig-name descname"><span class="pre">check_single_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../tile/index.html#zarrsmith.mosaic_manager.tile.Tile" title="zarrsmith.mosaic_manager.tile.Tile"><span class="pre">zarrsmith.mosaic_manager.tile.Tile</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/mosaic_manager/fields.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.mosaic_manager.fields.check_single_field" title="Link to this definition"></a></dt>
+<dd><p>Raise <a class="reference internal" href="#zarrsmith.mosaic_manager.fields.MultipleFieldsError" title="zarrsmith.mosaic_manager.fields.MultipleFieldsError"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleFieldsError</span></code></a> (and log the error) if <code class="docutils literal notranslate"><span class="pre">tiles</span></code> come from
+more than one field. Returns the fields of <code class="docutils literal notranslate"><span class="pre">tiles</span></code>.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="zarrsmith.mosaic_manager" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../fusion/index.html" class="btn btn-neutral float-right" title="zarrsmith.mosaic_manager.fusion" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, European Molecular Biology Laboratory (EMBL).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

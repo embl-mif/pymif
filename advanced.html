@@ -1,0 +1,230 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced writing options &mdash; ZarrSmith 0.6.2.dev2+g423d5bb1d documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=0b5a380a"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Command line" href="cli.html" />
+    <link rel="prev" title="Chromatic shift correction" href="chromatic-shift.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            ZarrSmith
+              <img src="_static/zarrsmith-icon.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Advanced writing options</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#sharding-zarr-v3-only">Sharding (zarr v3 only)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#singleton-axes">Singleton axes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parallel-writing">Parallel writing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#progress-bar">Progress bar</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing and extending ZarrSmith</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ZarrSmith</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Advanced writing options</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/advanced.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="advanced-writing-options">
+<h1>Advanced writing options<a class="headerlink" href="#advanced-writing-options" title="Link to this heading"></a></h1>
+<p>These options control how the OME-Zarr output is laid out and how fast it is written. They are available in the Python API (<code class="docutils literal notranslate"><span class="pre">to_zarr(...)</span></code> keyword arguments), the CLI (flags and batch CSV columns) and the napari converter (the <em>Additional parameters</em> panel).</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Python / CSV column</p></th>
+<th class="head"><p>CLI flag</p></th>
+<th class="head"><p>napari control</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">shards</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-sh</span></code>, <code class="docutils literal notranslate"><span class="pre">--shards</span></code></p></td>
+<td><p>Sharding (zarr v3 only)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">auto</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">shard_target_mb</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-stm</span></code>, <code class="docutils literal notranslate"><span class="pre">--shard_target_mb</span></code></p></td>
+<td><p>Shard target (MB)</p></td>
+<td><p>1024</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">shard_exclude_axes</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-sea</span></code>, <code class="docutils literal notranslate"><span class="pre">--shard_exclude_axes</span></code></p></td>
+<td><p>Never merge axes</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">c</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">drop_singleton</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-ds</span></code>, <code class="docutils literal notranslate"><span class="pre">--drop_singleton</span></code></p></td>
+<td><p>Drop singleton axes</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">num_workers</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-nw</span></code>, <code class="docutils literal notranslate"><span class="pre">--num_workers</span></code></p></td>
+<td><p>Write threads (0 = auto)</p></td>
+<td><p>auto</p></td>
+</tr>
+</tbody>
+</table>
+<p>In the batch CSV, leave a cell empty to use the default (so an empty <code class="docutils literal notranslate"><span class="pre">shards</span></code> cell means <code class="docutils literal notranslate"><span class="pre">auto</span></code>; write <code class="docutils literal notranslate"><span class="pre">none</span></code> to disable sharding).</p>
+<section id="sharding-zarr-v3-only">
+<h2>Sharding (zarr v3 only)<a class="headerlink" href="#sharding-zarr-v3-only" title="Link to this heading"></a></h2>
+<p>Sharding is on by default (<code class="docutils literal notranslate"><span class="pre">shards=&quot;auto&quot;</span></code>). Without it every chunk is its own file; with sharding, many chunks are packed into one larger file (a <em>shard</em>), which greatly reduces the number of files on disk while each chunk stays individually readable. Sharding needs zarr v3 / NGFF 0.5: with zarr v2 ZarrSmith issues a warning and sets sharding to none.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Let ZarrSmith choose shard sizes (about shard_target_mb of uncompressed data per shard)</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="s2">"out.zarr"</span><span class="p">,</span> <span class="n">shards</span><span class="o">=</span><span class="s2">"auto"</span><span class="p">,</span> <span class="n">shard_target_mb</span><span class="o">=</span><span class="mi">256</span><span class="p">)</span>
+
+<span class="c1"># Disable sharding: one file per chunk</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="s2">"out.zarr"</span><span class="p">,</span> <span class="n">shards</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># Or give an explicit shard shape (one value per axis); it is snapped to a</span>
+<span class="c1"># multiple of the chunk shape and clipped to each level's extent</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="s2">"out.zarr"</span><span class="p">,</span> <span class="n">shards</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">2160</span><span class="p">,</span> <span class="mi">4096</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">zarrsmith convert -i INPUT -m opera -z OUT.zarr -sh auto -stm 256 -sea t c   # or: -sh none to disable</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">shards=&quot;auto&quot;</span></code> picks a shard shape per pyramid level and leaves small levels unsharded.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shard_exclude_axes</span></code> lists axes that <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> never merges chunks along. It defaults to <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">c</span></code>, so each timepoint and channel stays in its own shard. Use <code class="docutils literal notranslate"><span class="pre">none</span></code> (CLI/CSV) or <code class="docutils literal notranslate"><span class="pre">()</span></code> (Python) to allow every axis to merge. An explicit shard shape is always used exactly as given.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shard_target_mb</span></code> is the target uncompressed size of a shard. The default is 1024 MB (1 GB). Larger shards mean fewer files but more memory per write thread (see below).</p></li>
+</ul>
+</section>
+<section id="singleton-axes">
+<h2>Singleton axes<a class="headerlink" href="#singleton-axes" title="Link to this heading"></a></h2>
+<p>With <code class="docutils literal notranslate"><span class="pre">drop_singleton=True</span></code> (the default) any <code class="docutils literal notranslate"><span class="pre">t</span></code>, <code class="docutils literal notranslate"><span class="pre">c</span></code> or <code class="docutils literal notranslate"><span class="pre">z</span></code> axis of size 1 is removed from the written dataset, so a single-timepoint, single-channel stack is stored as a plain <code class="docutils literal notranslate"><span class="pre">zyx</span></code> array. The axes list, scales, units and any <code class="docutils literal notranslate"><span class="pre">chunks</span></code>/<code class="docutils literal notranslate"><span class="pre">shards</span></code> you gave for the full axis set are adjusted accordingly. <code class="docutils literal notranslate"><span class="pre">y</span></code> and <code class="docutils literal notranslate"><span class="pre">x</span></code> are never dropped. Pass <code class="docutils literal notranslate"><span class="pre">drop_singleton=False</span></code> (<code class="docutils literal notranslate"><span class="pre">-ds</span> <span class="pre">false</span></code> in the CLI, <code class="docutils literal notranslate"><span class="pre">false</span></code> in the CSV, or untick the napari checkbox) to keep every axis.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="s2">"out.zarr"</span><span class="p">,</span> <span class="n">drop_singleton</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>   <span class="c1"># keep size-1 t/c/z axes</span>
+</pre></div>
+</div>
+<p>Note that, because this is on by default, existing code that writes datasets with size-1 <code class="docutils literal notranslate"><span class="pre">t</span></code>, <code class="docutils literal notranslate"><span class="pre">c</span></code> or <code class="docutils literal notranslate"><span class="pre">z</span></code> axes now produces arrays with fewer dimensions.</p>
+</section>
+<section id="parallel-writing">
+<h2>Parallel writing<a class="headerlink" href="#parallel-writing" title="Link to this heading"></a></h2>
+<p>Blocks of the dataset are compressed and written by several threads at once. <code class="docutils literal notranslate"><span class="pre">num_workers</span></code> sets the thread count; by default ZarrSmith uses <strong>half of the available cores, capped at 8</strong>, because writing stops getting faster beyond roughly 8 threads while memory use keeps growing.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="s2">"out.zarr"</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">zarrsmith convert -i INPUT -m opera -z OUT.zarr -nw 4</span>
+</pre></div>
+</div>
+<p>How it works:</p>
+<ul class="simple">
+<li><p><strong>Sharded levels</strong> are written one whole shard per task, so threads never touch the same file and no locking is needed. Each thread holds one shard in memory, so the thread count is automatically reduced to fit in about half of the free RAM, and a warning is shown if that limits parallelism. If it does, use smaller shards (a lower <code class="docutils literal notranslate"><span class="pre">shard_target_mb</span></code>).</p></li>
+<li><p><strong>All pyramid levels are written in a single pass</strong>, so the source data is read once instead of once per level. This matters most for slow sources such as files on a network drive.</p></li>
+<li><p>With <code class="docutils literal notranslate"><span class="pre">compute=False</span></code>, <code class="docutils literal notranslate"><span class="pre">to_zarr</span></code> returns the unevaluated dask tasks instead of writing, and <code class="docutils literal notranslate"><span class="pre">num_workers</span></code> does not apply: you run them with your own scheduler.</p></li>
+</ul>
+<p>Writing speed is also bounded by how fast the source can be read and decoded, which <code class="docutils literal notranslate"><span class="pre">num_workers</span></code> does not change.</p>
+</section>
+<section id="progress-bar">
+<h2>Progress bar<a class="headerlink" href="#progress-bar" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">to_zarr</span></code> shows a <a class="reference external" href="https://tqdm.github.io/">tqdm</a> progress bar (in a terminal or a notebook) while the arrays are written, labelled with the dataset being written (<code class="docutils literal notranslate"><span class="pre">raw</span></code>, a group or a label). The CLI shows it too. All pyramid levels of a dataset share one bar, because they are computed in a single pass.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="s2">"out.zarr"</span><span class="p">)</span>                    <span class="c1"># progress bar on (default)</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="s2">"out.zarr"</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>    <span class="c1"># silent, e.g. for batch jobs and tests</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="chromatic-shift.html" class="btn btn-neutral float-left" title="Chromatic shift correction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cli.html" class="btn btn-neutral float-right" title="Command line" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, European Molecular Biology Laboratory (EMBL).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

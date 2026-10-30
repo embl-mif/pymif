@@ -1,0 +1,137 @@
+zarrsmith.utils.axes
+====================
+
+.. py:module:: zarrsmith.utils.axes
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   zarrsmith.utils.axes.ALLOWED_AXES
+   zarrsmith.utils.axes.ALLOWED_AXIS_SET
+   zarrsmith.utils.axes.SPATIAL_AXES
+   zarrsmith.utils.axes.SPATIAL_AXIS_SET
+   zarrsmith.utils.axes.DATA_TYPES
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   zarrsmith.utils.axes.infer_axes_from_ndim
+   zarrsmith.utils.axes.normalize_axes
+   zarrsmith.utils.axes.metadata_axes
+   zarrsmith.utils.axes.metadata_axis_size
+   zarrsmith.utils.axes.spatial_axes_in_order
+   zarrsmith.utils.axes.spatial_axis_indices
+   zarrsmith.utils.axes.normalize_data_type
+   zarrsmith.utils.axes.spatial_values_for_axes
+   zarrsmith.utils.axes.index_list_from_selection
+   zarrsmith.utils.axes.selection_length_and_spacing
+   zarrsmith.utils.axes.to_tczyx
+
+
+Module Contents
+---------------
+
+.. py:data:: ALLOWED_AXES
+   :type:  tuple[str, ...]
+   :value: ('t', 'c', 'z', 'y', 'x')
+
+
+.. py:data:: ALLOWED_AXIS_SET
+   :type:  set[str]
+
+.. py:data:: SPATIAL_AXES
+   :type:  tuple[str, ...]
+   :value: ('z', 'y', 'x')
+
+
+.. py:data:: SPATIAL_AXIS_SET
+   :type:  set[str]
+
+.. py:data:: DATA_TYPES
+   :type:  tuple[str, ...]
+   :value: ('intensity', 'label')
+
+
+.. py:function:: infer_axes_from_ndim(ndim: int) -> tuple[str, ...]
+
+   Infer a legacy-friendly axes tuple from an array dimensionality.
+
+
+.. py:function:: normalize_axes(axes: str | collections.abc.Sequence[str] | None, ndim: int | None = None) -> tuple[str, ...]
+
+   Return validated, lowercase axis labels.
+
+   ZarrSmith Zarr datasets intentionally support only image-style axes made from
+   the labels ``t``, ``c``, ``z``, ``y`` and ``x``.  Any subset and any order of
+   those labels is accepted, but labels must be unique and must match the array
+   dimensionality when ``ndim`` is supplied.
+
+
+.. py:function:: metadata_axes(metadata: dict[str, Any]) -> str
+
+   Axes of a dataset from its metadata (lowercase), ``tczyx`` when not given.
+
+
+.. py:function:: metadata_axis_size(metadata: dict[str, Any], axis: str, default: int = 1) -> int
+
+   Size of ``axis`` at the base resolution level (``default`` if the dataset has no such axis).
+
+
+.. py:function:: spatial_axes_in_order(axes: str | collections.abc.Sequence[str]) -> tuple[str, ...]
+
+   Return the spatial axis labels present in ``axes``, preserving order.
+
+
+.. py:function:: spatial_axis_indices(axes: str | collections.abc.Sequence[str]) -> tuple[int, ...]
+
+   Return the integer positions of spatial axes in ``axes``.
+
+
+.. py:function:: normalize_data_type(data_type: str | None = None, *, is_label: bool | None = None) -> str
+
+   Normalize ZarrSmith's image-vs-label flag to ``intensity`` or ``label``.
+
+
+.. py:function:: spatial_values_for_axes(value: numbers.Real | collections.abc.Sequence[numbers.Real] | None, axes: str | collections.abc.Sequence[str], *, name: str, default: numbers.Real = 1, allow_float: bool = True) -> tuple[float, ...] | tuple[int, ...]
+
+   Normalize a scalar/spatial sequence to the spatial axes present.
+
+   Sequences may be either length ``n_spatial`` in the order used by ``axes`` or
+   length 3 in legacy ZYX order.  The latter keeps old calls like
+   ``downscale_factor=(1, 2, 2)`` working for datasets that contain only YX.
+
+
+.. py:function:: index_list_from_selection(selection: Any, axis_size: int) -> list[int]
+
+   Return explicit indices represented by an int, slice or index sequence.
+
+
+.. py:function:: selection_length_and_spacing(selection: Any, axis_size: int, axis_name: str) -> tuple[int, int]
+
+   Return selected length and uniform spacing for metadata updates.
+
+
+.. py:function:: to_tczyx(arr: Any, axes: str | collections.abc.Sequence[str], target: str = 'tczyx') -> Any
+
+   Reorder ``arr`` to ``target`` axes, inserting singleton dimensions.
+
+   Works for any array supporting ``reshape``/``transpose`` semantics through
+   dask (a dask array is expected). Axes of ``arr`` that are not in ``target``
+   raise ``ValueError``; target axes missing from ``arr`` are added with size 1.
+
+   Parameters
+   ----------
+   arr : dask.array.Array
+       Input array.
+   axes : str or sequence of str
+       Axis labels of ``arr`` (case-insensitive), e.g. ``"zyx"`` or ``"CYX"``.
+   target : str, optional
+       Desired axis order, ``"tczyx"`` by default.
+
+

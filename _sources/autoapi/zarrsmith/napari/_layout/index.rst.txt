@@ -1,0 +1,118 @@
+zarrsmith.napari._layout
+========================
+
+.. py:module:: zarrsmith.napari._layout
+
+.. autoapi-nested-parse::
+
+   Layout helpers that keep the ZarrSmith napari widgets usable at any dock size.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   zarrsmith.napari._layout.MIN_WIDTH
+   zarrsmith.napari._layout.MIN_LOG_HEIGHT
+   zarrsmith.napari._layout.MIN_CONTENT_HEIGHT
+   zarrsmith.napari._layout.TITLE_STYLE
+   zarrsmith.napari._layout.LOGO_PATH
+   zarrsmith.napari._layout.LOGO_SIZE
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   zarrsmith.napari._layout.make_logo_header
+   zarrsmith.napari._layout.make_title
+   zarrsmith.napari._layout.make_log_pane
+   zarrsmith.napari._layout.make_section
+   zarrsmith.napari._layout.make_button_holder
+   zarrsmith.napari._layout.compose_dock
+   zarrsmith.napari._layout.enable_drag_and_drop
+
+
+Module Contents
+---------------
+
+.. py:data:: MIN_WIDTH
+   :value: 260
+
+
+.. py:data:: MIN_LOG_HEIGHT
+   :value: 140
+
+
+.. py:data:: MIN_CONTENT_HEIGHT
+   :value: 120
+
+
+.. py:data:: TITLE_STYLE
+   :value: 'QLabel { font-weight: bold; font-size: 13px; padding: 2px 0px; }'
+
+
+.. py:data:: LOGO_PATH
+
+.. py:data:: LOGO_SIZE
+   :value: 40
+
+
+.. py:function:: make_logo_header() -> qtpy.QtWidgets.QWidget
+
+   A slim row with the logo, shown above the scrollable content of a dock.
+
+
+.. py:function:: make_title(text: str) -> qtpy.QtWidgets.QLabel
+
+   The bold title of a section.
+
+
+.. py:function:: make_log_pane(title: str = 'ZarrSmith Log:')
+
+   The log of a widget: a read-only text box under its title and a Clear button.
+
+   Returns ``(section, text_box)``; the section is the ``bottom`` pane of :func:`compose_dock`.
+
+
+.. py:function:: make_section(*widgets, margins=(6, 4, 6, 6), spacing=3)
+
+   Wrap widgets in a rounded, bordered frame to visually separate a block.
+
+   The border uses a translucent grey so it reads on both light and dark
+   napari themes. More widgets can be added later via ``section.layout()``.
+
+
+.. py:function:: make_button_holder(button: qtpy.QtWidgets.QPushButton) -> qtpy.QtWidgets.QWidget
+
+   A small holder for an action button.
+
+   Disable the *holder* to lock the button: a disabled parent keeps its
+   children disabled even if the button re-enables itself (magicgui does).
+
+
+.. py:function:: compose_dock(content: qtpy.QtWidgets.QWidget, bottom: qtpy.QtWidgets.QWidget | None = None) -> qtpy.QtWidgets.QWidget
+
+   Build the dock widget: scrollable content and an optional resizable bottom pane.
+
+   * the logo sits in a slim row above everything, always visible.
+   * ``content`` (all the boxes) goes in one scroll area, so nothing is ever cut
+     off, whatever the size or position of the dock (side or bottom).
+   * ``bottom`` (typically the log) sits under a splitter handle, so it can be
+     dragged taller or shorter.
+
+
+.. py:function:: enable_drag_and_drop(file_edit, transform: Optional[Callable[[pathlib.Path], pathlib.Path]] = None, placeholder: str = 'Drop a file or folder here, or browse', single_only: bool = False) -> None
+
+   Let a magicgui ``FileEdit`` accept a file or folder dropped from the file explorer.
+
+   ``transform`` maps the dropped path to the value to set (e.g. a file to its
+   folder); by default the dropped path is used as is. Paths are not resolved,
+   so a mapped network drive (``Y:\...``) keeps its drive letter.
+   With ``single_only``, several files dropped at once are left to the parent
+   widget (e.g. a panel that sorts them out); else the first one is used.
+
+

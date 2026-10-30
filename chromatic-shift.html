@@ -1,0 +1,364 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chromatic shift correction &mdash; ZarrSmith 0.6.2.dev2+g423d5bb1d documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=0b5a380a"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Advanced writing options" href="advanced.html" />
+    <link rel="prev" title="Mosaics: raw tiles and fusion" href="mosaic.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            ZarrSmith
+              <img src="_static/zarrsmith-icon.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Chromatic shift correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#quick-start">Quick start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#command-line">Command line</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-the-shift-is-measured">How the shift is measured</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#estimate-options">Estimate options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-report">The report</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-corrected-dataset">The corrected dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#checking-the-result">Checking the result</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#troubleshooting">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing and extending ZarrSmith</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ZarrSmith</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Chromatic shift correction</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/chromatic-shift.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="chromatic-shift-correction">
+<h1>Chromatic shift correction<a class="headerlink" href="#chromatic-shift-correction" title="Link to this heading"></a></h1>
+<p>On a light-sheet microscope the channels of one stack are often offset from each other along <strong>Z</strong>. The detection focal planes of different wavelengths do not coincide, and the offset changes every time the system is realigned, so a bead calibration from another day does not apply. ZarrSmith therefore measures the offset <strong>on the sample itself</strong> and writes a corrected copy of the OME-Zarr dataset.</p>
+<p>The correction works on any OME-Zarr image opened with <code class="docutils literal notranslate"><span class="pre">ZarrManager</span></code> (for example the output of <code class="docutils literal notranslate"><span class="pre">zarrsmith</span> <span class="pre">convert</span></code> or of a <a class="reference internal" href="mosaic.html"><span class="std std-doc">mosaic fusion</span></a>) and writes a new OME-Zarr image. Only a Z translation per channel is corrected.</p>
+<p><img alt="chromatic-shift-before" src="_images/chromatic-shift-before.png" /></p>
+<p><img alt="chromatic-shift-after" src="_images/chromatic-shift-after.png" /></p>
+<p><em>XZ section of a cleared mouse brain, autofluorescence in cyan and cFos in magenta (the reference channel), shown at pyramid level 2 (12 µm planes). Before the correction the autofluorescence sits above the cFos signal: a cyan rim shows on top of the brain and a magenta rim below it. The estimate moved the autofluorescence channel by +95.4 µm, about 32 planes at full resolution (3 µm). 29 of the 32 crops were used, and the lower and upper surfaces agreed to within 2 µm.</em></p>
+<section id="quick-start">
+<h2>Quick start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">zarrsmith.microscope_manager</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mm</span>
+
+<span class="n">z</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">ZarrManager</span><span class="p">(</span><span class="s2">"brain.ome.zarr"</span><span class="p">)</span>
+
+<span class="c1"># 1. Measure: one correction per channel, in the Z unit (usually micrometer)</span>
+<span class="n">report</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">estimate_chromatic_shift</span><span class="p">(</span><span class="n">reference_channel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="p">[</span><span class="s2">"shifts"</span><span class="p">])</span>      <span class="c1"># e.g. [0.0, 104.4]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="p">[</span><span class="s2">"warnings"</span><span class="p">])</span>    <span class="c1"># [] when the estimate is trustworthy</span>
+<span class="n">Path</span><span class="p">(</span><span class="s2">"chromatic_shift.json"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">report</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="c1"># 2. Correct: a new store with the same structure as the input</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">apply_chromatic_shift</span><span class="p">(</span><span class="s2">"brain_corrected.ome.zarr"</span><span class="p">,</span> <span class="n">report</span><span class="p">)</span>
+
+<span class="c1"># Or both steps in one call</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">correct_chromatic_shift</span><span class="p">(</span><span class="s2">"brain_corrected.ome.zarr"</span><span class="p">,</span> <span class="n">reference_channel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A shift is the displacement applied to that channel: positive values move its content towards higher Z indices. The reference channel always gets <code class="docutils literal notranslate"><span class="pre">0</span></code>. Shifts can also be given by hand, <code class="docutils literal notranslate"><span class="pre">z.apply_chromatic_shift(out,</span> <span class="pre">[0.0,</span> <span class="pre">104.4])</span></code>, for example when they were measured on another dataset of the same session.</p>
+</section>
+<section id="command-line">
+<h2>Command line<a class="headerlink" href="#command-line" title="Link to this heading"></a></h2>
+<p>The same steps are available as <code class="docutils literal notranslate"><span class="pre">zarrsmith</span> <span class="pre">chromatic-shift</span></code>, for scripts and pipelines:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">zarrsmith chromatic-shift -i brain.ome.zarr -z brain_corrected.ome.zarr -r chromatic_shift.json</span>
+<span class="go">zarrsmith chromatic-shift -i brain.ome.zarr -r chromatic_shift.json                 # only measure</span>
+<span class="go">zarrsmith chromatic-shift -i other.ome.zarr -z other_corrected.ome.zarr -sf chromatic_shift.json</span>
+</pre></div>
+</div>
+<p>Add <code class="docutils literal notranslate"><span class="pre">--fail_on_warning</span></code> in a pipeline: when the report has warnings, the command exits with an error and writes only the report. Every option, and the <code class="docutils literal notranslate"><span class="pre">--batch</span></code> CSV columns, are in <a class="reference internal" href="cli.html#correct-the-chromatic-shift"><span class="std std-ref">Command line</span></a>.</p>
+</section>
+<section id="how-the-shift-is-measured">
+<h2>How the shift is measured<a class="headerlink" href="#how-the-shift-is-measured" title="Link to this heading"></a></h2>
+<p>The sample’s <strong>lower and upper surfaces</strong> (its boundary along Z) are the one structure every channel shows, through background and autofluorescence, even when the channels label completely different things. The estimate uses only those surfaces. Lateral edges are ignored: their profile is the same at every Z, so they carry no information about an axial offset.</p>
+<p>It runs in two stages, a coarse one on the whole sample and a fine one on small crops.</p>
+<p><strong>1. Coarse level, whole sample</strong></p>
+<ul class="simple">
+<li><p>The coarsest pyramid level that still has at least 16 Z planes and 32 pixels in Y and X is read for every channel (or <code class="docutils literal notranslate"><span class="pre">coarse_level</span></code>).</p></li>
+<li><p>A sample mask is made from the average of the channels, each rescaled to 0–1 first: Gaussian smoothing, Otsu threshold (or <code class="docutils literal notranslate"><span class="pre">threshold</span></code>), largest object, holes filled.</p></li>
+<li><p>Only surface voxels whose normal points mostly along Z are kept (<code class="docutils literal notranslate"><span class="pre">min_z_normal</span></code>, default 0.7). Places where the sample is cut by the end of the stack are not surfaces and are left out.</p></li>
+<li><p>The Z-derivative of every channel is compared with that of the reference channel around those surfaces (normalized cross-correlation) at every whole-plane offset up to <code class="docutils literal notranslate"><span class="pre">max_shift</span></code>. The derivative places the edge at a peak and removes brightness and background differences between channels. A parabola through the best offset and its neighbours gives a sub-plane result.</p></li>
+</ul>
+<p><strong>2. Finer level, local crops</strong></p>
+<ul class="simple">
+<li><p>Up to <code class="docutils literal notranslate"><span class="pre">n_regions</span></code> (default 32) points are picked on the surface, spread over the sample in Y/X and split between the lower and the upper surface.</p></li>
+<li><p>Around each point, a crop is read from <code class="docutils literal notranslate"><span class="pre">refine_level</span></code> (default 0, full resolution): <code class="docutils literal notranslate"><span class="pre">crop_yx</span></code> pixels wide and a few planes high. The crop of each channel is pre-shifted by the coarse result, so only the remaining error is searched, over about one coarse plane.</p></li>
+<li><p>Each crop gives a correlation curve. The curves of all crops whose peak reaches <code class="docutils literal notranslate"><span class="pre">min_correlation</span></code> are <strong>summed</strong>, and the peak of the sum (again refined with a parabola) is the final shift. Summing is more robust than a median of per-crop results: a weak crop adds a little signal instead of an outlier vote.</p></li>
+</ul>
+<p>Balancing the crops between the two surfaces matters. A channel whose edge is more blurred (different PSF, scattering) appears shifted one way on the lower surface and the other way on the upper surface, so the two biases cancel in the sum. The report shows each surface separately so you can see how large that effect is.</p>
+<p>For example, with level 0 at 2 µm and a pyramid that halves Z at every level, the coarse step runs on level 2 (8 µm planes) and gets the shift to within a few micrometers. The fine step then searches ±12 µm around it on level 0 and returns the shift to a fraction of a plane.</p>
+</section>
+<section id="estimate-options">
+<h2>Estimate options<a class="headerlink" href="#estimate-options" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">reference_channel</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+<td><p>channel that stays in place</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">timepoint</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+<td><p>timepoint used for the estimate (all timepoints get the same shift)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">max_shift</span></code></p></td>
+<td><p>10% of the stack depth</p></td>
+<td><p>largest shift searched, in the Z unit. A wide range is cheap: only the coarse level is affected</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">coarse_level</span></code></p></td>
+<td><p>auto</p></td>
+<td><p>level for the mask and the coarse step</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">refine_level</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+<td><p>level the crops are read from; <code class="docutils literal notranslate"><span class="pre">None</span></code> skips refinement</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">n_regions</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">32</span></code></p></td>
+<td><p>number of crops</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">crop_yx</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">64</span></code></p></td>
+<td><p>crop width in Y and X, in pixels of <code class="docutils literal notranslate"><span class="pre">refine_level</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">min_z_normal</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.7</span></code></p></td>
+<td><p>how flat a surface must be to count as Z-facing (<code class="docutils literal notranslate"><span class="pre">1</span></code> = perfectly flat)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">min_correlation</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.2</span></code></p></td>
+<td><p>crops whose correlation peak is lower are left out</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">threshold</span></code></p></td>
+<td><p>Otsu</p></td>
+<td><p>mask threshold on the averaged, 0–1 rescaled coarse image</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="the-report">
+<h2>The report<a class="headerlink" href="#the-report" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">estimate_chromatic_shift()</span></code> returns a JSON-serializable dict:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Content</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">shifts</span></code></p></td>
+<td><p>final correction per channel, in <code class="docutils literal notranslate"><span class="pre">unit</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">coarse_shifts</span></code>, <code class="docutils literal notranslate"><span class="pre">coarse_correlation</span></code></p></td>
+<td><p>result and correlation peak of the coarse step</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">n_regions_used</span></code></p></td>
+<td><p>crops that passed <code class="docutils literal notranslate"><span class="pre">min_correlation</span></code>, per channel</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">surface_shifts</span></code></p></td>
+<td><p>median per-crop shift on the <code class="docutils literal notranslate"><span class="pre">lower</span></code> and <code class="docutils literal notranslate"><span class="pre">upper</span></code> surface, per channel</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">spread</span></code></p></td>
+<td><p>robust standard deviation of the per-crop shifts around their surface median</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">regions</span></code></p></td>
+<td><p>every crop: channel, position, surface, shift, correlation, whether it was used</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">warnings</span></code></p></td>
+<td><p>problems found during the estimate (see below); empty when all went well</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max_shift</span></code>, <code class="docutils literal notranslate"><span class="pre">coarse_level</span></code>, <code class="docutils literal notranslate"><span class="pre">refine_level</span></code>, <code class="docutils literal notranslate"><span class="pre">reference_channel</span></code>, <code class="docutils literal notranslate"><span class="pre">timepoint</span></code>, <code class="docutils literal notranslate"><span class="pre">channel_names</span></code></p></td>
+<td><p>the settings that were used</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="the-corrected-dataset">
+<h2>The corrected dataset<a class="headerlink" href="#the-corrected-dataset" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">apply_chromatic_shift()</span></code> writes a new store and returns it opened as a <code class="docutils literal notranslate"><span class="pre">ZarrManager</span></code>. The output has the <strong>structure of the input</strong>: every array keeps its chunks, shards, compression and dimension names, and every group keeps its attributes (pixel sizes, channel names, colours and display windows). Only the Z size changes.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Values</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">extent</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;union&quot;</span></code> (default), <code class="docutils literal notranslate"><span class="pre">&quot;same&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;intersection&quot;</span></code></p></td>
+<td><p>grow Z so no channel loses data; keep the input size (data shifted out of the stack is lost); or crop to the planes every channel covers</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">order</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code> (default), <code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+<td><p>linear interpolation; or round each shift to whole planes, which leaves voxel values untouched</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">include_groups</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+<td><p>also shift image subgroups that have the same channels</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">include_labels</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+<td><p>also write labels; they follow the reference channel and are only padded or cropped</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">overwrite</span></code>, <code class="docutils literal notranslate"><span class="pre">num_workers</span></code>, <code class="docutils literal notranslate"><span class="pre">progress</span></code></p></td>
+<td><p></p></td>
+<td><p>as for <a class="reference internal" href="advanced.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">to_zarr</span></code></span></a></p></td>
+</tr>
+</tbody>
+</table>
+<p>The added or removed planes are rounded to whole planes of the coarsest level, so every pyramid level stays aligned (each level is shifted directly, keeping the input’s own downsampling). Planes added below the data move the image origin; ZarrSmith does not write translations in the NGFF metadata, so the output’s root attribute <code class="docutils literal notranslate"><span class="pre">zarrsmith_chromatic_shift</span></code> records it instead, together with what was applied:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">out</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"zarrsmith_chromatic_shift"</span><span class="p">]</span>
+<span class="c1"># {'shifts': [0.0, 104.4], 'unit': 'micrometer', 'extent': 'union', 'order': 1,</span>
+<span class="c1">#  'z_offset': 0.0,          # where input plane 0 now sits, in micrometer</span>
+<span class="c1">#  'estimate': {...}}        # summary of the report, when one was passed</span>
+</pre></div>
+</div>
+<p>Datasets corrected with PyMIF (version 0.5.5 or older) have the same record under <code class="docutils literal notranslate"><span class="pre">pymif_chromatic_shift</span></code>.</p>
+<p>The output path must differ from the input. Call <code class="docutils literal notranslate"><span class="pre">apply_chromatic_shift()</span></code> before in-memory edits such as <code class="docutils literal notranslate"><span class="pre">subset_dataset()</span></code>: it copies the on-disk settings of each array and refuses datasets that no longer match them.</p>
+</section>
+<section id="checking-the-result">
+<h2>Checking the result<a class="headerlink" href="#checking-the-result" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">warnings</span></code> is empty.</strong> A warning that the search limit was reached means the real shift is larger than <code class="docutils literal notranslate"><span class="pre">max_shift</span></code>: increase it. A warning that the refined shift sits at the edge of its window means the coarse step went wrong.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">n_regions_used</span></code> is close to <code class="docutils literal notranslate"><span class="pre">n_regions</span></code></strong> and <code class="docutils literal notranslate"><span class="pre">spread</span></code> is a fraction of a plane.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">surface_shifts</span></code>: lower and upper agree</strong> to within a plane or so. A larger gap means the channels’ edges differ in shape, not just in position; the final shift is still their balanced average.</p></li>
+<li><p><strong>The residual is near zero</strong>: running <code class="docutils literal notranslate"><span class="pre">out.estimate_chromatic_shift()</span></code> on the corrected store should return shifts close to <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
+</ul>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Symptom</p></th>
+<th class="head"><p>Cause and fix</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">No</span> <span class="pre">Z-facing</span> <span class="pre">sample</span> <span class="pre">surface</span> <span class="pre">found</span></code></p></td>
+<td><p>the sample fills the whole stack in Z, so it has no lower or upper surface in the data. Measure the shift on another dataset of the same session and pass it to <code class="docutils literal notranslate"><span class="pre">apply_chromatic_shift()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>search-limit warning</p></td>
+<td><p>the shift is larger than <code class="docutils literal notranslate"><span class="pre">max_shift</span></code>; increase it</p></td>
+</tr>
+<tr class="row-even"><td><p>few crops used, low correlation</p></td>
+<td><p>a channel with very little tissue contrast. Lower <code class="docutils literal notranslate"><span class="pre">min_correlation</span></code>, increase <code class="docutils literal notranslate"><span class="pre">n_regions</span></code> or <code class="docutils literal notranslate"><span class="pre">crop_yx</span></code>, or check the mask with <code class="docutils literal notranslate"><span class="pre">threshold</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>the coarse level is large</p></td>
+<td><p>with pyramids that also downsample Z, the automatic coarse level can be a few hundred MB per channel; pass a coarser <code class="docutils literal notranslate"><span class="pre">coarse_level</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mosaic.html" class="btn btn-neutral float-left" title="Mosaics: raw tiles and fusion" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="advanced.html" class="btn btn-neutral float-right" title="Advanced writing options" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, European Molecular Biology Laboratory (EMBL).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

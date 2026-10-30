@@ -1,0 +1,527 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>zarrsmith.napari._mosaic_widget &mdash; ZarrSmith 0.6.2.dev2+g423d5bb1d documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=0b5a380a"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="zarrsmith.utils" href="../../utils/index.html" />
+    <link rel="prev" title="zarrsmith.napari._log" href="../_log/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            ZarrSmith
+              <img src="../../../../_static/zarrsmith-icon.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing and extending ZarrSmith</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">zarrsmith</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../_version/index.html">zarrsmith._version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html">zarrsmith.cli</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../microscope_manager/index.html">zarrsmith.microscope_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../mosaic_manager/index.html">zarrsmith.mosaic_manager</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">zarrsmith.napari</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../utils/index.html">zarrsmith.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">ZarrSmith</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../api_reference.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">zarrsmith</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">zarrsmith.napari</a></li>
+      <li class="breadcrumb-item active">zarrsmith.napari._mosaic_widget</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/zarrsmith/napari/_mosaic_widget/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-zarrsmith.napari._mosaic_widget">
+<span id="zarrsmith-napari-mosaic-widget"></span><h1>zarrsmith.napari._mosaic_widget<a class="headerlink" href="#module-zarrsmith.napari._mosaic_widget" title="Link to this heading"></a></h1>
+<p>napari widget to inspect raw mosaic tiles and fuse them into an OME-Zarr image.</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.MOSAIC_READERS" title="zarrsmith.napari._mosaic_widget.MOSAIC_READERS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MOSAIC_READERS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.NO_GROUP" title="zarrsmith.napari._mosaic_widget.NO_GROUP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NO_GROUP</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget._PROJECTIONS" title="zarrsmith.napari._mosaic_widget._PROJECTIONS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_PROJECTIONS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.TILE_MODES" title="zarrsmith.napari._mosaic_widget.TILE_MODES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TILE_MODES</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.TILE_MAP" title="zarrsmith.napari._mosaic_widget.TILE_MAP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TILE_MAP</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget._MAP_COLORS" title="zarrsmith.napari._mosaic_widget._MAP_COLORS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_MAP_COLORS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget._CLICK_TOLERANCE" title="zarrsmith.napari._mosaic_widget._CLICK_TOLERANCE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_CLICK_TOLERANCE</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.MOSAIC_BATCH_COLUMNS" title="zarrsmith.napari._mosaic_widget.MOSAIC_BATCH_COLUMNS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MOSAIC_BATCH_COLUMNS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.group_labels" title="zarrsmith.napari._mosaic_widget.group_labels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">group_labels</span></code></a>(→ list[str])</p></td>
+<td><p>Group names of a mosaic as shown in the widget.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.select_tiles" title="zarrsmith.napari._mosaic_widget.select_tiles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">select_tiles</span></code></a>(mosaic, channels, groups[, fields])</p></td>
+<td><p>Tiles whose channel is in <code class="docutils literal notranslate"><span class="pre">channels</span></code>, group label in <code class="docutils literal notranslate"><span class="pre">groups</span></code> and field in</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.field_summary" title="zarrsmith.napari._mosaic_widget.field_summary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">field_summary</span></code></a>(→ str)</p></td>
+<td><p>One line per field: its name and stack positions (empty for a single field).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.default_output" title="zarrsmith.napari._mosaic_widget.default_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_output</span></code></a>(→ pathlib.Path)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&lt;folder&gt;/&lt;name&gt;_MIP_ds8-8.ome.zarr</span></code> (projection) or <code class="docutils literal notranslate"><span class="pre">&lt;name&gt;_3D_ds4-8-8.ome.zarr</span></code>,</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.folder_of" title="zarrsmith.napari._mosaic_widget.folder_of"><code class="xref py py-obj docutils literal notranslate"><span class="pre">folder_of</span></code></a>(→ pathlib.Path)</p></td>
+<td><p>Dropped on the acquisition field: a file stands for its folder.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.output_for_drop" title="zarrsmith.napari._mosaic_widget.output_for_drop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">output_for_drop</span></code></a>(→ pathlib.Path)</p></td>
+<td><p>Dropped on the output field: a <code class="docutils literal notranslate"><span class="pre">.zarr</span></code> is used as is, a plain folder</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.fuse_kwargs" title="zarrsmith.napari._mosaic_widget.fuse_kwargs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fuse_kwargs</span></code></a>(→ dict)</p></td>
+<td><p>Map the fusion widget values onto <a class="reference internal" href="../../mosaic_manager/index.html#zarrsmith.mosaic_manager.fuse_tiles" title="zarrsmith.mosaic_manager.fuse_tiles"><code class="xref py py-func docutils literal notranslate"><span class="pre">fuse_tiles()</span></code></a> arguments.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.tile_layers" title="zarrsmith.napari._mosaic_widget.tile_layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tile_layers</span></code></a>(→ list)</p></td>
+<td><p>The napari layers that show a tile of the mosaic loaded from <code class="docutils literal notranslate"><span class="pre">mosaic_path</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.skipped_tile_ids" title="zarrsmith.napari._mosaic_widget.skipped_tile_ids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skipped_tile_ids</span></code></a>(→ list[str])</p></td>
+<td><p>Ids of the tiles to leave blank, from the tile layers shown in napari.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.stack_id" title="zarrsmith.napari._mosaic_widget.stack_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stack_id</span></code></a>(→ str)</p></td>
+<td><p>Stack position of a tile, shared by all its channels (the <code class="docutils literal notranslate"><span class="pre">&lt;stack&gt;</span></code> of its tile id).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.tile_footprints" title="zarrsmith.napari._mosaic_widget.tile_footprints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tile_footprints</span></code></a>(→ dict)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{stack</span> <span class="pre">id:</span> <span class="pre">[[y0,</span> <span class="pre">x0],</span> <span class="pre">[y1,</span> <span class="pre">x1]]}</span></code>: the y/x rectangle covered by every stack</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.stack_fields" title="zarrsmith.napari._mosaic_widget.stack_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stack_fields</span></code></a>(→ dict)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{stack</span> <span class="pre">id:</span> <span class="pre">field}</span></code> of every stack position.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.add_tile_map" title="zarrsmith.napari._mosaic_widget.add_tile_map"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_tile_map</span></code></a>(viewer, mosaic)</p></td>
+<td><p>Add the tile map of <code class="docutils literal notranslate"><span class="pre">mosaic</span></code> to <code class="docutils literal notranslate"><span class="pre">viewer</span></code> (replacing any earlier one), all tiles picked.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.find_tile_map" title="zarrsmith.napari._mosaic_widget.find_tile_map"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_tile_map</span></code></a>(layers, mosaic_path)</p></td>
+<td><p>The tile map layer of the mosaic loaded from <code class="docutils literal notranslate"><span class="pre">mosaic_path</span></code>, or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.refresh_tile_map" title="zarrsmith.napari._mosaic_widget.refresh_tile_map"><code class="xref py py-obj docutils literal notranslate"><span class="pre">refresh_tile_map</span></code></a>(→ None)</p></td>
+<td><p>Colour the rectangles of a tile map by their <code class="docutils literal notranslate"><span class="pre">picked</span></code> feature, or by <code class="docutils literal notranslate"><span class="pre">picked</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.tile_at" title="zarrsmith.napari._mosaic_widget.tile_at"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tile_at</span></code></a>(→ Optional[int])</p></td>
+<td><p>Index of the tile-map rectangle under <code class="docutils literal notranslate"><span class="pre">position</span></code> (world coordinates), or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget._box" title="zarrsmith.napari._mosaic_widget._box"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_box</span></code></a>(corner, opposite)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(lo,</span> <span class="pre">hi)</span></code> y/x corners of the box between two world positions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.tiles_in_box" title="zarrsmith.napari._mosaic_widget.tiles_in_box"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tiles_in_box</span></code></a>(→ list[int])</p></td>
+<td><p>Indices of the tile-map rectangles that lie, even partially, in the y/x box</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.show_drag_box" title="zarrsmith.napari._mosaic_widget.show_drag_box"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_drag_box</span></code></a>(→ None)</p></td>
+<td><p>Draw the box between two world positions over <code class="docutils literal notranslate"><span class="pre">tile_map</span></code>, or remove it (no positions).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.boxed_picks" title="zarrsmith.napari._mosaic_widget.boxed_picks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">boxed_picks</span></code></a>(→ list[bool])</p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">picked</span></code> feature of a tile map with <code class="docutils literal notranslate"><span class="pre">indices</span></code> set to <code class="docutils literal notranslate"><span class="pre">picked</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.set_picked" title="zarrsmith.napari._mosaic_widget.set_picked"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_picked</span></code></a>(→ None)</p></td>
+<td><p>Pick (or unpick) the tile-map rectangles <code class="docutils literal notranslate"><span class="pre">indices</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.toggle_tile_at" title="zarrsmith.napari._mosaic_widget.toggle_tile_at"><code class="xref py py-obj docutils literal notranslate"><span class="pre">toggle_tile_at</span></code></a>(→ Optional[str])</p></td>
+<td><p>Pick or unpick the tile under <code class="docutils literal notranslate"><span class="pre">position</span></code> (world coordinates) on a tile map.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.picked_stack_ids" title="zarrsmith.napari._mosaic_widget.picked_stack_ids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">picked_stack_ids</span></code></a>(→ Optional[list[str]])</p></td>
+<td><p>Stack ids picked on a tile map; <code class="docutils literal notranslate"><span class="pre">None</span></code> (every tile) without a map.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.picked_tiles" title="zarrsmith.napari._mosaic_widget.picked_tiles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">picked_tiles</span></code></a>(mosaic, tiles, picked)</p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">tiles</span></code> whose stack position is in <code class="docutils literal notranslate"><span class="pre">picked</span></code> (all of them if <code class="docutils literal notranslate"><span class="pre">picked</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.batch_row" title="zarrsmith.napari._mosaic_widget.batch_row"><code class="xref py py-obj docutils literal notranslate"><span class="pre">batch_row</span></code></a>(, all_fields, flatfield)</p></td>
+<td><p>One <code class="docutils literal notranslate"><span class="pre">zarrsmith</span> <span class="pre">fuse</span> <span class="pre">--batch</span></code> CSV row from the fusion widget <code class="docutils literal notranslate"><span class="pre">values</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.shown_contrast_limits" title="zarrsmith.napari._mosaic_widget.shown_contrast_limits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shown_contrast_limits</span></code></a>(→ dict)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{channel:</span> <span class="pre">(low,</span> <span class="pre">high)}</span></code> of the tile layers of <code class="docutils literal notranslate"><span class="pre">mosaic</span></code> shown in napari</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.apply_display_windows" title="zarrsmith.napari._mosaic_widget.apply_display_windows"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_display_windows</span></code></a>(→ None)</p></td>
+<td><p>Give the image layers of a fused result its stored display windows (one per</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget._scan_worker" title="zarrsmith.napari._mosaic_widget._scan_worker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_scan_worker</span></code></a>(reader, path[, options])</p></td>
+<td><p>Scan the acquisition folder in the background (opens every tile's metadata).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget._fuse_worker" title="zarrsmith.napari._mosaic_widget._fuse_worker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_fuse_worker</span></code></a>(tiles, out, kwargs)</p></td>
+<td><p>Run the fusion in the background and return the written dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._mosaic_widget.mosaic_widget" title="zarrsmith.napari._mosaic_widget.mosaic_widget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mosaic_widget</span></code></a>()</p></td>
+<td><p>Create the ZarrSmith mosaic widget: load raw tiles, show them, fuse them.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.MOSAIC_READERS">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">MOSAIC_READERS</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.MOSAIC_READERS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.NO_GROUP">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">NO_GROUP</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'(none)'</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.NO_GROUP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget._PROJECTIONS">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">_PROJECTIONS</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget._PROJECTIONS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.TILE_MODES">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">TILE_MODES</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.TILE_MODES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.TILE_MAP">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">TILE_MAP</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'tile</span> <span class="pre">map'</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.TILE_MAP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget._MAP_COLORS">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">_MAP_COLORS</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget._MAP_COLORS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget._CLICK_TOLERANCE">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">_CLICK_TOLERANCE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget._CLICK_TOLERANCE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.MOSAIC_BATCH_COLUMNS">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">MOSAIC_BATCH_COLUMNS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['input',</span> <span class="pre">'microscope',</span> <span class="pre">'output',</span> <span class="pre">'downsample',</span> <span class="pre">'projection',</span> <span class="pre">'blend',</span> <span class="pre">'channels',</span> <span class="pre">'groups',...</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.MOSAIC_BATCH_COLUMNS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.group_labels">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">group_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mosaic</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.group_labels" title="Link to this definition"></a></dt>
+<dd><p>Group names of a mosaic as shown in the widget.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.select_tiles">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">select_tiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mosaic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.select_tiles" title="Link to this definition"></a></dt>
+<dd><p>Tiles whose channel is in <code class="docutils literal notranslate"><span class="pre">channels</span></code>, group label in <code class="docutils literal notranslate"><span class="pre">groups</span></code> and field in
+<code class="docutils literal notranslate"><span class="pre">fields</span></code> (<code class="docutils literal notranslate"><span class="pre">None</span></code>: any field).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.field_summary">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">field_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mosaic</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.field_summary" title="Link to this definition"></a></dt>
+<dd><p>One line per field: its name and stack positions (empty for a single field).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.default_output">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">default_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.default_output" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">&lt;folder&gt;/&lt;name&gt;_MIP_ds8-8.ome.zarr</span></code> (projection) or <code class="docutils literal notranslate"><span class="pre">&lt;name&gt;_3D_ds4-8-8.ome.zarr</span></code>,
+with <code class="docutils literal notranslate"><span class="pre">_&lt;field&gt;</span></code> before the suffix when one <code class="docutils literal notranslate"><span class="pre">field</span></code> of several is fused.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.folder_of">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">folder_of</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.folder_of" title="Link to this definition"></a></dt>
+<dd><p>Dropped on the acquisition field: a file stands for its folder.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.output_for_drop">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">output_for_drop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.output_for_drop" title="Link to this definition"></a></dt>
+<dd><p>Dropped on the output field: a <code class="docutils literal notranslate"><span class="pre">.zarr</span></code> is used as is, a plain folder
+receives the current output name (<code class="docutils literal notranslate"><span class="pre">fused.ome.zarr</span></code> if there is none).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.fuse_kwargs">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">fuse_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds_z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">levels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.fuse_kwargs" title="Link to this definition"></a></dt>
+<dd><p>Map the fusion widget values onto <a class="reference internal" href="../../mosaic_manager/index.html#zarrsmith.mosaic_manager.fuse_tiles" title="zarrsmith.mosaic_manager.fuse_tiles"><code class="xref py py-func docutils literal notranslate"><span class="pre">fuse_tiles()</span></code></a> arguments.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.tile_layers">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">tile_layers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mosaic_path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.tile_layers" title="Link to this definition"></a></dt>
+<dd><p>The napari layers that show a tile of the mosaic loaded from <code class="docutils literal notranslate"><span class="pre">mosaic_path</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.skipped_tile_ids">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">skipped_tile_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mosaic_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.skipped_tile_ids" title="Link to this definition"></a></dt>
+<dd><p>Ids of the tiles to leave blank, from the tile layers shown in napari.</p>
+<p><code class="docutils literal notranslate"><span class="pre">mode=&quot;visible&quot;</span></code> skips the tiles whose layer is hidden (eye icon off),
+<code class="docutils literal notranslate"><span class="pre">mode=&quot;selected&quot;</span></code> the tiles whose layer is not selected in the layer list,
+<code class="docutils literal notranslate"><span class="pre">None</span></code> none. Tiles without a layer (e.g. a channel that is not shown) are
+fused normally. With <code class="docutils literal notranslate"><span class="pre">all_channels</span></code> the same stack position is skipped in
+every channel (the ids are then stack names, e.g. <code class="docutils literal notranslate"><span class="pre">&quot;1-x00-y00&quot;</span></code>).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.stack_id">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">stack_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mosaic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tile</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.stack_id" title="Link to this definition"></a></dt>
+<dd><p>Stack position of a tile, shared by all its channels (the <code class="docutils literal notranslate"><span class="pre">&lt;stack&gt;</span></code> of its tile id).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.tile_footprints">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">tile_footprints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mosaic</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.tile_footprints" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">{stack</span> <span class="pre">id:</span> <span class="pre">[[y0,</span> <span class="pre">x0],</span> <span class="pre">[y1,</span> <span class="pre">x1]]}</span></code>: the y/x rectangle covered by every stack
+position (all its channels and sides), in sample coordinates.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.stack_fields">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">stack_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mosaic</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.stack_fields" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">{stack</span> <span class="pre">id:</span> <span class="pre">field}</span></code> of every stack position.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.add_tile_map">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">add_tile_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">viewer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mosaic</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.add_tile_map" title="Link to this definition"></a></dt>
+<dd><p>Add the tile map of <code class="docutils literal notranslate"><span class="pre">mosaic</span></code> to <code class="docutils literal notranslate"><span class="pre">viewer</span></code> (replacing any earlier one), all tiles picked.</p>
+<p>One rectangle per stack position, labelled with its stack id. The layer cannot
+be edited (napari would let you move or delete rectangles); <a class="reference internal" href="#zarrsmith.napari._mosaic_widget.toggle_tile_at" title="zarrsmith.napari._mosaic_widget.toggle_tile_at"><code class="xref py py-func docutils literal notranslate"><span class="pre">toggle_tile_at()</span></code></a>
+picks or unpicks a tile.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.find_tile_map">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">find_tile_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mosaic_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.find_tile_map" title="Link to this definition"></a></dt>
+<dd><p>The tile map layer of the mosaic loaded from <code class="docutils literal notranslate"><span class="pre">mosaic_path</span></code>, or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.refresh_tile_map">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">refresh_tile_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">picked</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.refresh_tile_map" title="Link to this definition"></a></dt>
+<dd><p>Colour the rectangles of a tile map by their <code class="docutils literal notranslate"><span class="pre">picked</span></code> feature, or by <code class="docutils literal notranslate"><span class="pre">picked</span></code>
+if given (a preview that leaves the feature unchanged).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.tile_at">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">tile_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.tile_at" title="Link to this definition"></a></dt>
+<dd><p>Index of the tile-map rectangle under <code class="docutils literal notranslate"><span class="pre">position</span></code> (world coordinates), or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget._box">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corner</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opposite</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget._box" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">(lo,</span> <span class="pre">hi)</span></code> y/x corners of the box between two world positions.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.tiles_in_box">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">tiles_in_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corner</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opposite</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.tiles_in_box" title="Link to this definition"></a></dt>
+<dd><p>Indices of the tile-map rectangles that lie, even partially, in the y/x box
+between two world positions.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.show_drag_box">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">show_drag_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">viewer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tile_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opposite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.show_drag_box" title="Link to this definition"></a></dt>
+<dd><p>Draw the box between two world positions over <code class="docutils literal notranslate"><span class="pre">tile_map</span></code>, or remove it (no positions).</p>
+<p>The box is a temporary shapes layer (<code class="docutils literal notranslate"><span class="pre">&quot;tile</span> <span class="pre">map</span> <span class="pre">box&quot;</span></code>) that only exists while
+dragging. Adding it would select it, so the layer selection is restored at once
+(it decides which tiles are fused in <em>selected layers only</em> mode).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.boxed_picks">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">boxed_picks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">picked</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.boxed_picks" title="Link to this definition"></a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">picked</span></code> feature of a tile map with <code class="docutils literal notranslate"><span class="pre">indices</span></code> set to <code class="docutils literal notranslate"><span class="pre">picked</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.set_picked">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">set_picked</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">picked</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.set_picked" title="Link to this definition"></a></dt>
+<dd><p>Pick (or unpick) the tile-map rectangles <code class="docutils literal notranslate"><span class="pre">indices</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.toggle_tile_at">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">toggle_tile_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.toggle_tile_at" title="Link to this definition"></a></dt>
+<dd><p>Pick or unpick the tile under <code class="docutils literal notranslate"><span class="pre">position</span></code> (world coordinates) on a tile map.</p>
+<p>Returns the stack id of the toggled tile, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if no tile is there.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.picked_stack_ids">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">picked_stack_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.picked_stack_ids" title="Link to this definition"></a></dt>
+<dd><p>Stack ids picked on a tile map; <code class="docutils literal notranslate"><span class="pre">None</span></code> (every tile) without a map.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.picked_tiles">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">picked_tiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mosaic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">picked</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.picked_tiles" title="Link to this definition"></a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">tiles</span></code> whose stack position is in <code class="docutils literal notranslate"><span class="pre">picked</span></code> (all of them if <code class="docutils literal notranslate"><span class="pre">picked</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.batch_row">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">batch_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">microscope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">picked</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_stacks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatfield</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.batch_row" title="Link to this definition"></a></dt>
+<dd><p>One <code class="docutils literal notranslate"><span class="pre">zarrsmith</span> <span class="pre">fuse</span> <span class="pre">--batch</span></code> CSV row from the fusion widget <code class="docutils literal notranslate"><span class="pre">values</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">picked</span></code> are the stack ids picked on the tile map (<code class="docutils literal notranslate"><span class="pre">None</span></code>: all); the <code class="docutils literal notranslate"><span class="pre">tiles</span></code>
+column stays empty (every tile) when they cover <code class="docutils literal notranslate"><span class="pre">all_stacks</span></code>. The <code class="docutils literal notranslate"><span class="pre">fields</span></code>
+column stays empty when <code class="docutils literal notranslate"><span class="pre">values[&quot;fields&quot;]</span></code> is missing or the mosaic has a single
+field (<code class="docutils literal notranslate"><span class="pre">all_fields</span></code>); otherwise it names the fields, since an empty cell means
+the first field. <code class="docutils literal notranslate"><span class="pre">flatfield</span></code> is the reader’s flat-field option (<code class="docutils literal notranslate"><span class="pre">None</span></code>: the
+reader has none, and the column stays empty).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.shown_contrast_limits">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">shown_contrast_limits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mosaic</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.shown_contrast_limits" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">{channel:</span> <span class="pre">(low,</span> <span class="pre">high)}</span></code> of the tile layers of <code class="docutils literal notranslate"><span class="pre">mosaic</span></code> shown in napari
+(their contrast is linked per channel), to keep it when tiles are shown again.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.apply_display_windows">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">apply_display_windows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">windows</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.apply_display_windows" title="Link to this definition"></a></dt>
+<dd><p>Give the image layers of a fused result its stored display windows (one per
+channel, in layer order), with the slider over the whole dtype range.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget._scan_worker">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">_scan_worker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget._scan_worker" title="Link to this definition"></a></dt>
+<dd><p>Scan the acquisition folder in the background (opens every tile’s metadata).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget._fuse_worker">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">_fuse_worker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget._fuse_worker" title="Link to this definition"></a></dt>
+<dd><p>Run the fusion in the background and return the written dataset.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._mosaic_widget.mosaic_widget">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._mosaic_widget.</span></span><span class="sig-name descname"><span class="pre">mosaic_widget</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_mosaic_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._mosaic_widget.mosaic_widget" title="Link to this definition"></a></dt>
+<dd><p>Create the ZarrSmith mosaic widget: load raw tiles, show them, fuse them.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../_log/index.html" class="btn btn-neutral float-left" title="zarrsmith.napari._log" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../utils/index.html" class="btn btn-neutral float-right" title="zarrsmith.utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, European Molecular Biology Laboratory (EMBL).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

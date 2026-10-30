@@ -1,0 +1,686 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>zarrsmith.utils.ngff &mdash; ZarrSmith 0.6.2.dev2+g423d5bb1d documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=0b5a380a"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="zarrsmith.utils.ome" href="../ome/index.html" />
+    <link rel="prev" title="zarrsmith.utils.metadata" href="../metadata/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            ZarrSmith
+              <img src="../../../../_static/zarrsmith-icon.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing and extending ZarrSmith</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">zarrsmith</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../_version/index.html">zarrsmith._version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html">zarrsmith.cli</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../microscope_manager/index.html">zarrsmith.microscope_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../mosaic_manager/index.html">zarrsmith.mosaic_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../napari/index.html">zarrsmith.napari</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">zarrsmith.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">ZarrSmith</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../api_reference.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">zarrsmith</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">zarrsmith.utils</a></li>
+      <li class="breadcrumb-item active">zarrsmith.utils.ngff</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/zarrsmith/utils/ngff/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-zarrsmith.utils.ngff">
+<span id="zarrsmith-utils-ngff"></span><h1>zarrsmith.utils.ngff<a class="headerlink" href="#module-zarrsmith.utils.ngff" title="Link to this heading"></a></h1>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff.SPATIAL_AXES" title="zarrsmith.utils.ngff.SPATIAL_AXES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SPATIAL_AXES</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff.DEFAULT_SHARD_EXCLUDE_AXES" title="zarrsmith.utils.ngff.DEFAULT_SHARD_EXCLUDE_AXES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DEFAULT_SHARD_EXCLUDE_AXES</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff.DEFAULT_WORKER_FRACTION" title="zarrsmith.utils.ngff.DEFAULT_WORKER_FRACTION"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DEFAULT_WORKER_FRACTION</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff.DEFAULT_MAX_WORKERS" title="zarrsmith.utils.ngff.DEFAULT_MAX_WORKERS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DEFAULT_MAX_WORKERS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff.DEFAULT_MEMORY_FRACTION" title="zarrsmith.utils.ngff.DEFAULT_MEMORY_FRACTION"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DEFAULT_MEMORY_FRACTION</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff.FALLBACK_MEMORY_BUDGET_MB" title="zarrsmith.utils.ngff.FALLBACK_MEMORY_BUDGET_MB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FALLBACK_MEMORY_BUDGET_MB</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff.ZarrWriteConfig" title="zarrsmith.utils.ngff.ZarrWriteConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ZarrWriteConfig</span></code></a></p></td>
+<td><p>Configuration container for NGFF/OME-Zarr writing operations.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._infer_ngff_version" title="zarrsmith.utils.ngff._infer_ngff_version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_infer_ngff_version</span></code></a>(→ str)</p></td>
+<td><p>Infer the NGFF metadata layout used by an existing group.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._label_entry" title="zarrsmith.utils.ngff._label_entry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_label_entry</span></code></a>(→ str)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._labels_contains" title="zarrsmith.utils.ngff._labels_contains"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_labels_contains</span></code></a>(→ bool)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._register_label_on_labels_group" title="zarrsmith.utils.ngff._register_label_on_labels_group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_register_label_on_labels_group</span></code></a>(→ None)</p></td>
+<td><p>Register a label image on the <code class="docutils literal notranslate"><span class="pre">labels</span></code> container group.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._get_group_ome_attrs" title="zarrsmith.utils.ngff._get_group_ome_attrs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_group_ome_attrs</span></code></a>(→ dict[str, Any])</p></td>
+<td><p>Return the effective OME-NGFF metadata mapping for a group.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._get_group_multiscales" title="zarrsmith.utils.ngff._get_group_multiscales"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_group_multiscales</span></code></a>(group)</p></td>
+<td><p>Compatibility helper returning the stored multiscales block for a group.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._infer_data_type_from_group" title="zarrsmith.utils.ngff._infer_data_type_from_group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_infer_data_type_from_group</span></code></a>(→ str)</p></td>
+<td><p>Infer <code class="docutils literal notranslate"><span class="pre">intensity</span></code> or <code class="docutils literal notranslate"><span class="pre">label</span></code> from explicit and legacy metadata.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._set_group_ngff_metadata" title="zarrsmith.utils.ngff._set_group_ngff_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_set_group_ngff_metadata</span></code></a>(→ None)</p></td>
+<td><p>Write NGFF metadata to <code class="docutils literal notranslate"><span class="pre">group</span></code> using either the v0.4 or v0.5 layout.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._set_dimension_names" title="zarrsmith.utils.ngff._set_dimension_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_set_dimension_names</span></code></a>(→ None)</p></td>
+<td><p>Write Zarr v3 array-level dimension names required by NGFF v0.5.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._resolve_format" title="zarrsmith.utils.ngff._resolve_format"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_resolve_format</span></code></a>(→ tuple[str, int])</p></td>
+<td><p>Resolve and validate the NGFF version / zarr format pair to use.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._resolve_write_chunks" title="zarrsmith.utils.ngff._resolve_write_chunks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_resolve_write_chunks</span></code></a>(→ list[dask.array.Array])</p></td>
+<td><p>Rechunk each pyramid level to the requested write-time <code class="docutils literal notranslate"><span class="pre">chunks</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._available_memory_mb" title="zarrsmith.utils.ngff._available_memory_mb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_available_memory_mb</span></code></a>(→ float)</p></td>
+<td><p>Free RAM in MB, or a fixed fallback budget when psutil is missing.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._resolve_num_workers" title="zarrsmith.utils.ngff._resolve_num_workers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_resolve_num_workers</span></code></a>(→ int)</p></td>
+<td><p>Number of write threads for <code class="docutils literal notranslate"><span class="pre">cfg</span></code>, limited by the in-flight block size.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._progress_bar" title="zarrsmith.utils.ngff._progress_bar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_progress_bar</span></code></a>(enabled, desc)</p></td>
+<td><p>Show a tqdm progress bar for the dask computation run inside the block.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._run_stores" title="zarrsmith.utils.ngff._run_stores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_run_stores</span></code></a>(tasks, cfg[, block_bytes, desc])</p></td>
+<td><p>Run (or return) the per-level store tasks of one multiscale dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._write_pyramid_v2" title="zarrsmith.utils.ngff._write_pyramid_v2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_write_pyramid_v2</span></code></a>(*, root, data_levels, cfg[, desc])</p></td>
+<td><p>Create and populate zarr v2 arrays for each pyramid level.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._write_pyramid_v3" title="zarrsmith.utils.ngff._write_pyramid_v3"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_write_pyramid_v3</span></code></a>(*, root, data_levels, cfg[, axes, desc])</p></td>
+<td><p>Create and populate zarr v3 arrays for each pyramid level.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._auto_shard_for_level" title="zarrsmith.utils.ngff._auto_shard_for_level"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_auto_shard_for_level</span></code></a>() → tuple[int, ...] | None)</p></td>
+<td><p>Pick a shard shape for one pyramid level targeting <code class="docutils literal notranslate"><span class="pre">target_bytes</span></code> per shard.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._snap_shard_shape" title="zarrsmith.utils.ngff._snap_shard_shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_snap_shard_shape</span></code></a>(→ tuple[int, ...] | None)</p></td>
+<td><p>Round a requested shard shape to a valid multiple of <code class="docutils literal notranslate"><span class="pre">chunk</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._resolve_shards_for_levels" title="zarrsmith.utils.ngff._resolve_shards_for_levels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_resolve_shards_for_levels</span></code></a>() → list[tuple[int, ...)</p></td>
+<td><p>Resolve a per-pyramid-level shard shape (or <code class="docutils literal notranslate"><span class="pre">None</span></code>) for zarr v3 writes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._build_v2_compressor" title="zarrsmith.utils.ngff._build_v2_compressor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_build_v2_compressor</span></code></a>(compressor, level)</p></td>
+<td><p>Construct a zarr v2-compatible compressor configuration.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._build_v3_compressors" title="zarrsmith.utils.ngff._build_v3_compressors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_build_v3_compressors</span></code></a>(compressor, level)</p></td>
+<td><p>Construct a zarr v3-compatible compressor chain.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._array_create_kwargs" title="zarrsmith.utils.ngff._array_create_kwargs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_array_create_kwargs</span></code></a>(→ dict[str, Any])</p></td>
+<td><p>Keyword arguments for <code class="docutils literal notranslate"><span class="pre">Group.create_array</span></code> of one pyramid level.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._resolve_creation_shards" title="zarrsmith.utils.ngff._resolve_creation_shards"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_resolve_creation_shards</span></code></a>(→ list[tuple[int, ...] | None])</p></td>
+<td><p>Per-level shard shapes for creating empty arrays from metadata.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._create_level_arrays" title="zarrsmith.utils.ngff._create_level_arrays"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_create_level_arrays</span></code></a>(→ None)</p></td>
+<td><p>Create the empty array of every pyramid level (<code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span></code>, ...) in <code class="docutils literal notranslate"><span class="pre">parent</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._build_multiscales" title="zarrsmith.utils.ngff._build_multiscales"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_build_multiscales</span></code></a>(→ dict[str, Any])</p></td>
+<td><p>NGFF <code class="docutils literal notranslate"><span class="pre">multiscales</span></code> entry (axes + per-level transforms) for <code class="docutils literal notranslate"><span class="pre">metadata</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._validate_metadata" title="zarrsmith.utils.ngff._validate_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_validate_metadata</span></code></a>(→ None)</p></td>
+<td><p>Validate the minimal metadata contract required for NGFF writing.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._build_axes" title="zarrsmith.utils.ngff._build_axes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_build_axes</span></code></a>(→ list[dict[str, Any]])</p></td>
+<td><p>Build the NGFF <code class="docutils literal notranslate"><span class="pre">axes</span></code> description from the normalized ZarrSmith metadata.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._build_coordinate_transformations" title="zarrsmith.utils.ngff._build_coordinate_transformations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_build_coordinate_transformations</span></code></a>(...)</p></td>
+<td><p>Generate one NGFF scale transformation entry per pyramid level.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._build_omero_metadata" title="zarrsmith.utils.ngff._build_omero_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_build_omero_metadata</span></code></a>(→ dict[str, Any])</p></td>
+<td><p>Create OMERO channel display metadata for an intensity array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.utils.ngff._default_window" title="zarrsmith.utils.ngff._default_window"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_default_window</span></code></a>(→ tuple[float, float])</p></td>
+<td><p>Return a default display range for the provided dtype.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff.SPATIAL_AXES">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">SPATIAL_AXES</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff.SPATIAL_AXES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff.DEFAULT_SHARD_EXCLUDE_AXES">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_SHARD_EXCLUDE_AXES</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('t',</span> <span class="pre">'c')</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff.DEFAULT_SHARD_EXCLUDE_AXES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff.DEFAULT_WORKER_FRACTION">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_WORKER_FRACTION</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff.DEFAULT_WORKER_FRACTION" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff.DEFAULT_MAX_WORKERS">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_MAX_WORKERS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff.DEFAULT_MAX_WORKERS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff.DEFAULT_MEMORY_FRACTION">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_MEMORY_FRACTION</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff.DEFAULT_MEMORY_FRACTION" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff.FALLBACK_MEMORY_BUDGET_MB">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">FALLBACK_MEMORY_BUDGET_MB</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4096.0</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff.FALLBACK_MEMORY_BUDGET_MB" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff.ZarrWriteConfig">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">ZarrWriteConfig</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff.ZarrWriteConfig" title="Link to this definition"></a></dt>
+<dd><p>Configuration container for NGFF/OME-Zarr writing operations.</p>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<dl>
+<dt>ngff_version, zarr_format</dt><dd><p><code class="docutils literal notranslate"><span class="pre">0.4</span></code>/Zarr v2 and <code class="docutils literal notranslate"><span class="pre">0.5</span></code>/Zarr v3 are the supported pairs.</p>
+</dd>
+<dt>data_type</dt><dd><p>Optional dataset semantic type.  Use <code class="docutils literal notranslate"><span class="pre">&quot;intensity&quot;</span></code> for regular image
+intensities or <code class="docutils literal notranslate"><span class="pre">&quot;label&quot;</span></code> for integer segmentation/annotation data.</p>
+</dd>
+<dt>chunks</dt><dd><p>Requested on-disk chunk shape, overriding whatever chunking the input
+dask arrays already have. One of:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> (default): write each level with its existing dask
+chunking, unchanged.</p></li>
+<li><p>A single chunk shape matching the array’s ndim: used for every
+level, clipped so no chunk axis exceeds that level’s extent.</p></li>
+<li><p>A sequence of chunk shapes, one per pyramid level.</p></li>
+</ul>
+<p>Applies to both zarr v2 and v3. This only changes the write-time
+chunk shape; it does not touch <code class="docutils literal notranslate"><span class="pre">metadata['chunksize']</span></code>, which is
+only used when a pyramid is built via
+<a class="reference internal" href="../pyramid/index.html#zarrsmith.utils.pyramid.build_pyramid" title="zarrsmith.utils.pyramid.build_pyramid"><code class="xref py py-func docutils literal notranslate"><span class="pre">build_pyramid()</span></code></a>.</p>
+</dd>
+<dt>shards</dt><dd><p>Zarr v3 sharding configuration, applied per pyramid level. One of:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> (default): pick a shard shape per level automatically so each
+shard is close to <code class="docutils literal notranslate"><span class="pre">shard_target_mb</span></code> in (uncompressed) size,
+grouping whole chunks along the axes with the most chunks first.
+Levels that are already small (few chunks, or a chunk already at
+or above the target size) are left unsharded.</p></li>
+<li><p>A single shape tuple matching the array’s ndim: used as the
+requested shard shape for every level, snapped to the nearest
+multiple of that level’s chunk shape and clipped so it never
+exceeds the level’s extent.</p></li>
+<li><p>A sequence of shape tuples, one per pyramid level, each resolved
+the same way.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code>: no sharding, one file per chunk.</p></li>
+</ul>
+<p>Only valid when writing zarr v3 (<code class="docutils literal notranslate"><span class="pre">ngff_version=&quot;0.5&quot;</span></code>); sharding
+has no zarr v2 equivalent, so for zarr v2 a warning is issued and
+sharding is set to <code class="docutils literal notranslate"><span class="pre">None</span></code>. <code class="docutils literal notranslate"><span class="pre">shard_exclude_axes</span></code> only constrains
+<code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>; an explicit shard shape always applies exactly as given.</p>
+</dd>
+<dt>shard_target_mb</dt><dd><p>Target <em>uncompressed</em> shard size in megabytes used by
+<code class="docutils literal notranslate"><span class="pre">shards=&quot;auto&quot;</span></code>.</p>
+</dd>
+<dt>shard_exclude_axes</dt><dd><p>Axis names that <code class="docutils literal notranslate"><span class="pre">shards=&quot;auto&quot;</span></code> never merges chunks along, even if
+doing so would help reach <code class="docutils literal notranslate"><span class="pre">shard_target_mb</span></code>. Defaults to
+<code class="docutils literal notranslate"><span class="pre">(&quot;t&quot;,</span> <span class="pre">&quot;c&quot;)</span></code> so each timepoint and channel stays independently
+addressable; the spatial axes (<code class="docutils literal notranslate"><span class="pre">z</span></code>/<code class="docutils literal notranslate"><span class="pre">y</span></code>/<code class="docutils literal notranslate"><span class="pre">x</span></code>) are consolidated
+automatically. Pass <code class="docutils literal notranslate"><span class="pre">()</span></code> to allow every axis to grow.</p>
+</dd>
+<dt>drop_singleton</dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default), <code class="docutils literal notranslate"><span class="pre">t</span></code>, <code class="docutils literal notranslate"><span class="pre">c</span></code> and <code class="docutils literal notranslate"><span class="pre">z</span></code> axes of size 1 are
+removed from the written arrays and metadata (<code class="docutils literal notranslate"><span class="pre">y</span></code> and <code class="docutils literal notranslate"><span class="pre">x</span></code> are
+always kept). <code class="docutils literal notranslate"><span class="pre">chunks</span></code>/<code class="docutils literal notranslate"><span class="pre">shards</span></code> given for the full axis set are
+trimmed accordingly. Pass <code class="docutils literal notranslate"><span class="pre">False</span></code> to keep every axis.</p>
+</dd>
+<dt>num_workers</dt><dd><p>Number of threads used to compress and write blocks in parallel.
+<code class="docutils literal notranslate"><span class="pre">None</span></code> (default) uses half of the available cores, capped at 8.
+For sharded levels the count is further reduced so the shard-sized
+blocks held in memory at once fit in about half of the free RAM.
+Only applies when <code class="docutils literal notranslate"><span class="pre">compute=True</span></code>; with <code class="docutils literal notranslate"><span class="pre">compute=False</span></code> the caller
+controls the scheduler when computing the returned tasks.</p>
+</dd>
+<dt>progress</dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default), show a <code class="docutils literal notranslate"><span class="pre">tqdm</span></code> progress bar (terminal or
+notebook) while the arrays are written. Only applies when
+<code class="docutils literal notranslate"><span class="pre">compute=True</span></code> and a local (threaded) dask scheduler is used.
+Pass <code class="docutils literal notranslate"><span class="pre">False</span></code> for silent writes, e.g. in batch jobs or tests.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff.ZarrWriteConfig.ngff_version">
+<span class="sig-name descname"><span class="pre">ngff_version</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'0.4'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'0.5'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff.ZarrWriteConfig.ngff_version" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff.ZarrWriteConfig.zarr_format">
+<span class="sig-name descname"><span class="pre">zarr_format</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">3</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff.ZarrWriteConfig.zarr_format" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff.ZarrWriteConfig.overwrite">
+<span class="sig-name descname"><span class="pre">overwrite</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff.ZarrWriteConfig.overwrite" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff.ZarrWriteConfig.compute">
+<span class="sig-name descname"><span class="pre">compute</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff.ZarrWriteConfig.compute" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff.ZarrWriteConfig.storage_options">
+<span class="sig-name descname"><span class="pre">storage_options</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff.ZarrWriteConfig.storage_options" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff.ZarrWriteConfig.compressor">
+<span class="sig-name descname"><span class="pre">compressor</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'blosc'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'gzip'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff.ZarrWriteConfig.compressor" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff.ZarrWriteConfig.compressor_level">
+<span class="sig-name descname"><span class="pre">compressor_level</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff.ZarrWriteConfig.compressor_level" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff.ZarrWriteConfig.data_type">
+<span class="sig-name descname"><span class="pre">data_type</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'intensity'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'label'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff.ZarrWriteConfig.data_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff.ZarrWriteConfig.chunks">
+<span class="sig-name descname"><span class="pre">chunks</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff.ZarrWriteConfig.chunks" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff.ZarrWriteConfig.shards">
+<span class="sig-name descname"><span class="pre">shards</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'auto'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'auto'</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff.ZarrWriteConfig.shards" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff.ZarrWriteConfig.shard_target_mb">
+<span class="sig-name descname"><span class="pre">shard_target_mb</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1024.0</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff.ZarrWriteConfig.shard_target_mb" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff.ZarrWriteConfig.shard_exclude_axes">
+<span class="sig-name descname"><span class="pre">shard_exclude_axes</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('t',</span> <span class="pre">'c')</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff.ZarrWriteConfig.shard_exclude_axes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff.ZarrWriteConfig.drop_singleton">
+<span class="sig-name descname"><span class="pre">drop_singleton</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff.ZarrWriteConfig.drop_singleton" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff.ZarrWriteConfig.num_workers">
+<span class="sig-name descname"><span class="pre">num_workers</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff.ZarrWriteConfig.num_workers" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff.ZarrWriteConfig.progress">
+<span class="sig-name descname"><span class="pre">progress</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff.ZarrWriteConfig.progress" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._infer_ngff_version">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_infer_ngff_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">zarr.Group</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._infer_ngff_version" title="Link to this definition"></a></dt>
+<dd><p>Infer the NGFF metadata layout used by an existing group.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._label_entry">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_label_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._label_entry" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._labels_contains">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_labels_contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._labels_contains" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._register_label_on_labels_group">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_register_label_on_labels_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">zarr.Group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ngff_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._register_label_on_labels_group" title="Link to this definition"></a></dt>
+<dd><p>Register a label image on the <code class="docutils literal notranslate"><span class="pre">labels</span></code> container group.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._get_group_ome_attrs">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_get_group_ome_attrs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">zarr.Group</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._get_group_ome_attrs" title="Link to this definition"></a></dt>
+<dd><p>Return the effective OME-NGFF metadata mapping for a group.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._get_group_multiscales">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_get_group_multiscales</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">zarr.Group</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._get_group_multiscales" title="Link to this definition"></a></dt>
+<dd><p>Compatibility helper returning the stored multiscales block for a group.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._infer_data_type_from_group">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_infer_data_type_from_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">zarr.Group</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._infer_data_type_from_group" title="Link to this definition"></a></dt>
+<dd><p>Infer <code class="docutils literal notranslate"><span class="pre">intensity</span></code> or <code class="docutils literal notranslate"><span class="pre">label</span></code> from explicit and legacy metadata.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._set_group_ngff_metadata">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_set_group_ngff_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">zarr.Group</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">ngff_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiscales</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omero</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._set_group_ngff_metadata" title="Link to this definition"></a></dt>
+<dd><p>Write NGFF metadata to <code class="docutils literal notranslate"><span class="pre">group</span></code> using either the v0.4 or v0.5 layout.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._set_dimension_names">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_set_dimension_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">zarr.Group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">zarr_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._set_dimension_names" title="Link to this definition"></a></dt>
+<dd><p>Write Zarr v3 array-level dimension names required by NGFF v0.5.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._resolve_format">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_resolve_format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zarrsmith.utils.ngff.ZarrWriteConfig" title="zarrsmith.utils.ngff.ZarrWriteConfig"><span class="pre">ZarrWriteConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._resolve_format" title="Link to this definition"></a></dt>
+<dd><p>Resolve and validate the NGFF version / zarr format pair to use.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._resolve_write_chunks">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_resolve_write_chunks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_levels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">dask.array.Array</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dask.array.Array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._resolve_write_chunks" title="Link to this definition"></a></dt>
+<dd><p>Rechunk each pyramid level to the requested write-time <code class="docutils literal notranslate"><span class="pre">chunks</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">chunks</span></code> is either <code class="docutils literal notranslate"><span class="pre">None</span></code> (levels are written with whatever chunking
+they already have), a single chunk shape applied to every level, or one
+chunk shape per level. Mirrors how <code class="docutils literal notranslate"><span class="pre">shards</span></code> accepts a single shape or a
+per-level list.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._available_memory_mb">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_available_memory_mb</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._available_memory_mb" title="Link to this definition"></a></dt>
+<dd><p>Free RAM in MB, or a fixed fallback budget when psutil is missing.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._resolve_num_workers">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_resolve_num_workers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zarrsmith.utils.ngff.ZarrWriteConfig" title="zarrsmith.utils.ngff.ZarrWriteConfig"><span class="pre">ZarrWriteConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_bytes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._resolve_num_workers" title="Link to this definition"></a></dt>
+<dd><p>Number of write threads for <code class="docutils literal notranslate"><span class="pre">cfg</span></code>, limited by the in-flight block size.</p>
+<p><code class="docutils literal notranslate"><span class="pre">block_bytes</span></code> is the uncompressed size of the largest block a worker
+holds at once (a whole shard for sharded levels, <code class="docutils literal notranslate"><span class="pre">0</span></code> otherwise). Each
+worker may also hold a compressed copy, hence the factor of 2.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._progress_bar">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_progress_bar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._progress_bar" title="Link to this definition"></a></dt>
+<dd><p>Show a tqdm progress bar for the dask computation run inside the block.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._run_stores">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_run_stores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tasks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zarrsmith.utils.ngff.ZarrWriteConfig" title="zarrsmith.utils.ngff.ZarrWriteConfig"><span class="pre">ZarrWriteConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_bytes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._run_stores" title="Link to this definition"></a></dt>
+<dd><p>Run (or return) the per-level store tasks of one multiscale dataset.</p>
+<p>All levels are computed in a single dask pass so shared upstream work (for
+example reading the source file) happens once instead of once per level.
+With <code class="docutils literal notranslate"><span class="pre">cfg.compute</span></code> false the unevaluated tasks are returned unchanged.
+<code class="docutils literal notranslate"><span class="pre">desc</span></code> labels the progress bar (see <code class="docutils literal notranslate"><span class="pre">ZarrWriteConfig.progress</span></code>).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._write_pyramid_v2">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_write_pyramid_v2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">zarr.Group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_levels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">dask.array.Array</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zarrsmith.utils.ngff.ZarrWriteConfig" title="zarrsmith.utils.ngff.ZarrWriteConfig"><span class="pre">ZarrWriteConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._write_pyramid_v2" title="Link to this definition"></a></dt>
+<dd><p>Create and populate zarr v2 arrays for each pyramid level.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._write_pyramid_v3">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_write_pyramid_v3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">zarr.Group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_levels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">dask.array.Array</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zarrsmith.utils.ngff.ZarrWriteConfig" title="zarrsmith.utils.ngff.ZarrWriteConfig"><span class="pre">ZarrWriteConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._write_pyramid_v3" title="Link to this definition"></a></dt>
+<dd><p>Create and populate zarr v3 arrays for each pyramid level.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._auto_shard_for_level">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_auto_shard_for_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">itemsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_bytes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_axes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._auto_shard_for_level" title="Link to this definition"></a></dt>
+<dd><p>Pick a shard shape for one pyramid level targeting <code class="docutils literal notranslate"><span class="pre">target_bytes</span></code> per shard.</p>
+<p>Whole chunks are grouped into a shard, growing the axes with the most
+available chunks first (typically the spatial <code class="docutils literal notranslate"><span class="pre">z</span></code>/<code class="docutils literal notranslate"><span class="pre">y</span></code>/<code class="docutils literal notranslate"><span class="pre">x</span></code> axes).
+Axes whose name is in <code class="docutils literal notranslate"><span class="pre">exclude_axes</span></code> (requires <code class="docutils literal notranslate"><span class="pre">axes</span></code> to be given)
+are never grown, so e.g. timepoints or channels can be kept one-per-shard
+even while z/y/x is merged. Levels with no growable axis holding more
+than one chunk, or whose chunk is already at or above the target size,
+are left unsharded (<code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._snap_shard_shape">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_snap_shard_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._snap_shard_shape" title="Link to this definition"></a></dt>
+<dd><p>Round a requested shard shape to a valid multiple of <code class="docutils literal notranslate"><span class="pre">chunk</span></code>.</p>
+<p>The request is rounded to the nearest whole number of chunks per axis
+(minimum one) and clipped so the shard never spans more chunks than the
+level actually has. Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> when the result collapses back to
+the plain chunk shape (i.e. sharding would add no value at this level).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._resolve_shards_for_levels">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_resolve_shards_for_levels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shapes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shards</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'auto'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">zarr_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_bytes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_axes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._resolve_shards_for_levels" title="Link to this definition"></a></dt>
+<dd><p>Resolve a per-pyramid-level shard shape (or <code class="docutils literal notranslate"><span class="pre">None</span></code>) for zarr v3 writes.</p>
+<p><code class="docutils literal notranslate"><span class="pre">axes</span></code>/<code class="docutils literal notranslate"><span class="pre">exclude_axes</span></code> only affect <code class="docutils literal notranslate"><span class="pre">shards=&quot;auto&quot;</span></code>; an explicit
+shard shape (single tuple or per-level list) always applies exactly as
+requested.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._build_v2_compressor">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_build_v2_compressor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compressor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._build_v2_compressor" title="Link to this definition"></a></dt>
+<dd><p>Construct a zarr v2-compatible compressor configuration.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._build_v3_compressors">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_build_v3_compressors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compressor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._build_v3_compressors" title="Link to this definition"></a></dt>
+<dd><p>Construct a zarr v3-compatible compressor chain.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._array_create_kwargs">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_array_create_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">zarr_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressor_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shards</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage_options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_pass_compressors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._array_create_kwargs" title="Link to this definition"></a></dt>
+<dd><p>Keyword arguments for <code class="docutils literal notranslate"><span class="pre">Group.create_array</span></code> of one pyramid level.</p>
+<p>Single place that knows the differences between zarr v2 (compressor +
+<code class="docutils literal notranslate"><span class="pre">/</span></code>-separated v2 chunk keys) and v3 (codec chain + optional sharding).
+For v3, <code class="docutils literal notranslate"><span class="pre">compressors</span></code> is only passed when a compressor is requested,
+unless <code class="docutils literal notranslate"><span class="pre">always_pass_compressors</span></code> is set (the writer passes <code class="docutils literal notranslate"><span class="pre">None</span></code>
+explicitly, which stores uncompressed chunks).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._resolve_creation_shards">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_resolve_creation_shards</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sizes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">zarr_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shards</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shard_target_mb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1024.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shard_exclude_axes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._resolve_creation_shards" title="Link to this definition"></a></dt>
+<dd><p>Per-level shard shapes for creating empty arrays from metadata.</p>
+<p>Falls back to <code class="docutils literal notranslate"><span class="pre">metadata['shards']</span></code> / <code class="docutils literal notranslate"><span class="pre">metadata['shard_exclude_axes']</span></code>
+when not given explicitly. Shards inherited from metadata whose rank does
+not match the new arrays (for example image metadata reused for a label
+group without channel axis) are ignored with a warning instead of failing.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._create_level_arrays">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_create_level_arrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">zarr.Group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sizes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shard_shapes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">zarr_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressor_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._create_level_arrays" title="Link to this definition"></a></dt>
+<dd><p>Create the empty array of every pyramid level (<code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span></code>, …) in <code class="docutils literal notranslate"><span class="pre">parent</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._build_multiscales">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_build_multiscales</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._build_multiscales" title="Link to this definition"></a></dt>
+<dd><p>NGFF <code class="docutils literal notranslate"><span class="pre">multiscales</span></code> entry (axes + per-level transforms) for <code class="docutils literal notranslate"><span class="pre">metadata</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._validate_metadata">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_validate_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_levels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">dask.array.Array</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._validate_metadata" title="Link to this definition"></a></dt>
+<dd><p>Validate the minimal metadata contract required for NGFF writing.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._build_axes">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_build_axes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._build_axes" title="Link to this definition"></a></dt>
+<dd><p>Build the NGFF <code class="docutils literal notranslate"><span class="pre">axes</span></code> description from the normalized ZarrSmith metadata.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._build_coordinate_transformations">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_build_coordinate_transformations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scales</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_increment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._build_coordinate_transformations" title="Link to this definition"></a></dt>
+<dd><p>Generate one NGFF scale transformation entry per pyramid level.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._build_omero_metadata">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_build_omero_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dask.array.Array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._build_omero_metadata" title="Link to this definition"></a></dt>
+<dd><p>Create OMERO channel display metadata for an intensity array.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.utils.ngff._default_window">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.utils.ngff.</span></span><span class="sig-name descname"><span class="pre">_default_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/utils/ngff.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.utils.ngff._default_window" title="Link to this definition"></a></dt>
+<dd><p>Return a default display range for the provided dtype.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../metadata/index.html" class="btn btn-neutral float-left" title="zarrsmith.utils.metadata" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../ome/index.html" class="btn btn-neutral float-right" title="zarrsmith.utils.ome" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, European Molecular Biology Laboratory (EMBL).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

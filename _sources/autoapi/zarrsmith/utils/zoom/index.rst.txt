@@ -1,0 +1,31 @@
+zarrsmith.utils.zoom
+====================
+
+.. py:module:: zarrsmith.utils.zoom
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   zarrsmith.utils.zoom._normalize_zoom_scale
+   zarrsmith.utils.zoom._zoom_numpy
+   zarrsmith.utils.zoom._zoom_dask
+
+
+Module Contents
+---------------
+
+.. py:function:: _normalize_zoom_scale(arr_ndim: int, scale: zarrsmith.utils.downsampling.SpatialFactor, spatial_axes: collections.abc.Sequence[int] | None)
+
+.. py:function:: _zoom_numpy(arr: numpy.ndarray, scale: zarrsmith.utils.downsampling.SpatialFactor, spatial_axes: collections.abc.Sequence[int] | None = None) -> numpy.ndarray
+
+   Nearest-neighbor zoom/shrink on selected spatial axes.
+
+
+.. py:function:: _zoom_dask(arr: dask.array.Array, scale: zarrsmith.utils.downsampling.SpatialFactor, spatial_axes: collections.abc.Sequence[int] | None = None) -> dask.array.Array
+
+   Nearest-neighbor zoom/shrink on selected spatial axes for Dask arrays.
+
+

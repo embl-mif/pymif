@@ -1,0 +1,1076 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>zarrsmith.napari._explorer_widget &mdash; ZarrSmith 0.6.2.dev2+g423d5bb1d documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=0b5a380a"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="zarrsmith.napari._export_widget" href="../_export_widget/index.html" />
+    <link rel="prev" title="zarrsmith.napari._dataset_helpers" href="../_dataset_helpers/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            ZarrSmith
+              <img src="../../../../_static/zarrsmith-icon.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli.html">Command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../napari-plugin.html">Napari plugin</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing and extending ZarrSmith</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">zarrsmith</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../_version/index.html">zarrsmith._version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../cli/index.html">zarrsmith.cli</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../microscope_manager/index.html">zarrsmith.microscope_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../mosaic_manager/index.html">zarrsmith.mosaic_manager</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">zarrsmith.napari</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../utils/index.html">zarrsmith.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">ZarrSmith</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../api_reference.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">zarrsmith</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">zarrsmith.napari</a></li>
+      <li class="breadcrumb-item active">zarrsmith.napari._explorer_widget</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/zarrsmith/napari/_explorer_widget/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-zarrsmith.napari._explorer_widget">
+<span id="zarrsmith-napari-explorer-widget"></span><h1>zarrsmith.napari._explorer_widget<a class="headerlink" href="#module-zarrsmith.napari._explorer_widget" title="Link to this heading"></a></h1>
+<p>napari widget to explore the features of segmented objects, with napari-clusters-plotter.</p>
+<p>Three things are loaded (dropped on their field, all at once anywhere on the panel, or browsed):</p>
+<ul class="simple">
+<li><p>an intensity OME-Zarr (all channels and resolution levels, read lazily),</p></li>
+<li><p>the labels OME-Zarr (optional: else the first group in <code class="docutils literal notranslate"><span class="pre">&lt;intensity&gt;.ome.zarr/labels/</span></code>),</p></li>
+<li><p>a CSV with one row per object: a label column and any features.</p></li>
+</ul>
+<p>A table from several images has two more columns, <code class="docutils literal notranslate"><span class="pre">image_path</span></code> and <code class="docutils literal notranslate"><span class="pre">labels_path</span></code>: the intensity and
+labels OME-Zarr of the image of every row, relative to the folder of the table. The intensity and labels
+fields are then not used: the panel lists the images of the table, the plot shows the objects of the
+ticked ones, and the viewer shows one image at a time (the one of the last clicked object).</p>
+<p>The features are plotted by napari-clusters-plotter, under the panel, with everything it can do
+(x / y features, colour of the plot and the labels by any feature, selections to make clusters,
+histogram, …). The plot is linked with the viewer:</p>
+<ul class="simple">
+<li><p>click a point: the viewer goes to that object (its image, its plane, centred, zoomed in) and selects
+its label,</p></li>
+<li><p>hover a point: a thumbnail of the object (XY and XZ through its centre, the intensity with the
+object outlined in magenta) appears next to the mouse,</p></li>
+<li><p>pick a label in napari: its point is highlighted in the plot.</p></li>
+</ul>
+<p>Where the objects are comes from centroid columns of the CSV: <code class="docutils literal notranslate"><span class="pre">centroid-0/1/2</span></code> (skimage
+<code class="docutils literal notranslate"><span class="pre">regionprops_table</span></code>), <code class="docutils literal notranslate"><span class="pre">centroid_z/y/x</span></code> or <code class="docutils literal notranslate"><span class="pre">z/y/x</span></code>, in voxels of the labels (full resolution) or
+in µm. Without them they are computed from a low resolution level of the labels (slow for big
+images, and small objects can be missed). The size of the thumbnail comes from <code class="docutils literal notranslate"><span class="pre">bbox-*</span></code> columns
+(regionprops) or a size column (<code class="docutils literal notranslate"><span class="pre">area</span></code>, <code class="docutils literal notranslate"><span class="pre">volume</span></code>, …).</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget._PLOTTER_IMPORT_ERROR" title="zarrsmith.napari._explorer_widget._PLOTTER_IMPORT_ERROR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_PLOTTER_IMPORT_ERROR</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.LABEL_COLUMNS" title="zarrsmith.napari._explorer_widget.LABEL_COLUMNS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LABEL_COLUMNS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.SIZE_COLUMNS" title="zarrsmith.napari._explorer_widget.SIZE_COLUMNS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SIZE_COLUMNS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.TIME_COLUMNS" title="zarrsmith.napari._explorer_widget.TIME_COLUMNS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TIME_COLUMNS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.TABLE_SUFFIXES" title="zarrsmith.napari._explorer_widget.TABLE_SUFFIXES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TABLE_SUFFIXES</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.PATH_COLUMNS" title="zarrsmith.napari._explorer_widget.PATH_COLUMNS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PATH_COLUMNS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.IMAGE_INDEX" title="zarrsmith.napari._explorer_widget.IMAGE_INDEX"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IMAGE_INDEX</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.LABELS_LAYER" title="zarrsmith.napari._explorer_widget.LABELS_LAYER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LABELS_LAYER</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.LABEL_IDS_KEY" title="zarrsmith.napari._explorer_widget.LABEL_IDS_KEY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LABEL_IDS_KEY</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.THUMBNAIL_PX" title="zarrsmith.napari._explorer_widget.THUMBNAIL_PX"><code class="xref py py-obj docutils literal notranslate"><span class="pre">THUMBNAIL_PX</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.THUMBNAIL_CONTEXT" title="zarrsmith.napari._explorer_widget.THUMBNAIL_CONTEXT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">THUMBNAIL_CONTEXT</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.MAX_BOX_PX" title="zarrsmith.napari._explorer_widget.MAX_BOX_PX"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MAX_BOX_PX</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.HOVER_RADIUS_PX" title="zarrsmith.napari._explorer_widget.HOVER_RADIUS_PX"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HOVER_RADIUS_PX</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.HOVER_DELAY_MS" title="zarrsmith.napari._explorer_widget.HOVER_DELAY_MS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HOVER_DELAY_MS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.MAX_THUMBNAILS" title="zarrsmith.napari._explorer_widget.MAX_THUMBNAILS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MAX_THUMBNAILS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.JUMP_CONTEXT" title="zarrsmith.napari._explorer_widget.JUMP_CONTEXT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">JUMP_CONTEXT</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.MIN_POINT_SIZE" title="zarrsmith.napari._explorer_widget.MIN_POINT_SIZE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MIN_POINT_SIZE</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.OBJECT_RGB" title="zarrsmith.napari._explorer_widget.OBJECT_RGB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OBJECT_RGB</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.OTHER_RGB" title="zarrsmith.napari._explorer_widget.OTHER_RGB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OTHER_RGB</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="exceptions">
+<h2>Exceptions<a class="headerlink" href="#exceptions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.RepeatedLabelsError" title="zarrsmith.napari._explorer_widget.RepeatedLabelsError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RepeatedLabelsError</span></code></a></p></td>
+<td><p>The table has several rows for the same object (the user is asked to fix the table).</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.ImageSource" title="zarrsmith.napari._explorer_widget.ImageSource"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageSource</span></code></a></p></td>
+<td><p>One image of the table: its files, its rows of the table and, read when first needed, its data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.Session" title="zarrsmith.napari._explorer_widget.Session"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Session</span></code></a></p></td>
+<td><p>What is loaded: the table (one row per object, sorted), its images and the layers of the shown one.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.ThumbnailPopup" title="zarrsmith.napari._explorer_widget.ThumbnailPopup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ThumbnailPopup</span></code></a></p></td>
+<td><p>Small window next to the mouse: the views of an object and a few of its features.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer" title="zarrsmith.napari._explorer_widget.ObjectsExplorer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ObjectsExplorer</span></code></a></p></td>
+<td><p>The panel: loads the data and links the plot of napari-clusters-plotter with the viewer.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget._patch_plotter" title="zarrsmith.napari._explorer_widget._patch_plotter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_patch_plotter</span></code></a>()</p></td>
+<td><p>Changes to napari-clusters-plotter, for the layers and the plot of this widget only.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.spatial_axes" title="zarrsmith.napari._explorer_widget.spatial_axes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spatial_axes</span></code></a>(dataset)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.voxel_sizes" title="zarrsmith.napari._explorer_widget.voxel_sizes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">voxel_sizes</span></code></a>(dataset)</p></td>
+<td><p>Voxel size (µm) of the spatial axes, at every level.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.as_labels" title="zarrsmith.napari._explorer_widget.as_labels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">as_labels</span></code></a>(labels, image)</p></td>
+<td><p>The labels without their channel axis (of size 1), with the voxel size of <code class="docutils literal notranslate"><span class="pre">image</span></code> when they were</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.box" title="zarrsmith.napari._explorer_widget.box"><code class="xref py py-obj docutils literal notranslate"><span class="pre">box</span></code></a>(dataset, centre_um, half_um[, channel, t])</p></td>
+<td><p>Cube of side 2 x half_um around centre_um ({axis: µm}) from the finest level that has at most</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.resample" title="zarrsmith.napari._explorer_widget.resample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resample</span></code></a>(labels, start, size, offset, shape, to_start, ...)</p></td>
+<td><p>Labels of one box (nearest voxel) at the voxel centres of another box.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.thumbnail_views" title="zarrsmith.napari._explorer_widget.thumbnail_views"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thumbnail_views</span></code></a>(image, labels, label)</p></td>
+<td><p>RGB views through the centre of a box: XY (and XZ in 3D), the object outlined in magenta.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.read_table" title="zarrsmith.napari._explorer_widget.read_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_table</span></code></a>(path, **kwargs)</p></td>
+<td><p>CSV / TSV, the separator guessed from the header.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.has_path_columns" title="zarrsmith.napari._explorer_widget.has_path_columns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_path_columns</span></code></a>(columns)</p></td>
+<td><p>True for a table from several images (it has the image_path and labels_path columns).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.path_text" title="zarrsmith.napari._explorer_widget.path_text"><code class="xref py py-obj docutils literal notranslate"><span class="pre">path_text</span></code></a>(value)</p></td>
+<td><p>A path of the table as text: '' when empty, '' read as '/' (a table written on Windows).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.resolve_path" title="zarrsmith.napari._explorer_widget.resolve_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_path</span></code></a>(value, folder)</p></td>
+<td><p>A path of the table, relative to <code class="docutils literal notranslate"><span class="pre">folder</span></code> (the folder of the table) unless absolute; None if empty.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.repeated_labels_message" title="zarrsmith.napari._explorer_widget.repeated_labels_message"><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeated_labels_message</span></code></a>(rows, label_column[, image_column])</p></td>
+<td><p>What to tell the user about the repeated objects in <code class="docutils literal notranslate"><span class="pre">rows</span></code> (the repeated rows of the table).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.clean_table" title="zarrsmith.napari._explorer_widget.clean_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clean_table</span></code></a>(table, label_column[, notes, image_column])</p></td>
+<td><p>One row per label (&gt; 0), sorted by label (by image, then label, with an <code class="docutils literal notranslate"><span class="pre">image_column</span></code>);</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.guess_label_column" title="zarrsmith.napari._explorer_widget.guess_label_column"><code class="xref py py-obj docutils literal notranslate"><span class="pre">guess_label_column</span></code></a>(columns)</p></td>
+<td><p>The label column among <code class="docutils literal notranslate"><span class="pre">columns</span></code> (by name), else the first one.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.centroid_columns" title="zarrsmith.napari._explorer_widget.centroid_columns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">centroid_columns</span></code></a>(table, axes)</p></td>
+<td><p>Names of the centroid columns (in the order of the axes), or None.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.object_radius_um" title="zarrsmith.napari._explorer_widget.object_radius_um"><code class="xref py py-obj docutils literal notranslate"><span class="pre">object_radius_um</span></code></a>(table, n_axes, voxel_um)</p></td>
+<td><p>Radius of every object (µm) from regionprops bbox columns or a size column (voxels), else NaN.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.centroids_from_labels" title="zarrsmith.napari._explorer_widget.centroids_from_labels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">centroids_from_labels</span></code></a>(labels, ids[, max_voxels, notes])</p></td>
+<td><p>(centroid µm, radius µm) of every label in ids, from the finest level with at most max_voxels voxels.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.contrast_limits" title="zarrsmith.napari._explorer_widget.contrast_limits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contrast_limits</span></code></a>(array)</p></td>
+<td><p>1 - 99.9 percentiles of an image, from at most ~4 million of its voxels.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.image_contrast_limits" title="zarrsmith.napari._explorer_widget.image_contrast_limits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_contrast_limits</span></code></a>(image)</p></td>
+<td><p>Contrast limits of every channel (a single one without a channel axis), from the lowest level.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.image_channel_names" title="zarrsmith.napari._explorer_widget.image_channel_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_channel_names</span></code></a>(image)</p></td>
+<td><p>Name of every channel of an image (<code class="docutils literal notranslate"><span class="pre">intensity</span></code> without a channel axis).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.add_image_layers" title="zarrsmith.napari._explorer_widget.add_image_layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_image_layers</span></code></a>(viewer, image, name, limits)</p></td>
+<td><p>The intensity image, one layer per channel (all levels, read when needed), blended additively.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.zarr_path" title="zarrsmith.napari._explorer_widget.zarr_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zarr_path</span></code></a>(text)</p></td>
+<td><p>A dropped path as the OME-Zarr folder (a metadata file inside it -&gt; the folder).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.short_name" title="zarrsmith.napari._explorer_widget.short_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">short_name</span></code></a>(path)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.sort_dropped" title="zarrsmith.napari._explorer_widget.sort_dropped"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort_dropped</span></code></a>(paths)</p></td>
+<td><p>Files dropped together, by kind: {&quot;table&quot; | &quot;labels&quot; | &quot;image&quot;: path}.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.open_labels" title="zarrsmith.napari._explorer_widget.open_labels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open_labels</span></code></a>(image_zarr, labels_path, notes)</p></td>
+<td><p>The labels OME-Zarr at <code class="docutils literal notranslate"><span class="pre">labels_path</span></code>, else the first label group of the intensity OME-Zarr.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.read_image" title="zarrsmith.napari._explorer_widget.read_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_image</span></code></a>(image_path, labels_path, rows, label_column)</p></td>
+<td><p>Read one image (in a background thread): its image and labels datasets, where its objects (<code class="docutils literal notranslate"><span class="pre">rows</span></code>, its rows of the</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.image_sources" title="zarrsmith.napari._explorer_widget.image_sources"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_sources</span></code></a>(table, table_path)</p></td>
+<td><p>The images of a table from several images, in the order of the table, with what is wrong with</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.read_dataset" title="zarrsmith.napari._explorer_widget.read_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_dataset</span></code></a>(image_path, labels_path, table_path, ...)</p></td>
+<td><p>Read the table and its first usable image (runs in a background thread): a generator that yields</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.path_field" title="zarrsmith.napari._explorer_widget.path_field"><code class="xref py py-obj docutils literal notranslate"><span class="pre">path_field</span></code></a>(mode, placeholder[, filter])</p></td>
+<td><p>A path field (magicgui <code class="docutils literal notranslate"><span class="pre">FileEdit</span></code>, <code class="docutils literal notranslate"><span class="pre">mode</span></code> <code class="docutils literal notranslate"><span class="pre">&quot;d&quot;</span></code>: a folder, <code class="docutils literal notranslate"><span class="pre">&quot;r&quot;</span></code>: a file) that takes a file or</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.field_path" title="zarrsmith.napari._explorer_widget.field_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">field_path</span></code></a>(field)</p></td>
+<td><p>The path in a path field as text ('' when empty).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget._form" title="zarrsmith.napari._explorer_widget._form"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_form</span></code></a>(*rows)</p></td>
+<td><p>A widget with a form layout; a row is (label, widget) or a widget spanning both columns.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#zarrsmith.napari._explorer_widget.explorer_widget" title="zarrsmith.napari._explorer_widget.explorer_widget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">explorer_widget</span></code></a>()</p></td>
+<td><p>The Objects Explorer dock: the panel, and under it the plot of napari-clusters-plotter.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget._PLOTTER_IMPORT_ERROR">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">_PLOTTER_IMPORT_ERROR</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget._PLOTTER_IMPORT_ERROR" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.LABEL_COLUMNS">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">LABEL_COLUMNS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('label',</span> <span class="pre">'label_id',</span> <span class="pre">'labels',</span> <span class="pre">'id',</span> <span class="pre">'object_id',</span> <span class="pre">'cell_id')</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.LABEL_COLUMNS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.SIZE_COLUMNS">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">SIZE_COLUMNS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('area',</span> <span class="pre">'volume',</span> <span class="pre">'num_pixels',</span> <span class="pre">'n_voxels',</span> <span class="pre">'voxels',</span> <span class="pre">'size')</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.SIZE_COLUMNS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.TIME_COLUMNS">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">TIME_COLUMNS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('frame',</span> <span class="pre">'t',</span> <span class="pre">'timepoint',</span> <span class="pre">'time')</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.TIME_COLUMNS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.TABLE_SUFFIXES">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">TABLE_SUFFIXES</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('.csv',</span> <span class="pre">'.tsv',</span> <span class="pre">'.txt')</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.TABLE_SUFFIXES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.PATH_COLUMNS">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">PATH_COLUMNS</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.PATH_COLUMNS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.IMAGE_INDEX">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">IMAGE_INDEX</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'image_index'</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.IMAGE_INDEX" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.LABELS_LAYER">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">LABELS_LAYER</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'labels'</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.LABELS_LAYER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.LABEL_IDS_KEY">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">LABEL_IDS_KEY</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'zarrsmith_label_ids'</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.LABEL_IDS_KEY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.THUMBNAIL_PX">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">THUMBNAIL_PX</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">170</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.THUMBNAIL_PX" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.THUMBNAIL_CONTEXT">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">THUMBNAIL_CONTEXT</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2.5</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.THUMBNAIL_CONTEXT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.MAX_BOX_PX">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">MAX_BOX_PX</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">128</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.MAX_BOX_PX" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.HOVER_RADIUS_PX">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">HOVER_RADIUS_PX</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.HOVER_RADIUS_PX" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.HOVER_DELAY_MS">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">HOVER_DELAY_MS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.HOVER_DELAY_MS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.MAX_THUMBNAILS">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">MAX_THUMBNAILS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">500</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.MAX_THUMBNAILS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.JUMP_CONTEXT">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">JUMP_CONTEXT</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.5</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.JUMP_CONTEXT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.MIN_POINT_SIZE">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">MIN_POINT_SIZE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.MIN_POINT_SIZE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.OBJECT_RGB">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">OBJECT_RGB</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(255,</span> <span class="pre">0,</span> <span class="pre">255)</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.OBJECT_RGB" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.OTHER_RGB">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">OTHER_RGB</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0,</span> <span class="pre">200,</span> <span class="pre">255)</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.OTHER_RGB" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget._patch_plotter">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">_patch_plotter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget._patch_plotter" title="Link to this definition"></a></dt>
+<dd><p>Changes to napari-clusters-plotter, for the layers and the plot of this widget only.</p>
+<ul class="simple">
+<li><p>It colours a labels layer by <code class="docutils literal notranslate"><span class="pre">np.unique</span></code> of the whole label image on every redraw (minutes
+for a big image) and gives the colour of row i of the features to the i-th label. The label of
+every row is given in the layer metadata instead (rows of an image that isn’t shown get ids
+that aren’t in the label image).</p></li>
+<li><p>biaplotter makes the points smaller the more there are (8000 / n): with tens of thousands of
+objects they can’t be seen any more. A scatter plot with <code class="docutils literal notranslate"><span class="pre">zarrsmith_min_size</span></code> keeps that size.</p></li>
+<li><p>No warning that the labels missing from the colours are transparent (wanted: they aren’t in
+the table), nor that a categorical colour (an image, a cluster) uses a categorical colormap.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.RepeatedLabelsError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">RepeatedLabelsError</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.RepeatedLabelsError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></p>
+<p>The table has several rows for the same object (the user is asked to fix the table).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.spatial_axes">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">spatial_axes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.spatial_axes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.voxel_sizes">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">voxel_sizes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.voxel_sizes" title="Link to this definition"></a></dt>
+<dd><p>Voxel size (µm) of the spatial axes, at every level.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.as_labels">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">as_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.as_labels" title="Link to this definition"></a></dt>
+<dd><p>The labels without their channel axis (of size 1), with the voxel size of <code class="docutils literal notranslate"><span class="pre">image</span></code> when they were
+saved without one (all 1) on its grid. A ZarrDataset when something changed, else <code class="docutils literal notranslate"><span class="pre">labels</span></code> itself.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.box">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centre_um</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">half_um</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.box" title="Link to this definition"></a></dt>
+<dd><p>Cube of side 2 x half_um around centre_um ({axis: µm}) from the finest level that has at most
+MAX_BOX_PX voxels per axis, zero padded at the image borders.
+Returns (array of the spatial axes, index of its first voxel, voxel size, offset of the level (µm)).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.resample">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">resample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_offset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.resample" title="Link to this definition"></a></dt>
+<dd><p>Labels of one box (nearest voxel) at the voxel centres of another box.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.thumbnail_views">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">thumbnail_views</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.thumbnail_views" title="Link to this definition"></a></dt>
+<dd><p>RGB views through the centre of a box: XY (and XZ in 3D), the object outlined in magenta.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.read_table">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">read_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.read_table" title="Link to this definition"></a></dt>
+<dd><p>CSV / TSV, the separator guessed from the header.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.has_path_columns">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">has_path_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.has_path_columns" title="Link to this definition"></a></dt>
+<dd><p>True for a table from several images (it has the image_path and labels_path columns).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.path_text">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">path_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.path_text" title="Link to this definition"></a></dt>
+<dd><p>A path of the table as text: ‘’ when empty, ‘' read as ‘/’ (a table written on Windows).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.resolve_path">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">resolve_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.resolve_path" title="Link to this definition"></a></dt>
+<dd><p>A path of the table, relative to <code class="docutils literal notranslate"><span class="pre">folder</span></code> (the folder of the table) unless absolute; None if empty.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.repeated_labels_message">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">repeated_labels_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rows</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.repeated_labels_message" title="Link to this definition"></a></dt>
+<dd><p>What to tell the user about the repeated objects in <code class="docutils literal notranslate"><span class="pre">rows</span></code> (the repeated rows of the table).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.clean_table">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">clean_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.clean_table" title="Link to this definition"></a></dt>
+<dd><p>One row per label (&gt; 0), sorted by label (by image, then label, with an <code class="docutils literal notranslate"><span class="pre">image_column</span></code>);
+text columns become categories (1, 2, …; 0 = empty), except the path columns;
+inf becomes NaN (not plotted: the plot can’t set its axis limits to inf).
+A label repeated (in an image) raises a RepeatedLabelsError. What was changed is appended to <code class="docutils literal notranslate"><span class="pre">notes</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.guess_label_column">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">guess_label_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.guess_label_column" title="Link to this definition"></a></dt>
+<dd><p>The label column among <code class="docutils literal notranslate"><span class="pre">columns</span></code> (by name), else the first one.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.centroid_columns">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">centroid_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.centroid_columns" title="Link to this definition"></a></dt>
+<dd><p>Names of the centroid columns (in the order of the axes), or None.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.object_radius_um">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">object_radius_um</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_axes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_um</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.object_radius_um" title="Link to this definition"></a></dt>
+<dd><p>Radius of every object (µm) from regionprops bbox columns or a size column (voxels), else NaN.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.centroids_from_labels">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">centroids_from_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_voxels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.centroids_from_labels" title="Link to this definition"></a></dt>
+<dd><p>(centroid µm, radius µm) of every label in ids, from the finest level with at most max_voxels voxels.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.contrast_limits">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">contrast_limits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.contrast_limits" title="Link to this definition"></a></dt>
+<dd><p>1 - 99.9 percentiles of an image, from at most ~4 million of its voxels.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.image_contrast_limits">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">image_contrast_limits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.image_contrast_limits" title="Link to this definition"></a></dt>
+<dd><p>Contrast limits of every channel (a single one without a channel axis), from the lowest level.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.image_channel_names">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">image_channel_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.image_channel_names" title="Link to this definition"></a></dt>
+<dd><p>Name of every channel of an image (<code class="docutils literal notranslate"><span class="pre">intensity</span></code> without a channel axis).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.add_image_layers">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">add_image_layers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">viewer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limits</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.add_image_layers" title="Link to this definition"></a></dt>
+<dd><p>The intensity image, one layer per channel (all levels, read when needed), blended additively.
+In the colours of the file, or napari’s when it has none or only white ones (all looking the same).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.zarr_path">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">zarr_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.zarr_path" title="Link to this definition"></a></dt>
+<dd><p>A dropped path as the OME-Zarr folder (a metadata file inside it -&gt; the folder).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.short_name">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">short_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.short_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.sort_dropped">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">sort_dropped</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.sort_dropped" title="Link to this definition"></a></dt>
+<dd><p>Files dropped together, by kind: {“table” | “labels” | “image”: path}.
+A table by its suffix, labels by their name, anything else is the intensity image.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.open_labels">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">open_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_zarr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notes</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.open_labels" title="Link to this definition"></a></dt>
+<dd><p>The labels OME-Zarr at <code class="docutils literal notranslate"><span class="pre">labels_path</span></code>, else the first label group of the intensity OME-Zarr.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.read_image">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">read_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centroids_um</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.read_image" title="Link to this definition"></a></dt>
+<dd><p>Read one image (in a background thread): its image and labels datasets, where its objects (<code class="docutils literal notranslate"><span class="pre">rows</span></code>, its rows of the
+table) are, as centroid and thumbnail half width (µm), and the contrast limits of its channels.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ImageSource">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">ImageSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">problem</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ImageSource" title="Link to this definition"></a></dt>
+<dd><p>One image of the table: its files, its rows of the table and, read when first needed, its data.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ImageSource.rows">
+<span class="sig-name descname"><span class="pre">rows</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ImageSource.rows" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ImageSource.problem">
+<span class="sig-name descname"><span class="pre">problem</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ImageSource.problem" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ImageSource.name">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">name</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ImageSource.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ImageSource.is_read">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">is_read</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ImageSource.is_read" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ImageSource.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centroids_um</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ImageSource.read" title="Link to this definition"></a></dt>
+<dd><p>See read_image; read once (from any thread).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.image_sources">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">image_sources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.image_sources" title="Link to this definition"></a></dt>
+<dd><p>The images of a table from several images, in the order of the table, with what is wrong with
+their files (<code class="docutils literal notranslate"><span class="pre">problem</span></code>) when they can’t be used.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.read_dataset">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">read_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centroids_um</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.read_dataset" title="Link to this definition"></a></dt>
+<dd><p>Read the table and its first usable image (runs in a background thread): a generator that yields
+progress messages and returns a dict with the cleaned table and its images (ImageSource).
+A table with image_path and labels_path columns is from several images: <code class="docutils literal notranslate"><span class="pre">image_path</span></code> and
+<code class="docutils literal notranslate"><span class="pre">labels_path</span></code> are then not used.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.Session">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">Session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sources</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centroids_um</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.Session" title="Link to this definition"></a></dt>
+<dd><p>What is loaded: the table (one row per object, sorted), its images and the layers of the shown one.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.Session.labels">
+<span class="sig-name descname"><span class="pre">labels</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.Session.labels" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.Session.source_of_row">
+<span class="sig-name descname"><span class="pre">source_of_row</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.Session.source_of_row" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.Session.time_column">
+<span class="sig-name descname"><span class="pre">time_column</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.Session.time_column" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.Session.active">
+<span class="sig-name descname"><span class="pre">active</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.Session.active" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.Session.feature_rows">
+<span class="sig-name descname"><span class="pre">feature_rows</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.Session.feature_rows" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.Session.extra">
+<span class="sig-name descname"><span class="pre">extra</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.Session.extra" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.Session.data">
+<span class="sig-name descname"><span class="pre">data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.Session.data" title="Link to this definition"></a></dt>
+<dd><p>What was read from an image (read now if needed: from a background thread).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.Session.position">
+<span class="sig-name descname"><span class="pre">position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.Session.position" title="Link to this definition"></a></dt>
+<dd><p>(centroid µm, thumbnail half width µm) of the object of a table row.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.Session.features">
+<span class="sig-name descname"><span class="pre">features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rows</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.Session.features" title="Link to this definition"></a></dt>
+<dd><p>Features of the labels layer for these table rows, and the label of every row (0 first) for
+the plotter: the label in the shown image, else an id that isn’t in its label image.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.Session.keep_plotter_columns">
+<span class="sig-name descname"><span class="pre">keep_plotter_columns</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.Session.keep_plotter_columns" title="Link to this definition"></a></dt>
+<dd><p>Columns that the plotter added to the layer features (clusters, …), kept by table row.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.Session.thumbnail">
+<span class="sig-name descname"><span class="pre">thumbnail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_of_view_um</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.Session.thumbnail" title="Link to this definition"></a></dt>
+<dd><p>RGB views of the object of a table row (runs in a background thread).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.path_field">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">path_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">placeholder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.path_field" title="Link to this definition"></a></dt>
+<dd><p>A path field (magicgui <code class="docutils literal notranslate"><span class="pre">FileEdit</span></code>, <code class="docutils literal notranslate"><span class="pre">mode</span></code> <code class="docutils literal notranslate"><span class="pre">&quot;d&quot;</span></code>: a folder, <code class="docutils literal notranslate"><span class="pre">&quot;r&quot;</span></code>: a file) that takes a file or
+folder dropped on it. Several files dropped at once go on to the panel, which sorts them out.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.field_path">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">field_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.field_path" title="Link to this definition"></a></dt>
+<dd><p>The path in a path field as text (’’ when empty).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ThumbnailPopup">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">ThumbnailPopup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ThumbnailPopup" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">qtpy.QtWidgets.QFrame</span></code></p>
+<p>Small window next to the mouse: the views of an object and a few of its features.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ThumbnailPopup.views">
+<span class="sig-name descname"><span class="pre">views</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ThumbnailPopup.views" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ThumbnailPopup.text">
+<span class="sig-name descname"><span class="pre">text</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ThumbnailPopup.text" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ThumbnailPopup.show_views">
+<span class="sig-name descname"><span class="pre">show_views</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">views</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ThumbnailPopup.show_views" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ThumbnailPopup.move_near_mouse">
+<span class="sig-name descname"><span class="pre">move_near_mouse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ThumbnailPopup.move_near_mouse" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget._form">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">rows</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget._form" title="Link to this definition"></a></dt>
+<dd><p>A widget with a form layout; a row is (label, widget) or a widget spanning both columns.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">ObjectsExplorer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">viewer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plotter</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">qtpy.QtWidgets.QWidget</span></code></p>
+<p>The panel: loads the data and links the plot of napari-clusters-plotter with the viewer.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer.session">
+<span class="sig-name descname"><span class="pre">session</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer.session" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._multi_table">
+<span class="sig-name descname"><span class="pre">_multi_table</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._multi_table" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._ticked">
+<span class="sig-name descname"><span class="pre">_ticked</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._ticked" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._syncing">
+<span class="sig-name descname"><span class="pre">_syncing</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._syncing" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._highlight">
+<span class="sig-name descname"><span class="pre">_highlight</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._highlight" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._hover_row">
+<span class="sig-name descname"><span class="pre">_hover_row</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._hover_row" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._thumbnails">
+<span class="sig-name descname"><span class="pre">_thumbnails</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._thumbnails" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer.popup">
+<span class="sig-name descname"><span class="pre">popup</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer.popup" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._hover_timer">
+<span class="sig-name descname"><span class="pre">_hover_timer</span></span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._hover_timer" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._build_ui">
+<span class="sig-name descname"><span class="pre">_build_ui</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._build_ui" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer.dragEnterEvent">
+<span class="sig-name descname"><span class="pre">dragEnterEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer.dragEnterEvent" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer.dropEvent">
+<span class="sig-name descname"><span class="pre">dropEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer.dropEvent" title="Link to this definition"></a></dt>
+<dd><p>Several files dropped on the panel: sorted by kind (table, labels, intensity).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._table_changed">
+<span class="sig-name descname"><span class="pre">_table_changed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._table_changed" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._isolate_toggled">
+<span class="sig-name descname"><span class="pre">_isolate_toggled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._isolate_toggled" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer.load" title="Link to this definition"></a></dt>
+<dd><p>Read the data in the background, then show it (the data loaded before stays until then).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._load_failed">
+<span class="sig-name descname"><span class="pre">_load_failed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._load_failed" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._load_done">
+<span class="sig-name descname"><span class="pre">_load_done</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._load_done" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._show">
+<span class="sig-name descname"><span class="pre">_show</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._show" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._show_dataset">
+<span class="sig-name descname"><span class="pre">_show_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._show_dataset" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._fill_image_list">
+<span class="sig-name descname"><span class="pre">_fill_image_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._fill_image_list" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._mark_shown_image">
+<span class="sig-name descname"><span class="pre">_mark_shown_image</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._mark_shown_image" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._ticks_changed">
+<span class="sig-name descname"><span class="pre">_ticks_changed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._ticks_changed" title="Link to this definition"></a></dt>
+<dd><p>Images ticked or unticked in the list: the plot shows the objects of the ticked ones.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._tick">
+<span class="sig-name descname"><span class="pre">_tick</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">which</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._tick" title="Link to this definition"></a></dt>
+<dd><p>Tick the usable images for which <code class="docutils literal notranslate"><span class="pre">which(index)</span></code> is true, untick the others.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer.show_image">
+<span class="sig-name descname"><span class="pre">show_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer.show_image" title="Link to this definition"></a></dt>
+<dd><p>Show an image of the table (read in the background if needed), then go to a row’s object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._image_read">
+<span class="sig-name descname"><span class="pre">_image_read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._image_read" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._clear_highlight">
+<span class="sig-name descname"><span class="pre">_clear_highlight</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._clear_highlight" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._opening_done">
+<span class="sig-name descname"><span class="pre">_opening_done</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._opening_done" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._show_image">
+<span class="sig-name descname"><span class="pre">_show_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._show_image" title="Link to this definition"></a></dt>
+<dd><p>Show an image already read: its channels in new layers, its labels in the labels layer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._set_features">
+<span class="sig-name descname"><span class="pre">_set_features</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._set_features" title="Link to this definition"></a></dt>
+<dd><p>Features of the labels layer: the objects of the ticked images (and the plotter’s columns).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._choose_plot_features">
+<span class="sig-name descname"><span class="pre">_choose_plot_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skip</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._choose_plot_features" title="Link to this definition"></a></dt>
+<dd><p>First features of the table on x, y and as colour.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._set_plot_features">
+<span class="sig-name descname"><span class="pre">_set_plot_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hue</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._set_plot_features" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._clear">
+<span class="sig-name descname"><span class="pre">_clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._clear" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._connect_plotter">
+<span class="sig-name descname"><span class="pre">_connect_plotter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._connect_plotter" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._plot_points">
+<span class="sig-name descname"><span class="pre">_plot_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._plot_points" title="Link to this definition"></a></dt>
+<dd><p>Table row of every point of the plot (-1: another layer), updated when the plot data change.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._point_under">
+<span class="sig-name descname"><span class="pre">_point_under</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._point_under" title="Link to this definition"></a></dt>
+<dd><p>Index of the plot point within HOVER_RADIUS_PX of the mouse, or None.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._on_highlighted">
+<span class="sig-name descname"><span class="pre">_on_highlighted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">highlighted</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._on_highlighted" title="Link to this definition"></a></dt>
+<dd><p>A point clicked in the plot: go to its object (showing its image first).</p>
+<p>The plot sends its highlight again whenever it redraws (new features, another colour, …):
+only a change of the highlight is a click.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer.go_to">
+<span class="sig-name descname"><span class="pre">go_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer.go_to" title="Link to this definition"></a></dt>
+<dd><p>Move the viewer to the object of a table row of the shown image: its plane, centred and
+zoomed in, its label selected.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._canvas_size">
+<span class="sig-name descname"><span class="pre">_canvas_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._canvas_size" title="Link to this definition"></a></dt>
+<dd><p>(height, width) of the canvas in screen pixels, or None.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._on_label_selected">
+<span class="sig-name descname"><span class="pre">_on_label_selected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._on_label_selected" title="Link to this definition"></a></dt>
+<dd><p>A label picked in napari: highlight its point in the plot.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._on_mouse_move">
+<span class="sig-name descname"><span class="pre">_on_mouse_move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._on_mouse_move" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._hide_popup">
+<span class="sig-name descname"><span class="pre">_hide_popup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._hide_popup" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._thumbnail_key">
+<span class="sig-name descname"><span class="pre">_thumbnail_key</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._thumbnail_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._hover_text">
+<span class="sig-name descname"><span class="pre">_hover_text</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._hover_text" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._request_thumbnail">
+<span class="sig-name descname"><span class="pre">_request_thumbnail</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._request_thumbnail" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._thumbnail_read">
+<span class="sig-name descname"><span class="pre">_thumbnail_read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">views</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._thumbnail_read" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._thumbnail_failed">
+<span class="sig-name descname"><span class="pre">_thumbnail_failed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._thumbnail_failed" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.ObjectsExplorer._worker_done">
+<span class="sig-name descname"><span class="pre">_worker_done</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer._worker_done" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zarrsmith.napari._explorer_widget.explorer_widget">
+<span class="sig-prename descclassname"><span class="pre">zarrsmith.napari._explorer_widget.</span></span><span class="sig-name descname"><span class="pre">explorer_widget</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/embl-mif/zarrsmith/blob/main/zarrsmith/napari/_explorer_widget.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zarrsmith.napari._explorer_widget.explorer_widget" title="Link to this definition"></a></dt>
+<dd><p>The Objects Explorer dock: the panel, and under it the plot of napari-clusters-plotter.</p>
+<p>The dock exposes <code class="docutils literal notranslate"><span class="pre">dock.explorer</span></code> (the panel, <a class="reference internal" href="#zarrsmith.napari._explorer_widget.ObjectsExplorer" title="zarrsmith.napari._explorer_widget.ObjectsExplorer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectsExplorer</span></code></a>) and <code class="docutils literal notranslate"><span class="pre">dock.plotter</span></code>.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../_dataset_helpers/index.html" class="btn btn-neutral float-left" title="zarrsmith.napari._dataset_helpers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../_export_widget/index.html" class="btn btn-neutral float-right" title="zarrsmith.napari._export_widget" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, European Molecular Biology Laboratory (EMBL).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

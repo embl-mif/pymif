@@ -1,0 +1,70 @@
+zarrsmith.mosaic_manager.readers
+================================
+
+.. py:module:: zarrsmith.mosaic_manager.readers
+
+.. autoapi-nested-parse::
+
+   Mosaic readers by microscope, and detection of the microscope of an acquisition folder.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   zarrsmith.mosaic_manager.readers.MOSAIC_READERS
+
+
+Exceptions
+----------
+
+.. autoapisummary::
+
+   zarrsmith.mosaic_manager.readers.WrongReaderError
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   zarrsmith.mosaic_manager.readers.detect_microscope
+   zarrsmith.mosaic_manager.readers.check_reader
+
+
+Module Contents
+---------------
+
+.. py:data:: MOSAIC_READERS
+   :type:  Dict[str, Type[zarrsmith.mosaic_manager.mosaic.MosaicManager]]
+
+.. py:exception:: WrongReaderError(message: str, detected: str)
+
+   Bases: :py:obj:`ValueError`
+
+
+   The acquisition was recorded by another microscope than the reader's (``detected``).
+
+
+   .. py:attribute:: detected
+
+
+.. py:function:: detect_microscope(path: str | pathlib.Path) -> Optional[str]
+
+   Microscope of the acquisition at ``path``, from its layout, or ``None`` if not recognised.
+
+   * ``"opera"``: a Harmony export (``Images/Index.xml``), its ``Images`` folder or the index;
+   * ``"luxendo"``: ``*.lux.h5`` files in ``raw/<stack>/``, in ``<stack>/`` or in the folder.
+
+   Opera is checked first: it takes a few file checks, Luxendo lists folders (slow
+   for an Opera ``Images`` folder of thousands of files on a network drive).
+
+
+.. py:function:: check_reader(reader: Type[zarrsmith.mosaic_manager.mosaic.MosaicManager], path: str | pathlib.Path) -> None
+
+   Raise :class:`WrongReaderError` when ``path`` is recognised as the acquisition of
+   another microscope than ``reader``'s (unrecognised folders pass).
+
+

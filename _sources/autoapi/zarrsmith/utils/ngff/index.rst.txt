@@ -1,0 +1,445 @@
+zarrsmith.utils.ngff
+====================
+
+.. py:module:: zarrsmith.utils.ngff
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   zarrsmith.utils.ngff.SPATIAL_AXES
+   zarrsmith.utils.ngff.DEFAULT_SHARD_EXCLUDE_AXES
+   zarrsmith.utils.ngff.DEFAULT_WORKER_FRACTION
+   zarrsmith.utils.ngff.DEFAULT_MAX_WORKERS
+   zarrsmith.utils.ngff.DEFAULT_MEMORY_FRACTION
+   zarrsmith.utils.ngff.FALLBACK_MEMORY_BUDGET_MB
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   zarrsmith.utils.ngff.ZarrWriteConfig
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   zarrsmith.utils.ngff._infer_ngff_version
+   zarrsmith.utils.ngff._label_entry
+   zarrsmith.utils.ngff._labels_contains
+   zarrsmith.utils.ngff._register_label_on_labels_group
+   zarrsmith.utils.ngff._get_group_ome_attrs
+   zarrsmith.utils.ngff._get_group_multiscales
+   zarrsmith.utils.ngff._infer_data_type_from_group
+   zarrsmith.utils.ngff._set_group_ngff_metadata
+   zarrsmith.utils.ngff._set_dimension_names
+   zarrsmith.utils.ngff._resolve_format
+   zarrsmith.utils.ngff._resolve_write_chunks
+   zarrsmith.utils.ngff._available_memory_mb
+   zarrsmith.utils.ngff._resolve_num_workers
+   zarrsmith.utils.ngff._progress_bar
+   zarrsmith.utils.ngff._run_stores
+   zarrsmith.utils.ngff._write_pyramid_v2
+   zarrsmith.utils.ngff._write_pyramid_v3
+   zarrsmith.utils.ngff._auto_shard_for_level
+   zarrsmith.utils.ngff._snap_shard_shape
+   zarrsmith.utils.ngff._resolve_shards_for_levels
+   zarrsmith.utils.ngff._build_v2_compressor
+   zarrsmith.utils.ngff._build_v3_compressors
+   zarrsmith.utils.ngff._array_create_kwargs
+   zarrsmith.utils.ngff._resolve_creation_shards
+   zarrsmith.utils.ngff._create_level_arrays
+   zarrsmith.utils.ngff._build_multiscales
+   zarrsmith.utils.ngff._validate_metadata
+   zarrsmith.utils.ngff._build_axes
+   zarrsmith.utils.ngff._build_coordinate_transformations
+   zarrsmith.utils.ngff._build_omero_metadata
+   zarrsmith.utils.ngff._default_window
+
+
+Module Contents
+---------------
+
+.. py:data:: SPATIAL_AXES
+
+.. py:data:: DEFAULT_SHARD_EXCLUDE_AXES
+   :type:  tuple[str, ...]
+   :value: ('t', 'c')
+
+
+.. py:data:: DEFAULT_WORKER_FRACTION
+   :value: 0.5
+
+
+.. py:data:: DEFAULT_MAX_WORKERS
+   :value: 8
+
+
+.. py:data:: DEFAULT_MEMORY_FRACTION
+   :value: 0.5
+
+
+.. py:data:: FALLBACK_MEMORY_BUDGET_MB
+   :value: 4096.0
+
+
+.. py:class:: ZarrWriteConfig
+
+   Configuration container for NGFF/OME-Zarr writing operations.
+
+   Parameters
+   ----------
+   ngff_version, zarr_format
+       ``0.4``/Zarr v2 and ``0.5``/Zarr v3 are the supported pairs.
+   data_type
+       Optional dataset semantic type.  Use ``"intensity"`` for regular image
+       intensities or ``"label"`` for integer segmentation/annotation data.
+   chunks
+       Requested on-disk chunk shape, overriding whatever chunking the input
+       dask arrays already have. One of:
+
+       - ``None`` (default): write each level with its existing dask
+         chunking, unchanged.
+       - A single chunk shape matching the array's ndim: used for every
+         level, clipped so no chunk axis exceeds that level's extent.
+       - A sequence of chunk shapes, one per pyramid level.
+
+       Applies to both zarr v2 and v3. This only changes the write-time
+       chunk shape; it does not touch ``metadata['chunksize']``, which is
+       only used when a pyramid is built via
+       :func:`~zarrsmith.utils.pyramid.build_pyramid`.
+   shards
+       Zarr v3 sharding configuration, applied per pyramid level. One of:
+
+       - ``"auto"`` (default): pick a shard shape per level automatically so each
+         shard is close to ``shard_target_mb`` in (uncompressed) size,
+         grouping whole chunks along the axes with the most chunks first.
+         Levels that are already small (few chunks, or a chunk already at
+         or above the target size) are left unsharded.
+       - A single shape tuple matching the array's ndim: used as the
+         requested shard shape for every level, snapped to the nearest
+         multiple of that level's chunk shape and clipped so it never
+         exceeds the level's extent.
+       - A sequence of shape tuples, one per pyramid level, each resolved
+         the same way.
+       - ``None``: no sharding, one file per chunk.
+
+       Only valid when writing zarr v3 (``ngff_version="0.5"``); sharding
+       has no zarr v2 equivalent, so for zarr v2 a warning is issued and
+       sharding is set to ``None``. ``shard_exclude_axes`` only constrains
+       ``"auto"``; an explicit shard shape always applies exactly as given.
+   shard_target_mb
+       Target *uncompressed* shard size in megabytes used by
+       ``shards="auto"``.
+   shard_exclude_axes
+       Axis names that ``shards="auto"`` never merges chunks along, even if
+       doing so would help reach ``shard_target_mb``. Defaults to
+       ``("t", "c")`` so each timepoint and channel stays independently
+       addressable; the spatial axes (``z``/``y``/``x``) are consolidated
+       automatically. Pass ``()`` to allow every axis to grow.
+   drop_singleton
+       If ``True`` (default), ``t``, ``c`` and ``z`` axes of size 1 are
+       removed from the written arrays and metadata (``y`` and ``x`` are
+       always kept). ``chunks``/``shards`` given for the full axis set are
+       trimmed accordingly. Pass ``False`` to keep every axis.
+   num_workers
+       Number of threads used to compress and write blocks in parallel.
+       ``None`` (default) uses half of the available cores, capped at 8.
+       For sharded levels the count is further reduced so the shard-sized
+       blocks held in memory at once fit in about half of the free RAM.
+       Only applies when ``compute=True``; with ``compute=False`` the caller
+       controls the scheduler when computing the returned tasks.
+   progress
+       If ``True`` (default), show a ``tqdm`` progress bar (terminal or
+       notebook) while the arrays are written. Only applies when
+       ``compute=True`` and a local (threaded) dask scheduler is used.
+       Pass ``False`` for silent writes, e.g. in batch jobs or tests.
+
+
+   .. py:attribute:: ngff_version
+      :type:  Literal['0.4', '0.5'] | None
+      :value: None
+
+
+
+   .. py:attribute:: zarr_format
+      :type:  Literal[2, 3] | None
+      :value: None
+
+
+
+   .. py:attribute:: overwrite
+      :type:  bool
+      :value: True
+
+
+
+   .. py:attribute:: compute
+      :type:  bool
+      :value: True
+
+
+
+   .. py:attribute:: storage_options
+      :type:  dict[str, Any] | None
+      :value: None
+
+
+
+   .. py:attribute:: compressor
+      :type:  Literal['blosc', 'gzip'] | None
+      :value: None
+
+
+
+   .. py:attribute:: compressor_level
+      :type:  int
+      :value: 3
+
+
+
+   .. py:attribute:: data_type
+      :type:  Literal['intensity', 'label'] | None
+      :value: None
+
+
+
+   .. py:attribute:: chunks
+      :type:  Sequence[int] | Sequence[Sequence[int]] | None
+      :value: None
+
+
+
+   .. py:attribute:: shards
+      :type:  Literal['auto'] | Sequence[int] | Sequence[Sequence[int]] | None
+      :value: 'auto'
+
+
+
+   .. py:attribute:: shard_target_mb
+      :type:  float
+      :value: 1024.0
+
+
+
+   .. py:attribute:: shard_exclude_axes
+      :type:  Sequence[str]
+      :value: ('t', 'c')
+
+
+
+   .. py:attribute:: drop_singleton
+      :type:  bool
+      :value: True
+
+
+
+   .. py:attribute:: num_workers
+      :type:  int | None
+      :value: None
+
+
+
+   .. py:attribute:: progress
+      :type:  bool
+      :value: True
+
+
+
+.. py:function:: _infer_ngff_version(group: zarr.Group) -> str
+
+   Infer the NGFF metadata layout used by an existing group.
+
+
+.. py:function:: _label_entry(label_name: str) -> str
+
+.. py:function:: _labels_contains(labels: Sequence[Any], label_name: str) -> bool
+
+.. py:function:: _register_label_on_labels_group(root: zarr.Group, label_name: str, ngff_version: str) -> None
+
+   Register a label image on the ``labels`` container group.
+
+
+.. py:function:: _get_group_ome_attrs(group: zarr.Group) -> dict[str, Any]
+
+   Return the effective OME-NGFF metadata mapping for a group.
+
+
+.. py:function:: _get_group_multiscales(group: zarr.Group)
+
+   Compatibility helper returning the stored multiscales block for a group.
+
+
+.. py:function:: _infer_data_type_from_group(group: zarr.Group) -> str
+
+   Infer ``intensity`` or ``label`` from explicit and legacy metadata.
+
+
+.. py:function:: _set_group_ngff_metadata(group: zarr.Group, *, ngff_version: str, multiscales: dict[str, Any], omero: dict[str, Any] | None = None, data_type: str | None = None, extra: dict[str, Any] | None = None) -> None
+
+   Write NGFF metadata to ``group`` using either the v0.4 or v0.5 layout.
+
+
+.. py:function:: _set_dimension_names(group: zarr.Group, datasets: Sequence[dict[str, Any]], axes: Sequence[str], *, zarr_format: int) -> None
+
+   Write Zarr v3 array-level dimension names required by NGFF v0.5.
+
+
+.. py:function:: _resolve_format(cfg: ZarrWriteConfig) -> tuple[str, int]
+
+   Resolve and validate the NGFF version / zarr format pair to use.
+
+
+.. py:function:: _resolve_write_chunks(data_levels: Sequence[dask.array.Array], chunks: Sequence[int] | Sequence[Sequence[int]] | None) -> list[dask.array.Array]
+
+   Rechunk each pyramid level to the requested write-time ``chunks``.
+
+   ``chunks`` is either ``None`` (levels are written with whatever chunking
+   they already have), a single chunk shape applied to every level, or one
+   chunk shape per level. Mirrors how ``shards`` accepts a single shape or a
+   per-level list.
+
+
+.. py:function:: _available_memory_mb() -> float
+
+   Free RAM in MB, or a fixed fallback budget when psutil is missing.
+
+
+.. py:function:: _resolve_num_workers(cfg: ZarrWriteConfig, block_bytes: int = 0) -> int
+
+   Number of write threads for ``cfg``, limited by the in-flight block size.
+
+   ``block_bytes`` is the uncompressed size of the largest block a worker
+   holds at once (a whole shard for sharded levels, ``0`` otherwise). Each
+   worker may also hold a compressed copy, hence the factor of 2.
+
+
+.. py:function:: _progress_bar(enabled: bool, desc: str | None)
+
+   Show a tqdm progress bar for the dask computation run inside the block.
+
+
+.. py:function:: _run_stores(tasks, cfg: ZarrWriteConfig, block_bytes: int = 0, desc: str | None = None)
+
+   Run (or return) the per-level store tasks of one multiscale dataset.
+
+   All levels are computed in a single dask pass so shared upstream work (for
+   example reading the source file) happens once instead of once per level.
+   With ``cfg.compute`` false the unevaluated tasks are returned unchanged.
+   ``desc`` labels the progress bar (see ``ZarrWriteConfig.progress``).
+
+
+.. py:function:: _write_pyramid_v2(*, root: zarr.Group, data_levels: Sequence[dask.array.Array], cfg: ZarrWriteConfig, desc: str | None = None)
+
+   Create and populate zarr v2 arrays for each pyramid level.
+
+
+.. py:function:: _write_pyramid_v3(*, root: zarr.Group, data_levels: Sequence[dask.array.Array], cfg: ZarrWriteConfig, axes: Sequence[str] | None = None, desc: str | None = None)
+
+   Create and populate zarr v3 arrays for each pyramid level.
+
+
+.. py:function:: _auto_shard_for_level(shape: Sequence[int], chunk: Sequence[int], itemsize: int, target_bytes: int, *, axes: Sequence[str] | None = None, exclude_axes: Sequence[str] = ()) -> tuple[int, ...] | None
+
+   Pick a shard shape for one pyramid level targeting ``target_bytes`` per shard.
+
+   Whole chunks are grouped into a shard, growing the axes with the most
+   available chunks first (typically the spatial ``z``/``y``/``x`` axes).
+   Axes whose name is in ``exclude_axes`` (requires ``axes`` to be given)
+   are never grown, so e.g. timepoints or channels can be kept one-per-shard
+   even while z/y/x is merged. Levels with no growable axis holding more
+   than one chunk, or whose chunk is already at or above the target size,
+   are left unsharded (``None``).
+
+
+.. py:function:: _snap_shard_shape(spec: Any, shape: Sequence[int], chunk: Sequence[int]) -> tuple[int, ...] | None
+
+   Round a requested shard shape to a valid multiple of ``chunk``.
+
+   The request is rounded to the nearest whole number of chunks per axis
+   (minimum one) and clipped so the shard never spans more chunks than the
+   level actually has. Returns ``None`` when the result collapses back to
+   the plain chunk shape (i.e. sharding would add no value at this level).
+
+
+.. py:function:: _resolve_shards_for_levels(shapes: Sequence[Sequence[int]], chunks: Sequence[Sequence[int]], dtype: Any, shards: Literal['auto'] | Sequence[int] | Sequence[Sequence[int]] | None, *, zarr_format: int, target_bytes: int, axes: Sequence[str] | None = None, exclude_axes: Sequence[str] = ()) -> list[tuple[int, ...] | None]
+
+   Resolve a per-pyramid-level shard shape (or ``None``) for zarr v3 writes.
+
+   ``axes``/``exclude_axes`` only affect ``shards="auto"``; an explicit
+   shard shape (single tuple or per-level list) always applies exactly as
+   requested.
+
+
+.. py:function:: _build_v2_compressor(compressor: str | None, level: int)
+
+   Construct a zarr v2-compatible compressor configuration.
+
+
+.. py:function:: _build_v3_compressors(compressor: str | None, level: int)
+
+   Construct a zarr v3-compatible compressor chain.
+
+
+.. py:function:: _array_create_kwargs(name: str, shape: Sequence[int], dtype: Any, chunks: Sequence[int], *, zarr_format: int, compressor: str | None, compressor_level: int, shards: Sequence[int] | None = None, storage_options: dict[str, Any] | None = None, always_pass_compressors: bool = False) -> dict[str, Any]
+
+   Keyword arguments for ``Group.create_array`` of one pyramid level.
+
+   Single place that knows the differences between zarr v2 (compressor +
+   ``/``-separated v2 chunk keys) and v3 (codec chain + optional sharding).
+   For v3, ``compressors`` is only passed when a compressor is requested,
+   unless ``always_pass_compressors`` is set (the writer passes ``None``
+   explicitly, which stores uncompressed chunks).
+
+
+.. py:function:: _resolve_creation_shards(metadata: dict[str, Any], sizes: Sequence[Sequence[int]], chunks: Sequence[Sequence[int]], axes: Sequence[str], *, zarr_format: int, shards: Any = None, shard_target_mb: float = 1024.0, shard_exclude_axes: Sequence[str] | None = None) -> list[tuple[int, ...] | None]
+
+   Per-level shard shapes for creating empty arrays from metadata.
+
+   Falls back to ``metadata['shards']`` / ``metadata['shard_exclude_axes']``
+   when not given explicitly. Shards inherited from metadata whose rank does
+   not match the new arrays (for example image metadata reused for a label
+   group without channel axis) are ignored with a warning instead of failing.
+
+
+.. py:function:: _create_level_arrays(parent: zarr.Group, sizes: Sequence[Sequence[int]], chunks: Sequence[Sequence[int]], dtype: Any, shard_shapes: Sequence[Sequence[int] | None], *, zarr_format: int, compressor: str | None, compressor_level: int) -> None
+
+   Create the empty array of every pyramid level (``0``, ``1``, ...) in ``parent``.
+
+
+.. py:function:: _build_multiscales(metadata: dict[str, Any], axes: Sequence[str], name: str) -> dict[str, Any]
+
+   NGFF ``multiscales`` entry (axes + per-level transforms) for ``metadata``.
+
+
+.. py:function:: _validate_metadata(data_levels: Sequence[dask.array.Array], metadata: dict[str, Any], axes: tuple[str, ...]) -> None
+
+   Validate the minimal metadata contract required for NGFF writing.
+
+
+.. py:function:: _build_axes(axes: tuple[str, ...], metadata: dict[str, Any]) -> list[dict[str, Any]]
+
+   Build the NGFF ``axes`` description from the normalized ZarrSmith metadata.
+
+
+.. py:function:: _build_coordinate_transformations(*, axes: tuple[str, ...] | str, scales: Sequence[Sequence[float]], time_increment: float | None) -> list[list[dict[str, Any]]]
+
+   Generate one NGFF scale transformation entry per pyramid level.
+
+
+.. py:function:: _build_omero_metadata(arr: dask.array.Array, axes: tuple[str, ...] | str, metadata: dict[str, Any]) -> dict[str, Any]
+
+   Create OMERO channel display metadata for an intensity array.
+
+
+.. py:function:: _default_window(dtype: numpy.dtype | str) -> tuple[float, float]
+
+   Return a default display range for the provided dtype.
+
+

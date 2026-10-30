@@ -1,0 +1,67 @@
+zarrsmith.utils.chunks
+======================
+
+.. py:module:: zarrsmith.utils.chunks
+
+.. autoapi-nested-parse::
+
+   Chunk / shape helpers shared by the pyramid builder, the Zarr writer, the CLI and napari.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   zarrsmith.utils.chunks.MAX_COARSEST_SIZE
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   zarrsmith.utils.chunks.shape_tuple
+   zarrsmith.utils.chunks.get_chunks
+   zarrsmith.utils.chunks.rechunk_to_shape
+   zarrsmith.utils.chunks.default_chunk_size
+   zarrsmith.utils.chunks.default_num_levels
+
+
+Module Contents
+---------------
+
+.. py:data:: MAX_COARSEST_SIZE
+   :value: 2048
+
+
+.. py:function:: shape_tuple(value: Any, ndim: int) -> tuple[int, ...] | None
+
+   Return a positive shape tuple of length ``ndim`` from ``value``, or ``None``.
+
+
+.. py:function:: get_chunks(arr: dask.array.Array) -> tuple[int, ...]
+
+   Return one normalized chunk tuple for a dask array.
+
+
+.. py:function:: rechunk_to_shape(arr: dask.array.Array, chunks: collections.abc.Sequence[int]) -> dask.array.Array
+
+   Rechunk ``arr`` to ``chunks``, clipped so no axis exceeds the array's extent.
+
+
+.. py:function:: default_chunk_size(metadata: dict[str, Any], max_size_mb: float = 100)
+
+   Default chunk shape of a dataset (``metadata['axes']``, ``['size']`` and ``['dtype']``).
+
+   T and C chunks are 1. Z is split in 2, then Z, Y and X are all split twice more until a chunk
+   is at most ``max_size_mb``. Returns ``(chunks, chunk size in MB, number of chunks along z, y, x)``.
+
+
+.. py:function:: default_num_levels(metadata: dict[str, Any], downscale_factor: Any = 2) -> int
+
+   Default number of pyramid levels: until no spatial axis of the coarsest level is above
+   MAX_COARSEST_SIZE voxels. ``downscale_factor``: one value, or one per spatial axis (or Z, Y, X).
+
+

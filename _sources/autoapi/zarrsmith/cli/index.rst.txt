@@ -1,0 +1,16 @@
+zarrsmith.cli
+=============
+
+.. py:module:: zarrsmith.cli
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/zarrsmith/cli/__arguments/index
+   /autoapi/zarrsmith/cli/zarrsmith/index
+
+

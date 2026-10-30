@@ -1,0 +1,196 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Napari plugin &mdash; ZarrSmith 0.6.2.dev2+g423d5bb1d documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=0b5a380a"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API reference" href="api_reference.html" />
+    <link rel="prev" title="Command line" href="cli.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            ZarrSmith
+              <img src="_static/zarrsmith-icon.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readers.html">Readers and conventions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Working with data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="python-api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mosaic.html">Mosaics: raw tiles and fusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chromatic-shift.html">Chromatic shift correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced writing options</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Napari plugin</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#converter">Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mosaic-fusion">Mosaic Fusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#objects-explorer">Objects Explorer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#a-table-from-several-images">A table from several images</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing and extending ZarrSmith</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ZarrSmith</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Napari plugin</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/napari-plugin.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="napari-plugin">
+<h1>Napari plugin<a class="headerlink" href="#napari-plugin" title="Link to this heading"></a></h1>
+<p>ZarrSmith provides napari widgets for conversion, mosaic fusion and the exploration of segmented objects. After installing the napari extras (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;zarrsmith[napari]&quot;</span></code>), they are in the <code class="docutils literal notranslate"><span class="pre">Plugins</span> <span class="pre">&gt;</span> <span class="pre">ZarrSmith</span></code> menu.</p>
+<section id="converter">
+<h2>Converter<a class="headerlink" href="#converter" title="Link to this heading"></a></h2>
+<p>The conversion widget is available from:</p>
+<p><code class="docutils literal notranslate"><span class="pre">Plugins</span> <span class="pre">&gt;</span> <span class="pre">ZarrSmith</span> <span class="pre">&gt;</span> <span class="pre">Converter</span> <span class="pre">Plugin</span></code></p>
+<p>The widget can load data, preview channels, define a 3D ROI, restrict z/time/channel ranges, choose pyramid settings, and export to OME-Zarr. For axis-aware zarr datasets, controls tied to missing axes are disabled; for example, a dataset with <code class="docutils literal notranslate"><span class="pre">axes=&quot;yx&quot;</span></code> has no active T slider or channel selector.</p>
+<p>The widgets are built to be docked on any side of the napari window, or floated, and to stay usable at small sizes:</p>
+<ul class="simple">
+<li><p>The three boxes (dataset loading, dataset conversion, batch CSV export) sit in one scroll area, so nothing is cut off in a narrow or short dock.</p></li>
+<li><p>In the <strong>Dataset conversion</strong> box, the arrow in its title expands or collapses the parameters in place. The <strong>Convert to zarr</strong> button stays inside the box and visible when they are collapsed, and is disabled while a conversion runs.</p></li>
+<li><p>Above the button, a line recaps the output at full resolution and follows the T/Z/Y/X ranges, the selected channels and <strong>Drop singleton axes</strong>, for example <code class="docutils literal notranslate"><span class="pre">3</span> <span class="pre">t</span> <span class="pre">x</span> <span class="pre">2</span> <span class="pre">ch</span> <span class="pre">x</span> <span class="pre">120</span> <span class="pre">x</span> <span class="pre">1024</span> <span class="pre">x</span> <span class="pre">1024</span> <span class="pre">px</span> <span class="pre">(tczyx),</span> <span class="pre">1.51</span> <span class="pre">GB,</span> <span class="pre">voxel</span> <span class="pre">2</span> <span class="pre">x</span> <span class="pre">0.65</span> <span class="pre">x</span> <span class="pre">0.65</span> <span class="pre">micrometer</span></code>. The size is uncompressed, so the files on disk are usually smaller.</p></li>
+<li><p>The log is a separate pane under a drag handle: drag it taller to see more lines, or shorter to give room to the parameters. Progress bars update a single line instead of filling the log.</p></li>
+</ul>
+<p><img alt="napari-demo" src="_images/napari-demo.png" /></p>
+</section>
+<section id="mosaic-fusion">
+<h2>Mosaic Fusion<a class="headerlink" href="#mosaic-fusion" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Plugins</span> <span class="pre">&gt;</span> <span class="pre">ZarrSmith</span> <span class="pre">&gt;</span> <span class="pre">Mosaic</span> <span class="pre">Fusion</span></code> loads the raw tiles of a mosaic, shows them as one layer per tile at its stage position, and fuses them into an OME-Zarr image in the background, with a live estimate of the output size. See <a class="reference internal" href="mosaic.html#napari"><span class="std std-ref">Mosaics</span></a> for details.</p>
+<p><img alt="mosaic-demo" src="_images/mosaic-demo.png" /></p>
+</section>
+<section id="objects-explorer">
+<h2>Objects Explorer<a class="headerlink" href="#objects-explorer" title="Link to this heading"></a></h2>
+<p><img alt="objects-explorer-demo" src="_images/objects-explorer.gif" /></p>
+<p><em>A table from three images: hovering a point shows a thumbnail of its object; clicking a point of another image shows that image and goes to the object; unticking an image removes its objects from the plot.</em></p>
+<p><code class="docutils literal notranslate"><span class="pre">Plugins</span> <span class="pre">&gt;</span> <span class="pre">ZarrSmith</span> <span class="pre">&gt;</span> <span class="pre">Objects</span> <span class="pre">Explorer</span></code> plots the features of segmented objects with <a class="reference external" href="https://github.com/BiAPoL/napari-clusters-plotter">napari-clusters-plotter</a> and links the plot with the viewer. It loads three things, dropped on their field, dropped all at once anywhere on the panel, or browsed:</p>
+<ul class="simple">
+<li><p>the intensity OME-Zarr (all channels and resolution levels, read lazily),</p></li>
+<li><p>the labels OME-Zarr (optional: else the first group in <code class="docutils literal notranslate"><span class="pre">&lt;intensity&gt;.ome.zarr/labels/</span></code>),</p></li>
+<li><p>a CSV with one row per object: a label column and any features.</p></li>
+</ul>
+<p><strong>Load</strong> reads them in the background, then adds one layer per channel and the labels layer, and plots the first features of the table. The plot sits under the panel, behind a drag handle, with everything napari-clusters-plotter can do: x / y features, colour of the plot and of the labels by any feature, selections (lasso, ellipse, rectangle) to make clusters, 2D histogram. The plot is linked with the viewer:</p>
+<ul class="simple">
+<li><p><strong>Click a point</strong>: the viewer goes to that object (its plane, centred and zoomed in) and selects its label. Turn off the zoom and pan tools of the plot first: while one of them is on, clicks don’t select points.</p></li>
+<li><p><strong>Hover a point</strong>: a thumbnail of the object appears next to the mouse, with XY and XZ views through its centre and the object outlined in magenta.</p></li>
+<li><p><strong>Pick a label in napari</strong>: its point is highlighted in the plot.</p></li>
+</ul>
+<p>Where the objects are comes from centroid columns of the CSV: <code class="docutils literal notranslate"><span class="pre">centroid-0/1/2</span></code> (skimage <code class="docutils literal notranslate"><span class="pre">regionprops_table</span></code>), <code class="docutils literal notranslate"><span class="pre">centroid_z/y/x</span></code> or <code class="docutils literal notranslate"><span class="pre">z/y/x</span></code>, in voxels of the labels at full resolution, or in µm (tick the box). Without them the centroids are computed from a low resolution level of the labels; this is slow for big images and can miss small objects. The size of the thumbnail comes from <code class="docutils literal notranslate"><span class="pre">bbox-*</span></code> columns (regionprops) or a size column (<code class="docutils literal notranslate"><span class="pre">area</span></code>, <code class="docutils literal notranslate"><span class="pre">volume</span></code>, …).</p>
+<p>In the table, text columns become categories (1, 2, …) and <code class="docutils literal notranslate"><span class="pre">inf</span></code> values become NaN. Those objects are then missing from plots of that feature.</p>
+<p>Each object needs a single row. If a label appears several times, the table is not loaded and a message says which label is repeated. This usually means the table comes from several images: see below.</p>
+<section id="a-table-from-several-images">
+<h3>A table from several images<a class="headerlink" href="#a-table-from-several-images" title="Link to this heading"></a></h3>
+<p>A table with the columns <code class="docutils literal notranslate"><span class="pre">image_path</span></code> and <code class="docutils literal notranslate"><span class="pre">labels_path</span></code> describes objects from several images. Each row gives the intensity and labels OME-Zarr of its object’s image, relative to the folder of the table (absolute paths work too; <code class="docutils literal notranslate"><span class="pre">\</span></code> is read as <code class="docutils literal notranslate"><span class="pre">/</span></code>, so a table written on Windows also works on Linux):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">label</span><span class="p">,</span><span class="n">image_path</span><span class="p">,</span><span class="n">labels_path</span><span class="p">,</span><span class="n">area</span><span class="p">,</span><span class="n">solidity</span>
+<span class="mi">12</span><span class="p">,</span><span class="n">images</span><span class="o">/</span><span class="n">sample_01</span><span class="o">.</span><span class="n">ome</span><span class="o">.</span><span class="n">zarr</span><span class="p">,</span><span class="n">labels</span><span class="o">/</span><span class="n">sample_01_labels</span><span class="o">.</span><span class="n">ome</span><span class="o">.</span><span class="n">zarr</span><span class="p">,</span><span class="mi">523</span><span class="p">,</span><span class="mf">0.91</span>
+<span class="mi">12</span><span class="p">,</span><span class="n">images</span><span class="o">/</span><span class="n">sample_02</span><span class="o">.</span><span class="n">ome</span><span class="o">.</span><span class="n">zarr</span><span class="p">,</span><span class="n">labels</span><span class="o">/</span><span class="n">sample_02_labels</span><span class="o">.</span><span class="n">ome</span><span class="o">.</span><span class="n">zarr</span><span class="p">,</span><span class="mi">388</span><span class="p">,</span><span class="mf">0.87</span>
+</pre></div>
+</div>
+<p>The labels are always separate files in this mode. The <strong>Intensity</strong> and <strong>Labels</strong> fields are then not used, and greyed out.</p>
+<p>After <strong>Load</strong>, the panel lists the images of the table with their number of objects. Images whose files can’t be found are greyed out, with the reason.</p>
+<ul class="simple">
+<li><p><strong>Tick the images to plot</strong>: the plot shows the objects of the ticked images only. <strong>All</strong> ticks all of them, <strong>Only the shown one</strong> keeps just the image in the viewer. At least one image stays ticked.</p></li>
+<li><p><strong>The viewer shows one image at a time</strong>, in bold in the list. Clicking a point of another image reads that image and shows it in the same layers, then goes to the object. Double-clicking an image in the list shows it too.</p></li>
+<li><p><strong>Thumbnails</strong> work for the objects of any ticked image; each image is read the first time it is needed.</p></li>
+<li><p>The feature <code class="docutils literal notranslate"><span class="pre">image_index</span></code> (1, 2, … as numbered in the list) is added, so the plot or the labels can be coloured by image. Clusters drawn in the plot are kept when images are unticked and ticked again.</p></li>
+</ul>
+<p>The same widget opens from a script, with the files given on the command line: <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">examples/label_features_explorer.py</span> <span class="pre">image.ome.zarr</span> <span class="pre">labels.ome.zarr</span> <span class="pre">features.csv</span></code>.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="cli.html" class="btn btn-neutral float-left" title="Command line" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api_reference.html" class="btn btn-neutral float-right" title="API reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, European Molecular Biology Laboratory (EMBL).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
