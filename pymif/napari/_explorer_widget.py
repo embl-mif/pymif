@@ -743,6 +743,7 @@ class ObjectsExplorer(QWidget):
         self._multi_table = False  # the table in the field has image_path and labels_path columns
         self._ticked = set()  # images whose objects are plotted
         self._syncing = False  # True while the plot and the viewer update each other
+        self._highlight = None  # last highlight of the plot points: a click changes it
         self._points_data = self._point_rows = self._tree = None
         self._hover_row = None
         self._thumbnails = OrderedDict()  # (table row, channel, field of view) -> views
@@ -976,8 +977,20 @@ class ObjectsExplorer(QWidget):
             self._show_image(index)
             if row is not None:
                 self.go_to(row)
+            else:  # shown from the list: the point clicked before is of another image
+                self._clear_highlight()
         except Exception as error:
             self._load_failed(error)
+
+    def _clear_highlight(self):
+        artist = self.plotter.plotting_widget.active_artist
+        if artist.highlighted is None:
+            return
+        self._syncing = True
+        try:
+            artist.highlighted = np.zeros(len(artist.highlighted), bool)
+        finally:
+            self._syncing = False
 
     def _opening_done(self):
         self._opening = None
@@ -1135,8 +1148,16 @@ class ObjectsExplorer(QWidget):
         return near[best] if distance[best] <= HOVER_RADIUS_PX else None
 
     def _on_highlighted(self, highlighted):
-        """A point clicked in the plot: go to its object (showing its image first)."""
-        if self._syncing or highlighted is None or self._plot_points() is None:
+        """A point clicked in the plot: go to its object (showing its image first).
+
+        The plot sends its highlight again whenever it redraws (new features, another colour, ...):
+        only a change of the highlight is a click.
+        """
+        previous = self._highlight
+        self._highlight = None if highlighted is None else np.array(highlighted, bool)
+        repeated = (previous is not None and self._highlight is not None
+                    and np.array_equal(previous, self._highlight))
+        if self._syncing or repeated or highlighted is None or self._plot_points() is None:
             return
         points = np.flatnonzero(highlighted)
         if len(points) == 1 and self._point_rows[points[0]] >= 0:

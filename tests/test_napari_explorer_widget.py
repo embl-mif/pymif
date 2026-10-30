@@ -395,7 +395,29 @@ def test_widget_with_several_images(app, multi_dataset, monkeypatch):
     explorer.images.item(1).setCheckState(Qt.CheckState.Unchecked)
     assert explorer._ticked == {1}
 
-    # double-click on an image: shown
+    # double-click on an image: shown, and it stays shown when the plot redraws (the plot sends the
+    # highlight of the point clicked before, of image b, again: not a click)
+    _click(plotter, 1)  # label 8 of image b (only image b is ticked)
     explorer.show_image(0)
     _wait(app, lambda: s.active == 0 and explorer._opening is None)
+    for _ in range(3):
+        plotter.plot_needs_update.emit()
+        for _ in range(20):
+            app.processEvents()
+            time.sleep(0.01)
+    assert s.active == 0 and explorer._pending is None and explorer._opening is None
     assert [layer.name for layer in viewer.layers] == ["a: A", "a: B", "labels"]
+    assert not plotter.plotting_widget.active_artist.highlighted.any()  # the old point: no longer marked
+
+
+def test_redrawing_the_plot_is_not_a_click(app, dataset, monkeypatch):
+    viewer, explorer, plotter = _explorer(monkeypatch)
+    image_path, table = dataset
+    explorer._show(_read(str(image_path), "", str(table), "label")[1])
+    jumps = []
+    monkeypatch.setattr(explorer, "go_to", jumps.append)
+    _click(plotter, 1)
+    plotter.control_widget.hue_box.setCurrentText("area")  # redraws the plot with the highlight
+    plotter.plot_needs_update.emit()
+    app.processEvents()
+    assert jumps == [1]
