@@ -4,9 +4,9 @@ import argparse
 import os
 import re
 import textwrap
-from matplotlib.colors import cnames
 
 from pymif import __version__
+from pymif.utils.colors import parse_color as _parse_color
 
 
 class MultilineDefaultsHelpFormatter(
@@ -15,9 +15,6 @@ class MultilineDefaultsHelpFormatter(
 ):
     """Formatter that preserves line breaks while still displaying defaults."""
     pass
-
-
-HEX_PATTERN = re.compile(r'^#?[0-9a-fA-F]{6}$')
 
 
 # Valid type of's
@@ -40,34 +37,12 @@ def valid_output_path(x):
 
 
 def parse_color(value: str) -> str:
-    """Parse a CLI color input:
-
-    - Accept 6-digit hex codes (# optional)
-
-    - Accept color names from matplotlib.colors.cnames
-
-    - Raise a meaningful error if invalid
-    """
-
-    v = value.strip()
-
-    # --- 1) Hex code (with or without #) ---
-    if HEX_PATTERN.match(v):
-        return v.replace("#", "").upper()
-
-    # --- 2) Matplotlib named color ---
-    lower = v.lower()
-    if lower in cnames:
-        # cnames returns a hex string with '#', e.g. "#ff00ff"
-        return cnames[lower].replace("#", "").upper()
-
-    # --- 3) Fail: report detailed reason ---
-    raise argparse.ArgumentTypeError(
-        f"Invalid color '{value}'. "
-        f"Must be:\n"
-        f"  • A 6-digit hex code (e.g. FF00FF or #ff00ff), OR\n"
-        f"  • A valid color name from matplotlib ({', '.join(list(cnames.keys())[:10])}, ...)"
-    )
+    """A CLI color (6-digit hex code, ``#`` optional, or a matplotlib color name) as ``RRGGBB``;
+    see :func:`pymif.utils.colors.parse_color`."""
+    try:
+        return _parse_color(value)
+    except TypeError as error:
+        raise argparse.ArgumentTypeError(str(error)) from None
 
 def parse_downscale_factor(value: str):
     """Parse a scalar or anisotropic downscale factor from a CSV cell.

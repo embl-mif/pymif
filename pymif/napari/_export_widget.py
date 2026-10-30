@@ -1,32 +1,13 @@
-from napari import current_viewer
-from magicgui import magicgui
-from magicgui.widgets import FileEdit
-from qtpy.QtWidgets import QWidget, QVBoxLayout
-from ._layout import compose_dock
+import os
 
 import numpy as np
-
 import tifffile as tiff
-import os
+from magicgui import magicgui
+from napari import current_viewer
+from qtpy.QtWidgets import QWidget, QVBoxLayout
 from skimage.color import rgb2gray
 
-
-import os
-from napari import current_viewer
-import numpy as np
-from magicgui import magicgui
-import matplotlib.pyplot as plt
-from matplotlib.colors import LinearSegmentedColormap, Normalize
-import pymif.microscope_manager as mm
-from magicgui.widgets import FileEdit
-from qtpy.QtWidgets import QWidget, QVBoxLayout
-from matplotlib import rc
-
-
-# Set font properties for matplotlib plots
-rc('font', size=12)
-rc('font', family='Arial')
-rc('pdf', fonttype=42)
+from ._layout import compose_dock
 
 
 # Define functions that will be used during the export process. 
@@ -126,7 +107,7 @@ def export_widget():
 
         # Export report
         report_name = merged_name.replace('_merged.png','.txt')
-        cl_list = export_contrast_settings(viewer, report_name)
+        export_contrast_settings(viewer, report_name)
 
         # Export not adjusted 3D composite
         # Initiate an array to append channels
@@ -159,9 +140,6 @@ def export_widget():
         # Export not adjusted composite
         stack = np.stack(composite_array, axis=0)  # shape: (n_layers, H, W)
         stack = stack.astype(np.uint8)
-
-        # physical calibration from metadata
-        pixel_size_um = layer.scale[-1]   # e.g. µm/pixel in X
 
         # physical calibration from metadata
         pixel_size_um = layer.scale[-1]   # e.g. µm/pixel in X

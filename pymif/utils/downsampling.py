@@ -84,41 +84,6 @@ def spatial_factor_power_for_axes(
     return tuple(1.0 / (v ** (-exponent)) for v in values)
 
 
-def multiply_spatial_scales(
-    scales: Sequence[int | float],
-    factors: SpatialFactor,
-) -> tuple[float, float, float]:
-    values = normalize_spatial_factor(factors, allow_float=True)
-    if len(scales) != len(values):
-        raise ValueError(
-            f"scales must contain one value for each spatial factor, got {scales!r}."
-        )
-    return tuple(float(s) * f for s, f in zip(scales, values))
-
-
-def relative_level_factors(
-    total_levels: int,
-    ref_level: int,
-    downscale_factor: SpatialFactor = 2,
-) -> list[SpatialScale]:
-    """Return level scale ratios relative to `ref_level`.
-
-    Example with downscale_factor=(1,2,2), ref_level=0:
-
-        level 0 -> (1, 1, 1)
-        level 1 -> (1, 2, 2)
-        level 2 -> (1, 4, 4)
-
-    Example with ref_level=1:
-
-        level 0 -> (1, 0.5, 0.5)
-        level 1 -> (1, 1, 1)
-        level 2 -> (1, 2, 2)
-    """
-    if not 0 <= ref_level < total_levels:
-        raise ValueError(f"ref_level must be in [0, {total_levels}), got {ref_level}.")
-    return [spatial_factor_power(downscale_factor, level - ref_level) for level in range(total_levels)]
-
 def relative_level_factors_for_axes(
     total_levels: int,
     ref_level: int,

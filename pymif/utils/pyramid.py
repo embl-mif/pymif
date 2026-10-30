@@ -28,12 +28,6 @@ def _target_chunks(data_level: da.Array, metadata: Dict[str, Any]) -> tuple[int,
     return tuple(int(c) for c in data_level.chunksize)
 
 
-def get_spatial_axes(metadata: Dict[str, Any]) -> tuple[int, ...]:
-    """Return axis indices for all spatial axes present in metadata['axes']."""
-    axes = normalize_axes(metadata.get("axes"))
-    return spatial_axis_indices(axes)
-
-
 def factor_power(factors: Sequence[int], exponent: int) -> tuple[int, ...]:
     return tuple(int(f) ** exponent for f in factors)
 

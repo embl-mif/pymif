@@ -16,6 +16,7 @@ from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QApplication
 
 import pymif.microscope_manager as mm
+from pymif.microscope_manager.zarr_manager import ZarrDataset
 from pymif.napari import _explorer_widget as ew
 
 #: Two cubes in a 1 x 8 x 32 x 32 label image: label -> (z, y, x) slices.
@@ -208,21 +209,34 @@ def test_sort_dropped_and_zarr_path(tmp_path):
     assert ew.zarr_path(f'"{tmp_path / "img.zarr" / "labels"}"') == tmp_path / "img.zarr" / "labels" / "nuclei"
 
 
+def _dataset(array, axes, scales=SCALES[:1]):
+    return ZarrDataset(data=[da.from_array(array)], zarr_data=None, metadata={"axes": axes, "scales": list(scales)})
+
+
+def test_as_labels_drops_the_channel_and_fixes_the_voxel_size():
+    image = _dataset(_image(), "tczyx")
+    labels = ew.as_labels(_dataset(_labels()[:, None], "tczyx", [(1, 1, 1)]), image)
+    assert ew.dataset_axes(labels) == "tzyx" and labels.data[0].shape == (1, 8, 32, 32)
+    assert ew.layer_geometry(labels.metadata, "tzyx", drop_channel=False)["scale"] == (1.0, *SCALES[0])
+    same = _dataset(_labels(), "tzyx")
+    assert ew.as_labels(same, image) is same  # nothing to change
+
+
 def test_centroids_from_labels_with_a_single_time_point():
-    labels = ew.Pyramid([da.from_array(_labels())], {"axes": "tzyx", "scales": [SCALES[0]]})
+    labels = _dataset(_labels(), "tzyx")
     centre, radius = ew.centroids_from_labels(labels, np.array([5, 3, 9]))
     assert centre[1] == pytest.approx([3.5 * 2, 7.5 * 0.5, 7.5 * 0.5])
     assert centre[0] == pytest.approx([1.5 * 2, 23.5 * 0.5, 22.5 * 0.5])
     assert np.isnan(centre[2]).all() and np.isnan(radius[2])
 
-    two_times = ew.Pyramid([da.from_array(np.concatenate([_labels()] * 2))], {"axes": "tzyx", "scales": [SCALES[0]]})
+    two_times = _dataset(np.concatenate([_labels()] * 2), "tzyx")
     with pytest.raises(ValueError, match="time-lapse"):
         ew.centroids_from_labels(two_times, np.array([3]))
 
 
 def test_thumbnail_outlines_the_object():
-    labels = ew.Pyramid([da.from_array(_labels()[0])], {"axes": "zyx", "scales": [SCALES[0]]})
-    box, start, size, offset = labels.box({"z": 7.0, "y": 3.75, "x": 3.75}, 4.0)
+    labels = _dataset(_labels()[0], "zyx")
+    box, start, size, offset = ew.box(labels, {"z": 7.0, "y": 3.75, "x": 3.75}, 4.0)
     assert box.shape == (5, 17, 17) and (box == 3).any()
     views = ew.thumbnail_views(box.astype(np.float32), box, 3)
     assert len(views) == 2 and views[0].dtype == np.uint8
@@ -252,10 +266,10 @@ def test_read_dataset_of_several_images(multi_dataset):
 def test_widget_loads_and_goes_to_an_object(app, dataset, monkeypatch):
     viewer, explorer, plotter = _explorer(monkeypatch)
     image_path, table = dataset
-    explorer.table_field.edit.setText(str(table))
+    explorer.table_field.value = table
     assert explorer.label_column.currentText() == "label"
 
-    explorer.image_field.edit.setText(str(image_path))
+    explorer.image_field.value = image_path
     explorer.load()  # in a background thread, the Load button locked meanwhile
     assert not explorer.load_holder.isEnabled()
     _wait(app, lambda: explorer._loader is None)
@@ -280,14 +294,45 @@ def test_widget_loads_and_goes_to_an_object(app, dataset, monkeypatch):
     assert len(viewer.layers) == 3
 
 
+def test_drops_on_a_field_and_on_the_panel(app, monkeypatch, tmp_path):
+    from qtpy.QtCore import QMimeData, QPoint, QPointF, QUrl
+    from qtpy.QtGui import QDragEnterEvent, QDropEvent
+    from qtpy.QtWidgets import QLineEdit
+
+    _, explorer, _ = _explorer(monkeypatch)
+    image, labels, table = tmp_path / "a.ome.zarr", tmp_path / "a_labels.ome.zarr", tmp_path / "f.csv"
+
+    def mime(*paths):
+        data = QMimeData()
+        data.setUrls([QUrl.fromLocalFile(str(p)) for p in paths])
+        return data
+
+    def drag_enter(widget, data):
+        event = QDragEnterEvent(QPoint(1, 1), Qt.DropAction.CopyAction, data, Qt.MouseButton.NoButton,
+                                Qt.KeyboardModifier.NoModifier)
+        event.accept()
+        widget.dragEnterEvent(event)
+        return event.isAccepted()
+
+    line = explorer.labels_field.native.findChild(QLineEdit)
+    assert drag_enter(line, mime(labels))  # one file: the field takes it
+    assert not drag_enter(line, mime(image, labels, table))  # several: left to the panel
+    several = mime(image, labels, table)
+    explorer.dropEvent(QDropEvent(QPointF(1, 1), Qt.DropAction.CopyAction, several, Qt.MouseButton.NoButton,
+                                  Qt.KeyboardModifier.NoModifier))
+    assert (explorer.image_field.value, explorer.labels_field.value, explorer.table_field.value) == (
+        image, labels, table)
+    assert ew.field_path(ew.path_field("d", "empty")) == ""
+
+
 def test_repeated_labels_prompt_the_user(app, dataset, monkeypatch):
     viewer, explorer, _ = _explorer(monkeypatch)
     image_path, table = dataset
     pd.DataFrame({"label": [5, 3, 5], "area": [1, 2, 3]}).to_csv(table, index=False)
     prompts = []
     monkeypatch.setattr(ew.QMessageBox, "warning", lambda parent, title, text: prompts.append((title, text)))
-    explorer.image_field.edit.setText(str(image_path))
-    explorer.table_field.edit.setText(str(table))
+    explorer.image_field.value = image_path
+    explorer.table_field.value = table
     explorer.load()
     _wait(app, lambda: explorer._loader is None)
     assert prompts and prompts[0][0] == "Repeated labels"
@@ -297,8 +342,8 @@ def test_repeated_labels_prompt_the_user(app, dataset, monkeypatch):
 
 def test_widget_with_several_images(app, multi_dataset, monkeypatch):
     viewer, explorer, plotter = _explorer(monkeypatch)
-    explorer.table_field.edit.setText(str(multi_dataset))
-    assert not explorer.image_field.isEnabled() and not explorer.labels_field.isEnabled()
+    explorer.table_field.value = multi_dataset
+    assert not explorer.image_field.enabled and not explorer.labels_field.enabled
     explorer.load()
     _wait(app, lambda: explorer._loader is None)
     s = explorer.session

@@ -36,22 +36,24 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from matplotlib.colors import to_rgb
+from magicgui.widgets import FileEdit
 from napari import current_viewer
 from napari.qt.threading import create_worker
-from napari.utils import Colormap
 from napari.utils.notifications import show_error, show_info, show_warning
 from qtpy.QtCore import Qt, QTimer
 from qtpy.QtGui import QCursor, QFont, QGuiApplication, QImage, QPixmap
 from qtpy.QtWidgets import (
-    QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog, QFormLayout, QFrame, QHBoxLayout, QLabel,
-    QLineEdit, QListWidget, QListWidgetItem, QMessageBox, QPushButton, QVBoxLayout, QWidget,
+    QCheckBox, QComboBox, QDoubleSpinBox, QFormLayout, QFrame, QHBoxLayout, QLabel,
+    QListWidget, QListWidgetItem, QMessageBox, QPushButton, QVBoxLayout, QWidget,
 )
 from scipy.spatial import cKDTree
 from skimage.segmentation import find_boundaries
 
 import pymif.microscope_manager as mm
-from ._layout import compose_dock, make_button_holder, make_section
+from pymif.microscope_manager.zarr_manager import ZarrDataset
+from pymif.utils.visualize import add_layers, channel_names, layer_geometry
+from ._dataset_helpers import dataset_axes
+from ._layout import compose_dock, enable_drag_and_drop, make_button_holder, make_section, make_title
 
 try:
     import napari_clusters_plotter._utilities as ncp_utilities
@@ -102,9 +104,6 @@ MIN_POINT_SIZE = 10
 OBJECT_RGB = (255, 0, 255)
 OTHER_RGB = (0, 200, 255)
 
-_TITLE_STYLE = "QLabel { font-weight: bold; font-size: 13px; padding: 2px 0px; }"
-
-
 # ---------------------------------------------------------------------------
 # napari-clusters-plotter
 # ---------------------------------------------------------------------------
@@ -141,59 +140,69 @@ class RepeatedLabelsError(ValueError):
     """The table has several rows for the same object (the user is asked to fix the table)."""
 
 
-class Pyramid:
-    """All resolution levels of an OME-Zarr image (lazy dask arrays) with their axes and voxel sizes (µm)."""
+# A dataset is a ZarrManager or a ZarrDataset (a label group): ``.data`` holds its resolution levels
+# (lazy dask arrays), ``.metadata`` its axes and the voxel sizes (µm) of its spatial axes at every level.
 
-    def __init__(self, levels, metadata):
-        self.levels, self.metadata = list(levels), metadata
-        self.axes = metadata["axes"].lower()
-        self.scales = [np.asarray(s, float) for s in metadata["scales"]]
+def spatial_axes(dataset):
+    return [a for a in dataset_axes(dataset) if a in "zyx"]
 
-    @property
-    def spatial(self):
-        return [a for a in self.axes if a in "zyx"]
 
-    def drop_channel(self):
-        """Labels: drop a channel axis (of size 1)."""
-        if "c" in self.axes:
-            c = self.axes.index("c")
-            self.levels = [level[(slice(None),) * c + (0,)] for level in self.levels]
-            self.axes = self.axes.replace("c", "")
+def voxel_sizes(dataset):
+    """Voxel size (µm) of the spatial axes, at every level."""
+    return [np.asarray(s, float) for s in dataset.metadata["scales"]]
 
-    def layer_scale(self):
-        """napari scale of the layer (the channel axis, if any, becomes separate layers)."""
-        spatial = iter(self.scales[0])
-        return [next(spatial) if a in "zyx" else 1.0 for a in self.axes if a != "c"]
 
-    def box(self, centre_um, half_um, channel=0, t=0):
-        """
-        Cube of side 2 x half_um around centre_um ({axis: µm}) from the finest level that has at most
-        MAX_BOX_PX voxels per axis, zero padded at the image borders.
-        Returns (array of the spatial axes, index of its first voxel, voxel size, offset of the level (µm)).
-        """
-        level = next((i for i, s in enumerate(self.scales) if np.all(2 * half_um / s <= MAX_BOX_PX)),
-                     len(self.levels) - 1)
-        array, size = self.levels[level], self.scales[level]
-        offset = (size - self.scales[0]) / 2  # voxel centres of a coarser level are shifted
-        index, inside, start, shape = [], [], [], []
-        for axis, n in zip(self.axes, array.shape):
-            if axis == "t":
-                index.append(min(t, n - 1))
-            elif axis == "c":
-                index.append(min(channel, n - 1))
-            else:
-                k = len(start)
-                half = max(1, int(round(half_um / size[k])))
-                centre = int(round((centre_um.get(axis, 0) - offset[k]) / size[k]))
-                low, high = centre - half, centre + half + 1
-                index.append(slice(min(max(low, 0), n), max(min(high, n), 0)))
-                inside.append(slice(index[-1].start - low, index[-1].stop - low))
-                start.append(low)
-                shape.append(high - low)
-        out = np.zeros(shape, dtype=array.dtype)
-        if all(s.stop > s.start for s in inside):
-            out[tuple(inside)] = np.asarray(array[tuple(index)])
-        return out, np.array(start), size, offset
+def as_labels(labels, image):
+    """
+    The labels without their channel axis (of size 1), with the voxel size of ``image`` when they were
+    saved without one (all 1) on its grid. A ZarrDataset when something changed, else ``labels`` itself.
+    """
+    axes, levels, scales = dataset_axes(labels), list(labels.data), voxel_sizes(labels)
+    if "c" in axes:
+        c = axes.index("c")
+        levels = [level[(slice(None),) * c + (0,)] for level in levels]
+        axes = axes.replace("c", "")
+    resized = (np.allclose(scales[0], 1) and not np.allclose(voxel_sizes(image)[0], 1)
+               and levels[0].shape[-3:] == image.data[0].shape[-3:])
+    if resized:
+        scales = [s * voxel_sizes(image)[0] for s in scales]
+    if axes == dataset_axes(labels) and not resized:
+        return labels
+    metadata = dict(labels.metadata, axes=axes, scales=[tuple(s) for s in scales],
+                    size=[tuple(level.shape) for level in levels])
+    metadata.pop("chunksize", None)
+    return ZarrDataset(data=levels, zarr_data=None, metadata=metadata, name=getattr(labels, "name", None))
+
+
+def box(dataset, centre_um, half_um, channel=0, t=0):
+    """
+    Cube of side 2 x half_um around centre_um ({axis: µm}) from the finest level that has at most
+    MAX_BOX_PX voxels per axis, zero padded at the image borders.
+    Returns (array of the spatial axes, index of its first voxel, voxel size, offset of the level (µm)).
+    """
+    scales = voxel_sizes(dataset)
+    level = next((i for i, s in enumerate(scales) if np.all(2 * half_um / s <= MAX_BOX_PX)), len(scales) - 1)
+    array, size = dataset.data[level], scales[level]
+    offset = (size - scales[0]) / 2  # voxel centres of a coarser level are shifted
+    index, inside, start, shape = [], [], [], []
+    for axis, n in zip(dataset_axes(dataset), array.shape):
+        if axis == "t":
+            index.append(min(t, n - 1))
+        elif axis == "c":
+            index.append(min(channel, n - 1))
+        else:
+            k = len(start)
+            half = max(1, int(round(half_um / size[k])))
+            centre = int(round((centre_um.get(axis, 0) - offset[k]) / size[k]))
+            low, high = centre - half, centre + half + 1
+            index.append(slice(min(max(low, 0), n), max(min(high, n), 0)))
+            inside.append(slice(index[-1].start - low, index[-1].stop - low))
+            start.append(low)
+            shape.append(high - low)
+    out = np.zeros(shape, dtype=array.dtype)
+    if all(s.stop > s.start for s in inside):
+        out[tuple(inside)] = np.asarray(array[tuple(index)])
+    return out, np.array(start), size, offset
 
 
 def resample(labels, start, size, offset, shape, to_start, to_size, to_offset):
@@ -347,20 +356,20 @@ def object_radius_um(table, n_axes, voxel_um):
 def centroids_from_labels(labels, ids, max_voxels=3e7, notes=None):
     """(centroid µm, radius µm) of every label in ids, from the finest level with at most max_voxels voxels."""
     notes = [] if notes is None else notes
-    t = labels.axes.find("t")
-    if t >= 0 and labels.levels[0].shape[t] > 1:
+    t = dataset_axes(labels).find("t")
+    if t >= 0 and labels.data[0].shape[t] > 1:
         raise ValueError("time-lapse labels: add centroid columns to the table "
                          "(centroid-0/1/2, centroid_z/y/x or z/y/x)")
-    level = next((i for i, a in enumerate(labels.levels) if np.prod(a.shape) <= max_voxels),
-                 len(labels.levels) - 1)
-    data = labels.levels[level]
+    level = next((i for i, a in enumerate(labels.data) if np.prod(a.shape) <= max_voxels), len(labels.data) - 1)
+    data = labels.data[level]
     data = np.asarray(data[(slice(None),) * t + (0,)] if t >= 0 else data)  # a single time point
     where = np.flatnonzero(data)
     found, inverse, counts = np.unique(data.ravel()[where], return_inverse=True, return_counts=True)
     coords = np.unravel_index(where, data.shape)
     sums = np.stack([np.bincount(inverse, weights=c, minlength=len(found)) for c in coords], axis=1)
-    size = labels.scales[level]
-    centre = sums / counts[:, None] * size + (size - labels.scales[0]) / 2
+    scales = voxel_sizes(labels)
+    size = scales[level]
+    centre = sums / counts[:, None] * size + (size - scales[0]) / 2
     volume = counts * np.prod(size)
     radius = (3 * volume / (4 * np.pi)) ** (1 / 3) if data.ndim == 3 else np.sqrt(volume / np.pi)
     rows = pd.Index(found).get_indexer(ids)
@@ -382,44 +391,30 @@ def contrast_limits(array):
 
 def image_contrast_limits(image):
     """Contrast limits of every channel (a single one without a channel axis), from the lowest level."""
-    lowest = image.levels[-1]
-    if "t" in image.axes:
-        lowest = lowest[(slice(None),) * image.axes.index("t") + (0,)]
-    if "c" not in image.axes:
+    axes, lowest = dataset_axes(image), image.data[-1]
+    if "t" in axes:
+        lowest = lowest[(slice(None),) * axes.index("t") + (0,)]
+    if "c" not in axes:
         return [contrast_limits(lowest)]
-    c = image.axes.replace("t", "").index("c")
+    c = axes.replace("t", "").index("c")
     return [contrast_limits(lowest[(slice(None),) * c + (i,)]) for i in range(lowest.shape[c])]
 
 
-def channel_names(image):
+def image_channel_names(image):
     """Name of every channel of an image (``intensity`` without a channel axis)."""
-    if "c" not in image.axes:
-        return ["intensity"]
-    n = image.levels[0].shape[image.axes.index("c")]
-    names = image.metadata.get("channel_names") or []
-    return [str(c) for c in names] if len(names) == n else [f"channel {i}" for i in range(n)]
-
-
-def hex_colormap(value):
-    rgb = to_rgb("#" + str(value).lstrip("#")[:6])
-    return Colormap([[0, 0, 0, 1], [*rgb, 1]], name="#" + str(value).lstrip("#")[:6].lower())
+    axes = dataset_axes(image)
+    return channel_names(image.metadata, image.data[0].shape[axes.index("c")]) if "c" in axes else ["intensity"]
 
 
 def add_image_layers(viewer, image, name, limits):
-    """The intensity image, one layer per channel (all levels, read when needed)."""
-    multiscale = len(image.levels) > 1
-    data = image.levels if multiscale else image.levels[0]
-    if "c" not in image.axes:
-        return [viewer.add_image(data, multiscale=multiscale, scale=image.layer_scale(), name=name,
-                                 contrast_limits=limits[0])]
-    channels = channel_names(image)
-    colours = image.metadata.get("channel_colors") or []
-    colormaps = None  # napari's default colours, unless the file has its own
-    if len(colours) == len(channels) and any(str(h).lstrip("#").upper()[:6] != "FFFFFF" for h in colours):
-        colormaps = [hex_colormap(h) for h in colours]
-    return viewer.add_image(data, channel_axis=image.axes.index("c"), multiscale=multiscale,
-                            scale=image.layer_scale(), name=[f"{name}: {ch}" for ch in channels],
-                            colormap=colormaps, contrast_limits=limits, blending="additive")
+    """The intensity image, one layer per channel (all levels, read when needed), blended additively.
+    In the colours of the file, or napari's when it has none or only white ones (all looking the same)."""
+    if "c" not in dataset_axes(image):
+        return add_layers(viewer, image.data, image.metadata, name=name, contrast_limits=limits[0])
+    colours = [str(c).lstrip("#").upper()[:6] for c in image.metadata.get("channel_colors") or []]
+    own_colours = {} if any(c != "FFFFFF" for c in colours) else {"colormap": None}
+    return add_layers(viewer, image.data, image.metadata, name=name, contrast_limits=limits,
+                      blending="additive", **own_colours)
 
 
 def zarr_path(text):
@@ -455,44 +450,38 @@ def open_labels(image_zarr, labels_path, notes):
     """The labels OME-Zarr at ``labels_path``, else the first label group of the intensity OME-Zarr."""
     if labels_path:
         path = zarr_path(labels_path)
-        labels_zarr = mm.ZarrManager(str(path))
-        return Pyramid(labels_zarr.data, labels_zarr.metadata), short_name(path)
+        return mm.ZarrManager(str(path)), short_name(path)
     groups = getattr(image_zarr, "labels", None) or {}
     if not groups:
         raise ValueError("no labels given, and none in <intensity>.ome.zarr/labels/")
     name = next(iter(groups))
     notes.append(f"labels: '{name}' of the intensity OME-Zarr")
-    return Pyramid(groups[name].data, groups[name].metadata), name
+    return groups[name], name
 
 
 def read_image(image_path, labels_path, rows, label_column, centroids_um=False):
     """
-    Read one image (in a background thread): its pyramids, where its objects (``rows``, its rows of the
+    Read one image (in a background thread): its image and labels datasets, where its objects (``rows``, its rows of the
     table) are, as centroid and thumbnail half width (µm), and the contrast limits of its channels.
     """
     notes = []
     image_path = zarr_path(image_path)
-    image_zarr = mm.ZarrManager(str(image_path))
-    image = Pyramid(image_zarr.data, image_zarr.metadata)
-    labels, labels_name = open_labels(image_zarr, labels_path, notes)
-    labels.drop_channel()
-    if (np.allclose(labels.scales[0], 1) and not np.allclose(image.scales[0], 1)
-            and labels.levels[0].shape[-3:] == image.levels[0].shape[-3:]):
-        # labels saved without voxel size, on the grid of the image
-        labels.scales = [s * image.scales[0] for s in labels.scales]
+    image = mm.ZarrManager(str(image_path))
+    labels, labels_name = open_labels(image, labels_path, notes)
+    labels = as_labels(labels, image)
 
-    spatial = labels.spatial
+    spatial, voxel = spatial_axes(labels), voxel_sizes(labels)[0]
     columns = centroid_columns(rows, spatial)
     if columns is not None:
         centroid = rows[columns].to_numpy(float)
         if not centroids_um:
-            centroid = centroid * labels.scales[0]
-        radius = object_radius_um(rows, len(spatial), labels.scales[0])
+            centroid = centroid * voxel
+        radius = object_radius_um(rows, len(spatial), voxel)
         where = f"centroids from {', '.join(columns)}"
     else:
         centroid, radius = centroids_from_labels(labels, rows[label_column].to_numpy(), notes=notes)
         where = "centroids computed from the labels"
-    voxel = labels.scales[0].min()
+    voxel = voxel.min()
     half = np.where(np.isfinite(radius), np.maximum(THUMBNAIL_CONTEXT * radius, 6 * voxel), 12 * voxel)
     return {
         "image": image, "image_name": short_name(image_path), "limits": image_contrast_limits(image),
@@ -605,12 +594,6 @@ class Session:
         k = int(np.searchsorted(source.rows, row))
         return data["centroid_um"][k], data["half_um"][k]
 
-    def row_of(self, label, index=None):
-        """Table row of a label of an image (the shown one by default), or -1."""
-        rows = self.sources[self.active if index is None else index].rows
-        k = int(np.searchsorted(self.labels[rows], label))
-        return int(rows[k]) if k < len(rows) and self.labels[rows[k]] == label else -1
-
     def features(self, rows):
         """Features of the labels layer for these table rows, and the label of every row (0 first) for
         the plotter: the label in the shown image, else an id that isn't in its label image."""
@@ -644,12 +627,11 @@ class Session:
         centroid, half = self.position(row)
         if not np.all(np.isfinite(centroid)):
             return []
-        labels_pyramid = data["labels"]
-        centre = dict(zip(labels_pyramid.spatial, centroid))
+        centre = dict(zip(spatial_axes(data["labels"]), centroid))
         half = field_of_view_um / 2 if field_of_view_um > 0 else half
         t = int(self.table[self.time_column].iloc[row]) if self.time_column else 0
-        image, *image_grid = data["image"].box(centre, half, channel, t)
-        labels, *labels_grid = labels_pyramid.box(centre, half, 0, t)
+        image, *image_grid = box(data["image"], centre, half, channel, t)
+        labels, *labels_grid = box(data["labels"], centre, half, 0, t)
         if labels.ndim != image.ndim:
             return []
         return thumbnail_views(image.astype(np.float32), resample(labels, *labels_grid, image.shape, *image_grid),
@@ -660,48 +642,17 @@ class Session:
 # widgets
 # ---------------------------------------------------------------------------
 
-class PathField(QWidget):
-    """A path box that takes a file or folder dropped on it (or picked with the … button)."""
+def path_field(mode, placeholder, filter=None):
+    """A path field (magicgui ``FileEdit``, ``mode`` ``"d"``: a folder, ``"r"``: a file) that takes a file or
+    folder dropped on it. Several files dropped at once go on to the panel, which sorts them out."""
+    field = FileEdit(mode=mode, filter=filter, nullable=True)
+    enable_drag_and_drop(field, placeholder=placeholder, single_only=True)
+    return field
 
-    def __init__(self, placeholder, folder=True):
-        super().__init__()
-        self.folder = folder
-        self.edit = QLineEdit()
-        self.edit.setPlaceholderText(placeholder)
-        self.edit.setAcceptDrops(False)  # the drop goes to this widget
-        self.setAcceptDrops(True)
-        browse = QPushButton("…")
-        browse.setFixedWidth(28)
-        browse.clicked.connect(self._browse)
-        layout = QHBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.addWidget(self.edit)
-        layout.addWidget(browse)
 
-    def dragEnterEvent(self, event):
-        # several files: the panel sorts them out
-        if len(event.mimeData().urls()) == 1:
-            event.acceptProposedAction()
-        else:
-            event.ignore()
-
-    dragMoveEvent = dragEnterEvent
-
-    def dropEvent(self, event):
-        self.edit.setText(event.mimeData().urls()[0].toLocalFile())
-        event.acceptProposedAction()
-
-    def _browse(self):
-        if self.folder:
-            path = QFileDialog.getExistingDirectory(self, "OME-Zarr folder")
-        else:
-            path, _ = QFileDialog.getOpenFileName(self, "Features table", "", "Tables (*.csv *.tsv *.txt);;All (*)")
-        if path:
-            self.edit.setText(path)
-
-    @property
-    def path(self):
-        return self.edit.text().strip().strip('"')
+def field_path(field):
+    """The path in a path field as text ('' when empty)."""
+    return "" if field.value is None else str(field.value).strip().strip('"')
 
 
 class ThumbnailPopup(QFrame):
@@ -749,12 +700,6 @@ class ThumbnailPopup(QFrame):
         self.move(x, y)
 
 
-def _title(text):
-    label = QLabel(text)
-    label.setStyleSheet(_TITLE_STYLE)
-    return label
-
-
 def _form(*rows):
     """A widget with a form layout; a row is (label, widget) or a widget spanning both columns."""
     widget = QWidget()
@@ -793,16 +738,16 @@ class ObjectsExplorer(QWidget):
 
     # ----------------------------------------------------------------- panel
     def _build_ui(self):
-        self.image_field = PathField("intensity .ome.zarr")
-        self.labels_field = PathField("labels .ome.zarr (empty: <intensity>/labels/)")
-        self.table_field = PathField("features .csv", folder=False)
+        self.image_field = path_field("d", "intensity .ome.zarr")
+        self.labels_field = path_field("d", "labels .ome.zarr (empty: <intensity>/labels/)")
+        self.table_field = path_field("r", "features .csv", filter="*.csv *.tsv *.txt")
         self.label_column = QComboBox()
         self.label_column.setEditable(True)
         self.centroids_um = QCheckBox("Centroids of the table are in µm (not voxels)")
         self.load_button = QPushButton("Load")
         self.load_button.clicked.connect(self.load)
         self.load_holder = make_button_holder(self.load_button)
-        self.table_field.edit.textChanged.connect(self._table_changed)
+        self.table_field.changed.connect(self._table_changed)
 
         self.images = QListWidget()
         self.images.setMaximumHeight(170)
@@ -838,17 +783,17 @@ class ObjectsExplorer(QWidget):
         self.info = QLabel("Drop the intensity, labels and features files, then Load.")
         self.info.setWordWrap(True)
 
-        data = _form(("Intensity", self.image_field), ("Labels", self.labels_field),
-                     ("Features", self.table_field), ("Label column", self.label_column), self.centroids_um)
+        data = _form(("Intensity", self.image_field.native), ("Labels", self.labels_field.native),
+                     ("Features", self.table_field.native), ("Label column", self.label_column), self.centroids_um)
         links = _form(self.zoom, self.isolate, self.hover, ("Thumbnail channel", self.channel),
                       ("Thumbnail width", self.field_of_view))
-        self.images_section = make_section(_title("Images of the table:"), hint, self.images, buttons)
+        self.images_section = make_section(make_title("Images of the table:"), hint, self.images, buttons)
         self.images_section.setVisible(False)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(4, 4, 4, 4)
-        layout.addWidget(make_section(_title("Data (drop the files here):"), data, self.load_holder, self.info))
+        layout.addWidget(make_section(make_title("Data (drop the files here):"), data, self.load_holder, self.info))
         layout.addWidget(self.images_section)
-        layout.addWidget(make_section(_title("Plot and viewer:"), links))
+        layout.addWidget(make_section(make_title("Plot and viewer:"), links))
         layout.addStretch(1)
         self.setAcceptDrops(True)
 
@@ -860,11 +805,11 @@ class ObjectsExplorer(QWidget):
         """Several files dropped on the panel: sorted by kind (table, labels, intensity)."""
         fields = {"table": self.table_field, "labels": self.labels_field, "image": self.image_field}
         for kind, path in sort_dropped(url.toLocalFile() for url in event.mimeData().urls()).items():
-            fields[kind].edit.setText(path)
+            fields[kind].value = path
         event.acceptProposedAction()
 
-    def _table_changed(self, text):
-        path = Path(text.strip().strip('"'))
+    def _table_changed(self, *_):
+        path = Path(field_path(self.table_field))
         try:
             columns = list(read_table(path, nrows=0).columns) if path.is_file() else None
         except Exception:
@@ -872,8 +817,8 @@ class ObjectsExplorer(QWidget):
         self._multi_table = columns is not None and has_path_columns(columns)
         tip = f"Not used: the table has {IMAGE_PATH} and {LABELS_PATH} columns" if self._multi_table else ""
         for field in (self.image_field, self.labels_field):
-            field.setEnabled(not self._multi_table)
-            field.setToolTip(tip)
+            field.enabled = not self._multi_table
+            field.tooltip = tip
         if not columns:
             return
         if self._multi_table and self.session is None:
@@ -891,10 +836,10 @@ class ObjectsExplorer(QWidget):
     # ----------------------------------------------------------------- loading
     def load(self):
         """Read the data in the background, then show it (the data loaded before stays until then)."""
-        if not self.table_field.path:
+        if not field_path(self.table_field):
             show_warning("Give the features table")
             return
-        if not self._multi_table and not self.image_field.path:
+        if not self._multi_table and not field_path(self.image_field):
             show_warning(f"Give the intensity OME-Zarr (or {IMAGE_PATH} and {LABELS_PATH} columns in the table)")
             return
         if self._loader is not None:
@@ -902,7 +847,7 @@ class ObjectsExplorer(QWidget):
         self.load_holder.setEnabled(False)
         self.info.setText("Loading ...")
         self._loader = create_worker(
-            read_dataset, self.image_field.path, self.labels_field.path, self.table_field.path,
+            read_dataset, field_path(self.image_field), field_path(self.labels_field), field_path(self.table_field),
             self.label_column.currentText(), self.centroids_um.isChecked(),
             _connect={"yielded": self.info.setText, "returned": self._show, "errored": self._load_failed,
                       "finished": self._load_done})
@@ -1034,14 +979,16 @@ class ObjectsExplorer(QWidget):
         s.image_layers = list(add_image_layers(self.viewer, data["image"], data["image_name"], data["limits"]))
         s.active = index
         labels = data["labels"]
-        multiscale = len(labels.levels) > 1 or s.multi  # several images: the layer takes any of them
-        levels = labels.levels if multiscale else labels.levels[0]
+        multiscale = len(labels.data) > 1 or s.multi  # several images: the layer takes any of them
+        levels = list(labels.data) if multiscale else labels.data[0]
+        geometry = layer_geometry(labels.metadata, dataset_axes(labels), drop_channel=False)  # scale, units
         if first:
-            s.layer = self.viewer.add_labels(levels, multiscale=multiscale, scale=labels.layer_scale(),
-                                             name=LABELS_LAYER if s.multi else data["labels_name"], opacity=0.7)
+            s.layer = self.viewer.add_labels(levels, multiscale=multiscale, opacity=0.7, **geometry,
+                                             name=LABELS_LAYER if s.multi else data["labels_name"])
         else:
             s.layer.data = levels
-            s.layer.scale = labels.layer_scale()
+            for name, value in geometry.items():
+                setattr(s.layer, name, value)
             self.viewer.layers.move(self.viewer.layers.index(s.layer), len(self.viewer.layers))
         self._set_features()
         self.viewer.layers.selection.select_only(s.layer)  # -> the plotter takes its features
@@ -1049,7 +996,7 @@ class ObjectsExplorer(QWidget):
         channel = self.channel.currentIndex()
         self.channel.blockSignals(True)
         self.channel.clear()
-        self.channel.addItems(channel_names(data["image"]))
+        self.channel.addItems(image_channel_names(data["image"]))
         self.channel.setCurrentIndex(min(max(channel, 0), self.channel.count() - 1))
         self.channel.blockSignals(False)
         if first:
@@ -1188,8 +1135,9 @@ class ObjectsExplorer(QWidget):
         first = max(0, self.viewer.dims.ndim - len(centre))
         for axis, value in enumerate(centre, start=first):
             self.viewer.dims.set_point(axis, value)
-        if s.time_column is not None and first > 0:
-            self.viewer.dims.set_point(first - 1, float(s.table[s.time_column].iloc[row]))
+        if s.time_column is not None and first > 0:  # the time axis is scaled by the time increment
+            frame = float(s.table[s.time_column].iloc[row])
+            self.viewer.dims.set_point(first - 1, frame * s.layer.scale[-len(centre) - 1])
         scene = getattr(self.viewer, "scene", self.viewer)  # napari >= 0.9: viewer.scene.camera
         scene.camera.center = tuple(centre[-3:])
         if self.zoom.isChecked():
@@ -1326,7 +1274,7 @@ def explorer_widget():
     viewer = current_viewer()
     plotter = PlotterWidget(viewer)
     explorer = ObjectsExplorer(viewer, plotter)
-    dock = compose_dock(explorer, bottom=make_section(_title("Plot and select features:"), plotter))
+    dock = compose_dock(explorer, bottom=make_section(make_title("Plot and select features:"), plotter))
     dock.splitter.setSizes([340, 660])
     dock.explorer, dock.plotter = explorer, plotter
     return dock

@@ -117,7 +117,6 @@ def visualize(
     if viewer is None:
         viewer = napari.Viewer()
 
-    axes = normalize_axes(metadata.get("axes"), ndim=data_levels[0].ndim)
     pyramid = data_levels[start_level:] if stop_level == -1 else data_levels[start_level:stop_level]
     if in_memory:
         try:
@@ -125,60 +124,62 @@ def visualize(
         except Exception as exc:
             raise RuntimeError(f"Failed to load data into memory: {exc}") from exc
 
-    data_type = str(metadata.get("data_type", "intensity")).lower()
-    scale = _axis_scale(metadata, axes, start_level, drop_channel=("c" in axes and data_type != "label"))
-
-    if data_type == "label":
-        label_kwargs = {}
-        label_units = _axis_units(metadata, axes, drop_channel=False)
-        if label_units is not None:
-            label_kwargs["units"] = label_units
-        viewer.add_labels(
-            pyramid,
-            name=metadata.get("name", "labels"),
-            scale=scale,
-            metadata=metadata,
-            multiscale=True,
-            **label_kwargs,
-        )
-        _set_axis_labels(viewer, axes, drop_channel=False)
-        return viewer
-
-    add_kwargs = {
-        "scale": scale,
-        "metadata": metadata,
-        "multiscale": True,
-    }
-    image_units = _axis_units(metadata, axes, drop_channel=("c" in axes))
-    if image_units is not None:
-        add_kwargs["units"] = image_units
-
-    if "c" in axes:
-        c_axis = axes.index("c")
-        num_channels = int(data_levels[0].shape[c_axis])
-        channel_names = metadata.get("channel_names") or [f"ch_{i}" for i in range(num_channels)]
-        channel_colors = metadata.get("channel_colors") or []
-        if channel_colors:
-            try:
-                add_kwargs["colormap"] = [_parse_color(c) for c in channel_colors]
-            except Exception:
-                add_kwargs["colormap"] = ["gray"] * num_channels
-        else:
-            add_kwargs["colormap"] = ["gray"] * num_channels
-        viewer.add_image(
-            pyramid,
-            name=channel_names,
-            channel_axis=c_axis,
-            **add_kwargs,
-        )
-        _set_axis_labels(viewer, axes, drop_channel=True)
-    else:
-        viewer.add_image(
-            pyramid,
-            name=metadata.get("name", "image"),
-            colormap="gray",
-            **add_kwargs,
-        )
-        _set_axis_labels(viewer, axes, drop_channel=False)
-
+    add_layers(viewer, pyramid, metadata, level=start_level)
     return viewer
+
+
+def channel_names(metadata: Dict[str, Any], n: int) -> list[str]:
+    """Names of the ``n`` channels of a dataset (``ch_0``, ``ch_1``, ... when not in its metadata)."""
+    names = metadata.get("channel_names") or []
+    return [str(name) for name in names] if len(names) == n else [f"ch_{i}" for i in range(n)]
+
+
+def layer_geometry(metadata: Dict[str, Any], axes, level: int = 0, *, drop_channel: bool) -> Dict[str, Any]:
+    """``scale`` (and ``units``, when known) of a napari layer showing ``level`` of a dataset."""
+    axes = normalize_axes(axes)
+    geometry = {"scale": _axis_scale(metadata, axes, level, drop_channel=drop_channel)}
+    units = _axis_units(metadata, axes, drop_channel=drop_channel)
+    if units is not None:
+        geometry["units"] = units
+    return geometry
+
+
+def add_layers(viewer, data_levels: List[Any], metadata: Dict[str, Any], *, level: int = 0,
+               name: str | None = None, **kwargs) -> list:
+    """Add a dataset to ``viewer`` and return its layers: one labels layer for label data, else one
+    image layer per channel (named ``"<name>: <channel>"`` when ``name`` is given).
+
+    ``data_levels`` are the levels shown (``level``: the first one's index in the dataset).
+    The colours are the channel colours of the metadata (gray without them); ``kwargs`` go to napari
+    and replace any of these settings (e.g. ``contrast_limits``, ``blending``, ``colormap``).
+    """
+    axes = normalize_axes(metadata.get("axes"), ndim=data_levels[0].ndim)
+    data = list(data_levels)
+    if str(metadata.get("data_type", "intensity")).lower() == "label":
+        settings = dict(layer_geometry(metadata, axes, level, drop_channel=False), metadata=metadata,
+                        multiscale=True, name=name or metadata.get("name", "labels"))
+        layers = [viewer.add_labels(data, **{**settings, **kwargs})]
+        _set_axis_labels(viewer, axes, drop_channel=False)
+        return layers
+
+    settings = dict(layer_geometry(metadata, axes, level, drop_channel="c" in axes),
+                    metadata=metadata, multiscale=True)
+    if "c" not in axes:
+        settings.update(name=name or metadata.get("name", "image"), colormap="gray")
+        layers = [viewer.add_image(data, **{**settings, **kwargs})]
+        _set_axis_labels(viewer, axes, drop_channel=False)
+        return layers
+
+    c_axis = axes.index("c")
+    n = int(data_levels[0].shape[c_axis])
+    names = channel_names(metadata, n)
+    colours = metadata.get("channel_colors") or []
+    try:
+        colormap = [_parse_color(c) for c in colours] if len(colours) == n else ["gray"] * n
+    except Exception:
+        colormap = ["gray"] * n
+    settings.update(name=[f"{name}: {ch}" for ch in names] if name else names, colormap=colormap,
+                    channel_axis=c_axis)
+    layers = viewer.add_image(data, **{**settings, **kwargs})
+    _set_axis_labels(viewer, axes, drop_channel=True)
+    return list(layers)

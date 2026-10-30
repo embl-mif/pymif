@@ -34,9 +34,9 @@ def main():
     viewer.window.add_dock_widget(dock, name="Objects Explorer", area="right")
 
     explorer = dock.explorer
-    explorer.image_field.edit.setText(args.image)
-    explorer.labels_field.edit.setText(args.labels)
-    explorer.table_field.edit.setText(args.table)
+    explorer.image_field.value = args.image or None
+    explorer.labels_field.value = args.labels or None
+    explorer.table_field.value = args.table or None
     if args.label_column:
         explorer.label_column.setCurrentText(args.label_column)
     explorer.centroids_um.setChecked(args.centroids_um)

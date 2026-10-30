@@ -8,3 +8,4 @@ from .opera_manager import OperaManager
 from .zeiss_manager import ZeissManager
 from .evident_manager import EvidentManager
 from .scape_manager import ScapeManager
+from .readers import READERS, detect_reader

@@ -33,16 +33,6 @@ def subset_dask_array(
     return arr
 
 
-def validate_uniform_spacing(indices: Sequence[int], name: str):
-    """Ensure spacing between integer indices is uniform."""
-    if len(indices) < 2:
-        return 1
-    diffs = [b - a for a, b in zip(indices[:-1], indices[1:])]
-    if len(set(diffs)) != 1:
-        raise ValueError(f"Non-uniform spacing in {name} axis: {indices}")
-    return diffs[0]
-
-
 def _subset_list(values, selection, axis_size):
     if values is None:
         return values
