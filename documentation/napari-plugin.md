@@ -1,6 +1,6 @@
 # Napari plugin
 
-ZarrSmith provides napari widgets for conversion, mosaic fusion and the exploration of segmented objects. After installing the napari extras (`pip install -e .[napari]`), they are in the `Plugins > ZarrSmith` menu.
+ZarrSmith provides napari widgets for conversion, mosaic fusion and the exploration of segmented objects. After installing the napari extras (`pip install "zarrsmith[napari]"`), they are in the `Plugins > ZarrSmith` menu.
 
 ## Converter
 

@@ -41,12 +41,22 @@ The rendered documentation is at **[embl-mif.github.io/zarrsmith](https://embl-m
 ```console
 conda create -n zarrsmith python=3.12
 conda activate zarrsmith
-git clone https://github.com/embl-mif/zarrsmith.git
-cd zarrsmith
-pip install .            # or: pip install -e .[napari] for development with the napari widgets
+pip install zarrsmith
 ```
 
-Versioning, releases and development installs: [Installation and versioning](https://embl-mif.github.io/zarrsmith/installation.html).
+Optional extras:
+
+```console
+pip install "zarrsmith[napari]"      # napari widgets
+pip install "zarrsmith[notebooks]"   # Jupyter, to run the example notebooks
+pip install "zarrsmith[dev]"         # tests and packaging
+pip install "zarrsmith[docs]"        # documentation build
+pip install "zarrsmith[all]"         # all of the above
+```
+
+Extras can be combined, e.g. `pip install "zarrsmith[napari,notebooks]"`.
+
+Installing from source, development installs, versioning and releases: [Installation and versioning](https://embl-mif.github.io/zarrsmith/installation.html).
 
 ## Quick start
 
