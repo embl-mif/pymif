@@ -21,7 +21,7 @@ rewrite HTML paths) and includes this README from here. -->
 The rendered documentation is at **[embl-mif.github.io/zarrsmith](https://embl-mif.github.io/zarrsmith/)**.
 
 > [!NOTE]
-> ZarrSmith was called **PyMIF** up to version 0.5.4. From 0.6.0, import `zarrsmith` and run the `zarrsmith` command instead of `pymif`. The Docker images of PyMIF stay available at `ghcr.io/embl-mif/pymif:<version>`; newer images are at `ghcr.io/embl-mif/zarrsmith`.
+> ZarrSmith was called **PyMIF** up to version 0.5.5. From 0.6.0, import `zarrsmith` and run the `zarrsmith` command instead of `pymif`. The Docker images of PyMIF stay available at `ghcr.io/embl-mif/pymif:<version>`; newer images are at `ghcr.io/embl-mif/zarrsmith`.
 
 ---
 
