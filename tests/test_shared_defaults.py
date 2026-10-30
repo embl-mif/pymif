@@ -37,13 +37,18 @@ def test_default_num_levels():
     assert default_num_levels(_metadata("zyx", (4096, 100, 100)), (1, 2, 2)) == 1
 
 
-def test_readers_shared_by_the_cli_and_napari(tmp_path):
-    from pymif.cli.pymif import _resolve_zarr_manager
+def test_napari_reader_uses_the_shared_registry():
+    pytest.importorskip("magicgui")
     from pymif.napari._convert_widget import dataset_reader
 
     assert dataset_reader("zeiss") is mm.READERS["zeiss"] is mm.ZeissManager
     with pytest.raises(ValueError, match="Unsupported"):
         dataset_reader("nope")
+
+
+def test_cli_reader_detection(tmp_path):
+    from pymif.cli.pymif import _resolve_zarr_manager
+
     store = tmp_path / "a.zarr"
     store.mkdir()
     (store / "zarr.json").write_text("{}")
