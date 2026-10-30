@@ -7,7 +7,7 @@
 documentation/index.md repeats this header in Markdown (Sphinx needs a Markdown title and does not
 rewrite HTML paths) and includes this README from here. -->
 
-![Python](https://img.shields.io/badge/python-3.12-green)
+![Python](https://img.shields.io/badge/python-3.12%20%7C%203.13-green)
 [![License](https://img.shields.io/github/license/embl-mif/zarrsmith.svg)](https://github.com/embl-mif/zarrsmith/blob/main/LICENSE)
 [![Tests](https://github.com/embl-mif/zarrsmith/actions/workflows/tests.yml/badge.svg)](https://github.com/embl-mif/zarrsmith/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/gh/embl-mif/zarrsmith/graph/badge.svg)](https://codecov.io/gh/embl-mif/zarrsmith)
