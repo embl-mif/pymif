@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import threading
 import traceback
+import warnings
 from collections import OrderedDict
 from pathlib import Path
 
@@ -58,9 +59,10 @@ from ._layout import compose_dock, enable_drag_and_drop, make_button_holder, mak
 try:
     import napari_clusters_plotter._utilities as ncp_utilities
     from biaplotter.artists import Scatter
+    from biaplotter.artists_base import Artist
     from napari_clusters_plotter import PlotterWidget
 except ImportError as error:  # the widget then says how to install it
-    ncp_utilities = Scatter = PlotterWidget = None
+    ncp_utilities = Scatter = Artist = PlotterWidget = None
     _PLOTTER_IMPORT_ERROR = error
 else:
     _PLOTTER_IMPORT_ERROR = None
@@ -109,7 +111,7 @@ OTHER_RGB = (0, 200, 255)
 # ---------------------------------------------------------------------------
 
 def _patch_plotter():
-    """Two changes to napari-clusters-plotter, for the layers and the plot of this widget only.
+    """Changes to napari-clusters-plotter, for the layers and the plot of this widget only.
 
     * It colours a labels layer by ``np.unique`` of the whole label image on every redraw (minutes
       for a big image) and gives the colour of row i of the features to the i-th label. The label of
@@ -117,18 +119,35 @@ def _patch_plotter():
       that aren't in the label image).
     * biaplotter makes the points smaller the more there are (8000 / n): with tens of thousands of
       objects they can't be seen any more. A scatter plot with ``pymif_min_size`` keeps that size.
+    * No warning that the labels missing from the colours are transparent (wanted: they aren't in
+      the table), nor that a categorical colour (an image, a cluster) uses a categorical colormap.
     """
     if getattr(ncp_utilities, "_pymif_patched", False):
         return
     unique_values = ncp_utilities._get_unique_values
     default_size = Scatter.default_size.fget
+    set_layer_color = PlotterWidget._set_layer_color
+    overlay_colormap = Artist.overlay_colormap
 
     def labels_of_features(layer):
         ids = layer.metadata.get(LABEL_IDS_KEY)
         return ids if ids is not None else unique_values(layer)
 
+    def set_layer_color_quietly(self, layer, colors):
+        with warnings.catch_warnings():
+            if LABEL_IDS_KEY in layer.metadata:
+                warnings.filterwarnings("ignore", "color_dict did not provide a default color")
+            set_layer_color(self, layer, colors)
+
+    def set_overlay_colormap_quietly(self, value):
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", "Categorical colormap detected")
+            overlay_colormap.fset(self, value)
+
     ncp_utilities._get_unique_values = labels_of_features
     Scatter.default_size = property(lambda self: max(getattr(self, "pymif_min_size", 0), default_size(self)))
+    PlotterWidget._set_layer_color = set_layer_color_quietly
+    Artist.overlay_colormap = overlay_colormap.setter(set_overlay_colormap_quietly)
     ncp_utilities._pymif_patched = True
 
 
