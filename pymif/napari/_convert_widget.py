@@ -1,12 +1,19 @@
-from napari import current_viewer
-from datetime import datetime
-from napari.qt.threading import thread_worker
+import sys
+from pathlib import Path
+
 import numpy as np
-import pandas as pd
 from magicgui import magicgui
-import pymif.microscope_manager as mm
+from magicgui.widgets import FileEdit
+from napari import current_viewer
+from napari.layers.utils import layer_utils
+from napari.qt.threading import thread_worker
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QToolButton
+
+from pymif.microscope_manager.readers import READERS
+from pymif.utils.chunks import default_chunk_size, default_num_levels
 from ._batch_csv import append_batch_csv
-from ._layout import compose_dock, enable_drag_and_drop, make_button_holder
+from ._layout import compose_dock, enable_drag_and_drop, make_button_holder, make_log_pane, make_title
 from ._layout import make_section as _make_section
 from ._dataset_helpers import axis_index as _axis_index
 from ._dataset_helpers import axis_size as _axis_size
@@ -14,22 +21,6 @@ from ._dataset_helpers import dataset_axes as _dataset_axes
 from ._dataset_helpers import scale_for_axes as _scale_for_axes
 from ._dataset_helpers import points_projection_kwargs
 from ._dataset_helpers import units_kwargs as _units_kwargs
-from magicgui.widgets import FileEdit
-import sys
-from qtpy.QtWidgets import QTextEdit, QLineEdit
-from qtpy.QtCore import QObject, Qt, Signal, QUrl
-from qtpy.QtGui import QTextCursor
-from qtpy.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QToolButton, QFrame, QSizePolicy
-from pathlib import Path
-from matplotlib import rc
-rc('font', size=12)
-rc('font', family='Arial')
-# rc('font', serif='Times')
-rc('pdf', fonttype=42)
-# rc('text', usetex=True)
-
-import numpy as np
-from napari.layers.utils import layer_utils
 
 def conservative_compute_multiscale_level(
     requested_shape,
@@ -65,9 +56,7 @@ def conservative_compute_multiscale_level(
 
     # Find the highest level (lowest resolution) allowed
     locations = np.argwhere(np.any(scaled_shape > (np.asarray(shape_threshold) * threshold_factor), axis=1))
-    level = locations[-1][0] if len(locations) > 0 else 0
-    print('Level in viewer:', level)
-    return level
+    return locations[-1][0] if len(locations) > 0 else 0
 
 
 layer_utils.compute_multiscale_level = conservative_compute_multiscale_level
@@ -81,24 +70,9 @@ from ._log import EmittingStream, make_log_appender  # noqa: F401  (re-exported)
 
 def dataset_reader(microscope):
     """Return the PyMIF manager class matching the selected microscope key."""
-    if microscope == "zeiss":
-        reader = mm.ZeissManager
-    elif microscope == "evident":
-        reader = mm.EvidentManager
-    elif microscope == "viventis":
-        reader = mm.ViventisManager
-    elif microscope == "opera":
-        reader = mm.OperaManager
-    elif microscope == "luxendo":
-        reader = mm.LuxendoManager
-    elif microscope == "zarr":
-        reader = mm.ZarrManager
-    elif microscope == "scape":
-        reader = mm.ScapeManager
-    else:
+    if microscope not in READERS:
         raise ValueError(f"Unsupported microscope: {microscope}")
-    
-    return reader
+    return READERS[microscope]
 
 
 def _chunk_shape_for_dataset(dataset, chunk_z=16, chunk_y=512, chunk_x=512):
@@ -122,54 +96,6 @@ def _set_range_widget(widget, size, enabled=True):
     widget.max = max_idx
     widget.value = (0, max_idx)
     widget.enabled = bool(enabled and size > 1)
-
-def get_chunk_size(dataset_size, max_size_mb=100, axes="tczyx"):
-    """Estimate a chunk shape for any dataset axis subset.
-
-    The returned tuple follows ``axes``.  Legacy callers that pass a five-value
-    TCZYX size still receive a five-value chunk tuple.
-    """
-    axes = str(axes).lower()
-    size_map = dict(zip(axes, dataset_size))
-    z = max(1, int(size_map.get("z", 1)))
-    y = max(1, int(size_map.get("y", 1)))
-    x = max(1, int(size_map.get("x", 1)))
-
-    n_chunks = {"z": 4, "y": 1, "x": 1}
-    chunk_map = {"t": 1, "c": 1}
-
-    while True:
-        chunk_map.update(
-            {
-                "z": int(z / n_chunks["z"] + 1),
-                "y": int(y / n_chunks["y"] + 1),
-                "x": int(x / n_chunks["x"] + 1),
-            }
-        )
-        size_mb = 2 * chunk_map["z"] * chunk_map["y"] * chunk_map["x"] / 1024 / 1024
-        if size_mb <= max_size_mb:
-            break
-        n_chunks = {k: v * 2 for k, v in n_chunks.items()}
-
-    return tuple(int(max(1, min(size_map.get(ax, 1), chunk_map[ax]))) for ax in axes)
-
-
-def get_n_levels(dataset_size, axes="tczyx"):
-    """Estimate a default number of pyramid levels from present spatial axes."""
-    axes = str(axes).lower()
-    size_map = dict(zip(axes, dataset_size))
-    shape = [max(1, int(size_map[ax])) for ax in axes if ax in "zyx"]
-    if not shape:
-        return 1
-
-    n = 1
-    while any(s > 2048 for s in shape):
-        n += 1
-        shape = [max(1, s // 2) for s in shape]
-
-    return max(3, n)
-
-
 
 BATCH_CSV_COLUMNS = [
     "input",
@@ -1011,9 +937,10 @@ def convert_widget():
         _set_convert_enabled(True)
 
         axes = _dataset_axes(dataset)
-        chunk_size = get_chunk_size(dataset.metadata["size"][0], max_size_mb=100, axes=axes)
-        chunk_map = dict(zip(axes, chunk_size))
-        num_levels = get_n_levels(dataset.metadata["size"][0], axes=axes)
+        chunk_map = dict(zip(axes, default_chunk_size(dataset.metadata, max_size_mb=100)[0]))
+        downscale = (make_convert_widget.downscale_z.value, make_convert_widget.downscale_y.value,
+                     make_convert_widget.downscale_x.value)
+        num_levels = default_num_levels(dataset.metadata, downscale)
 
         make_convert_widget.chunk_x.max = _axis_size(dataset, "x") + 1
         make_convert_widget.chunk_x.value = chunk_map.get("x", 1)
@@ -1090,15 +1017,6 @@ def convert_widget():
     container = QWidget()
     layout = QVBoxLayout(container)
     
-    title1_label = QLabel("Dataset loading:")
-    title1_label.setStyleSheet("""
-        QLabel {
-            font-weight: bold;
-            font-size: 13px;
-            padding: 2px 0px;
-        }
-    """)
-
     # Collapsible section header, same pattern as "Additional parameters".
     title2_btn = QToolButton()
     title2_btn.setCheckable(True)
@@ -1124,7 +1042,7 @@ def convert_widget():
 
     title2_btn.toggled.connect(_toggle_conversion)
 
-    section_loading = _make_section(title1_label, make_visualize_widget.native)
+    section_loading = _make_section(make_title("Dataset loading:"), make_visualize_widget.native)
     section_conversion = _make_section(title2_btn)
     layout.setSpacing(6)
     layout.setContentsMargins(4, 4, 4, 4)
@@ -1176,32 +1094,9 @@ def convert_widget():
     section_conversion.layout().addWidget(make_convert_widget.native)
     _toggle_conversion(title2_btn.isChecked())
 
-    title_csv_label = QLabel("Batch CSV export:")
-    title_csv_label.setStyleSheet("""
-        QLabel {
-            font-weight: bold;
-            font-size: 13px;
-            padding: 2px 0px;
-        }
-    """)
-    layout.addWidget(_make_section(title_csv_label, make_batch_csv_widget.native))
-    # layout.addWidget(reset_roi_widget.native)
+    layout.addWidget(_make_section(make_title("Batch CSV export:"), make_batch_csv_widget.native))
 
-    # make_visualize_widget.input_path.tooltip = (
-    #     "Select a folder containing OME-Zarr data (.zarr)"
-    # )
-
-    log_widget = QTextEdit()
-    log_widget.setReadOnly(True)
-    log_widget.setMinimumHeight(110)  # the dock splitter lets the user drag it taller
-    log_widget.setStyleSheet("""
-        QTextEdit {
-            background-color: #111;
-            color: #ddd;
-            font-family: Consolas, Menlo, monospace;
-            font-size: 12px;
-        }
-    """)
+    log_section, log_widget = make_log_pane()
 
     stdout_stream = EmittingStream()
     stderr_stream = EmittingStream()
@@ -1223,29 +1118,6 @@ def convert_widget():
 
     stdout_stream.text_written.connect(append_with_time)
     stderr_stream.text_written.connect(append_with_time)
-
-    title3_label = QLabel("PyMIF Log:")
-    title3_label.setStyleSheet("""
-        QLabel {
-            font-weight: bold;
-            font-size: 13px;
-            padding: 2px 0px;
-        }
-    """)
-
-    clear_btn = QPushButton("Clear")
-    clear_btn.setToolTip("Clear the log")
-    clear_btn.setMaximumWidth(60)
-    clear_btn.clicked.connect(log_widget.clear)
-
-    log_header = QWidget()
-    log_header_layout = QHBoxLayout(log_header)
-    log_header_layout.setContentsMargins(0, 0, 0, 0)
-    log_header_layout.addWidget(title3_label)
-    log_header_layout.addStretch(1)
-    log_header_layout.addWidget(clear_btn)
-    log_section = _make_section(log_header, log_widget)
-    log_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
     # The Convert button stays inside the "Dataset conversion" box, below the
     # (collapsible) parameters, so it is visible even when they are collapsed.

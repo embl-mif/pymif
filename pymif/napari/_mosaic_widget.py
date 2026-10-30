@@ -8,11 +8,11 @@ import numpy as np
 from magicgui import magicgui
 from napari import current_viewer
 from napari.qt.threading import thread_worker
-from qtpy.QtWidgets import QHBoxLayout, QLabel, QPushButton, QSizePolicy, QTextEdit, QVBoxLayout, QWidget
+from qtpy.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from pymif import mosaic_manager as mos
 from ._batch_csv import append_batch_csv
-from ._layout import compose_dock, enable_drag_and_drop, make_button_holder, make_section
+from ._layout import compose_dock, enable_drag_and_drop, make_button_holder, make_log_pane, make_section, make_title
 from ._log import EmittingStream, make_log_appender
 
 #: Mosaic readers offered in the widget (Zeiss is a placeholder for now).
@@ -45,9 +45,6 @@ MOSAIC_BATCH_COLUMNS = [
     "channel_colors", "channel_names", "num_levels", "shards", "shard_target_mb", "shard_exclude_axes",
     "drop_singleton", "num_workers",
 ]
-
-_TITLE_STYLE = "QLabel { font-weight: bold; font-size: 13px; padding: 2px 0px; }"
-
 
 # ---------------------------------------------------------------------------
 # helpers (no Qt, unit tested)
@@ -410,13 +407,7 @@ def mosaic_widget():
     state = {"mosaic": None, "auto_output": None, "streams": None}
 
     # ----- console redirection, only while one of our tasks runs -----
-    log_widget = QTextEdit()
-    log_widget.setReadOnly(True)
-    log_widget.setMinimumHeight(110)
-    log_widget.setStyleSheet(
-        "QTextEdit { background-color: #111; color: #ddd;"
-        " font-family: Consolas, Menlo, monospace; font-size: 12px; }"
-    )
+    log_section, log_widget = make_log_pane()
     stream = EmittingStream()
     stream.text_written.connect(make_log_appender(log_widget))
 
@@ -806,35 +797,20 @@ def mosaic_widget():
     fuse_widget.native.layout().removeWidget(fuse_button)
     ui["fuse_holder"] = make_button_holder(fuse_button)
 
-    def title(text):
-        label = QLabel(text)
-        label.setStyleSheet(_TITLE_STYLE)
-        return label
-
     container = QWidget()
     layout = QVBoxLayout(container)
     layout.setSpacing(6)
     layout.setContentsMargins(4, 4, 4, 4)
-    layout.addWidget(make_section(title("Mosaic loading:"), load_widget.native))
-    layout.addWidget(make_section(title("Show tiles:"), show_widget.native))
-    layout.addWidget(make_section(title("Fuse to OME-Zarr:"), fuse_widget.native, plan_label, ui["fuse_holder"]))
+    layout.addWidget(make_section(make_title("Mosaic loading:"), load_widget.native))
+    layout.addWidget(make_section(make_title("Show tiles:"), show_widget.native))
+    layout.addWidget(make_section(make_title("Fuse to OME-Zarr:"), fuse_widget.native, plan_label,
+                                  ui["fuse_holder"]))
     batch_widget.native.layout().setContentsMargins(0, 0, 0, 0)
-    layout.addWidget(make_section(title("Batch CSV export:"), batch_widget.native))
+    layout.addWidget(make_section(make_title("Batch CSV export:"), batch_widget.native))
     layout.addStretch(1)
 
-    clear_btn = QPushButton("Clear")
-    clear_btn.setMaximumWidth(60)
-    clear_btn.clicked.connect(log_widget.clear)
-    header = QWidget()
-    header_layout = QHBoxLayout(header)
-    header_layout.setContentsMargins(0, 0, 0, 0)
-    header_layout.addWidget(title("PyMIF Log:"))
-    header_layout.addStretch(1)
-    header_layout.addWidget(clear_btn)
-    log_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
     _busy(False)
-    dock = compose_dock(container, bottom=make_section(header, log_widget))
+    dock = compose_dock(container, bottom=log_section)
     # exposed for tests
     dock.load_widget, dock.show_widget, dock.fuse_widget = load_widget, show_widget, fuse_widget
     dock.batch_widget = batch_widget

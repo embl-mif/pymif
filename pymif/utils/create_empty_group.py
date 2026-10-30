@@ -2,23 +2,11 @@ from __future__ import annotations
 
 from typing import Any
 
-import dask.array as da
 import zarr
 
 from .axes import normalize_axes, normalize_data_type
-from .ngff import (
-    ZarrWriteConfig,
-    _build_multiscales,
-    _build_omero_metadata,
-    _create_level_arrays,
-    _resolve_creation_shards,
-    _infer_ngff_version,
-    _register_label_on_labels_group,
-    _resolve_format,
-    _set_group_ngff_metadata,
-    _set_dimension_names,
-    _validate_metadata,
-)
+from .create_empty_dataset import write_empty_pyramid
+from .ngff import ZarrWriteConfig, _infer_ngff_version, _register_label_on_labels_group, _resolve_format
 
 def _without_axis(values, axis_index: int):
     return tuple(v for i, v in enumerate(values) if i != axis_index)
@@ -114,54 +102,15 @@ def create_empty_group(
         del parent[group_name]
     grp = parent.create_group(group_name)
 
-    sizes = [tuple(s) for s in metadata["size"]]
-    chunks = [tuple(c) for c in metadata["chunksize"]]
-    dtype = metadata.get("dtype", "uint16")
-    axes = normalize_axes(metadata.get("axes"), ndim=len(sizes[0]))
-
-    effective_metadata = dict(metadata)
-    effective_metadata["axes"] = "".join(axes)
-    effective_metadata["data_type"] = requested_data_type
-
-    dummy_levels = [da.empty(shape=s, dtype=dtype, chunks=c) for s, c in zip(sizes, chunks)]
-    _validate_metadata(dummy_levels, effective_metadata, axes)
-
-    shard_shapes = _resolve_creation_shards(
-        effective_metadata, sizes, chunks, axes,
-        zarr_format=zarr_format,
-        shards=shards,
-        shard_target_mb=shard_target_mb,
-        shard_exclude_axes=shard_exclude_axes,
+    write_empty_pyramid(
+        grp, metadata,
+        data_type=requested_data_type,
+        name=group_name,
+        label_source={"source": {"image": "../../"}},
+        ngff_version=ngff_version, zarr_format=zarr_format,
+        compressor=compressor, compressor_level=compressor_level,
+        shards=shards, shard_target_mb=shard_target_mb, shard_exclude_axes=shard_exclude_axes,
     )
-    _create_level_arrays(
-        grp, sizes, chunks, dtype, shard_shapes,
-        zarr_format=zarr_format, compressor=compressor, compressor_level=compressor_level,
-    )
-
-    data_type = normalize_data_type(effective_metadata.get("data_type"))
-    multiscales = _build_multiscales(effective_metadata, axes, group_name)
-
-    _set_dimension_names(grp, multiscales["datasets"], axes, zarr_format=zarr_format)
-
-    if data_type == "label":
-        _set_group_ngff_metadata(
-            grp,
-            ngff_version=ngff_version,
-            multiscales=multiscales,
-            omero=None,
-            data_type=data_type,
-            extra={"image-label": {"source": {"image": "../../"}}},
-        )
+    if requested_data_type == "label":
         _register_label_on_labels_group(root, group_name, ngff_version)
-    else:
-        omero = _build_omero_metadata(dummy_levels[0], axes, effective_metadata)
-        _set_group_ngff_metadata(
-            grp,
-            ngff_version=ngff_version,
-            multiscales=multiscales,
-            omero=omero,
-            data_type=data_type,
-            extra=None,
-        )
-
     return grp

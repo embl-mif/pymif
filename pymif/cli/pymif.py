@@ -8,6 +8,8 @@ import numpy as np
 import pandas as pd
 
 import pymif.microscope_manager as mm
+from pymif.utils.axes import metadata_axes, metadata_axis_size
+from pymif.utils.chunks import default_chunk_size, default_num_levels
 from pymif.cli.__arguments import (
     _parse_arguments,
     parse_bool,
@@ -19,15 +21,6 @@ from pymif.cli.__arguments import (
 )
 
 
-def _axes(metadata):
-    return str(metadata.get("axes", "tczyx")).lower()
-
-
-def _axis_size(metadata, axis, default=1):
-    axes = _axes(metadata)
-    return int(metadata["size"][0][axes.index(axis)]) if axis in axes else default
-
-
 def _dataset_size_mb(metadata):
     dtype = np.dtype(metadata.get("dtype", "uint16"))
     nbytes = dtype.itemsize
@@ -36,29 +29,9 @@ def _dataset_size_mb(metadata):
     return nbytes / 1024 / 1024
 
 
-def _select_chunk_size(metadata, max_size):
-    axes = _axes(metadata)
-    size_map = dict(zip(axes, metadata["size"][0]))
-    n_chunks = {"z": 2, "y": 1, "x": 1}
-    chunk_map = {"t": 1, "c": 1}
-    while True:
-        chunk_map.update({
-            "z": int(size_map.get("z", 1) / n_chunks["z"] + 1),
-            "y": int(size_map.get("y", 1) / n_chunks["y"] + 1),
-            "x": int(size_map.get("x", 1) / n_chunks["x"] + 1),
-        })
-        dtype_size = np.dtype(metadata.get("dtype", "uint16")).itemsize
-        size_mb = dtype_size * chunk_map["z"] * chunk_map["y"] * chunk_map["x"] / 1024 / 1024
-        if size_mb <= max_size:
-            break
-        n_chunks = {key: value * 2 for key, value in n_chunks.items()}
-    chunks = tuple(int(max(1, min(size_map.get(ax, 1), chunk_map[ax]))) for ax in axes)
-    return chunks, size_mb, n_chunks
-
-
 def _check_chunk_size(chunk_size, metadata):
     """Return ``chunk_size`` as a tuple, or raise if it does not have one value per dataset axis."""
-    axes = _axes(metadata)
+    axes = metadata_axes(metadata)
     chunk_size = tuple(int(c) for c in chunk_size)
     if len(chunk_size) != len(axes):
         raise ValueError(
@@ -67,21 +40,6 @@ def _check_chunk_size(chunk_size, metadata):
             f"Provide one chunk size per axis, in {axes.upper()} order."
         )
     return chunk_size
-
-
-def _estimate_levels(metadata, downscale_factor):
-    axes = _axes(metadata)
-    size_map = dict(zip(axes, metadata["size"][0]))
-    shape = [int(size_map[ax]) for ax in axes if ax in "zyx"]
-    if not shape:
-        return 1
-    n = 1
-    print(f"Layer {n}, shape {shape}")
-    while any(s > 2048 for s in shape):
-        n += 1
-        shape = [max(1, s // downscale_factor[i]) for i, s in enumerate(shape)]
-        print(f"Layer {n}, shape {shape}")
-    return n
 
 
 def _normalize_downscale_factor(value):
@@ -139,64 +97,21 @@ def _normalize_subset(value):
         "subset must be either a dict of axis selections or a compact subset string"
     )
 
-def _manager_name_map() -> Dict[str, Any]:
-    return {
-        'luxendo': mm.LuxendoManager,
-        'opera': mm.OperaManager,
-        'viventis': mm.ViventisManager,
-        'zeiss': mm.ZeissManager,
-        'evident': mm.EvidentManager,
-        'zarrv04': mm.ZarrV04Manager,
-        'zarr': mm.ZarrManager,
-        'scape': mm.ScapeManager,
-    }
-
 def _resolve_zarr_manager(input_path: str, microscope: Optional[str] = None):
     """Resolve a manager class from an explicit microscope name or by inspecting the path."""
-
+    names = ", ".join(f'"{key}"' for key in mm.READERS)
     if _present(microscope):
         key = str(microscope).strip().lower()
-        manager = _manager_name_map().get(key)
-        if manager is None:
-            raise TypeError(
-                f'Microscope {microscope} not recognized. Should be one of '
-                f'"luxendo", "opera", "viventis", "zeiss", "evident", "zarrv04", "zarr", "scape".'
-            )
-        return manager, key
-
-    path = Path(input_path)
-
-    # Zarr stores: prefer explicit v3/v0.5 when zarr.json exists, otherwise legacy v0.4.
-    if path.is_dir():
-        if (path / 'zarr.json').exists():
-            return mm.ZarrManager, 'zarr'
-        if (path / '.zgroup').exists() or (path / '.zattrs').exists():
-            return mm.ZarrManager, 'zarrv04'
-
-        if any(path.glob('*.lux.h5')) and any(path.glob('*.xml')):
-            return mm.LuxendoManager, 'luxendo'
-
-        if any(path.glob('*.ome')) and any(path.glob('*.tif')):
-            return mm.ViventisManager, 'viventis'
-
-    # File-based formats.
-    suffixes = ''.join(path.suffixes).lower()
-    if suffixes.endswith('.czi'):
-        return mm.ZeissManager, 'zeiss'
-
-    if suffixes.endswith('.vsi'):
-        return mm.EvidentManager, 'evident'
-
-    if suffixes.endswith('.ome.tif') or suffixes.endswith('.ome.tiff') or path.suffix.lower() in {'.tif', '.tiff'}:
-        metadata_dir = path.parent / 'Metadata'
-        if metadata_dir.exists() and any(metadata_dir.glob('*.xlif')):
-            return mm.ScapeManager, 'scape'
-        return mm.OperaManager, 'opera'
-
-    raise TypeError(
-        'Could not auto-detect the microscope from the input path. '
-        'Pass --microscope explicitly with one of "luxendo", "opera", "viventis", "zeiss", "evident", "zarrv04", "zarr", "scape".'
-    )
+        if key not in mm.READERS:
+            raise TypeError(f'Microscope {microscope} not recognized. Should be one of {names}.')
+        return mm.READERS[key], key
+    found = mm.detect_reader(input_path)
+    if found is None:
+        raise TypeError(
+            'Could not auto-detect the microscope from the input path. '
+            f'Pass --microscope explicitly with one of {names}.'
+        )
+    return found
 
 def zarr_convert(
     input_path, 
@@ -319,15 +234,15 @@ def zarr_convert(
         print("DATASET SIZE (MB):", _dataset_size_mb(dataset.metadata))
         
     # --- Select chunk size ---
-    print(f"\n--->Select chunks.")
+    print("\n--->Select chunks.")
     if chunk_size is not None:
         chunk_size = _check_chunk_size(chunk_size, dataset.metadata)
-        print(f"\tUsing user-provided chunk size: {chunk_size} ({_axes(dataset.metadata)})")
+        print(f"\tUsing user-provided chunk size: {chunk_size} ({metadata_axes(dataset.metadata)})")
         size_mb = _dataset_size_mb(dataset.metadata) * np.prod(chunk_size) / np.prod(dataset.metadata["size"][0])
-        n_chunks = {ax: int(np.ceil(size / chunk)) for ax, size, chunk in zip(_axes(dataset.metadata), dataset.metadata["size"][0], chunk_size)}
+        n_chunks = {ax: int(np.ceil(size / chunk)) for ax, size, chunk in zip(metadata_axes(dataset.metadata), dataset.metadata["size"][0], chunk_size)}
     else:
         print(f"\tUsing max_size={max_size} MB to select chunk size.")
-        chunk_size, size_mb, n_chunks = _select_chunk_size(dataset.metadata, max_size)
+        chunk_size, size_mb, n_chunks = default_chunk_size(dataset.metadata, max_size)
 
     print(f"Chunk size: {chunk_size}, {size_mb} MB.")
     print(f"N chunks: {n_chunks}.")
@@ -341,9 +256,10 @@ def zarr_convert(
         dataset.chunks = chunk_size
 
     # --- Build pyramid ---
-    print(f"\n--->Selected pyramidal layers, lower layer should have dims<2048")
+    print("\n--->Selected pyramidal layers, lower layer should have dims<2048")
     if num_levels is None:
-        num_levels = _estimate_levels(dataset.metadata, downscale_factor)
+        num_levels = default_num_levels(dataset.metadata, downscale_factor)
+    print(f"Number of levels: {num_levels}.")
 
     dataset.build_pyramid(
         num_levels=num_levels, 
@@ -368,9 +284,9 @@ def zarr_convert(
     print("\n--->Updating metadata to selected channel_names and channel_colors")
     metadata = {}
     if channel_names:
-        if "c" not in _axes(dataset.metadata):
+        if "c" not in metadata_axes(dataset.metadata):
             raise TypeError("channel_names were provided, but the dataset has no channel axis.")
-        n_ch = _axis_size(dataset.metadata, "c")
+        n_ch = metadata_axis_size(dataset.metadata, "c")
         if len(channel_names)!=n_ch:
             raise TypeError(f"Length of channel_names={channel_names} does not match dataset channels of length={n_ch}.")
         metadata["channel_names"] = channel_names
@@ -702,12 +618,12 @@ def mosaic_convert(
         chunks = tuple(int(c) for c in chunk_size)
         print(f"\tUsing user-provided chunk size: {chunks}")
     else:
-        chunks, size_mb, _ = _select_chunk_size(plan_md, max_size if max_size is not None else 100)
+        chunks, size_mb, _ = default_chunk_size(plan_md, max_size if max_size is not None else 100)
         print(f"\tUsing max_size={max_size} MB: chunk size {chunks}, {size_mb:.1f} MB.")
 
     factor = _normalize_downscale_factor(downscale_factor)
     if num_levels is None:
-        num_levels = _estimate_levels(plan_md, factor[1:] if projection else factor)
+        num_levels = default_num_levels(plan_md, factor[1:] if projection else factor)
 
     shards = _normalize_shards(shards)
     shard_exclude_axes = _normalize_shard_exclude_axes(shard_exclude_axes)

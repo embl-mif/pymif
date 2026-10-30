@@ -16,10 +16,6 @@ It is developed for users of the [Mesoscopic Imaging Facility (MIF)](https://www
 > [!NOTE]
 > PyMIF writes **NGFF v0.5 / Zarr v3** by default. **NGFF v0.4 / Zarr v2** datasets remain supported through `ZarrManager` and `ZarrV04Manager`.
 
-![Demo](documentation/demo.gif)
-
-*Demonstration of PyMIF usage. Data: near newborn mouse embryo (~1.5 cm long). Fluorescence signal: methylene blue + autofluorescence. Sample processed and imaged by Montserrat Coll at the Mesoscopic Imaging Facility. Video speed: 2.5× real speed.*
-
 ---
 
 ## What PyMIF does
@@ -30,7 +26,7 @@ It is developed for users of the [Mesoscopic Imaging Facility (MIF)](https://www
 - **Mosaics**: raw tiles shown at their stage position and fused into one OME-Zarr image (3D or projection). → [Mosaics](documentation/mosaic.md)
 - **Chromatic shift correction**: the Z offset between channels measured on the sample itself, and a corrected copy with the same layout as the input. → [Chromatic shift correction](documentation/chromatic-shift.md)
 - **Command line**: one-off and CSV-batch conversion, mosaic fusion and chromatic shift correction. → [Command line](documentation/cli.md)
-- **Napari widgets**: conversion with ROI selection, mosaic fusion. → [Napari plugin](documentation/napari-plugin.md)
+- **Napari widgets**: conversion with ROI selection, mosaic fusion, exploration of segmented objects (features plot linked with the viewer). → [Napari plugin](documentation/napari-plugin.md)
 - **Output tuning**: sharding, singleton axes, parallel writing, progress bars. → [Advanced writing options](documentation/advanced.md)
 
 ## Installation
@@ -87,7 +83,7 @@ pymif chromatic-shift -i INPUT_ZARR -z OUTPUT_ZARR -r shift.json   # align chann
 | Page | Contents |
 |---|---|
 | [Command line](documentation/cli.md) | `pymif convert`, `pymif fuse`, `pymif chromatic-shift` (one dataset or a CSV batch) |
-| [Napari plugin](documentation/napari-plugin.md) | converter and mosaic fusion widgets |
+| [Napari plugin](documentation/napari-plugin.md) | converter, mosaic fusion and objects explorer widgets |
 
 **Reference**
 

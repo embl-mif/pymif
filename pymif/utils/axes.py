@@ -67,9 +67,15 @@ def normalize_axes(axes: str | Sequence[str] | None, ndim: int | None = None) ->
     return labels
 
 
-def axes_to_string(axes: str | Sequence[str] | None, ndim: int | None = None) -> str:
-    """Normalize axes and return the compact string representation."""
-    return "".join(normalize_axes(axes, ndim=ndim))
+def metadata_axes(metadata: dict[str, Any]) -> str:
+    """Axes of a dataset from its metadata (lowercase), ``tczyx`` when not given."""
+    return str(metadata.get("axes", "tczyx")).lower()
+
+
+def metadata_axis_size(metadata: dict[str, Any], axis: str, default: int = 1) -> int:
+    """Size of ``axis`` at the base resolution level (``default`` if the dataset has no such axis)."""
+    axes = metadata_axes(metadata)
+    return int(metadata["size"][0][axes.index(axis)]) if axis in axes else default
 
 
 def spatial_axes_in_order(axes: str | Sequence[str]) -> tuple[str, ...]:

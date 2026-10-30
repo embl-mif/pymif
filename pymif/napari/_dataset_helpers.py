@@ -1,12 +1,13 @@
 """Dataset helpers shared by the napari widgets (no Qt dependency, so unit-testable)."""
 from __future__ import annotations
 
+from pymif.utils.axes import metadata_axes, metadata_axis_size
 from pymif.utils.visualize import units_for_axes
 
 
 def dataset_axes(dataset) -> str:
     """Return normalized dataset axes, defaulting to legacy TCZYX metadata."""
-    return str(dataset.metadata.get("axes", "tczyx")).lower()
+    return metadata_axes(dataset.metadata)
 
 
 def axis_index(dataset, axis):
@@ -17,10 +18,7 @@ def axis_index(dataset, axis):
 
 def axis_size(dataset, axis, default=1):
     """Size of ``axis`` at the base resolution level (``default`` if absent)."""
-    idx = axis_index(dataset, axis)
-    if idx is None:
-        return default
-    return int(dataset.metadata["size"][0][idx])
+    return metadata_axis_size(dataset.metadata, axis, default)
 
 
 def scale_for_axes(dataset, requested_axes):

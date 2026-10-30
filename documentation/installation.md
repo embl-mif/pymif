@@ -27,6 +27,12 @@ To use the napari widgets as well:
 pip install -e .[napari]
 ```
 
+The optional extras are `napari` (the widgets), `notebooks` (Jupyter, to run the example notebooks), `dev` (tests and packaging), `docs` (the documentation build) and `all` (all of them):
+
+```console
+pip install -e .[napari,notebooks]
+```
+
 ## Versioning
 
 PyMIF uses semantic versions (`MAJOR.MINOR.PATCH`) derived from git tags with [setuptools-scm](https://setuptools-scm.readthedocs.io/). The version is never edited by hand. Releases are **opt-in**: merging a PR into `main` does nothing unless the PR carries a release label, so you can merge many feature PRs and release once, from the PR that should trigger it:

@@ -11,17 +11,24 @@ contributions:
     - id: pymif.mosaic
       python_name: pymif.napari._mosaic_widget:mosaic_widget
       title: Mosaic Fusion
+    - id: pymif.explorer
+      python_name: pymif.napari._explorer_widget:explorer_widget
+      title: Objects Explorer
+  # napari lists the widgets in this order in Plugins > PyMIF
   widgets:
     - command: pymif.convert
       display_name: Converter Plugin
-    - command: pymif.export_widget
-      display_name: Export Viewer
     - command: pymif.mosaic
       display_name: Mosaic Fusion
+    - command: pymif.explorer
+      display_name: Objects Explorer
+    - command: pymif.export_widget
+      display_name: Export Viewer
   menus:
     "napari/menu/plugins":
       - submenu: PyMIF
         items:
           - command: pymif.convert
-          - command: pymif.export_widget
           - command: pymif.mosaic
+          - command: pymif.explorer
+          - command: pymif.export_widget

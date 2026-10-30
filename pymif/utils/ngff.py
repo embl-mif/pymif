@@ -198,10 +198,6 @@ def _get_group_ome_attrs(group: zarr.Group) -> dict[str, Any]:
     ome = attrs.get("ome")
     return ome if isinstance(ome, dict) else attrs
 
-def _get_multiscales(group: zarr.Group) -> list[dict[str, Any]]:
-    """Return the raw ``multiscales`` list from a group across NGFF versions."""
-    return _get_group_ome_attrs(group).get("multiscales", [])
-
 def _get_group_multiscales(group: zarr.Group):
     """Compatibility helper returning the stored multiscales block for a group."""
     return _get_group_ome_attrs(group).get("multiscales")
