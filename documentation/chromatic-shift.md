@@ -120,7 +120,7 @@ out.root.attrs["zarrsmith_chromatic_shift"]
 #  'estimate': {...}}        # summary of the report, when one was passed
 ```
 
-Datasets corrected with PyMIF (version 0.5.4 or older) have the same record under `pymif_chromatic_shift`.
+Datasets corrected with PyMIF (version 0.5.5 or older) have the same record under `pymif_chromatic_shift`.
 
 The output path must differ from the input. Call `apply_chromatic_shift()` before in-memory edits such as `subset_dataset()`: it copies the on-disk settings of each array and refuses datasets that no longer match them.
 

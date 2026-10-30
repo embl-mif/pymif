@@ -16,7 +16,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  # Explicit, not github.repository: the images up to 0.5.4 stay at ghcr.io/embl-mif/pymif.
+  # Explicit, not github.repository: the images up to 0.5.5 stay at ghcr.io/embl-mif/pymif.
   IMAGE_NAME: ${{ github.repository_owner }}/zarrsmith
 
 jobs:
