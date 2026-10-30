@@ -16,10 +16,6 @@ It is developed for users of the [Mesoscopic Imaging Facility (MIF)](https://www
 > [!NOTE]
 > PyMIF writes **NGFF v0.5 / Zarr v3** by default. **NGFF v0.4 / Zarr v2** datasets remain supported through `ZarrManager` and `ZarrV04Manager`.
 
-![Demo](documentation/demo.gif)
-
-*Demonstration of PyMIF usage. Data: near newborn mouse embryo (~1.5 cm long). Fluorescence signal: methylene blue + autofluorescence. Sample processed and imaged by Montserrat Coll at the Mesoscopic Imaging Facility. Video speed: 2.5× real speed.*
-
 ---
 
 ## What PyMIF does

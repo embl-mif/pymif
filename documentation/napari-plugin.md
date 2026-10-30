@@ -27,6 +27,10 @@ The widgets are built to be docked on any side of the napari window, or floated,
 
 ## Objects Explorer
 
+![objects-explorer-demo](objects-explorer.gif)
+
+*A table from three images: hovering a point shows a thumbnail of its object; clicking a point of another image shows that image and goes to the object; unticking an image removes its objects from the plot.*
+
 `Plugins > PyMIF > Objects Explorer` plots the features of segmented objects with [napari-clusters-plotter](https://github.com/BiAPoL/napari-clusters-plotter) and links the plot with the viewer. It loads three things, dropped on their field, dropped all at once anywhere on the panel, or browsed:
 
 - the intensity OME-Zarr (all channels and resolution levels, read lazily),
