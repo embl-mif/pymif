@@ -1,4 +1,12 @@
+<!-- The header of README.md, in Markdown. The logo is the html_logo of conf.py, which Sphinx copies to _static/. -->
+<img src="_static/zarrsmith-icon.svg" alt="zarrsmith logo" width="120" align="left">
+
+# PyMIF — microscopy I/O, OME-Zarr forging, and NGFF utilities
+
+<br clear="left">
+
 ```{include} ../README.md
+:start-after: rewrite HTML paths) and includes this README from here. -->
 :relative-docs: documentation/
 :relative-images:
 ```
